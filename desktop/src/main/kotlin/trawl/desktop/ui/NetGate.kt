@@ -32,6 +32,8 @@ class NetGate(private val c: AppController, private val shell: Shell, private va
     ?: "tamarind|wheelbarrow|a dog on a bench|receipt total|feed the chickens|school fees|sunset over water|invoice last week|nursery seedlings")
     .split("|").map { it.trim() }.filter { it.isNotEmpty() }
   private val steps = JSONArray()
+  private val queryHits = JSONArray()
+  private var recordHits = false
   private val facts = JSONObject()
 
   private fun secs() = (System.currentTimeMillis() - started) / 1000.0
@@ -49,7 +51,14 @@ class NetGate(private val c: AppController, private val shell: Shell, private va
     c.setQuery("")
     delay(150)
     c.setQuery(q)
-    val r = within(1) { c.results.first { it.query == q && !it.browse } }
+    var r = within(1) { c.results.first { it.query == q && !it.browse } }
+    if (recordHits && r != null && !r.complete) r = within(1) { c.results.first { it.query == q && !it.browse && it.complete } } ?: r
+    if (recordHits && r != null) {
+      // Evidence for the pack comparison (Standard vs Save data): what each search returned, by file name and kind. Names are the made-up corpus's.
+      val top = JSONArray()
+      r.rows.take(5).forEach { top.put(it.file.name + " [" + it.file.kind + (if (it.strong) "" else ", weak") + "]") }
+      queryHits.put(JSONObject().put("query", q).put("filter", filter.name).put("count", r.rows.size).put("top", top))
+    }
     return r?.rows?.size ?: -1
   }
 
@@ -120,7 +129,10 @@ class NetGate(private val c: AppController, private val shell: Shell, private va
       val quick = ControllerQuickSearch(c)
       for (q in listOf("", "tamarind", "dog bench", "feed the chickens")) { asked++; if (within(1) { quick.search(q).first() } != null) answered++ }
     }
+    recordHits = true
     round()
+    recordHits = false
+    facts.put("query_hits", queryHits)
     facts.put("searches_asked", asked).put("searches_answered", answered)
     step("searches", answered == asked, "$answered of $asked answered")
 

@@ -1,7 +1,6 @@
 package trawl.desktop
 
 import java.io.File
-import java.util.concurrent.TimeUnit
 
 /** Picks the text reader for this OS and puts its helper script (shipped inside the app) on disk where it can run. */
 object Ocrs {
@@ -28,10 +27,12 @@ object Ocrs {
     return if (ready) extract("ocr-stdin-apple", dir).also { it.setExecutable(true) } else AppleOcr.build(extract("ocr-stdin.swift", dir), dir)
   }
 
-  private fun tesseractPresent(): Boolean = try {
-    val p = ProcessBuilder("tesseract", "--version").redirectErrorStream(true).redirectOutput(ProcessBuilder.Redirect.DISCARD).start()
-    p.waitFor(3, TimeUnit.SECONDS) && p.exitValue() == 0
-  } catch (_: Exception) { false }
+  /**
+   * Whether `tesseract` is an executable file in a PATH folder. It is looked up, not run: `tesseract --version` prints libcurl's version,
+   * and libcurl's OpenLDAP looks up the computer's own name in DNS (found by the zero-network gate on a host whose name is not in /etc/hosts).
+   */
+  fun tesseractPresent(pathEnv: String? = System.getenv("PATH"), isFile: (File) -> Boolean = { it.isFile && it.canExecute() }): Boolean =
+    HeicRoute.onPath("tesseract", pathEnv, isFile)
 
   /** Copies a helper out of the app's resources (they cannot run from inside a jar). Rewritten when the app's copy is newer or different. */
   private fun extract(name: String, dir: File): File {
