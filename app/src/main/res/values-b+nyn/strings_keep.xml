@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="keep_action">Gumizamu okushoma hati</string>
+  <string name="keep_action_hint">Ereka sikuriini eyakire omu mwirima kakye ngu <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ebaase kushoma obu otarikukozesa simu. Kirungi giheke aha chaaja. Simu eguma etakingirwe yaaba neekora, n\'ahabw\'ekyo kikore aharikwesigwa honka.</string>
+  <string name="keep_heading"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> neeshoma fayiro zaawe</string>
+  <string name="keep_counts">%1$s aha %2$s za fayiro zeetegyereezibwa</string>
+  <string name="keep_time_left">Obwire obusigaireho: %1$s</string>
+  <string name="keep_time_unknown">Nihaabarwa obwire oburaatware</string>
+  <string name="keep_charging">Neeyongyerwamu omuriro</string>
+  <string name="keep_on_battery">Teeri kwongyerwamu muriro. Erahuka yaaba eri aha chaaja.</string>
+  <string name="keep_unlocked">Sikuriini eguma eyakire kandi simu eguma etakingirwe obu <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> erikushoma. Gitsigye aharikwesigwa honka.</string>
+  <string name="keep_tap_to_stop">Koma ahari hoona kurekyeraho</string>
+  <string name="keep_stop_done_title">Byona bihwire</string>
+  <string name="keep_stop_done"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yaashoma fayiro zaawe zoona. Sherura neezimanya hati.</string>
+  <string name="keep_stop_battery_title">Yarekyeraho: batiri eri ahansi</string>
+  <string name="keep_stop_battery">Batiri eri ahansi ya 20 ya buli kikumi. Heeka chaaja, rero otandikye buto kuruga aha sikuriini y\'amagyenda.</string>
+  <string name="keep_stop_hot_title">Yarekyeraho: simu neeyota</string>
+  <string name="keep_stop_hot">Simu yaayota munonga, n\'ahabw\'ekyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yaarekyeraho ngu ebaase kwohora. Noobaasa kutandika buto bwanyima.</string>
+  <string name="keep_stop_unplugged_title">Yarekyeraho: chaaja yaihwayo</string>
+  <string name="keep_stop_unplugged">Garuramu chaaja, rero otandikye buto kuruga aha sikuriini y\'amagyenda.</string>
+  <string name="keep_stop_charger_title">Kutegyereza chaaja</string>
+  <string name="keep_stop_charger">Aha batiri, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ekora omurimo omworobi gwonka, kandi ogwo guhwire. Heeka chaaja, rero otandikye buto.</string>
+  <string name="keep_stop_paused_title">Yarekyeraho: okushoma kwyemereziibweho</string>
+  <string name="keep_stop_paused">Igura sikuriini y\'amagyenda omu <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kureeba ensonga n\'okugumizamu.</string>
+  <string name="keep_screen_will_sleep">Sikuriini hati neeyija kuzima yenka nk\'oku yaabaire neekora.</string>
+  <string name="keep_close">Kingaho</string>
+</resources>

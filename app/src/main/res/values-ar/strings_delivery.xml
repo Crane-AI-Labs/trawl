@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="models_eyebrow">تنزيل واحد</string>
+  <string name="models_title">الحصول على نماذج البحث</string>
+  <string name="models_body">استخدم Wi-Fi إن أمكن: ملف واحد بحجم %1$d MB، يُنزَّل مرة واحدة. يمكنك البحث بالأسماء والكلمات فورًا. ويتحسن البحث بالمعنى كلما تعرّف <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> على ملفاتك، ويكون في أفضل حالاته بعد ليلة على الشاحن.</string>
+  <string name="models_get">تنزيل النماذج (%1$d MB)</string>
+  <string name="models_choose">اختيار الملف</string>
+  <string name="models_hint_choose">هل لديك الملف بالفعل؟ اختره من هاتفك.</string>
+  <string name="models_hint_access">يضيف <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> الملف تلقائيًا عند اكتمال تنزيله، بعد أن تسمح له بالوصول إلى ملفاتك. أو استخدم اختيار الملف.</string>
+  <string name="models_hint_wait">يضيف <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> الملف تلقائيًا عند اكتمال التنزيل. يمكنك البدء الآن.</string>
+  <string name="models_no_browser">لم يتم العثور على متصفح على هذا الهاتف. انسخ الملف إليه بطريقة أخرى، ثم اختره هنا.</string>
+  <string name="models_downloading">جارٍ التنزيل… تم تنزيل %1$s حتى الآن</string>
+  <string name="models_installing_pct">جارٍ التحقق من النماذج وإضافتها… %1$d%%</string>
+  <string name="models_installing">جارٍ التحقق من النماذج وإضافتها…</string>
+  <string name="models_cancel">إلغاء</string>
+  <string name="models_done">تم تثبيت النماذج. البحث جاهز.</string>
+  <string name="models_done_already">النماذج مثبتة بالفعل.</string>
+  <string name="models_ok">حسنًا</string>
+  <string name="models_free_question">هل تريد حذف الملف الذي تم تنزيله لتوفير %1$s؟</string>
+  <string name="models_free_yes">نعم، احذفه</string>
+  <string name="models_free_no">لا، احتفظ به</string>
+  <string name="models_try_again">إعادة المحاولة</string>
+  <string name="models_refused_wrong_class">هذا الملف مخصص لنوع مختلف من الهواتف. استخدم تنزيل النماذج لتنزيل الملف المناسب لهذا الهاتف.</string>
+  <string name="models_refused_damaged">الملف تالف أو غير مكتمل، لذلك لم يستخدمه <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>. نزّله مرة أخرى، ثم أعد المحاولة.</string>
+  <string name="models_refused_not_signed">تعذّر على <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> التأكد من أن هذا الملف أصلي، لذلك لم يستخدمه. استخدم تنزيل النماذج لتنزيله مرة أخرى.</string>
+  <string name="models_refused_older">هذا الملف أقدم من النماذج الموجودة بالفعل على هذا الهاتف، لذلك احتفظ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> بالنماذج الأحدث.</string>
+  <string name="models_refused_no_space">لا توجد مساحة خالية كافية على هذا الهاتف. وفّر حوالي %1$d MB، ثم أعد المحاولة.</string>
+  <string name="models_refused_cancelled">تم الإيقاف. لم يتغير شيء.</string>
+  <string name="models_update_title">يتوفر نموذج أفضل</string>
+  <string name="models_update_body_reread">ستؤدي إضافته إلى جعل <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> يقرأ ملفاتك مرة أخرى. يحدث ذلك أثناء شحن الهاتف، ويستمر البحث في العمل خلال ذلك.</string>
+  <string name="models_update_body_light">لن تؤدي إضافته إلى جعل <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> يقرأ ملفاتك مرة أخرى.</string>
+  <string name="models_update_get">تنزيل التحديث (%1$d MB)</string>
+  <string name="models_update_not_now">ليس الآن</string>
+</resources>

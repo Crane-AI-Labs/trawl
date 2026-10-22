@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The adaptive icon's foreground (also the monochrome themed icon, and the splash, which shows ic_launcher itself): the mark
+  (ic_brand_mark.xml) inset 18.5% on each side, so it is 68 dp of the 108 dp canvas. Its farthest ink (the end of the handle) is
+  30.4 dp from the centre, inside the 66 dp safe circle (33 dp) that every mask keeps. The inset is a fraction, not dp:
+  launchers and the splash draw these layers at their own sizes, and a dp inset does not scale with them. The mark's own size
+  (68 dp) over 63% makes the 108 dp.
+-->
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+  android:drawable="@drawable/ic_brand_mark"
+  android:inset="18.5%" />

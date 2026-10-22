@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="keep_action">Continuar analisando agora</string>
+  <string name="keep_action_hint">Mantém a tela acesa e esmaecida para o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> analisar enquanto você não usa o celular. Melhor no carregador. O celular fica desbloqueado durante o processo, então use apenas em locais de confiança.</string>
+  <string name="keep_heading">O <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> está analisando seus arquivos</string>
+  <string name="keep_counts">%1$s de %2$s arquivos analisados</string>
+  <string name="keep_time_left">Tempo restante: %1$s</string>
+  <string name="keep_time_unknown">Calculando o tempo restante</string>
+  <string name="keep_charging">Carregando</string>
+  <string name="keep_on_battery">Não está carregando. Fica mais rápido no carregador.</string>
+  <string name="keep_unlocked">A tela continua ligada e o celular continua desbloqueado enquanto o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> aprende. Só deixe o celular em um lugar de confiança.</string>
+  <string name="keep_tap_to_stop">Toque em qualquer lugar para parar</string>
+  <string name="keep_stop_done_title">Tudo pronto</string>
+  <string name="keep_stop_done">O <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> analisou todos os seus arquivos. A busca já os reconhece.</string>
+  <string name="keep_stop_battery_title">Interrompido: bateria fraca</string>
+  <string name="keep_stop_battery">A bateria está abaixo de 20%. Conecte o carregador e continue pela tela de progresso.</string>
+  <string name="keep_stop_hot_title">Interrompido: o celular esquentou</string>
+  <string name="keep_stop_hot">O celular esquentou demais, então o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> parou para esfriar. Você pode continuar mais tarde.</string>
+  <string name="keep_stop_unplugged_title">Interrompido: o carregador foi desconectado</string>
+  <string name="keep_stop_unplugged">Reconecte o carregador e continue pela tela de progresso.</string>
+  <string name="keep_stop_charger_title">Aguardando o carregador</string>
+  <string name="keep_stop_charger">Na bateria, o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> faz apenas tarefas leves, e elas já terminaram. Conecte o carregador e recomece.</string>
+  <string name="keep_stop_paused_title">Interrompido: análise pausada</string>
+  <string name="keep_stop_paused">Abra a tela de progresso no <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> para ver o motivo e continuar.</string>
+  <string name="keep_screen_will_sleep">A tela agora vai desligar normalmente.</string>
+  <string name="keep_close">Fechar</string>
+</resources>

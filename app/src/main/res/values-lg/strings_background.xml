@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="bg_title">Essimu eno eyimiriza app</string>
+  <string name="bg_body">Essimu nnyingi, nga n\'eno mw\'eri, ziyimiriza app ssirini ng\'ezikiddwa. Noolwekyo, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> esoma fayiro zo ng\'eggule yokka. Bw\'oba ne galeriya ennene, kozesa Weeyongere okusoma ng\'essimu eri ku caaja ekiro kyonna.</string>
+  <string name="bg_open">Ggulawo enteekateeka z\'essimu</string>
+  <string name="bg_settings_section">Ku ssimu eno</string>
+  <string name="bg_settings_hint">Essimu nnyingi, nga n\'eno mw\'eri, ziyimiriza app ssirini ng\'ezikiddwa. Noolwekyo, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> esoma fayiro zo ng\'eggule yokka. Bw\'oba ne galeriya ennene, kozesa Weeyongere okusoma ng\'essimu eri ku caaja. Enteekateeka y\'essimu eri wansi ekoma ku kukkiriza app okutandika nate essimu ng\'emaze okuddamu okutandika.</string>
+  <string name="bgs_title">Samsung eyinza okuyimiriza app eno ekiro</string>
+  <string name="bgs_body">Essimu za Samsung ziyinza okwebasa app oba okuziggala ekiro, bwe kityo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> eyimirira okusoma fayiro zo. Mu Battery, londa «Unrestricted» ku lwa <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>.</string>
+  <string name="bgs_open">Ggulawo enteekateeka za battery</string>
+</resources>

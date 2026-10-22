@@ -1,0 +1,14 @@
+# Baseline profile (hand-written wildcard rules; AGP expands them against the dex at build time).
+# What a fresh sideloaded install otherwise runs in the interpreter/JIT until ART profiles it: our own UI and view models,
+# Coil's request pipeline and the thumbnail fetcher, and the coroutines/lifecycle plumbing every scroll frame goes through.
+# Compose, Material 3, lifecycle and WorkManager ship their own profiles, which AGP merges.
+# Flags: H = hot (compile), S = startup (layout-ordered into the first dex), P = post-startup.
+HSPLcom/craneai/findr/ui/**;->**(**)**
+HSPLcom/craneai/findr/core/**;->**(**)**
+HSPLcom/craneai/findr/MainActivity;->**(**)**
+HSPLcom/craneai/findr/FindrApp;->**(**)**
+HSPLcoil3/**;->**(**)**
+HSPLkotlinx/coroutines/**;->**(**)**
+HSPLkotlin/**;->**(**)**
+Lcom/craneai/findr/**;
+Lcoil3/**;

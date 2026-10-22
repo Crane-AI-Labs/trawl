@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="action_find_similar">Tafuta zinazofanana</string>
+  <string name="action_find_similar_help">Tafuta zinazofanana huonyesha picha zinazofanana na hii.</string>
+  <string name="similar_chip">Zinazofanana na %1$s</string>
+  <string name="similar_remove">Acha kutafuta zinazofanana</string>
+  <string name="similar_nothing_body">Bado hakuna chochote kwenye mafaili yako kinachofanana na %1$s.</string>
+</resources>

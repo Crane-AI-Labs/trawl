@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="welcome_line"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ń rí àwọn àkọsílẹ̀, fọ́tò àti àwòrán ojú ìbòjú rẹ nípa orúkọ wọn àti àwọn ọ̀rọ̀ inú wọn.</string>
+  <string name="onb1_point_model_title">A ṣe é fún àwọn fóònù kéékèèké</string>
+  <string name="welcome_point_ai_body">Ó ń ka àwọn fáìlì rẹ níbí, láìsí ohun kankan láti gbà sílẹ̀. Kò sí ohun tí a fi ránṣẹ́ sí sáfà.</string>
+  <string name="meter_sub_progress_eta">%1$s nínú %2$s ni a ti kà · ó kù nǹkan bí %3$s</string>
+  <string name="meter_sub_progress_estimating">%1$s nínú %2$s ni a ti kà · ń ṣírò iye àkókò tó kù</string>
+  <string name="meter_sub_paused">%1$s nínú %2$s ni a ti kà. Wá ṣì ń ṣiṣẹ́.</string>
+  <string name="meter_a11y">%1$s. %2$s. Ìpín %3$d nínú ọgọ́rùn-ún ni a ti kà.</string>
+  <string name="sheet_detail_indexing">A kọ́kọ́ ka àwọn orúkọ, kí Wá lè ṣiṣẹ́ lẹ́sẹ̀kẹsẹ̀. Kíkà àwọn ọ̀rọ̀ inú àwọn àkọsílẹ̀, PDF àti fọ́tò rẹ ń gba àkókò púpọ̀ sí i.</string>
+  <string name="level_searchable">Ṣeé wá nípa orúkọ</string>
+  <string name="level_searchable_hint">Ó yára. Ó ń jẹ́ kó o rí fáìlì nípa orúkọ rẹ̀.</string>
+  <string name="level_understood">Àwọn ọ̀rọ̀ tí a ti kà</string>
+  <string name="level_understood_hint">Ó lọ́ra díẹ̀. Ó ń jẹ́ kó o rí fáìlì nípa àwọn ọ̀rọ̀ inú rẹ̀, títí kan ọ̀rọ̀ inú àwọn fọ́tò.</string>
+  <string name="search_hint_a11y">Wá àwọn fáìlì rẹ nípa orúkọ wọn àti àwọn ọ̀rọ̀ inú wọn</string>
+  <string name="search_incomplete_note">Àwọn orúkọ ń ṣiṣẹ́ báyìí, a sì ṣì ń ka àwọn ọ̀rọ̀. Nítorí náà, àwọn àbájáde míì lè yọjú.</string>
+  <string name="settings_about_model">Wíwá ń rí àwọn fáìlì nípa orúkọ wọn àti àwọn ọ̀rọ̀ inú wọn, gbogbo rẹ̀ lórí fóònù yìí.</string>
+  <string name="settings_delete_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ń pa àyẹ̀wò àwọn fáìlì rẹ rẹ́ báyìí: orúkọ wọn, àwọn ọ̀rọ̀ inú àwọn àkọsílẹ̀ rẹ, àti ọ̀rọ̀ tí ó kà nínú àwọn fọ́tò àti àwòrán ojú ìbòjú. Àwọn fáìlì ìgbà díẹ̀ rẹ̀ àti ìròyìn ìṣòro yóò lọ pẹ̀lú.\n\nA kò fọwọ́ kan àwọn fáìlì tirẹ̀. Ètò rẹ yóò wà níbẹ̀, títí kan àwọn fódà tí o fo.\n\n<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yóò wá dẹ́kun kíkà. Wá yóò wà ní òfo títí tí o ó fi tẹ Tẹ̀síwájú.</string>
+  <string name="pause_battery_low_detail">Bátìrì kò tó 30%%, torí náà <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ń dúró láti fi ìyókù pamọ́. Yóò tẹ̀síwájú fúnra rẹ̀ nígbà tí fóònù bá gba iná.</string>
+</resources>

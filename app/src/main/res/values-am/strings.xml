@@ -1,0 +1,459 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="kind_document">ሰነድ</string>
+  <string name="kind_pdf">PDF</string>
+  <string name="kind_photo">ፎቶ</string>
+  <string name="kind_screenshot">የስክሪን ፎቶ</string>
+  <string name="kind_video">ቪዲዮ</string>
+  <string name="kind_audio">ኦዲዮ</string>
+  <string name="kind_other">ፋይል</string>
+  <string name="filter_all">ሁሉም</string>
+  <string name="filter_photos">ፎቶዎች</string>
+  <string name="filter_screenshots">የስክሪን ፎቶዎች</string>
+  <string name="filter_videos">ቪዲዮዎች</string>
+  <string name="filter_documents">ሰነዶች</string>
+  <string name="filter_audio">ኦዲዮ</string>
+  <string name="kind_plural_screenshots">የስክሪን ፎቶዎች</string>
+  <string name="kind_plural_photos">ፎቶዎች</string>
+  <string name="kind_plural_documents">ሰነዶች እና PDFዎች</string>
+  <string name="kind_plural_videos">ቪዲዮዎች</string>
+  <string name="kind_plural_audio">ኦዲዮ</string>
+  <string name="section_photos_videos">ፎቶዎች እና ቪዲዮዎች</string>
+  <string name="section_documents_text">ሰነዶች እና ጽሑፍ</string>
+  <string name="section_recent_documents">የቅርብ ጊዜ ሰነዶች</string>
+  <string name="section_recent_photos_videos">የቅርብ ጊዜ ፎቶዎች እና ቪዲዮዎች</string>
+  <string name="badge_page">ገጽ %1$d</string>
+  <string name="badge_at_time">በ%1$s</string>
+  <plurals name="pages_count">
+        
+    
+    <item quantity="one">%d ገጽ</item>
+    <item quantity="other">%d ገጾች</item>
+  </plurals>
+  <string name="action_open">ክፈት</string>
+  <string name="action_share">አጋራ</string>
+  <string name="action_copy">ቅዳ</string>
+  <string name="action_show_folder">በፎልደር ውስጥ አሳይ</string>
+  <string name="action_more">ተጨማሪ እርምጃዎች</string>
+  <string name="snack_copied">ተቀድቷል</string>
+  <string name="meter_title_not_started">ማንበብ አልተጀመረም</string>
+  <string name="meter_title_scanning">ስልክህን በመቃኘት ላይ</string>
+  <string name="meter_title_indexing">ፋይሎችህን በማጥናት ላይ</string>
+  <string name="meter_title_up_to_date">ሁሉም ተጠናቋል</string>
+  <string name="meter_title_error">ችግር ተፈጥሯል</string>
+  <string name="meter_sub_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ፋይሎችህን ማግኘት ሲችል ይጀምራል።</string>
+  <string name="meter_sub_scanning">እስካሁን %1$s ፋይሎች ተገኝተዋል።</string>
+  <string name="meter_sub_names_first">አሁኑኑ መፈለግ እንድትችል መጀመሪያ ስሞች እና ቃላት።</string>
+  <string name="meter_sub_progress_eta">ከ%2$s ውስጥ %1$s ተረድቷል · ወደ %3$s ገደማ ይቀራል</string>
+  <string name="meter_sub_progress_estimating">ከ%2$s ውስጥ %1$s ተረድቷል · የሚወስደውን ጊዜ በማስላት ላይ</string>
+  <string name="meter_sub_needs_charger">አሁን ስሞች እና ቃላት። ትርጉም የሚጀምረው ቻርጅ ሲያደርጉ ነው።</string>
+  <string name="meter_sub_reembed">ፎቶዎችን ለአዲሱ ሞዴል በማዘመን ላይ፦ %1$s ከ %2$s። ፍለጋ መስራቱን ይቀጥላል።</string>
+  <string name="meter_sub_reembed_eta">ፎቶዎችን ለአዲሱ ሞዴል በማዘመን ላይ፦ %1$s ከ %2$s · ወደ %3$s ገደማ ይቀራል</string>
+  <string name="meter_sub_reembed_battery">ፎቶዎችን ለአዲሱ ሞዴል በማዘመን ላይ፦ %1$s ከ %2$s። የቀረው ቻርጅ ሲያደርጉ ይቀጥላል።</string>
+  <string name="meter_sub_light_reading">ለፈጣን ፍለጋ ፎቶዎችህን በማንበብ ላይ። ሙሉ ጥራቱ የሚጠናቀቀው ቻርጅ ሲያደርጉ ነው።</string>
+  <string name="meter_sub_light_done">አሁን ሁሉንም መፈለግ ይቻላል። ሙሉ ጥራቱ የሚጠናቀቀው ቻርጅ ሲያደርጉ ነው።</string>
+  <string name="meter_sub_paused">%1$s ከ %2$s ተረድቷል። ፍለጋ አሁንም ይሰራል።</string>
+  <string name="meter_sub_up_to_date">%1$s ፋይሎች ለፍለጋ ዝግጁ ናቸው።</string>
+  <string name="meter_sub_error">ለዝርዝሮች ይንኩ።</string>
+  <string name="meter_a11y">%1$s። %2$s። %3$d በመቶ ተረድቷል።</string>
+  <string name="meter_open_details">የማንበብ ዝርዝሮችን አሳይ</string>
+  <string name="pause_not_charging">ቻርጀር በመጠበቅ ላይ</string>
+  <string name="pause_not_charging_detail">ሁሉንም በሙሉ ጥራት ማንበብ ብዙ ባትሪ ይወስዳል፣ ስለዚህ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ያንን ክፍል ስልኩ ቻርጅ እያደረገ ሳለ ይሰራልታል። ይህ በእንዲህ እንዳለ ፍለጋ ይሰራል።</string>
+  <string name="pause_too_hot">በማቀዝቀዝ ላይ</string>
+  <string name="pause_too_hot_detail">ስልኩ ስለሞቀ፣ ለመጠበቅ ሲባል <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> እረፍት እየወሰደ ነው። ስልኩ አንዴ ከቀዘቀዘ በራሱ ይቀጥላል።</string>
+  <string name="pause_battery_low">ባትሪው አነስተኛ ነው</string>
+  <string name="pause_battery_low_detail">ባትሪው ከ30%% በታች ስለሆነ፣ የቀረውን ለመቆጠብ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ስሞችን እና ቃላትን ብቻ ያነባል። ስልኩ ቻርጅ ሲደረግ በራሱ ይቀጥላል።</string>
+  <string name="pause_user">በእርስዎ ቆሟል</string>
+  <string name="pause_user_detail">ማንበብ ቆሟል። <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> እስካሁን በተረዳው ላይ ፍለጋ አሁንም ይሰራል።</string>
+  <string name="pause_no_permission">ወደ ፋይሎችህ መዳረሻ ያስፈልጋል</string>
+  <string name="pause_no_permission_detail">የሁሉም ፋይሎች መዳረሻን ካልፈቀዱ በስተቀር <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ፋይሎችህን ማየት አይችልም። የሚያነባቸው ብቻ ሲሆን ምንም ነገር አይለውጥም።</string>
+  <string name="pause_storage_low">የስልኩ ማከማቻ ሊሞላ ተቃርቧል</string>
+  <string name="pause_storage_low_detail"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> መዝገቡን ለማስቀመጥ ትንሽ ቦታ ይፈልጋል። የተወሰነ ቦታ ነፃ ሲያደርጉ ይቀጥላል።</string>
+  <string name="action_pause">አፍታ አቁም</string>
+  <string name="action_resume">ቀጥል</string>
+  <string name="action_read_on_battery">ያም ሆነ ይህ በባትሪ አንብብ</string>
+  <string name="action_allow_access">መዳረሻ ፍቀድ</string>
+  <string name="action_free_space">ቦታ ነፃ አድርግ</string>
+  <string name="action_retry">እንደገና ሞክር</string>
+  <string name="eta_under_minute">ከአንድ ደቂቃ በታች</string>
+  <string name="eta_minutes">%d ደቂቃ</string>
+  <string name="eta_hours_single">%d ሰዓት</string>
+  <string name="eta_hours_range">ከ%1$d እስከ %2$d ሰዓት</string>
+  <string name="eta_while_charging">ቻርጅ ሲደረግ %1$s</string>
+  <string name="sheet_title">ፋይሎችህን በማንበብ ላይ</string>
+  <string name="sheet_detail_up_to_date"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ሊያየው የሚችለው እያንዳንዱ ፋይል ዝግጁ ነው። አዳዲሶቹ እንደታዩ ይታከላሉ።</string>
+  <string name="sheet_detail_scanning"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> የፋይሎችህን ዝርዝር በማዘጋጀት ላይ ነው። ይህ አንድ ወይም ሁለት ደቂቃ ይወስዳል።</string>
+  <string name="sheet_detail_light_on_battery">አሁን ስሞች እና ቃላት ይነበባሉ፣ ፎቶዎችም ፈጣን እይታ ያገኛሉ፣ ስለዚህ ፍለጋ አሁኑኑ ይሰራል። ምርጥ ውጤቶችን የሚሰጠው ሙሉ ጥራት ስልኩ ቻርጅ ሲደረግ ይጠናቀቃል።</string>
+  <string name="sheet_detail_needs_charger">አሁን ስሞች እና ቃላት እየተነበቡ ነው፣ ስለዚህ ፍለጋ አሁኑኑ ይሰራል። ፎቶዎች እና ሰነዶች ምን እንደሚገልጹ መረዳት የሚጀምረው ስልኩ ቻርጅ ሲደረግ ነው።</string>
+  <string name="sheet_detail_indexing">መጀመሪያ ስሞች እና ቃላት ይመጣሉ፣ ስለዚህ ፈልግ ወዲያውኑ ይሠራል። ፎቶዎች እና ሰነዶች ስለ ምን እንደሆኑ መረዳት ረዘም ያለ ጊዜ ስለሚወስድ ማታ ቻርጅ ላይ እያለ ቢሠራ ይመረጣል።</string>
+  <string name="sheet_detail_error">ማንበብ ሳይታሰብ ቆሟል። ቀዳሚ ውጤቶችህ ደህንነታቸው የተጠበቀ ነው።</string>
+  <string name="sheet_detail_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ማንበብ ገና አልጀመረም።</string>
+  <string name="sheet_by_kind">በፋይል አይነት</string>
+  <string name="sheet_reading_now">አሁን በማንበብ ላይ</string>
+  <string name="sheet_resumes_by_itself">ይህ ሲስተካከል በራሱ ይቀጥላል።</string>
+  <string name="level_searchable">በስም እና በቃላት የሚፈለግ</string>
+  <string name="level_searchable_hint">ፈጣን። ፋይልን በውስጡ በተጻፈው እንድታገኝ ያስችላል።</string>
+  <string name="level_understood">በፍቺው የተረዳ</string>
+  <string name="level_understood_hint">ቀስ ያለ። ፋይልን ስለ ምን እንደሆነ በማወቅ እንድታገኝ ያስችላል።</string>
+  <string name="level_quicklook">ፈጣን እይታ፦ ፎቶዎች እና ቪዲዮዎች</string>
+  <string name="level_quicklook_hint">ፈጣን። አነስተኛ ሞዴል በእንግሊዝኛ ፍለጋዎች ፎቶዎችን በውስጣቸው ባለው ነገር ያገኛል። እያንዳንዱ ፎቶ ሲረዳ በሙሉ ዝርዝር ይተካል።</string>
+  <string name="meter_quicklook">ፈጣን እይታ፦ %1$s ከ%3$s ፎቶዎች · ሙሉ ዝርዝር፦ %2$s ከ%3$s</string>
+  <string name="level_a11y">%1$s፦ %2$s ከ%3$s</string>
+  <string name="count_of">%1$s ከ%2$s</string>
+  <string name="stat_time_left">የቀረ ጊዜ</string>
+  <string name="stat_speed">ፍጥነት</string>
+  <string name="stat_index_size">የመዝገብ መጠን</string>
+  <string name="stat_model_size">የሞዴል መጠን</string>
+  <string name="stat_when_charging">ቻርጅ ሲደረግ ይጀምራል</string>
+  <string name="stat_estimating">በማስላት ላይ</string>
+  <string name="stat_measuring">በመለካት ላይ</string>
+  <string name="stat_done">ተጠናቋል</string>
+  <string name="stat_rate_value">%1$s ፋይሎች/በሰዓት</string>
+  <string name="onb_next">ቀጥል</string>
+  <string name="onb_back">ተመለስ</string>
+  <string name="onb_start"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g>ን ጀምር</string>
+  <string name="onb_start_locked"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ከመጀመሩ በፊት የሁሉንም ፋይሎች መዳረሻ ይፈልጋል</string>
+  <string name="onb_allow_access">የፋይሎች መዳረሻን ፍቀድ</string>
+  <string name="onb_page_of">ደረጃ %1$d ከ%2$d</string>
+  <string name="welcome_line"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ሰነዶችህን፣ ፎቶዎችህን እና ስክሪንሾቶችህን በሚሉትና በሚያሳዩት ያገኛል።</string>
+  <string name="welcome_point_ai_body">ፋይሎችህን የሚረዳው AI በዚህ ስልክ ላይ ይሰራል። ምንም ነገር ወደ ሰርቨር አይላክም።</string>
+  <string name="welcome_point_reads_title">ፋይሎችህን ብቻ ያነባል</string>
+  <string name="welcome_point_reads_body">ምንም ነገር አይቀይርም፣ አያንቀሳቅስም ወይም አያጠፋም። የተማረውን በማንኛውም ጊዜ ማጥፋት ትችላለህ።</string>
+  <string name="onb_choose_folders">ፎልደሮችን ምረጥ</string>
+  <string name="onb1_eyebrow">ግላዊነትን ያማከለ</string>
+  <string name="onb1_title">ፋይሎችህ መቼም ከዚህ ስልክ አይወጡም።</string>
+  <string name="onb1_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ሰነዶችን፣ ፒዲኤፎችን፣ ቅጽበታዊ ገጽ እይታዎችን፣ ፎቶዎችን፣ ሚሞችን እና ቪዲዮዎችን በሚናገሩት እና በሚያሳዩት ነገር ያገኛል። ሁሉም ነገር እዚህ፣ በዚህ ስልክ ላይ ይከናወናል።</string>
+  <string name="onb1_point_internet_title">የኢንተርኔት ፈቃድ የለውም</string>
+  <string name="onb1_point_internet_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> በጭራሽ ከኢንተርኔት ጋር መገናኘት አይችልም። አንድሮይድ ራሱ ማንኛውንም ነገር ወደ ውጭ እንዳይልከው ያግደዋል።</string>
+  <string name="onb1_point_model_title">AIው በስልክህ ላይ ነው ያለው</string>
+  <string name="onb1_point_model_body">ፋይሎችህን የሚረዳው የGoogle ሞዴል EmbeddingGemma 2 በዚህ ስልክ ላይ ነው የሚሠራው። እንዲረዳ ወደ ሰርቨር የሚላክ ምንም ነገር የለም።</string>
+  <string name="onb1_point_delete_title">ውሳኔው ያንተ ነው</string>
+  <string name="onb1_point_delete_body">የፈለግከውን ፎልደር ዝለል፣ ወይም <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ያጠናውን ሁሉ በፈለግከው ጊዜ አጥፋ።</string>
+  <string name="onb2_eyebrow">ቀጥሎ ምን ይሆናል</string>
+  <string name="onb2_title">ፍለጋ በጥቂት ደቂቃዎች ውስጥ ይሠራል። መረዳት ግን አንድ ሌሊት ይወስዳል።</string>
+  <string name="onb2_step1_title">በጥቂት ደቂቃዎች ውስጥ</string>
+  <string name="onb2_step1_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> የፋይሎችህን ዝርዝር ያዘጋጃል፤ እንዲሁም ስሞቻቸውንና ውስጣቸው ያሉትን ቃላት ያጠናል። ወዲያውኑ መፈለግ ትችላለህ።</string>
+  <string name="onb2_step2_title">በሚቀጥሉት ሰዓታት ውስጥ</string>
+  <string name="onb2_step2_body">ከዚያም እያንዳንዱ ፎቶ እና ሰነድ ስለ ምን እንደሆነ ያጠናል፤ ስለዚህ እንደ “የትምህርት ቤት ክፍያ ደረሰኝ” ያለ ፍለጋ እነዚያ ቃላት በውስጡ ባይኖሩም እንኳ ትክክለኛውን ያገኛል። ይህ ለስልክ ቀርፋፋ ሥራ ነው።</string>
+  <string name="onb2_step3_title">በዋናነት ኃይል በሚሞላበት ጊዜ</string>
+  <string name="onb2_step3_body">የባትሪህን ኃይል ለመቆጠብ፣ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ቀርፋፋውን ክፍል ቻርጀር ላይ ሲሆን ያከናውናል። ለአንድ ሌሊት ቻርጀር ላይ እንደተሰካ ተወው። በማንኛውም ጊዜ ሂደቱን ማየት፣ ማቆም ወይም ይህን መለወጥ ትችላለህ።</string>
+  <string name="onb3_eyebrow">ሁለት ፈቃዶች</string>
+  <string name="onb3_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ፋይሎችህን እንዲያይ ፍቀድለት</string>
+  <string name="onb3_files_title">የሁሉም ፋይሎች መዳረሻ</string>
+  <string name="onb3_files_body">በእያንዳንዱ ፎልደር ውስጥ ያሉ ፋይሎችን፣ ለምሳሌ የWhatsApp ሰነዶችን ለማየት ያስፈልጋል። <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> የሚያነበው ብቻ ነው። ምንም ነገር አይለውጥም፣ አያንቀሳቅስም ወይም አያጠፋም።</string>
+  <string name="onb3_files_action">ቅንብሮችን ክፈት</string>
+  <string name="onb3_files_granted">ተፈቅዷል</string>
+  <string name="onb3_files_hint">በሚከፈተው ዝርዝር ውስጥ “ሁሉንም ፋይሎች ለማስተዳደር መዳረሻ ፍቀድ” የሚለውን አብራ፣ ከዚያ ተመለስ።</string>
+  <string name="onb3_notif_title">ማሳወቂያዎች (አማራጭ)</string>
+  <string name="onb3_notif_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ማንበብ ሲጨርስ ሊነግርህ እንዲችል ብቻ ነው። ለሌላ ምንም አይደለም።</string>
+  <string name="onb3_notif_action">ፍቀድ</string>
+  <string name="onb3_notif_granted">ተፈቅዷል</string>
+  <string name="onb4_eyebrow">አማራጭ ተጨማሪዎች</string>
+  <string name="onb4_title">ተጨማሪዎችን ማከል ይፈልጋሉ?</string>
+  <string name="onb4_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ያለ እነዚህም ይሠራል። እያንዳንዳቸው አንድ ነገር ያሻሽላሉ። <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> በጭራሽ ከበይነመረብ ጋር ስለማይገናኝ፣ እያንዳንዳቸው ወደ Downloads የምትገለብጣቸው ፋይል ናቸው።</string>
+  <string name="onb4_add">አክል</string>
+  <string name="onb4_not_now">አሁን አይደለም</string>
+  <string name="onb4_added">ታክሏል</string>
+  <string name="onb4_skipped">ታልፏል። በኋላ ላይ ማከል ትችላለህ።</string>
+  <string name="onb4_footer">ይህንን በኋላ ላይ በቅንብሮች → ተጨማሪዎች ውስጥ መለወጥ ትችላለህ።</string>
+  <string name="search_hint">ፋይሎችህን ፈልግ</string>
+  <string name="search_hint_a11y">ፋይሎችህን በሚናገሩት ወይም በሚያሳዩት ነገር ፈልግ</string>
+  <string name="search_clear">ፍለጋን አጽዳ</string>
+  <string name="search_searching">በመፈለግ ላይ</string>
+  <string name="search_settings">ቅንብሮች</string>
+  <string name="search_nothing_title">ምንም አልተገኘም</string>
+  <string name="search_nothing_body">ከ“%1$s” ጋር የሚዛመድ ምንም ፋይል የለም።</string>
+  <string name="search_nothing_try_all">ያነሱ ወይም የተለያዩ ቃላትን ሞክር፣ ወይም ሁሉንም ፈልግ።</string>
+  <string name="search_nothing_incomplete"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> አሁንም ፋይሎችህን በማጥናት ላይ ነው፤ ስለዚህ ይህ ሊለወጥ ይችላል። ትንሽ ቆይተህ እንደገና ሞክር።</string>
+  <string name="search_repairing_note">ፍለጋው ራሱን እየጠገነ ነው። ስሞችና ቃላት አሁንም ይሰራሉ፤ በትርጉም መፈለግ በጥቂት ደቂቃዎች ውስጥ ይመለሳል።</string>
+  <string name="search_incomplete_note">ስሞች እና ቃላት አሁን ይሠራሉ። የፍቺ ፍለጋ አሁንም በመጠና ላይ ነው፣ ስለዚህ ተጨማሪ ተዛማጆች ሊታዩ ይችላሉ።</string>
+  <string name="search_incomplete_note_charger">ስሞች እና ቃላት አሁን ይሠራሉ። በፍቺ መፈለግ (ለምሳሌ ለሞተርሳይክል ፎቶ “ቦዳ” ብሎ መፈለግ) ስልኩ ኃይል መሙላት ሲጀምር ይጀምራል።</string>
+  <string name="search_weak_toggle">ደካማ ተዛማጆች (%1$d)</string>
+  <string name="search_weak_only">ምንም ጠንካራ ተዛማጆች የሉም። እነዚህ በጣም የቀረቡት ናቸው።</string>
+  <string name="search_weak_expand">ደካማ ተዛማጆችን አሳይ</string>
+  <string name="search_weak_collapse">ደካማ ተዛምዶዎችን ደብቅ</string>
+  <string name="search_fresh_title">እስካሁን የሚታይ ነገር የለም</string>
+  <string name="search_fresh_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ፋይሎችህን እንዳየ፣ አዳዲሶቹ እዚህ ይታያሉ። ለመፈለግ ከላይ ጻፍ።</string>
+  <string name="search_recent_empty_filter">እስካሁን የዚህ ዓይነት ፋይሎች የሉም።</string>
+  <string name="access_banner_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> እስካሁን ፋይሎችህን ማየት አልቻለም</string>
+  <string name="access_banner_body">እንዲያነባቸው የሁሉንም ፋይሎች መዳረሻ ፍቀድ። ምንም ነገር አይለውጥም።</string>
+  <string name="snack_no_app">በዚህ ስልክ ላይ ይህን ፋይል መክፈት የሚችል መተግበሪያ የለም።</string>
+  <string name="snack_sample">ይህ የናሙና ፋይል ስለሆነ ሊከፈት አይችልም።</string>
+  <string name="settings_title">ቅንብሮች</string>
+  <string name="settings_back">ተመለስ</string>
+  <string name="settings_section_reading">ማንበብ</string>
+  <string name="learn_speed_title">የመማር ፍጥነት</string>
+  <string name="learn_gentle">ቀስ በቀስ</string>
+  <string name="learn_gentle_hint">ቻርጅ ሲደረግ ብቻ ያነባል፣ በጥቂት ክሮች። ትንሽ ባትሪ እና ሙቀት፤ ማንኛውም አዲስ ነገር ቻርጀር ይጠብቃል።</string>
+  <string name="learn_balanced">መካከለኛ</string>
+  <string name="learn_balanced_hint">የተለመደው መንገድ። ቻርጀሩ ሙሉ ጋለሪዎን ያነባል፤ በባትሪ ላይ አዳዲስ ፋይሎች እና ፈጣን እይታ ብቻ ይሰራሉ።</string>
+  <string name="learn_fast">ፈጣን</string>
+  <string name="learn_fast_hint">በባትሪ ላይም ሁሉንም ያነባል፣ ሌላ መተግበሪያ ሲጠቀሙ ብቻ ይጠብቃል። ቶሎ ያልቃል፣ ብዙ ባትሪ ይጠቀማል እና የበለጠ ይሞቃል።</string>
+  <string name="settings_section_kinds">ምን እንደሚነበብ</string>
+  <string name="settings_recordings">የድምፅ ማስታወሻዎች እና ቅጂዎች</string>
+  <string name="settings_recordings_hint">ልትፈልጋቸው እንድትችል የተባለውንና የሚሰማውን ያነባል።</string>
+  <string name="settings_deeper">ጥልቅ የድምፅ ፍለጋ (ቀርፋፋ)፦ ሙዚቃ እና ሌሎች ድምፆች</string>
+  <string name="settings_deeper_hint">ድምፆችን በቃላት ብቻ ሳይሆን በመሰላቸው ነገር ያገኛል። በመደበኛ ስልክ ላይ ለእያንዳንዱ የድምፅ ደቂቃ ወደ 15 ሰከንድ የሚጠጋ ንባብ ይወስዳል።</string>
+  <string name="settings_section_addons">ተጨማሪዎች</string>
+  <string name="addons_intro">ፍለጋን የተሻለ የሚያደርጉ አማራጭ ተጨማሪዎች። <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ፈጽሞ መስመር ላይ አይገባም፣ ስለዚህ እያንዳንዳቸው መጀመሪያ ወደ Downloads የምትገለብጣቸው ፋይል ናቸው። ሁሉም ነገር በዚህ ስልክ ላይ ይቆያል።</string>
+  <string name="addons_status_not_added">አልተጨመረም</string>
+  <string name="addons_status_adding">በመጨመር ላይ</string>
+  <string name="addons_status_added">ተጨምሯል</string>
+  <string name="addons_status_soon">በቅርቡ የሚመጣ</string>
+  <string name="addons_size">መጠን፦ %1$s</string>
+  <string name="addons_add">ጨምር</string>
+  <string name="addons_add_with_size">ጨምር (%1$s)</string>
+  <string name="addons_remove">አስወግድ፣ %1$s ነፃ ያደርጋል</string>
+  <string name="addons_on">በርቷል</string>
+  <string name="addons_off">ጠፍቷል</string>
+  <string name="addons_adding_pct">በመፈተሽ እና በመጨመር ላይ… %1$d%%</string>
+  <string name="addons_adding">በመፈተሽ እና በመጨመር ላይ…</string>
+  <string name="addons_try_again">እንደገና ሞክር</string>
+  <string name="addons_soon_hint">እስካሁን ዝግጁ አይደለም። ዝግጁ ሲሆን እዚህ ይታያል።</string>
+  <string name="addons_problem_not_found"><xliff:g id="app_name" example="Trawl">%2$s</xliff:g> %1$sን በDownloads ውስጥ ማግኘት አልቻለም። ወደዚያ ገልብጠው፣ ከዚያ እንደገና ሞክር።</string>
+  <string name="addons_problem_access"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> Downloadsን ለማንበብ የሁሉንም ፋይሎች መዳረሻ ይፈልጋል። አብራው፣ ከዚያ እንደገና ሞክር።</string>
+  <string name="addons_problem_bad">በDownloads ውስጥ ያለው ፋይል ተጎድቷል ወይም የተሳሳተ ነው፣ ስለዚህ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> አልተጠቀመበትም። እንደገና ገልብጠው፣ ከዚያ እንደገና ሞክር።</string>
+  <string name="addons_problem_unavailable">ይህ ተጨማሪ በዚህ ስሪት ላይ እስካሁን ሊጨመር አይችልም።</string>
+  <string name="addons_add_title">%1$sን አክል</string>
+  <string name="addons_add_install">ጫን</string>
+  <string name="addons_remove_title">%1$s ይወገድ?</string>
+  <string name="addons_remove_body">ይህ %1$s ነፃ ያደርጋል እንዲሁም ያጠፋዋል። <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> አስቀድሞ የተማራቸው ቃላት እና ትርጉሞች እነዚያ ፋይሎች እንደገና እስኪነበቡ ድረስ ይቆያሉ። በማንኛውም ጊዜ መልሰው ማከል ይችላሉ።</string>
+  <string name="addons_remove_confirm">አስወግድ</string>
+  <string name="settings_section_excluded">የታለፉ ፎልደሮች</string>
+  <string name="settings_excluded_hint"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> በእነዚህ ፎልደሮች ውስጥ ያለን ማንኛውንም ነገር አያነብም።</string>
+  <string name="settings_excluded_empty">ምንም የለም። <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> የሚያየውን እያንዳንዱን ፎልደር ያነባል።</string>
+  <string name="settings_excluded_remove">%1$sን ማለፍ አቁም</string>
+  <string name="settings_excluded_bad">ያ ፎልደር ከዚህ ሊመረጥ አይችልም። በስልኩ ዋና ማከማቻ ላይ ያለ ይምረጡ።</string>
+  <string name="onb_scope_eyebrow">የእርስዎ ምርጫ</string>
+  <string name="scope_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ምን ይፈልግ?</string>
+  <string name="scope_intro">እንዲገኝ የማይፈልጉትን ማንኛውንም ነገር ያጥፉ። ፋይሎቹ ወዲያውኑ ከፍለጋ ይወጣሉ፤ መልሰው ሲያበሩትም ይመለሳሉ።</string>
+  <string name="scope_counts_unknown"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ፋይሎችህን ማየት እንደቻለ የፋይል ብዛት ይታያል።</string>
+  <string name="scope_private">የተደበቁ ፎልደሮች፣ የ.nomedia ምልክት ያለባቸው ፎልደሮች እና የሌሎች መተግበሪያዎች የግል ፎልደሮች ፈጽሞ አይነበቡም።</string>
+  <string name="scope_added_title">ያከሏቸው ፎልደሮች</string>
+  <string name="scope_add">ፎልደር አክል</string>
+  <string name="scope_added_remove">%1$sን መፈለግ አቁም</string>
+  <string name="scope_exclude">ፎልደር አግልል</string>
+  <plurals name="scope_files">
+        
+    
+    <item quantity="one">%1$s ፋይል</item>
+    <item quantity="other">%1$s ፋይሎች</item>
+  </plurals>
+  <string name="scope_group_camera">ካሜራ</string>
+  <string name="scope_group_screenshots">ቅጽበታዊ ገጽ እይታዎች</string>
+  <string name="scope_group_whatsapp_images">የWhatsApp ፎቶዎች</string>
+  <string name="scope_group_whatsapp_video">የWhatsApp ቪዲዮዎች</string>
+  <string name="scope_group_whatsapp_documents">የWhatsApp ሰነዶች</string>
+  <string name="scope_group_whatsapp_voice">የWhatsApp የድምፅ መልዕክቶች</string>
+  <string name="scope_group_whatsapp_status">የWhatsApp ሁኔታ (Status)</string>
+  <string name="scope_group_downloads">የወረዱ ፋይሎች</string>
+  <string name="scope_group_documents">ሰነዶች</string>
+  <string name="scope_group_music">ሙዚቃ እና ቅጂዎች</string>
+  <string name="scope_group_other">ሌሎች ፎልደሮች</string>
+  <string name="settings_section_storage">ጥቅም ላይ የዋለ ማከማቻ</string>
+  <string name="settings_storage_index">የፍለጋ መዝገብ</string>
+  <string name="settings_storage_model">የAI ሞዴል</string>
+  <string name="settings_delete"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> የሚያውቀውን ሁሉ አጥፋ</string>
+  <string name="settings_delete_hint"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ከፋይሎችህ ያነበበውን እና ጊዜያዊ ፋይሎቹን ያጠፋል። የራስህ ፋይሎች አይነኩም።</string>
+  <string name="settings_delete_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> የሚያውቀውን ሁሉ ይጥፋ?</string>
+  <string name="settings_delete_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> የፋይሎችህን መዝገብ አሁን ያጠፋል፦ ስሞቻቸውን፣ በሰነዶችህ ውስጥ ያሉትን ቃላት፣ በፎቶዎች እና ቅጽበታዊ ገጽ እይታዎች ውስጥ ያነበበውን ጽሑፍ፣ ከቪዲዮዎች እና የድምፅ መልዕክቶች የጻፈውን ንግግር፣ እንዲሁም AIው ስለ እያንዳንዱ ፋይል የያዘውን ማስታወሻ። ጊዜያዊ ፋይሎቹ እና ማናቸውም የችግር ሪፖርቶችም ይጠፋሉ።\n\nየራስህ ፋይሎች አይነኩም። የታለፉ ፎልደሮችን ጨምሮ ቅንብሮችህ እንደነበሩ ይቆያሉ።\n\nከዚያ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ማንበቡን ያቆማል። «ቀጥል»ን እስክትነካ ድረስ ፍለጋ ባዶ ሆኖ ይቆያል።</string>
+  <string name="settings_delete_done">%1$s ጠፍቷል። «ቀጥል»ን እስክትነካ ድረስ <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> ቆሟል።</string>
+  <string name="settings_storage_model_hint">በትርጉም ለመፈለግ ያስፈልጋል።</string>
+  <string name="settings_storage_index_hint">ዳታቤዙ እና መዝገቡ።</string>
+  <string name="settings_storage_estimate">እያንዳንዱ ፋይል ሲነበብ</string>
+  <string name="settings_storage_estimate_value">ወደ %1$s ገደማ</string>
+  <string name="settings_storage_memory">በፍለጋ ወቅት የሚጠቀምበት ሜሞሪ</string>
+  <string name="settings_storage_memory_hint"><xliff:g id="app_name" example="Trawl">%2$s</xliff:g> ክፍት በሆነበት ወቅት ብቻ ይያዛል። እያንዳንዱ ፋይል ሲነበብ ወደ %1$s ገደማ።</string>
+  <string name="settings_storage_remove">አስወግድ</string>
+  <string name="settings_storage_no_data"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> በጭራሽ የተንቀሳቃሽ ስልክ ዳታ አይጠቀምም፦ የኢንተርኔት መዳረሻ የለውም።</string>
+  <string name="settings_delete_confirm">አጥፋ</string>
+  <string name="settings_cancel">ሰርዝ</string>
+  <string name="settings_section_appearance">መልክ</string>
+  <string name="settings_theme_system">የስርዓቱ</string>
+  <string name="settings_theme_light">ብሩህ</string>
+  <string name="settings_theme_dark">ጨለማ</string>
+  <string name="report_card_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ሳይታሰብ ቆሟል። ችግሩን ለማስተካከል እንዲረዳ ሪፖርት ይላክ?</string>
+  <string name="report_card_body">ሪፖርቱ ምንም የፋይል ስሞች፣ ፍለጋዎች ወይም ከፋይሎችህ የተወሰዱ ጽሁፎችን አያካትትም። መጀመሪያ አንተ ታየዋለህ፣ በራስህ የኢሜይል መተግበሪያ ውስጥ «ላክ» የሚለውን እስክትነካ ድረስ ምንም ነገር አይላክም።</string>
+  <string name="report_send">ላክ</string>
+  <string name="report_not_now">አሁን አይደለም</string>
+  <string name="report_view">ሪፖርቱን እይ</string>
+  <string name="report_close">ዝጋ</string>
+  <string name="report_send_email">በኢሜይል ላክ</string>
+  <string name="report_send_whatsapp">በWhatsApp ላክ</string>
+  <string name="report_send_whatsapp_file">ሙሉውን ሪፖርት በWhatsApp ላክ</string>
+  <string name="report_no_email">በዚህ ስልክ ላይ ምንም የኢሜይል መተግበሪያ አልተገኘም። ለማንበብ «ሪፖርቱን እይ»ን ተጠቀም፣ ወይም የኢሜይል መተግበሪያ ጫን።</string>
+  <string name="report_no_whatsapp">WhatsAppን መክፈት አልተቻለም።</string>
+  <string name="report_building">ሪፖርቱን በማዘጋጀት ላይ…</string>
+  <string name="report_dialog_title">የችግር ሪፖርት</string>
+  <string name="report_dialog_hint">የሚላከው ይሄ ብቻ ነው። ፋይሎችህ፣ ፎልደሮችህ እና ፍለጋዎችህ በዚህ ውስጥ የሉም።</string>
+  <string name="settings_section_report">ችግር ሪፖርት አድርግ</string>
+  <string name="settings_report_hint">ለመላክ የተዘጋጀ ሪፖርት የያዘውን የኢሜይል መተግበሪያህን ይከፍታል። የስልኩን እና የ<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ስሪት፣ እንዲሁም <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ያጋጠሙትን ስህተቶች የያዘ ሲሆን ምንም የፋይል ስሞች፣ ፍለጋዎች ወይም ከፋይሎችህ የተወሰዱ ጽሁፎችን አያካትትም። መጀመሪያ አንተ ታየዋለህ፣ እዚያ ላይ «ላክ» የሚለውን እስክትነካ ድረስ ምንም አይላክም።</string>
+  <string name="settings_report_note">ምን ችግር አጋጠመ? (አማራጭ)</string>
+  <string name="settings_report_kept"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> በዚህ ስልክ ላይ ቢበዛ 10 ሪፖርቶችን (ወደ 100 ኪባ ገደማ) ያቆያል። «<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> የሚያውቀውን ሁሉ አጥፋ» ያስወግዳቸዋል።</string>
+  <string name="settings_section_about">ስለ</string>
+  <string name="settings_about_version">ስሪት %1$s</string>
+  <string name="settings_about_model">ፍለጋ የሚሠራው በGoogle EmbeddingGemma 2 (Apache 2.0) አማካኝነት፣ ሙሉ በሙሉ በዚህ ስልክ ላይ ነው።</string>
+  <string name="settings_about_private"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> የኢንተርኔት ፈቃድ የለውም። ፋይሎችህ እና ከመረጃዎቻቸው የተማራቸው ነገሮች በጭራሽ ከስልኩ አይወጡም።</string>
+  <string name="settings_about_maker">የተሰራው በCrane AI Labs ነው።</string>
+  <string name="settings_licences">ፈቃዶች እና ምስጋናዎች</string>
+  <string name="licences_title">ፈቃዶች እና ምስጋናዎች</string>
+  <string name="licences_intro"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> የተገነባው ከዚህ በታች ባለው ስራ ላይ ነው። እነዚህ ማስታወቂያዎች በፈቃዶቹ የሚፈለጉ ናቸው፣ እንዲሁም እኛ ምስጋና የምናቀርብበት መንገድ ናቸው።</string>
+  <string name="licences_section_required">ማስታወቂያዎች</string>
+  <string name="licences_section_components">በ<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ውስጥ ያለ ሌላ ማንኛውም ነገር</string>
+  <string name="licences_section_texts">ሙሉ የፈቃድ ጽሑፎች</string>
+  <string name="licences_show">ሙሉ ጽሑፍ አሳይ</string>
+  <string name="licences_hide">ሙሉ ጽሑፍ ደብቅ</string>
+  <string name="settings_close">ዝጋ</string>
+  <string name="pack_size_mb">%1$d ሜባ</string>
+  <string name="pack_speech_name">የንግግር ፍለጋ</string>
+  <string name="pack_speech_benefit">በቪዲዮዎች እና በድምፅ ማስታወሻዎች ውስጥ የተባለውን ያገኛል፦ ከ%2$d%% ይልቅ %1$d%% ጊዜ ትክክለኛውን ፋይል መጀመሪያ ያመጣል።</string>
+  <plurals name="pack_speech_cost">
+        
+    
+    <item quantity="one">በሚያነብበት ጊዜ ለእያንዳንዱ የቪዲዮ ደቂቃ ወደ %1$d ሰከንድ ገደማ ይጨምራል። ለአሁን የእንግሊዝኛ ንግግር ብቻ።</item>
+    <item quantity="other">በሚያነብበት ጊዜ ለእያንዳንዱ የቪዲዮ ደቂቃ ወደ %1$d ሰከንዶች ገደማ ይጨምራል። ለአሁን የእንግሊዝኛ ንግግር ብቻ።</item>
+  </plurals>
+  <string name="pack_quicklook_name">ለፎቶዎች ፈጣን እይታ</string>
+  <plurals name="pack_quicklook_benefit">
+        
+    
+    <item quantity="one">መላው ጋለሪህ በሰዓታት ፋንታ በጥቂት ደቂቃዎች ውስጥ በትርጉም የሚፈለግ እንዲሆን ያደርጋል፦ በተመጣጣኝ ስልክ ላይ ከ%2$d ይልቅ በሰዓት ወደ %1$s ፎቶ ገደማ (የእንግሊዝኛ ፍለጋዎች)። ሙሉ ዝርዝሩ ከበስተጀርባ መሞላቱን ይቀጥላል።</item>
+    <item quantity="other">መላው ጋለሪህ በሰዓታት ፋንታ በጥቂት ደቂቃዎች ውስጥ በትርጉም የሚፈለግ እንዲሆን ያደርጋል፦ በተመጣጣኝ ስልክ ላይ ከ%2$d ይልቅ በሰዓት ወደ %1$s ፎቶዎች ገደማ (የእንግሊዝኛ ፍለጋዎች)። ሙሉ ዝርዝሩ ከበስተጀርባ መሞላቱን ይቀጥላል።</item>
+  </plurals>
+  <string name="pack_quicklook_cost">የእንግሊዝኛ ፍለጋዎች ብቻ፦ በሌሎች ቋንቋዎች ያሉ ፍለጋዎች ሙሉ ንባቡ እስኪያልቅ ይጠብቃሉ። በሚሰራበት ጊዜ ሙሉ ንባቡ በ%1$d%% ገደማ ይዘገያል፣ እንዲሁም በሚያነብበት ጊዜ ትንሽ ተጨማሪ ማህደረ ትውስታ ይጠቀማል።</string>
+  <string name="pack_privacy_name">የግል የሚመስሉ ቅድመ-እይታዎችን አደብዝዝ</string>
+  <string name="pack_privacy_benefit">የግል የሚመስሉ ፎቶዎችን (እርቃንነት፣ የውስጥ ልብስ) አነስተኛ ቅድመ-እይታ ያደበዝዛል፣ ስለዚህ ማንም ሰው ስክሪንህን በድንገት ቢያይ ብዙ አይታይም። ቅድመ-እይታውን ለማሳየት ንካው። ማደብዘዝ ብቻ ነው የሚያደርገው፦ በውጤቶች ውስጥ ምንም ነገር አልተደበቀም ወይም አልተንቀሳቀሰም።</string>
+  <string name="pack_privacy_cost">በሁለቱም መንገድ ሊሳሳት ይችላል፣ እና የጤና ፎቶዎች (ሽፍታ፣ የሚያጠቡ እናቶች) ሊደበዝዙ ይችላሉ። ስልኩ እየሞላ እያለ ፎቶዎችን ከበስተጀርባ ያነባል፣ እንዲሁም በሚሰራበት ጊዜ ሙሉ ንባቡን በ%1$d%% ገደማ ያዘገየዋል።</string>
+  <string name="pack_privacy_recommended">የፈጣን ፍለጋ ፓነሉን የምትጠቀም ከሆነ ይመከራል</string>
+  <string name="pack_how_to_add_downloads"><xliff:g id="app_name" example="Trawl">%3$s</xliff:g> ከበይነመረብ ጋር ስለማይገናኝ ይህንን በራሱ ማውረድ አይችልም። %1$s (%2$s) ፋይሉን ከCrane AI Labs አግኝተህ ወደዚህ ስልክ Downloads ፎልደር ቅዳው። ከዚያ ጫን የሚለውን ንካ፦ <xliff:g id="app_name" example="Trawl">%3$s</xliff:g> ፋይሉን አረጋግጦ ይጨምረዋል። በኋላ ላይ .zip ፋይሉን ማጥፋት ትችላለህ።</string>
+  <string name="pack_how_to_add_play">ጫን የሚለውን ስትነካ Play %1$s (%2$s) ያቀርባል። ሌላ ምንም የሚደረግ ነገር የለም።</string>
+  <string name="notif_channel_name">ስልክህን በማጥናት ላይ</string>
+  <string name="notif_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ስልክህን በማጥናት ላይ ነው</string>
+  <string name="notif_getting_ready">በመዘጋጀት ላይ…</string>
+  <string name="notif_reading_photo">ፎቶ በማንበብ ላይ</string>
+  <string name="notif_reading_screenshot">ስክሪንሾት በማንበብ ላይ</string>
+  <string name="notif_reading_video">ቪዲዮ በማንበብ ላይ</string>
+  <string name="notif_reading_document">ሰነድ በማንበብ ላይ</string>
+  <string name="notif_reading_recording">ቅጂ በማንበብ ላይ</string>
+  <string name="notif_reading_file">ፋይል በማንበብ ላይ</string>
+  <string name="notif_waiting_polite">ስልክዎን ሲጠቀሙ በመጠበቅ ላይ</string>
+  <string name="chip_label_action">%1$s  ·  %2$s</string>
+  <string name="a11y_description_note">%1$s. %2$s</string>
+  <string name="meter_a11y_extra">%1$s %2$s.</string>
+  <string name="message_then_sentence">%1$s %2$s</string>
+  <string name="lock_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ተቆልፏል</string>
+  <string name="lock_body">በስልክህ የጣት አሻራ፣ ፊት፣ ፒን ወይም ስርዓተ-ጥለት ክፈት።</string>
+  <string name="lock_button">ክፈት</string>
+  <string name="quick_device_locked">ለመፈለግ ስልክህን ክፈት።</string>
+  <string name="lock_prompt_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g>ን ክፈት</string>
+  <string name="lock_prompt_subtitle">የስልክህን የማያ ገጽ መቆለፊያ ተጠቀም</string>
+  <string name="settings_section_privacy">ግላዊነት</string>
+  <string name="privacy_lock_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g>ን ቆልፍ</string>
+  <string name="privacy_lock_hint">ማንኛውንም ነገር ከማሳየቱ በፊት የጣት አሻራ፣ ፊት፣ ፒን ወይም ስርዓተ-ጥለት ይጠይቃል።</string>
+  <string name="privacy_lock_needs_screen_lock">በቅድሚያ በስልክህ ላይ የማያ ገጽ መቆለፊያ አዘጋጅ (ቅንብሮች፣ ደህንነት)። <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ተመሳሳዩን መክፈቻ ይጠቀማል።</string>
+  <string name="privacy_lock_on_prompt">የ<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> መቆለፊያን አብራ</string>
+  <string name="privacy_lock_off_prompt">የ<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> መቆለፊያን አጥፋ</string>
+  <string name="privacy_lock_after_title">ከዚህ በኋላ በድጋሚ ቆልፍ</string>
+  <string name="privacy_lock_after_now">ሁልጊዜ</string>
+  <string name="privacy_lock_after_minutes">%1$d ደቂቃ</string>
+  <string name="privacy_lock_after_hint"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ዳግም ከመጠየቁ በፊት ከበስተጀርባ ለምን ያህል ጊዜ መቆየት እንደሚችል። ማያ ገጹ ሲጠፋም ይቆለፋል።</string>
+  <string name="privacy_recents_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g>ን በቅርብ መተግበሪያዎች ውስጥ ደብቅ</string>
+  <string name="privacy_recents_hint">በቅርብ መተግበሪያዎች ዝርዝር ውስጥ የ<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ካርድ ባዶ ይሆናል። ጉዳቱ፦ የ<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ቅጽበታዊ ገጽ እይታዎችም ይታገዳሉ።</string>
+  <string name="privacy_show_title">ሚስጥራዊ ውጤቶችን አሳይ</string>
+  <string name="privacy_show_hint">ሲጠፋ፦ ሚስጥራዊ ብለህ የሰየምካቸው ፋይሎች እና በግል ፎልደሮች ውስጥ ያሉ ፋይሎች እስክትከፍታቸው ድረስ ከውጤቶች እና ከፈጣን ፓነል ይደበቃሉ።</string>
+  <string name="privacy_show_prompt">ሚስጥራዊ ውጤቶችን አሳይ</string>
+  <string name="privacy_pin_note">የስልክህን ፒን የሚያውቅ ማንኛውም ሰው ሚስጥራዊ ውጤቶችን ማየት ይችላል። <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> የራሱ ፒን የለውም።</string>
+  <string name="privacy_no_screen_lock_note">ስልክህ የማያ ገጽ መቆለፊያ ስለሌለው የያዘው ማንኛውም ሰው <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>ን ከፍቶ ሁሉንም ነገር ማየት ይችላል። ለመጠበቅ የማያ ገጽ መቆለፊያ አዘጋጅ።</string>
+  <string name="privacy_folders_title">የግል ፎልደሮች</string>
+  <string name="privacy_folders_hint">በግል ፎልደር ውስጥ ያለ ማንኛውም ነገር እንደ ሚስጥራዊ ይቆጠራል። ከተገለሉ ፎልደሮች በተለየ መልኩ አሁንም ይነበባል፤ ስለዚህ ከከፈትክ በኋላ መፈለግ ትችላለህ።</string>
+  <string name="privacy_folders_empty">ምንም የግል ፎልደሮች የሉም።</string>
+  <string name="privacy_folders_add">የግል ፎልደር አክል</string>
+  <string name="privacy_folders_bad">ይህን ፎልደር የግል ማድረግ አይቻልም። በስልኩ ዋና ማከማቻ ውስጥ ያለ ፎልደር ምረጥ።</string>
+  <string name="privacy_folders_remove">%1$sን እንደ የግል መቁጠር አቁም</string>
+  <string name="privacy_folders_remove_prompt">ፎልደሩን የግል ያልሆነ አድርግ</string>
+  <string name="onb_lock_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g>ን ቆልፍ (አማራጭ)</string>
+  <string name="onb_lock_body">ስልክህን የያዘ ሰው እንዳይፈልግበት <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ማንኛውንም ነገር ከማሳየቱ በፊት የስልክህን የጣት አሻራ፣ ፊት፣ ፒን ወይም ስርዓተ-ጥለት ሊጠይቅ ይችላል። ይህንን ቅንብሮች ውስጥ መቀየር ትችላለህ።</string>
+  <string name="onb_lock_action">መቆለፊያውን አብራ</string>
+  <string name="onb_lock_on">መቆለፊያው በርቷል</string>
+  <string name="onb_lock_no_screen_lock">ስልክህ እስካሁን የማያ ገጽ መቆለፊያ የለውም። ይህን ለመጠቀም በስልኩ ቅንብሮች ውስጥ አንዱን አዘጋጅ።</string>
+  <string name="privacy_hidden_chip">%1$d የተደበቀ</string>
+  <string name="privacy_hidden_action">አሳይ</string>
+  <plurals name="privacy_hidden_chip_description">
+        
+    
+    <item quantity="one">%1$d ሚስጥራዊ ውጤት ተደብቋል። ለመክፈት እና ለማሳየት ሁለት ጊዜ መታ አድርግ።</item>
+    <item quantity="other">%1$d ሚስጥራዊ ውጤቶች ተደብቀዋል። ለመክፈት እና ለማሳየት ሁለት ጊዜ መታ አድርግ።</item>
+  </plurals>
+  <string name="privacy_shown_chip">ሚስጥራዊ ውጤቶች ታይተዋል</string>
+  <string name="privacy_shown_action">ደብቅ</string>
+  <string name="privacy_reveal_title">ሚስጥራዊ ውጤቶችን አሳይ</string>
+  <string name="privacy_reveal_subtitle">የስልክህን የማያ ገጽ መቆለፊያ ተጠቀም</string>
+  <string name="action_mark_sensitive">እንደ ሚስጥራዊ ምልክት አድርግ</string>
+  <string name="action_unmark_sensitive">ሚስጥራዊ አይደለም</string>
+  <string name="snack_marked_sensitive">እንደ ሚስጥራዊ ምልክት ተደርጓል። አሁን ከውጤቶች ተደብቋል።</string>
+  <string name="snack_unmarked_sensitive">ከእንግዲህ ሚስጥራዊ አይደለም።</string>
+  <string name="sensitive_share_title">ሚስጥራዊ ንጥል ይጋራ?</string>
+  <string name="sensitive_share_body">ይህንን እንደ ሚስጥራዊ ምልክት አድርገኸዋል። የሚቀበለው ማንኛውም ሰው ሊያስቀምጠው እና ሊያስተላልፈው ይችላል።</string>
+  <string name="sensitive_share_confirm">አጋራ</string>
+  <string name="sensitive_copy_title">ሚስጥራዊ ንጥል ይቀዳ?</string>
+  <string name="sensitive_copy_body">ይህንን እንደ ሚስጥራዊ ምልክት አድርገኸዋል። የለጠፍክበት ማንኛውም ነገር ፋይሉን ራሱን ይቀበላል።</string>
+  <string name="sensitive_copy_confirm">ቅዳ</string>
+  <string name="sensitive_cancel">ይቅር</string>
+  <string name="settings_section_previews">ቅድመ-ዕይታዎች</string>
+  <string name="settings_blur_title">የግል የሚመስሉ ቅድመ-ዕይታዎችን አደብዝዝ</string>
+  <string name="settings_blur_hint">ራስ-ሰር በመሆኑ ስህተት ሊኖረው ይችላል። ትንሹ ምስል ብቻ ይደበዝዛል፤ ፋይሉ አሁንም ይገኛል። ለማሳየት ዓይኑን መታ አድርግ።</string>
+  <string name="settings_blur_panel_title">በፈጣን ፍለጋ ውስጥ አደብዝዝ</string>
+  <string name="settings_blur_panel_hint">ራስ-ሰር በመሆኑ ስህተት ሊኖረው ይችላል። ፓነሉ ከሌሎች መተግበሪያዎች በላይ ስለሚከፈት እዚህ በነባሪ በርቷል። ምስልን ለማሳየት ስልክህ መከፈት አለበት።</string>
+  <string name="settings_blur_needs_pack">ከታች ያለውን \"የግል የሚመስሉ ቅድመ-ዕይታዎችን አደብዝዝ\" ተጨማሪ ይፈልጋል። እስኪጨመር ድረስ ምንም አይደበዝዝም።</string>
+  <string name="action_show_picture">ምስል አሳይ</string>
+  <string name="preview_hidden">ቅድመ-ዕይታ ተደብቋል፣ የግል ሊሆን ይችላል</string>
+  <string name="quick_unlock_to_show">ይህን ምስል ለማሳየት ስልክህን ክፈት።</string>
+  <string name="quick_name">ፈጣን ፍለጋ</string>
+  <string name="quick_shortcut_long">ፋይሎችህን በፍጥነት ፈልግ</string>
+  <string name="quick_widget_hint">ፋይሎችህን ፈልግ</string>
+  <string name="quick_widget_description">ባለህበት መተግበሪያ ላይ የ<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ፈጣን ፍለጋን የሚከፍት የፍለጋ አሞሌ።</string>
+  <string name="quick_hint">ፋይሎችህን ፈልግ</string>
+  <string name="quick_close">ፈጣን ፍለጋን ዝጋ</string>
+  <string name="quick_clear">አጽዳ</string>
+  <string name="quick_nothing">ለ“%1$s” ምንም አልተገኘም።</string>
+  <string name="quick_nothing_incomplete"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> አሁንም ፋይሎችህን በማጥናት ላይ ነው፣ ስለዚህ ይህ ሊለወጥ ይችላል።</string>
+  <string name="quick_not_set_up"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> እስካሁን ፋይሎችህን አላነበበም። ለመጀመር <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>ን ክፈት።</string>
+  <string name="quick_open_findr"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g>ን ክፈት</string>
+  <string name="quick_still_meaning">ትርጉም በመፈለግ ላይ…</string>
+  <string name="quick_copied">ተቀድቷል። ውይይቱ ውስጥ ለጥፈው።</string>
+  <string name="quick_copy_failed">ይህን ፋይል መቅዳት አልተቻለም።</string>
+  <string name="quick_no_app">ይህን ፋይል ሊከፍት የሚችል መተግበሪያ የለም።</string>
+  <string name="quick_add_tile_title">ፈጣን ፍለጋ ወደ ፈጣን ቅንብሮችህ ይታከል?</string>
+  <string name="quick_add_tile_body">ከዚያም ከማንኛውም መተግበሪያ ሆነህ በሁለት ማንሸራተት ፋይሎችህን መፈለግ ትችላለህ።</string>
+  <string name="quick_add_tile_yes">ንጣፍ አክል</string>
+  <string name="quick_add_tile_no">አሁን አይደለም</string>
+  <string name="settings_storage_remove_named"><xliff:g id="item" example="Speech pack">%1$s</xliff:g>ን አስወግድ</string>
+  <string name="licences_show_named">የ<xliff:g id="licence" example="Apache License 2.0">%1$s</xliff:g> ሙሉ ጽሑፍ አሳይ</string>
+  <string name="licences_hide_named">የ<xliff:g id="licence" example="Apache License 2.0">%1$s</xliff:g> ሙሉ ጽሑፍ ደብቅ</string>
+  <string name="sheet_error_word">ችግር</string>
+  <string name="switch_on">በርቷል</string>
+  <string name="switch_off">ጠፍቷል</string>
+  <string name="language_title">ቋንቋህን ምረጥ</string>
+  <string name="language_intro">የ<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ገጾች በዚህ ቋንቋ ይሆናሉ። በኋላ ላይ በቅንብሮች ውስጥ መቀየር ትችላለህ።</string>
+  <string name="language_system">የስልኩ ቋንቋ</string>
+  <string name="language_system_hint">የስልክህን ቅንብሮች ይከተላል</string>
+  <string name="language_preview">ቅድመ እይታ</string>
+  <string name="settings_language">ቋንቋ</string>
+  <plurals name="search_status_so_far">
+        
+    
+    <item quantity="one">%1$d እስካሁን · ትርጉሙ በቅርቡ</item>
+    <item quantity="other">%1$d እስካሁን · ትርጉሙ በቅርቡ</item>
+  </plurals>
+  <string name="search_status_words">ቃላት አሁን · ትርጉም በቅርቡ</string>
+  <plurals name="search_status_found">
+        
+    
+    <item quantity="one">%1$d ተገኝቷል</item>
+    <item quantity="other">%1$d ተገኝተዋል</item>
+  </plurals>
+  <string name="action_share_file">%1$sን አጋራ</string>
+  <string name="action_copy_file">%1$sን ቅዳ</string>
+  <string name="preview_hidden_words">የግል ይመስላል · ለማየት ንካ</string>
+  <string name="filter_group">የትኞቹ ፋይሎች ይታዩ</string>
+</resources>

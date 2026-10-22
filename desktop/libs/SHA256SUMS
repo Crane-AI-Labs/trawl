@@ -1,0 +1,11 @@
+# Pinned SHA-256 of the sherpa-onnx 1.13.8 JVM jars (speech to text on the desktop). Source of every file:
+#   https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.13.8/<file>   (Apache-2.0; the native jars also carry ONNX Runtime, MIT)
+# desktop/settings.gradle.kts checks the committed jar and fetches the native jar for the build's own OS from that exact tag URL,
+# and FAILS the build when a byte differs. Nothing is fetched when the file is already here and matches. Nothing is fetched at run time.
+77b7b047fade4eadada96b568eb92615049aaf1dc317c7244e46c1ea38b9a63b  sherpa-onnx-jvm-1.13.8.jar
+30c93b59381113f9c20aedbbf9fc1ad399158f6bc03dddc0f8934a6e28e069ba  sherpa-onnx-native-lib-linux-x64-1.13.8.jar
+5123d2e48ae1a7ce82ba89ce153906c651bf418a63db2f7dff82265e6d49c104  sherpa-onnx-native-lib-linux-aarch64-1.13.8.jar
+42e272180c8836127f024f3335d7afcdfb30fe0164b78330d5d449034e34ce34  sherpa-onnx-native-lib-osx-aarch64-1.13.8.jar
+9190c28951d85efdbd376bae6b6dff12993311ad605945289e8459bf9c886a96  sherpa-onnx-native-lib-osx-x64-1.13.8.jar
+33fbdbd5410e9ba9bdda94aa164ec8f7825bb49246420d8ce9bdd88219d97039  sherpa-onnx-native-lib-win-x64-1.13.8.jar
+986660bef51f0ca4f5635b763c172c64bb056eabebcd319f42185d7b23337fb8  sherpa-onnx-native-lib-win-arm64-1.13.8.jar

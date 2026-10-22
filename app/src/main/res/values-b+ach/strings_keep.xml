@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="keep_action">Mede ki kwano kombeddi</string>
+  <string name="keep_action_hint">Gwoko wang cim ma yabbe kun ler tye mot, wek <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> okwan kun pe itye ka tic ki cim. Ber loyo ka tye i caji. Cim bedo pe giloro makun nongo tye ka tic, pi meno tim man i kabedo ma igeno keken.</string>
+  <string name="keep_heading"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> tye ka kwano fayil megi</string>
+  <string name="keep_counts">%1$s i kin fayil %2$s oniang woko</string>
+  <string name="keep_time_left">Kare ma odong: %1$s</string>
+  <string name="keep_time_unknown">Tye ka ngeyo kare ma biterone</string>
+  <string name="keep_charging">Tye i caji</string>
+  <string name="keep_on_battery">Pe tye i caji. Ceto oyot ka tye i caji.</string>
+  <string name="keep_unlocked">Wang cim bedo ma yabbe dok cim pe giloro kun <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> tye ka kwano. Wekke keken i kabedo ma igeno.</string>
+  <string name="keep_tap_to_stop">Dii kany keken me juko</string>
+  <string name="keep_stop_done_title">Otyeko woko</string>
+  <string name="keep_stop_done"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> otyeko kwano fayil megi ducu. Yenyo ngeyo gi kombeddi.</string>
+  <string name="keep_stop_battery_title">Ojuko: betri tye piny</string>
+  <string name="keep_stop_battery">Betri tye i te percent 20. Rwak caji, ci cak odoco ki i wang cim me medde anyim.</string>
+  <string name="keep_stop_hot_title">Ojuko: cim tye ma lyet</string>
+  <string name="keep_stop_hot">Cim olyet twatwal, pi meno <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ojuko wek ongic. Itwero cako odoco lacen.</string>
+  <string name="keep_stop_unplugged_title">Ojuko: kikwanyo caji woko</string>
+  <string name="keep_stop_unplugged">Rwak caji odoco, ci cak odoco ki i wang cim me medde anyim.</string>
+  <string name="keep_stop_charger_title">Tye ka kuro caji</string>
+  <string name="keep_stop_charger">Ka tye i betri, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> tiyo tic ma yot kene, dok meno otyeko woko. Rwak caji, ci cak odoco.</string>
+  <string name="keep_stop_paused_title">Ojuko: kijuko kwano mot</string>
+  <string name="keep_stop_paused">Yab wang cim me medde anyim i <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> me neno tyen lokke ci imede.</string>
+  <string name="keep_screen_will_sleep">Wang cim kombeddi bineko kome kene kit ma jiri.</string>
+  <string name="keep_close">Lor</string>
+</resources>

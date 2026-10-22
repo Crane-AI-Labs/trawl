@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="bg_title">Taleefankani abka wuu hakiyaa</string>
+  <string name="bg_body">Taleefanno badan, oo kan ku jiro, ayaa abka hakiya marka shaashaddu dansan tahay. Sidaas darteed <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> wuxuu faylashaada bartaa oo keliya inta uu furan yahay. Haddii sawirradu badan yihiin, adeegso Sii wad barashada adigoo taleefanka xeedhada ku haya habeenkii oo dhan.</string>
+  <string name="bg_open">Fur habaynta taleefanka</string>
+  <string name="bg_settings_section">Taleefankan ku jira</string>
+  <string name="bg_settings_hint">Taleefanno badan, oo kan ku jiro, ayaa abka hakiya marka shaashaddu dansan tahay. Sidaas darteed <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> wuxuu faylashaada bartaa oo keliya inta uu furan yahay. Haddii sawirradu badan yihiin, adeegso Sii wad barashada adigoo taleefanka xeedhada ku haya. Habaynta taleefanka ee hoose waxay keliya u oggolaanaysaa abka inuu mar kale bilowdo marka taleefanka dib loo shido.</string>
+  <string name="bgs_title">Samsung ayaa laga yaabaa inay joojiso app-kan habeenkii</string>
+  <string name="bgs_body">Taleefannada Samsung waxay awoodaan inay seexiyaan ama xidhaan app-yada habeenkii, sidaas darteed <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> wuu joojinayaa barashada faylashaada. Gudaha Battery, dooro «Unrestricted» <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>.</string>
+  <string name="bgs_open">Fur dejinta batariga</string>
+</resources>

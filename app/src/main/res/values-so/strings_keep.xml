@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="keep_action">Sii wad barashada hadda</string>
+  <string name="keep_action_hint">Shaashadda ayuu shidnaan ku hayaa iyadoo iftiinkeedu yar yahay, si <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> uu wax u barto inta aadan taleefanka isticmaaleyn. Waxaa ugu fiican isagoo dabka ku xiran. Taleefanku wuxuu ahaanayaa mid aan qufulnayn inta uu shaqeynayo, marka ku samee meel aad ku kalsoon tahay oo keliya.</string>
+  <string name="keep_heading"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> wuxuu wadaa barashada faylashada</string>
+  <string name="keep_counts">%1$s ka mid ah %2$s faylal ayaa la fahmay</string>
+  <string name="keep_time_left">Waqtiga haray: %1$s</string>
+  <string name="keep_time_unknown">Xisaabinta muddada ay qaadanayso</string>
+  <string name="keep_charging">Dabaysanaya</string>
+  <string name="keep_on_battery">Dab kuma jiro. Way ka dheeraysaa marka dabka lagu xiro.</string>
+  <string name="keep_unlocked">Shaashaddu way shidnaanaysaa taleefankuna wuxuu ahaanayaa mid furan inta <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> uu wax baranayo. Kaga tag meel aad ku kalsoon tahay oo keliya.</string>
+  <string name="keep_tap_to_stop">Taabo meel kasta si aad u joojiso</string>
+  <string name="keep_stop_done_title">Waa la wada dhammeeyay</string>
+  <string name="keep_stop_done"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> wuxuu bartay dhammaan faylashadaada. Raadi hadda wuu garanayaa.</string>
+  <string name="keep_stop_battery_title">Waa la joojiyay: batterigu wuu hooseeyaa</string>
+  <string name="keep_stop_battery">Batterigu wuxuu ka yar yahay boqolkiiba 20. Ku xir dabeysha, ka dibna dib uga bilow shaashadda horumarka.</string>
+  <string name="keep_stop_hot_title">Waa la joojiyay: taleefanku wuu diirran yahay</string>
+  <string name="keep_stop_hot">Taleefanku aad buu u kululaaday, markaa <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> wuu istaagay si uu u qaboobo. Dib ayaad u bilaabi kartaa hadhow.</string>
+  <string name="keep_stop_unplugged_title">Waa la joojiyay: dabeysha ayaa laga saaray</string>
+  <string name="keep_stop_unplugged">Dib ugu xir dabeysha, ka dibna dib uga bilow shaashadda horumarka.</string>
+  <string name="keep_stop_charger_title">Sugaya dabeysha</string>
+  <string name="keep_stop_charger">Marka batteriga lagu jiro, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> wuxuu qabtaa hawsha fudud oo keliya, waana la dhammeeyay. Ku xir dabeysha, ka dibna dib u bilow.</string>
+  <string name="keep_stop_paused_title">Waa la joojiyay: barashada waa la hakiyay</string>
+  <string name="keep_stop_paused">Fur shaashadda horumarka ee <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> si aad u aragto sababta oo aad u sii wadato.</string>
+  <string name="keep_screen_will_sleep">Shaashaddu hadda iskeed ayay u dami doontaa sidii caadiga ahayd.</string>
+  <string name="keep_close">Xir</string>
+</resources>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="typing_learning">Ṣì ń kẹ́kọ̀ọ́: %1$s nínú %2$s · àbájáde púpọ̀ sí i lè hàn</string>
+  <string name="typing_learning_charger">Ṣì ń kẹ́kọ̀ọ́: %1$s nínú %2$s · ìyókù yóò tẹ̀síwájú nígbà tí o bá gba iná</string>
+  <string name="typing_learning_paused">Ti kẹ́kọ̀ọ́ %1$s nínú %2$s báyìí · àbájáde púpọ̀ sí i lè hàn</string>
+  <string name="settings_colours">Àwọn àwọ̀</string>
+  <string name="colours_sunlight">Ìmọ́lẹ̀ oòrùn</string>
+  <string name="colours_sunlight_hint">Àwọ̀ bébà ọlọ́yàyà àti ofeefee kan, ó rọrùn láti kà ní ìmọ́lẹ̀ oòrùn.</string>
+  <string name="colours_wallpaper">Àwọ̀ àwòrán abẹ́lẹ̀</string>
+  <string name="colours_wallpaper_hint">Ó ń gba àwọn àwọ̀ rẹ̀ láti inú àwòrán abẹ́lẹ̀ rẹ, ó sì ń yí padà nígbà tí àwòrán náà bá yí padà.</string>
+  <string name="settings_brightness">Mọ́lẹ̀ tàbí ṣókùnkùn</string>
+</resources>

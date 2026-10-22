@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="open_problem_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ntiyashoboye gufungura Gusesengura kwayo muri aka kanya</string>
+  <string name="open_problem_busy">Hari ikindi gikorwa kirimo kugikoresha. Izongera kugerageza vuba.</string>
+  <string name="open_problem_storage_full">Ububiko bwa telefone bwuzuye. Izongera kugerageza vuba.</string>
+  <string name="open_problem_io">Telefone ntiyashoboye kugisoma. Izongera kugerageza vuba.</string>
+  <string name="open_problem_memory">Telefone nta mwanya uhagije wo kwibuka ifite. Izongera kugerageza vuba.</string>
+  <string name="open_problem_other">Izongera kugerageza vuba.</string>
+  <string name="open_problem_detail">Ibisubizo byawe bya mbere biratekanye kandi nta cyasibwe. Yongera kugerageza ubwayo, cyangwa ukande Ongera ugerageze.</string>
+</resources>

@@ -1,0 +1,12 @@
+{
+  "format": 1,
+  "note": "The newest model bundle version this app release knows about, per phone class. scripts/pack-bundle.sh reads the version from here, so a bundle and this file cannot drift. update_kind is how a phone upgrading from any older version is affected: pack-only | query-only | text-reembed | full-reembed | config. Raise version (and set update_kind) only with the release that ships a better bundle.",
+  "classes": {
+    "standard": { "version": 1, "size_mb": 670, "update_kind": "full-reembed" },
+    "lite":     { "version": 1, "size_mb": 304, "update_kind": "full-reembed" }
+  },
+  "addons_note": "Signed add-on bundles (role addon, class any; scripts/pack-bundle.sh VARIANT=speech). Their versions are their own; the app reads only 'classes' for the update notice. The vision upgrade (VARIANT=vision) is a standard-class bundle and takes the standard version.",
+  "addons": {
+    "speech": { "version": 1, "size_mb": 143 }
+  }
+}

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="sort_best">Ma rwate maber loyo</string>
+  <string name="sort_newest">Manyen loyo</string>
+  <string name="sort_oldest">Macon loyo</string>
+  <string name="sort_largest">Madit loyo</string>
+  <string name="sort_name">Nying A naka Z</string>
+  <string name="sort_group">Rye malube ki</string>
+  <string name="date_any_time">Cawa mo keken</string>
+  <string name="date_group">Nino dwe</string>
+  <string name="date_today">Tin</string>
+  <string name="date_yesterday">Lawo</string>
+  <string name="date_this_week">Cabit man</string>
+  <string name="date_last_week">Cabit mukato</string>
+  <string name="date_this_month">Dwe man</string>
+  <string name="date_last_month">Dwe mukato</string>
+  <string name="date_this_year">Mwaka man</string>
+  <string name="date_last_year">Mwaka mukato</string>
+  <string name="date_weekend">Agiki cabit mukato</string>
+  <string name="date_last_night">Dyewor mukato</string>
+  <string name="date_this_morning">Odiko man</string>
+  <string name="date_this_afternoon">Iceng man</string>
+  <string name="date_this_evening">Otyeno man</string>
+  <string name="date_yesterday_morning">Odiko me lawo</string>
+  <string name="date_yesterday_afternoon">Iceng me lawo</string>
+  <string name="date_yesterday_evening">Otyeno me lawo</string>
+  <string name="date_pick_range">Yer nino dwe…</string>
+  <string name="date_range">%1$s – %2$s</string>
+  <string name="date_remove">Kwany nino dwe ma kiyero</string>
+  <string name="date_from_words">%1$s, ki i lok me yenyo mamegi</string>
+  <string name="date_picker_title">Yer nino me acakki ki me agiki</string>
+  <string name="date_picker_ok">Tii kwede</string>
+  <plurals name="date_past_days">
+    
+    <item quantity="one">Nino %d ma okato</item>
+    <item quantity="other">Nino %d ma okato</item>
+  </plurals>
+  <plurals name="date_past_weeks">
+    
+    <item quantity="one">Cabit %d ma okato</item>
+    <item quantity="other">Cabit %d ma okato</item>
+  </plurals>
+  <plurals name="date_past_months">
+    
+    <item quantity="one">Dwe %d ma okato</item>
+    <item quantity="other">Dwe %d ma okato</item>
+  </plurals>
+  <plurals name="date_past_years">
+    
+    <item quantity="one">Mwaka %d ma okato</item>
+    <item quantity="other">Mwaka %d ma okato</item>
+  </plurals>
+  <plurals name="date_ago_days">
+    
+    <item quantity="one">Nino %d angec</item>
+    <item quantity="other">Nino %d angec</item>
+  </plurals>
+  <plurals name="date_ago_weeks">
+    
+    <item quantity="one">Cabit %d angec</item>
+    <item quantity="other">Cabit %d angec</item>
+  </plurals>
+  <plurals name="date_ago_months">
+    
+    <item quantity="one">Dwe %d angec</item>
+    <item quantity="other">Dwe %d angec</item>
+  </plurals>
+  <plurals name="date_ago_years">
+    
+    <item quantity="one">Mwaka %d angec</item>
+    <item quantity="other">Mwaka %d angec</item>
+  </plurals>
+  <string name="action_select">Yer</string>
+  <plurals name="select_count">
+    
+    <item quantity="one">%d ma kiyero</item>
+    <item quantity="other">%d ma kiyero</item>
+  </plurals>
+  <string name="select_all">Yer weng</string>
+  <string name="select_none">Pe iyer mo</string>
+  <string name="select_exit">Juk yero</string>
+  <string name="select_share_limit">Iromo nywako fayil nio wa %d keken i tyen acel.</string>
+  <string name="sensitive_share_body_many">Mogo i kin magi kicimo ni me mung. Ngat ma ogamo twero gwoko gi dok nywako gi bot jo mukene.</string>
+  <string name="sensitive_copy_body_many">Mogo i kin magi kicimo ni me mung. Kabedo mo keken ma iketo gi iye gamo fayil kikome.</string>
+  <string name="snack_marked_sensitive_many">Kicimo ni me mung. Kombedi gimukanne, pe ginyutte i Adwogi.</string>
+  <string name="snack_unmarked_sensitive_many">Kikwanyo cim. Gitwero nyutte dok i Adwogi.</string>
+  <string name="nothing_in_dates">Pe kinongo gin mo i %1$s. Tem nino dwe mukene.</string>
+</resources>

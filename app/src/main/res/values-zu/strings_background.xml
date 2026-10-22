@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="bg_title">Le foni imisa izinhlelo zokusebenza okwesikhashana</string>
+  <string name="bg_body">Amanye amafoni, kuhlanganise nale, amisa izinhlelo zokusebenza okwesikhashana uma isikrini sicishiwe. Ngakho i-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ifunda amafayela akho kuphela ngesikhathi ivuliwe. Ukuze ifunde igalari enkulu, sebenzisa okuthi Qhubeka ufunde manje ngenkathi ifoni ixhunywe kushaja ubusuku bonke.</string>
+  <string name="bg_open">Vula izilungiselelo zefoni</string>
+  <string name="bg_settings_section">Kule foni</string>
+  <string name="bg_settings_hint">Amanye amafoni, kuhlanganise nale, amisa izinhlelo zokusebenza okwesikhashana uma isikrini sicishiwe. Ngakho i-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ifunda amafayela akho kuphela ngesikhathi ivuliwe. Ukuze ifunde igalari enkulu, sebenzisa okuthi Qhubeka ufunde manje ngenkathi ifoni ixhunywe kushaja. Isilungiselelo sefoni esingezansi sivumela uhlelo lokusebenza kuphela ukuthi luqale futhi ngemva kokuthi ifoni iqale kabusha. Asivimbi ifoni ukuthi iyimise okwesikhashana.</string>
+  <string name="bgs_title">I-Samsung ingamisa le app ebusuku</string>
+  <string name="bgs_body">Amafoni e-Samsung angalala ama-app noma awavale ebusuku, ngakho <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> iyayeka ukufunda amafayela akho. Ku-Battery, khetha «Unrestricted» ku-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g>.</string>
+  <string name="bgs_open">Vula izilungiselelo zebhethri</string>
+</resources>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- The heading over the photo peek (a few photos among the first document rows): the group name and how many it holds. -->
+  <string name="section_photos_videos_count">Sawirro iyo muuqaallo (%1$d)</string>
+</resources>

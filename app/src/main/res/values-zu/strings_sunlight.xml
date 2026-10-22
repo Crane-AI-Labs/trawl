@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="typing_learning">Isafunda: %1$s kwangu-%2$s · kungase kuvele eminye imiphumela</string>
+  <string name="typing_learning_charger">Isafunda: %1$s kwangu-%2$s · okusele uma ushaja</string>
+  <string name="typing_learning_paused">Ifunde %1$s kwangu-%2$s kuze kube manje · kungase kuvele eminye imiphumela</string>
+  <string name="settings_colours">Imibala</string>
+  <string name="colours_sunlight">Ukukhanya kwelanga</string>
+  <string name="colours_sunlight_hint">Iphepha elinombala ofudumele nophuzi owodwa, okufundeka kalula elangeni elikhanyayo.</string>
+  <string name="colours_wallpaper">Imibala yesithombe sangemuva</string>
+  <string name="colours_wallpaper_hint">Ithatha imibala yayo esithombeni sakho sangemuva, bese ishintsha lapho naso sishintsha.</string>
+  <string name="settings_brightness">Okukhanyayo noma okumnyama</string>
+</resources>

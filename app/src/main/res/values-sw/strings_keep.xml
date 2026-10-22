@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="keep_action">Endelea kusoma sasa</string>
+  <string name="keep_action_hint">Huacha skrini ikiwa wazi na hafifu ili <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> iweze kusoma usipotumia simu. Ni bora ikiwa kwenye chaja. Simu hubaki ikiwa haijafungwa inapoendelea, kwa hivyo fanya hivi mahali unapoamini tu.</string>
+  <string name="keep_heading"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> inasoma mafaili yako</string>
+  <string name="keep_counts">Mafaili %1$s kati ya %2$s yameeleweka</string>
+  <string name="keep_time_left">Muda uliobaki: %1$s</string>
+  <string name="keep_time_unknown">Inakadiria muda utakaotumika</string>
+  <string name="keep_charging">Inachaji</string>
+  <string name="keep_on_battery">Haichaji. Inakuwa na kasi zaidi ikiwa kwenye chaja.</string>
+  <string name="keep_unlocked">Skrini hubaki ikiwa wazi na simu ikiwa haijafungwa wakati <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> inasoma. Iache tu mahali unapoamini.</string>
+  <string name="keep_tap_to_stop">Gusa popote ili usimamishe</string>
+  <string name="keep_stop_done_title">Yote yamekamilika</string>
+  <string name="keep_stop_done"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> imesoma mafaili yako yote. Kipengele cha kutafuta kinayajua sasa.</string>
+  <string name="keep_stop_battery_title">Imesimama: betri iko chini</string>
+  <string name="keep_stop_battery">Betri iko chini ya asilimia 20. Chomeka chaja, kisha uanze tena kutoka kwenye skrini ya maendeleo.</string>
+  <string name="keep_stop_hot_title">Imesimama: simu ina joto</string>
+  <string name="keep_stop_hot">Simu imepata joto sana, kwa hivyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> imesimama ili ipoe. Unaweza kuanza tena baadaye.</string>
+  <string name="keep_stop_unplugged_title">Imesimama: chaja imechomolewa</string>
+  <string name="keep_stop_unplugged">Chomeka chaja tena, kisha uanze tena kutoka kwenye skrini ya maendeleo.</string>
+  <string name="keep_stop_charger_title">Inasubiri chaja</string>
+  <string name="keep_stop_charger">Inapotumia betri, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> hufanya kazi nyepesi tu, na hiyo imekamilika. Chomeka chaja, kisha uanze tena.</string>
+  <string name="keep_stop_paused_title">Imesimama: kusoma kumesitishwa</string>
+  <string name="keep_stop_paused">Fungua skrini ya maendeleo katika <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ili uone sababu na uendelee.</string>
+  <string name="keep_screen_will_sleep">Sasa skrini itajizima yenyewe kama kawaida.</string>
+  <string name="keep_close">Funga</string>
+</resources>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="models_eyebrow">Ukulanda okukodwa</string>
+  <string name="models_title">Thola amamodeli okusesha</string>
+  <string name="models_body">Sebenzisa i-Wi-Fi uma ukwazi: ifayela elilodwa elingu-%1$d MB, elilandwa kanye kuphela. Amagama amafayela namanye amagama asebenza ngokushesha. Ukusesha ngokwencazelo kuba ngcono njengoba <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> ifunda, futhi kuba kuhle kakhulu ngemva kokushajwa ubusuku bonke.</string>
+  <string name="models_get">Thola amamodeli (%1$d MB)</string>
+  <string name="models_choose">Khetha ifayela</string>
+  <string name="models_hint_choose">Usunalo ifayela? Likhethe efonini yakho.</string>
+  <string name="models_hint_access"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> izifakela ifayela lapho seliqedile ukulanda, uma usuyivumele ukufinyelela amafayela akho. Noma sebenzisa okuthi Khetha ifayela.</string>
+  <string name="models_hint_wait"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> izifakela ifayela uma seliqedile ukulandwa. Ungaqala manje.</string>
+  <string name="models_no_browser">Asikho isiphequluli esitholakele kule foni. Faka ifayela kuyo ngenye indlela, bese ulikhetha lapha.</string>
+  <string name="models_downloading">Iyalanda… %1$s kuze kube manje</string>
+  <string name="models_installing_pct">Ihlola futhi ifaka amamodeli… %1$d%%</string>
+  <string name="models_installing">Ihlola futhi ifaka amamodeli…</string>
+  <string name="models_cancel">Khansela</string>
+  <string name="models_done">Amamodeli afakiwe. Ukusesha sekulungile.</string>
+  <string name="models_done_already">Amamodeli asefakiwe kakade.</string>
+  <string name="models_ok">Kulungile</string>
+  <string name="models_free_question">Susa ifayela elilandiwe ukuze kuvuleke isikhala esingu-%1$s?</string>
+  <string name="models_free_yes">Yebo, lisuse</string>
+  <string name="models_free_no">Cha, ligcine</string>
+  <string name="models_try_again">Zama futhi</string>
+  <string name="models_refused_wrong_class">Leli fayela ngelohlobo oluhlukile lwefoni. Sebenzisa okuthi Thola amamodeli ukuze ulande elale foni.</string>
+  <string name="models_refused_damaged">Ifayela lonakele noma aliphelele, ngakho <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ayilisebenzisanga. Lilande futhi, bese uzama futhi.</string>
+  <string name="models_refused_not_signed"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ayikwazanga ukuqinisekisa ukuthi leli fayela ngelangempela, ngakho ayilisebenzisanga. Sebenzisa okuthi Thola amamodeli ukuze ulilande futhi.</string>
+  <string name="models_refused_older">Leli fayela lidala kunamamodeli asevele ekule foni, ngakho <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> igcine amasha.</string>
+  <string name="models_refused_no_space">Asikho isikhala esanele kule foni. Vula isikhala esingaba ngu-%1$d MB, bese uzama futhi.</string>
+  <string name="models_refused_cancelled">Kumisiwe. Akukho okushintshiwe.</string>
+  <string name="models_update_title">Imodeli engcono iyatholakala</string>
+  <string name="models_update_body_reread">Uma uyengeza, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> iphinda ifunde amafayela akho. Lokho kwenzeka ngesikhathi ifoni ishaja, futhi ukusesha kuyaqhubeka nokusebenza.</string>
+  <string name="models_update_body_light">Uma uyengeza, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ayiphindi ifunde amafayela akho.</string>
+  <string name="models_update_get">Thola isibuyekezo (%1$d MB)</string>
+  <string name="models_update_not_now">Hhayi manje</string>
+</resources>

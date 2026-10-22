@@ -1,0 +1,459 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="kind_document">Idokhumenti</string>
+  <string name="kind_pdf">PDF</string>
+  <string name="kind_photo">Isithombe</string>
+  <string name="kind_screenshot">Isithombe sesikrini</string>
+  <string name="kind_video">Ividiyo</string>
+  <string name="kind_audio">Umsindo</string>
+  <string name="kind_other">Ifayela</string>
+  <string name="filter_all">Konke</string>
+  <string name="filter_photos">Izithombe</string>
+  <string name="filter_screenshots">Izithombe zesikrini</string>
+  <string name="filter_videos">Amavidiyo</string>
+  <string name="filter_documents">Amadokhumenti</string>
+  <string name="filter_audio">Umsindo</string>
+  <string name="kind_plural_screenshots">Izithombe zesikrini</string>
+  <string name="kind_plural_photos">Izithombe</string>
+  <string name="kind_plural_documents">Amadokhumenti nama-PDF</string>
+  <string name="kind_plural_videos">Amavidiyo</string>
+  <string name="kind_plural_audio">Umsindo</string>
+  <string name="section_photos_videos">Izithombe namavidiyo</string>
+  <string name="section_documents_text">Amadokhumenti nombhalo</string>
+  <string name="section_recent_documents">Amadokhumenti akamuva</string>
+  <string name="section_recent_photos_videos">Izithombe namavidiyo akamuva</string>
+  <string name="badge_page">ikh. %1$d</string>
+  <string name="badge_at_time">ku-%1$s</string>
+  <plurals name="pages_count">
+        
+    
+    <item quantity="one">ikhasi elingu-%d</item>
+    <item quantity="other">amakhasi angu-%d</item>
+  </plurals>
+  <string name="action_open">Vula</string>
+  <string name="action_share">Yabelana</string>
+  <string name="action_copy">Kopisha</string>
+  <string name="action_show_folder">Bonisa efoldeni</string>
+  <string name="action_more">Izenzo ezengeziwe</string>
+  <string name="snack_copied">Kukopishiwe</string>
+  <string name="meter_title_not_started">Ayikafundi okwamanje</string>
+  <string name="meter_title_scanning">Ihlola ifoni yakho</string>
+  <string name="meter_title_indexing">Ifunda amafayela akho</string>
+  <string name="meter_title_up_to_date">Konke kusesikhathini</string>
+  <string name="meter_title_error">Kukhona okungahambanga kahle</string>
+  <string name="meter_sub_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> izoqala uma isikwazi ukubona amafayela akho.</string>
+  <string name="meter_sub_scanning">Kutholwe amafayela angu-%1$s kuze kube manje.</string>
+  <string name="meter_sub_names_first">Amagama nemibhalo kuqala, ukuze ukwazi ukusesha kakade.</string>
+  <string name="meter_sub_progress_eta">%1$s kokungu-%2$s kuqondiwe · cishe kusele %3$s</string>
+  <string name="meter_sub_progress_estimating">%1$s kokungu-%2$s kuqondiwe · kubalwa isikhathi esisele</string>
+  <string name="meter_sub_needs_charger">Amagama namagama amanje. Incazelo iqala uma ushaja.</string>
+  <string name="meter_sub_reembed">Kubuyekezwa izithombe zemodeli entsha: %1$s kokungu-%2$s. Ukusesha kusaqhubeka.</string>
+  <string name="meter_sub_reembed_eta">Kubuyekezwa izithombe zemodeli entsha: %1$s kokungu-%2$s · kusele cishe u-%3$s</string>
+  <string name="meter_sub_reembed_battery">Kubuyekezwa izithombe zemodeli entsha: %1$s kokungu-%2$s. Okusele kuzoqhubeka uma ushaja.</string>
+  <string name="meter_sub_light_reading">Kufundwa izithombe zakho ukuze kusheshe kuseshwe. Ikhwalithi ephelele iqedelwa uma ushaja.</string>
+  <string name="meter_sub_light_done">Konke kungaseshwa manje. Ikhwalithi ephelele iqedelwa uma ushaja.</string>
+  <string name="meter_sub_paused">%1$s kokungu-%2$s kuqondiwe. Ukusesha kusamisebenza.</string>
+  <string name="meter_sub_up_to_date">Amafayela angu-%1$s alungele ukuseshwa.</string>
+  <string name="meter_sub_error">Thepha ukuze uthole imininingwane.</string>
+  <string name="meter_a11y">%1$s. %2$s. Amaphesenti angu-%3$d aqondiwe.</string>
+  <string name="meter_open_details">Bonisa imininingwane yokufunda</string>
+  <string name="pause_not_charging">Kulindwe ishaja</string>
+  <string name="pause_not_charging_detail">Ukufunda konke ngekhwalithi ephelele kusebenzisa ibhethri eliningi, ngakho-ke i-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yenza lokho uma ifoni ishajwa. Ukusesha kusaqhubeka okwamanje.</string>
+  <string name="pause_too_hot">Iyaphola</string>
+  <string name="pause_too_hot_detail">Ifoni iyafudumala, ngakho-ke i-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ithatha ikhefu ukuze ivikeleke. Izoqhubeka ngokwayo uma ifoni isipholile.</string>
+  <string name="pause_battery_low">Ibhethri liphansi</string>
+  <string name="pause_battery_low_detail">Ibhethri lingaphansi kuka-30%%, ngakho-ke i-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ifunda amagama kuphela ukuze yonge elisele. Izoqhubeka ngokwayo uma ifoni ishajwa.</string>
+  <string name="pause_user">Kumiswe nguwe</string>
+  <string name="pause_user_detail">Ukufunda kumisiwe. Ukusesha kusamisebenza kulokho i-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> esikufundile kuze kube manje.</string>
+  <string name="pause_no_permission">Kudingeka ukufinyelela kumafayela akho</string>
+  <string name="pause_no_permission_detail">I-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ayikwazi ukubona amafayela akho uze uvumele ukufinyelela kwawo Wonke amafayela. Ifunda wona kuphela futhi ayilokothi ishintshe lutho.</string>
+  <string name="pause_storage_low">Isitoreji sefoni cishe sigcwele</string>
+  <string name="pause_storage_low_detail">I-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> idinga isikhala esincane sohlu lwayo. Khulula isikhala ukuze iqhubeke.</string>
+  <string name="action_pause">Misa kancane</string>
+  <string name="action_resume">Qhubeka</string>
+  <string name="action_read_on_battery">Funda ebhethrini noma kunjalo</string>
+  <string name="action_allow_access">Vumela ukufinyelela</string>
+  <string name="action_free_space">Khulula isikhala</string>
+  <string name="action_retry">Zama futhi</string>
+  <string name="eta_under_minute">ngaphansi komzuzu</string>
+  <string name="eta_minutes">%d amamiz</string>
+  <string name="eta_hours_single">%d amahora</string>
+  <string name="eta_hours_range">%1$d kuya ku-%2$d amahora</string>
+  <string name="eta_while_charging">%1$s eshajeni</string>
+  <string name="sheet_title">Ifunda amafayela akho</string>
+  <string name="sheet_detail_up_to_date">Wonke amafayela i-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> engawabona alungile. Amasha angeniswa njengoba evela.</string>
+  <string name="sheet_detail_scanning">I-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yenza uhlu lwamafayela akho. Lokhu kuthatha umzuzu owodwa noma emibili.</string>
+  <string name="sheet_detail_light_on_battery">Amagama afundwa manje futhi izithombe zibhekwa ngokushesha, ngakho ukusesha sekuyasebenza. Ikhwalithi ephelele, enikeza imiphumela engcono kakhulu, iqedelwa uma ifoni ishajwa.</string>
+  <string name="sheet_detail_needs_charger">Amagama ayafundwa manje, ngakho ukusesha sekuyasebenza. Ukuqonda ukuthi izithombe namadokhumenti kumayelana nani kuqala uma ifoni ishajwa.</string>
+  <string name="sheet_detail_indexing">Amagama aqala kuqala, ngakho ukusesha kusebenza masinyane. Ukuqonda okuqukethwe yizithombe namadokhumenti kuthatha isikhathi, futhi kungcono kwenziwe ebusuku ngenkathi ishajwa.</string>
+  <string name="sheet_detail_error">Ukufunda kume ngokungazelelwe. Imiphumela yakho yangaphambilini iphephile.</string>
+  <string name="sheet_detail_not_started">I-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ayikaqali ukufunda okwamanje.</string>
+  <string name="sheet_by_kind">Ngohlobo lwefayela</string>
+  <string name="sheet_reading_now">Ifunda manje</string>
+  <string name="sheet_resumes_by_itself">Izoqhubeka ngokwayo uma lokhu sekulungisiwe.</string>
+  <string name="level_searchable">Kuyasesheka ngegama nangamagama</string>
+  <string name="level_searchable_hint">Kuyashesha. Kukuvumela uthole ifayela ngalokho okubhalwe kulo.</string>
+  <string name="level_understood">Kuqondwa ngencazelo</string>
+  <string name="level_understood_hint">Kuhamba kancane. Kukuvumela uthole ifayela ngokuthi limayelana nani.</string>
+  <string name="level_quicklook">Ukubuka ngokushesha: izithombe namavidiyo</string>
+  <string name="level_quicklook_hint">Kuyashesha. Imodeli encane ithola izithombe ngokubuka okukuzo, oseshweni lwesiNgisi. Imininingwane ephelele iyithatha indawo lapho isithombe ngasinye siqondwa.</string>
+  <string name="meter_quicklook">Ukubuka ngokushesha: %1$s kokungu-%3$s ezithombeni · Imininingwane ephelele: %2$s kokungu-%3$s</string>
+  <string name="level_a11y">%1$s: %2$s kokungu-%3$s</string>
+  <string name="count_of">%1$s kokungu-%2$s</string>
+  <string name="stat_time_left">Isikhathi esisele</string>
+  <string name="stat_speed">Isivinini</string>
+  <string name="stat_index_size">Usayizi wohlu</string>
+  <string name="stat_model_size">Usayizi wemodeli</string>
+  <string name="stat_when_charging">Iqala uma ishajwa</string>
+  <string name="stat_estimating">Iyabala</string>
+  <string name="stat_measuring">Iyakala</string>
+  <string name="stat_done">Kuqediwe</string>
+  <string name="stat_rate_value">%1$s amafayela/h</string>
+  <string name="onb_next">Okulandelayo</string>
+  <string name="onb_back">Emuva</string>
+  <string name="onb_start">Qala i-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="onb_start_locked">I-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> idinga ukufinyelela kuwo Wonke amafayela ngaphambi kokuthi iqale</string>
+  <string name="onb_allow_access">Vumela ukufinyelela kumafayela</string>
+  <string name="onb_page_of">Isinyathelo %1$d kokungu-%2$d</string>
+  <string name="welcome_line"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ithola amadokhumenti akho, izithombe nezithombe-skrini ngokwalokho ezikushoyo nezikubonisayo.</string>
+  <string name="welcome_point_ai_body">I-AI eqonda amafayela akho isebenza kule foni. Akukho lutho oluthunyelwa kuseva.</string>
+  <string name="welcome_point_reads_title">Ifunda amafayela akho kuphela</string>
+  <string name="welcome_point_reads_body">Ayishintshi, ayihambisi noma isuse lutho. Ungasusa lokho ekufundile noma nini.</string>
+  <string name="onb_choose_folders">Khetha amafolda</string>
+  <string name="onb1_eyebrow">Kuyimfihlo ngokomklamo</string>
+  <string name="onb1_title">Amafayela akho awaphumi kule foni.</string>
+  <string name="onb1_body">I-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ithola amadokhumenti, ama-PDF, izithombe-skrini, izithombe, ama-meme namavidiyo ngalokho akushoyo nalokho akubonisayo. Konke lokhu kwenzeka lapha, kule foni.</string>
+  <string name="onb1_point_internet_title">Ayinayo imvume ye-inthanethi</string>
+  <string name="onb1_point_internet_body">I-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ayikwazi nhlobo ukuxhuma ku-inthanethi. I-Android ngokwayo iyivimba ekuthumeleni noma yini ngaphandle.</string>
+  <string name="onb1_point_model_title">I-AI ihlala efonini yakho</string>
+  <string name="onb1_point_model_body">Imodeli eqonda amafayela akho, i-EmbeddingGemma 2 yakwa-Google, isebenza kule foni. Akukho okuthunyelwa kuseva ukuze kuqondwe.</string>
+  <string name="onb1_point_delete_title">Nguwe olawulayo</string>
+  <string name="onb1_point_delete_body">Yeqa noma iyiphi ifolda, noma susa konke i-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ekufundile, noma nini lapho uthanda khona.</string>
+  <string name="onb2_eyebrow">Okwenzeka ngokulandelayo</string>
+  <string name="onb2_title">Ukusesha kusebenza ngemizuzu. Ukuqonda kuthatha ubusuku bonke.</string>
+  <string name="onb2_step1_title">Emizuzwini embalwa</string>
+  <string name="onb2_step1_body">I-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yenza uhlu lwamafayela akho futhi ifunde amagama awo namagama angaphakathi kuwo. Ungasesha khona manje.</string>
+  <string name="onb2_step2_title">Emahoreni ambalwa alandelayo</string>
+  <string name="onb2_step2_body">Bese ifunda ukuthi isithombe ngasinye nedokhumenti ngayinye imayelana nani, ukuze usesho olunjengokuthi “irisidi lemali yesikole” lithole elifanele ngisho noma lawo magama engekho kulo. Lo msebenzi uhamba kancane ocingweni.</string>
+  <string name="onb2_step3_title">Ikakhulukazi uma ishajwa</string>
+  <string name="onb2_step3_body">Ukuze yonge ibhethri lakho, i-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yenza ingxenye ehamba kancane uma ishajwa. Yishiye ishajwa ubusuku bonke kanye. Ungabuka inqubekelaphambili, umise kancane, noma ushintshe lokhu noma nini.</string>
+  <string name="onb3_eyebrow">Izimvume ezimbili</string>
+  <string name="onb3_title">Vumela i-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ibone amafayela akho</string>
+  <string name="onb3_files_title">Ukufinyelela kuwo wonke amafayela</string>
+  <string name="onb3_files_body">Kudingeka ukubona amafayela kuyo yonke ifolda, njengamadokhumenti e-WhatsApp. I-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ifunda kuphela. Ayilokothi ishintshe, ihambise noma isuse noma yini.</string>
+  <string name="onb3_files_action">Vula izilungiselelo</string>
+  <string name="onb3_files_granted">Kuvunyelwe</string>
+  <string name="onb3_files_hint">Ohlwini oluvulekayo, vula okuthi “Vumela ukufinyelela kokuphatha wonke amafayela”, bese ubuya.</string>
+  <string name="onb3_notif_title">Izaziso (uyazikhethela)</string>
+  <string name="onb3_notif_body">Ukuze kuphela i-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ikwazise uma isiqedile ukufunda. Akukho okunye.</string>
+  <string name="onb3_notif_action">Vumela</string>
+  <string name="onb3_notif_granted">Kuvunyelwe</string>
+  <string name="onb4_eyebrow">Okungeziwe ongakukhetha</string>
+  <string name="onb4_title">Engeza okwengeziwe?</string>
+  <string name="onb4_body">I-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> iyasebenza ngaphandle kwalokhu. Into ngayinye yenza okuthile kube ngcono. Into ngayinye ifayela olikopishela kokulandiwe, ngoba i-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ayilokothi iye ku-inthanethi.</string>
+  <string name="onb4_add">Engeza</string>
+  <string name="onb4_not_now">Hhayi manje</string>
+  <string name="onb4_added">Kungeziwe</string>
+  <string name="onb4_skipped">Kweqiwe. Ungakwengeza ngokuhamba kwesikhathi.</string>
+  <string name="onb4_footer">Ungashintsha lokhu ngokuhamba kwesikhathi kokuthi Izilungiselelo → Izengezo.</string>
+  <string name="search_hint">Sesha amafayela akho</string>
+  <string name="search_hint_a11y">Sesha amafayela akho ngalokho akushoyo noma akubonisayo</string>
+  <string name="search_clear">Sula usesho</string>
+  <string name="search_searching">Iyasesha</string>
+  <string name="search_settings">Izilungiselelo</string>
+  <string name="search_nothing_title">Akukho okutholiwe</string>
+  <string name="search_nothing_body">Alikho ifayela elifana nokuthi “%1$s”.</string>
+  <string name="search_nothing_try_all">Zama amagama ambalwa noma ahlukile, noma useshe Konke.</string>
+  <string name="search_nothing_incomplete">I-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> isafunda amafayela akho, ngakho lokhu kungashintsha. Zama futhi emva kwesikhashana.</string>
+  <string name="search_repairing_note">Ukusesha kuyazilungisa. Amagama asasebenza; ukusesha ngencazelo kuzobuya emizuzwini embalwa.</string>
+  <string name="search_incomplete_note">Amagama ayasebenza manje. Ukusesha ngencazelo kusafundwa, ngakho kungavela imiphumela eyengeziwe.</string>
+  <string name="search_incomplete_note_charger">Amagama ayasebenza manje. Ukusesha ngencazelo (njengokuthi “imoto” esithombeni sesithuthuthu) kuqala uma ifoni isishajwa.</string>
+  <string name="search_weak_toggle">Engafani kakhulu (%1$d)</string>
+  <string name="search_weak_only">Ayikho efana ncamashí. Yilawa asondelene kakhulu.</string>
+  <string name="search_weak_expand">Bonisa engafani kakhulu</string>
+  <string name="search_weak_collapse">Fihla okuqondene kancane</string>
+  <string name="search_fresh_title">Akukho okuzoboniswa okwamanje</string>
+  <string name="search_fresh_body">Lapho nje i-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ibona amafayela akho, amasha azovela lapha. Thayipha ngenhla ukuze useshe.</string>
+  <string name="search_recent_empty_filter">Awekho amafayela alolu hlobo okwamanje.</string>
+  <string name="access_banner_title">I-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ayikwazi ukubona amafayela akho okwamanje</string>
+  <string name="access_banner_body">Vumela ukufinyelela kuwo Wonke amafayela ukuze iwafunde. Ayilokothi iguqule lutho.</string>
+  <string name="snack_no_app">Ayikho i-app kule foni ekwazi ukuvula leli fayela.</string>
+  <string name="snack_sample">Leli yifayela lesampula, ngakho alikwazi ukuvulwa.</string>
+  <string name="settings_title">Izilungiselelo</string>
+  <string name="settings_back">Emuva</string>
+  <string name="settings_section_reading">Ukufunda</string>
+  <string name="learn_speed_title">Isivinini sokufunda</string>
+  <string name="learn_gentle">Buthule</string>
+  <string name="learn_gentle_hint">Ifunda kuphela uma ishajwa, ngemicu embalwa. Ibhethri elincane nokufudumala okuncane; noma yini entsha ilinda ishaja.</string>
+  <string name="learn_balanced">Olinganiselwe</string>
+  <string name="learn_balanced_hint">Indlela evamile. Ishaja ifunda yonke igalari yakho; ngebhethri kusebenza kuphela amafayela amasha nokubuka ngokushesha.</string>
+  <string name="learn_fast">Esheshayo</string>
+  <string name="learn_fast_hint">Ifunda konke nangebhethri futhi ilinda kuphela ngenkathi usebenzisa enye i-app. Iphela masinyane, isebenzisa ibhethri eliningi futhi iyashisa kakhulu.</string>
+  <string name="settings_section_kinds">Yini okufanele ifundwe</string>
+  <string name="settings_recordings">Amanothi ezwi nokuqoshiwe</string>
+  <string name="settings_recordings_hint">Funda okushiwoyo nokuzwakalayo, ukuze ukwazi ukukusesha.</string>
+  <string name="settings_deeper">Ukusesha umsindo okujulile (kuyanensa): umculo neminye imisindo</string>
+  <string name="settings_deeper_hint">Ithola imisindo ngendlela ezwakala ngayo, hhayi ngamagama kuphela. Kuthatha cishe imizuzwana engu-15 yokufunda ngomzuzu ngamunye womsindo efoni evamile.</string>
+  <string name="settings_section_addons">Izithasiselo</string>
+  <string name="addons_intro">Okungeziwe ongakukhetha okwenza ukusesha kube ngcono. I-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ayilokothi iye ku-inthanethi, ngakho ngasinye yifayela olikopishela kokulandiwe kuqala. Konke kuhlala kule foni.</string>
+  <string name="addons_status_not_added">Akungeziwe</string>
+  <string name="addons_status_adding">Kuyangezwa</string>
+  <string name="addons_status_added">Kungeziwe</string>
+  <string name="addons_status_soon">Kuyeza maduze</string>
+  <string name="addons_size">Usayizi: %1$s</string>
+  <string name="addons_add">Engeza</string>
+  <string name="addons_add_with_size">Engeza (%1$s)</string>
+  <string name="addons_remove">Susa, kukhulula i-%1$s</string>
+  <string name="addons_on">Kuvuliwe</string>
+  <string name="addons_off">Kucishiwe</string>
+  <string name="addons_adding_pct">Kuyahlolwa futhi kuyangezwa… %1$d%%</string>
+  <string name="addons_adding">Kuyahlolwa futhi kuyangezwa…</string>
+  <string name="addons_try_again">Zama futhi</string>
+  <string name="addons_soon_hint">Akukalungi okwamanje. Kuzovela lapha uma sekulungile.</string>
+  <string name="addons_problem_not_found">I-<xliff:g id="app_name" example="Trawl">%2$s</xliff:g> ayitholanga i-%1$s kokulandiwe. Yikopishele lapho, bese uzama futhi.</string>
+  <string name="addons_problem_access">I-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> idinga ukufinyelela kuwo Wonke amafayela ukuze ifunde Okulandiwe. Kuvule, bese uzama futhi.</string>
+  <string name="addons_problem_bad">Ifayela elikokulandiwe lonakele noma akulona elifanele, ngakho i-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ayilisebenzisanga. Likopishe futhi, bese uzama futhi.</string>
+  <string name="addons_problem_unavailable">Lesi sengezo asikwazi ukwengezwa kule nguqulo okwamanje.</string>
+  <string name="addons_add_title">Engeza i-%1$s</string>
+  <string name="addons_add_install">Faka</string>
+  <string name="addons_remove_title">Susa i-%1$s?</string>
+  <string name="addons_remove_body">Lokhu kukhulula i-%1$s futhi kuyicime. Amagama nezincazelo i-<xliff:g id="app_name" example="Trawl">%2$s</xliff:g> esiyifundile kuhlala kuze kufundwe lawo mafayela futhi. Ungaphinda uyengeze noma nini.</string>
+  <string name="addons_remove_confirm">Susa</string>
+  <string name="settings_section_excluded">Amafolda eqiwe</string>
+  <string name="settings_excluded_hint">I-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ngeke ifunde lutho olungaphakathi kwala mafolda.</string>
+  <string name="settings_excluded_empty">Alikho. I-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ifunda wonke amafolda engawabona.</string>
+  <string name="settings_excluded_remove">Yeka ukweqa i-%1$s</string>
+  <string name="settings_excluded_bad">Lelo folda alikwazi ukukhethwa lapha. Khetha elisesisindweni esikhulu sefoni.</string>
+  <string name="onb_scope_eyebrow">Ukukhetha kwakho</string>
+  <string name="scope_title">Kufanele i-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> iseshe ini?</string>
+  <string name="scope_intro">Cima noma yini ongafuni itholwe. Amafayela ayo asuka kusesho ngokushesha, futhi abuye uma uphinda ukulayitha.</string>
+  <string name="scope_counts_unknown">Inani lamafayela livela uma i-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> isikwazi ukubona amafayela akho.</string>
+  <string name="scope_private">Amafolda afihliwe, amafolda aphawulwe nge-.nomedia namanye amafolda ayimfihlo ezinhlelo zokusebenza awafundwa nanini.</string>
+  <string name="scope_added_title">Amafolda owangezile</string>
+  <string name="scope_add">Engeza ifolda</string>
+  <string name="scope_added_remove">Yeka ukusesha i-%1$s</string>
+  <string name="scope_exclude">Khipha ifolda</string>
+  <plurals name="scope_files">
+        
+    
+    <item quantity="one">%1$s ifayela</item>
+    <item quantity="other">%1$s amafayela</item>
+  </plurals>
+  <string name="scope_group_camera">Ikhamera</string>
+  <string name="scope_group_screenshots">Izithombe-skrini</string>
+  <string name="scope_group_whatsapp_images">Izithombe ze-WhatsApp</string>
+  <string name="scope_group_whatsapp_video">Amavidiyo e-WhatsApp</string>
+  <string name="scope_group_whatsapp_documents">Amadokhumenti e-WhatsApp</string>
+  <string name="scope_group_whatsapp_voice">Amanothi ezwi e-WhatsApp</string>
+  <string name="scope_group_whatsapp_status">Isimo se-WhatsApp</string>
+  <string name="scope_group_downloads">Okulandiwe</string>
+  <string name="scope_group_documents">Amadokhumenti</string>
+  <string name="scope_group_music">Umculo nokuqoshiwe</string>
+  <string name="scope_group_other">Amanye amafolda</string>
+  <string name="settings_section_storage">Isikhala esisetshenzisiwe</string>
+  <string name="settings_storage_index">Uhlu losesho</string>
+  <string name="settings_storage_model">Imodeli ye-AI</string>
+  <string name="settings_delete">Susa konke i-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ekwaziyo</string>
+  <string name="settings_delete_hint">Kususa lokho i-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ekufundile kumafayela akho, namafayela ayo esikhashana. Amafayela akho awathintwa.</string>
+  <string name="settings_delete_title">Susa konke i-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ekwaziyo?</string>
+  <string name="settings_delete_body">I-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> isusa uhlu lwayo lwamafayela akho manje: amagama awo, amagama asemadokhumentini akho, umbhalo ewufundile ezithombeni nasezithombeni-skrini, inkulumo eyibhale phansi kumavidiyo namanothi ezwi, nalokho i-AI yayo ekubonile ngefile ngalinye. Amafayela ayo esikhashana nemibiko yezinkinga nakho kuyasuswa.\n\nAmafayela akho awathintwa. Izilungiselelo zakho ziyahlala, kuhlanganise namafolda owawexile.\n\nI-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> bese iyeka ukufunda. Usesho luhlala lungenalutho uze uthephe okuthi Qhubeka.</string>
+  <string name="settings_delete_done">Kususwe i-%1$s. I-<xliff:g id="app_name" example="Trawl">%2$s</xliff:g> imisiwe uze uthephe okuthi Qhubeka.</string>
+  <string name="settings_storage_model_hint">Kudingeka ukuze kuseshwe ngencazelo.</string>
+  <string name="settings_storage_index_hint">Isizindalwazi nelogi yaso.</string>
+  <string name="settings_storage_estimate">Lapho wonke amafayela esefundiwe</string>
+  <string name="settings_storage_estimate_value">Cishe %1$s</string>
+  <string name="settings_storage_memory">Imemori lapho usesha</string>
+  <string name="settings_storage_memory_hint">Isetshenziswa kuphela ngenkathi i-<xliff:g id="app_name" example="Trawl">%2$s</xliff:g> ivuliwe. Cishe %1$s lapho wonke amafayela esefundiwe.</string>
+  <string name="settings_storage_remove">Susa</string>
+  <string name="settings_storage_no_data">I-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ayisebenzisi idatha yeselula: ayikwazi ukungena ku-inthanethi.</string>
+  <string name="settings_delete_confirm">Susa</string>
+  <string name="settings_cancel">Khansela</string>
+  <string name="settings_section_appearance">Ukubukeka</string>
+  <string name="settings_theme_system">Isistimu</string>
+  <string name="settings_theme_light">Okukhanyayo</string>
+  <string name="settings_theme_dark">Okumnyama</string>
+  <string name="report_card_title">I-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ime ngokungalindelekile. Thumela umbiko ukusiza ukuyilungisa?</string>
+  <string name="report_card_body">Umbiko awunawo amagama amafayela, okuseshiwe noma umbhalo ovela kumafayela akho. Uyawufunda kuqala, futhi akukho okuthunyelwayo uze ucindezele u-Thumela kuhlelo lwakho lwe-imeyili.</string>
+  <string name="report_send">Thumela</string>
+  <string name="report_not_now">Hhayi manje</string>
+  <string name="report_view">Buka umbiko</string>
+  <string name="report_close">Vala</string>
+  <string name="report_send_email">Thumela nge-imeyili</string>
+  <string name="report_send_whatsapp">Thumela ku-WhatsApp</string>
+  <string name="report_send_whatsapp_file">Thumela umbiko ogcwele ku-WhatsApp</string>
+  <string name="report_no_email">Alukho uhlelo lwe-imeyili olutholiwe kule foni. Sebenzisa u-Buka umbiko ukuze uwufunde, noma faka uhlelo lwe-imeyili.</string>
+  <string name="report_no_whatsapp">I-WhatsApp ayikwazanga ukuvulwa.</string>
+  <string name="report_building">Ilungiselela umbiko…</string>
+  <string name="report_dialog_title">Umbiko wenkinga</string>
+  <string name="report_dialog_hint">Yilokhu kuphela okuzothunyelwa. Amafayela akho, amafolda nokuseshiwe akukho kuko.</string>
+  <string name="settings_section_report">Bika inkinga</string>
+  <string name="settings_report_hint">Ivula uhlelo lwakho lwe-imeyili nombiko olungele ukuthunyelwa. Iqukethe ifoni kanye nenguqulo ye-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g>, nanoma imaphi amaphutha i-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ewahlangabezize, ngaphandle kwamagama amafayela, okuseshiwe noma umbhalo wamafayela akho. Uyawufunda kuqala, futhi akukho okuthunyelwayo uze ucindezele u-Thumela lapho.</string>
+  <string name="settings_report_note">Yini engahambanga kahle? (uyazikhethela)</string>
+  <string name="settings_report_kept">I-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> igcina imibiko engafinyelela kweyi-10 kule foni, cishe engu-100 KB. Ukuthi “Susa konke okwaziwa yi-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g>” kuyayisusa.</string>
+  <string name="settings_section_about">Mayelana</string>
+  <string name="settings_about_version">Inguqulo %1$s</string>
+  <string name="settings_about_model">Usesho lusebenza nge-EmbeddingGemma 2 yakwa-Google (Apache 2.0), kule foni kuphela.</string>
+  <string name="settings_about_private">I-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ayinayo imvume ye-inthanethi. Amafayela akho nalokho ekufundayo kuwo akukaze kuphume efonini.</string>
+  <string name="settings_about_maker">Kwenziwe ngabakwa-Crane AI Labs.</string>
+  <string name="settings_licences">Amalayisense namakhredithi</string>
+  <string name="licences_title">Amalayisense namakhredithi</string>
+  <string name="licences_intro">I-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yakhelwe phezu komsebenzi ongezansi. Lezi zaziso ziyadingeka ngaphansi kwamalayisense, futhi ziyindlela yethu yokubonga.</string>
+  <string name="licences_section_required">Izaziso</string>
+  <string name="licences_section_components">Konke okunye kokuthi <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="licences_section_texts">Imibhalo ephelele yamalayisense</string>
+  <string name="licences_show">Bonisa umbhalo ophelele</string>
+  <string name="licences_hide">Fihla umbhalo ophelele</string>
+  <string name="settings_close">Vala</string>
+  <string name="pack_size_mb">%1$d MB</string>
+  <string name="pack_speech_name">Ukusesha inkulumo</string>
+  <string name="pack_speech_benefit">Ithola okwashiwo kumavidiyo nasemanotini ezwi: ifayela elilungile liba ngelokuqala nge-%1$d%% yesikhathi esikhundleni se-%2$d%%.</string>
+  <plurals name="pack_speech_cost">
+        
+    
+    <item quantity="one">Yengeza cishe isekhondi elingu-%1$d ngomzuzu ngamunye wevidiyo ngenkathi ifunda. Inkulumo yesiNgisi kuphela okwamanje.</item>
+    <item quantity="other">Yengeza cishe amasekhondi angu-%1$d ngomzuzu ngamunye wevidiyo ngenkathi ifunda. Inkulumo yesiNgisi kuphela okwamanje.</item>
+  </plurals>
+  <string name="pack_quicklook_name">Ukubuka ngokushesha izithombe</string>
+  <plurals name="pack_quicklook_benefit">
+        
+    
+    <item quantity="one">Yenza yonke igalari yakho isesheke ngencazelo emizuzwini embalwa esikhundleni samahora: cishe isithombe esingu-%1$s ngehora esikhundleni se-%2$d kufoni engabizi (ukusesha kwesiNgisi). Imininingwane egcwele isaqhubeka nokugcwaliseka ngemva kwalokho.</item>
+    <item quantity="other">Yenza yonke igalari yakho isesheke ngencazelo emizuzwini embalwa esikhundleni samahora: cishe izithombe ezingu-%1$s ngehora esikhundleni se-%2$d kufoni engabizi (ukusesha kwesiNgisi). Imininingwane egcwele isaqhubeka nokugcwaliseka ngemva kwalokho.</item>
+  </plurals>
+  <string name="pack_quicklook_cost">Ukusesha kwesiNgisi kuphela: ukusesha ngezinye izilimi kulinda ukufunda okugcwele. Ukufunda okugcwele kuhamba kancane cishe nge-%1$d%% ngenkathi kusebenza, futhi kusebenzisa imemori eyengeziwe encane ngenkathi kufunda.</string>
+  <string name="pack_privacy_name">Fiphalisa ukubuka kuqala okuyimfihlo</string>
+  <string name="pack_privacy_benefit">Ifiphalisa ukubuka kuqala okuncane kwesithombe esibukeka siyimfihlo (ubunqunu, izingubo zangaphansi), ukuze isikrini esibonwa ngomunye umuntu sibonise okuncane. Thinta ukubuka kuqala ukuze ukwembule. Ifiphalisa kuphela: akukho okufihliwe noma okususwe emiphumeleni.</string>
+  <string name="pack_privacy_cost">Ingenza amaphutha ngazo zombili izindlela, futhi izithombe zezempilo (ubumqushu, umama oncelisayo) zingafiphazwa. Ifunda izithombe ngemuva ngenkathi ishaja, futhi yehlisa ukufunda okugcwele cishe nge-%1$d%% ngenkathi isebenza.</string>
+  <string name="pack_privacy_recommended">Kunconyiwe uma usebenzisa iphaneli yokusesha okusheshayo</string>
+  <string name="pack_how_to_add_downloads"><xliff:g id="app_name" example="Trawl">%3$s</xliff:g> ayilokothi iye ku-inthanethi, ngakho ayikwazi ukulanda lokhu ngokwayo. Thola ifayela elithi %1$s (%2$s) kwa-Crane AI Labs bese ulikopisha kufolda ethi Okulandiwe kule foni. Bese uthinta Faka: <xliff:g id="app_name" example="Trawl">%3$s</xliff:g> ihlola ifayela bese iyalingeza. Ungalisusa i-.zip ngemva kwalokho.</string>
+  <string name="pack_how_to_add_play">I-Play izoletha i-%1$s (%2$s) uma uthinta Faka. Akukho okunye okumele ukwenze.</string>
+  <string name="notif_channel_name">Ifunda ifoni yakho</string>
+  <string name="notif_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ifunda ifoni yakho</string>
+  <string name="notif_getting_ready">Iyalungiselela…</string>
+  <string name="notif_reading_photo">Ifunda isithombe</string>
+  <string name="notif_reading_screenshot">Ifunda isithombe-skrini</string>
+  <string name="notif_reading_video">Ifunda ividiyo</string>
+  <string name="notif_reading_document">Ifunda idokhumenti</string>
+  <string name="notif_reading_recording">Ifunda okuqoshiwe</string>
+  <string name="notif_reading_file">Ifunda ifayela</string>
+  <string name="notif_waiting_polite">Ilindile ngenkathi usebenzisa ifoni</string>
+  <string name="chip_label_action">%1$s  ·  %2$s</string>
+  <string name="a11y_description_note">%1$s. %2$s</string>
+  <string name="meter_a11y_extra">%1$s %2$s.</string>
+  <string name="message_then_sentence">%1$s %2$s</string>
+  <string name="lock_title">I-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ikhiyiwe</string>
+  <string name="lock_body">Vula ngezigxivizo zeminwe, ubuso, i-PIN noma iphethini yefoni yakho.</string>
+  <string name="lock_button">Vula</string>
+  <string name="quick_device_locked">Vula ifoni yakho ukuze useshe.</string>
+  <string name="lock_prompt_title">Vula i-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="lock_prompt_subtitle">Sebenzisa ukukhiya kwesikrini sefoni yakho</string>
+  <string name="settings_section_privacy">Ubumfihlo</string>
+  <string name="privacy_lock_title">Khiya i-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="privacy_lock_hint">Cela izigxivizo zeminwe, ubuso, i-PIN noma iphethini ngaphambi kokubonisa noma yini.</string>
+  <string name="privacy_lock_needs_screen_lock">Qala ngokusetha ukukhiya kwesikrini kufoni yakho kuqala (Izilungiselelo, Ukuphepha). I-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> isebenzisa ukuvula okufanayo.</string>
+  <string name="privacy_lock_on_prompt">Vula ukukhiya kwe-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="privacy_lock_off_prompt">Vala ukukhiya kwe-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="privacy_lock_after_title">Khiya futhi ngemuva kokuthi</string>
+  <string name="privacy_lock_after_now">Njalo</string>
+  <string name="privacy_lock_after_minutes">%1$d min</string>
+  <string name="privacy_lock_after_hint">Isikhathi lapho i-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> engahlala khona ngemuva ngaphambi kokubuza futhi. Ipinde ikhiye lapho isikrini sicisha.</string>
+  <string name="privacy_recents_title">Fihla i-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kuzinhlelo zakamuva</string>
+  <string name="privacy_recents_hint">Ikhadi le-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> liba mhlophe ohlwini lwezinhlelo zakamuva. Okubi: izithombe-skrini ze-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> nazo zivinjiwe.</string>
+  <string name="privacy_show_title">Bonisa imiphumela ebucayi</string>
+  <string name="privacy_show_hint">Kuvaliwe: amafayela owaphawula njengawabucayi, namafayela asezifoldeni eziyimfihlo, agodlwa emiphumeleni nakwiphaneli esheshayo uze uwavule.</string>
+  <string name="privacy_show_prompt">Bonisa imiphumela ebucayi</string>
+  <string name="privacy_pin_note">Noma ubani owazi i-PIN yefoni yakho angaveza imiphumela ebucayi. I-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ayinayo i-PIN yayo.</string>
+  <string name="privacy_no_screen_lock_note">Ifoni yakho ayinakho ukukhiya kwesikrini, ngakho noma ubani oyiphethe angavula i-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> futhi abone konke. Setha ukukhiya kwesikrini ukuze uyivikele.</string>
+  <string name="privacy_folders_title">Amafolda ayimfihlo</string>
+  <string name="privacy_folders_hint">Konke okusefoldeni eyimfihlo kuthathwa njengokubucayi. Ngokungafani namafolda akhishiwe, kusafundwa, ukuze ukwazi ukukusesha ngemuva kokuvula.</string>
+  <string name="privacy_folders_empty">Awekho amafolda ayimfihlo.</string>
+  <string name="privacy_folders_add">Engeza ifolda eyimfihlo</string>
+  <string name="privacy_folders_bad">Leyo folda ayikwazi ukumakwa njengeyimfihlo. Khetha ifolda kusitoreji esiyinhloko sefoni.</string>
+  <string name="privacy_folders_remove">Yeka ukuthatha i-%1$s njengeyimfihlo</string>
+  <string name="privacy_folders_remove_prompt">Yenza ifolda ingabi yimfihlo</string>
+  <string name="onb_lock_title">Khiya i-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> (ongakukhetha)</string>
+  <string name="onb_lock_body">I-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ingacela izigxivizo zeminwe, ubuso, i-PIN noma iphethini yefoni yakho ngaphambi kokubonisa noma yini, ukuze umuntu ophethe ifoni yakho angakwazi ukusesha. Ungashintsha lokhu kokuthi Izilungiselelo.</string>
+  <string name="onb_lock_action">Vula ukukhiya</string>
+  <string name="onb_lock_on">Ukukhiya kuvuliwe</string>
+  <string name="onb_lock_no_screen_lock">Ifoni yakho ayikabi nakho ukukhiya kwesikrini. Setha okukodwa kokuthi Izilungiselelo zefoni ukuze usebenzise lokhu.</string>
+  <string name="privacy_hidden_chip">%1$d okufihliwe</string>
+  <string name="privacy_hidden_action">Bonisa</string>
+  <plurals name="privacy_hidden_chip_description">
+        
+    
+    <item quantity="one">Umphumela obucayi ongu-%1$d ufihliwe. Thinta kabili ukuze uvule futhi uwubonise.</item>
+    <item quantity="other">Imiphumela ebucayi engu-%1$d ifihliwe. Thinta kabili ukuze uvule futhi uyibonise.</item>
+  </plurals>
+  <string name="privacy_shown_chip">Imiphumela ebucayi ibonisiwe</string>
+  <string name="privacy_shown_action">Fihla</string>
+  <string name="privacy_reveal_title">Bonisa imiphumela ebucayi</string>
+  <string name="privacy_reveal_subtitle">Sebenzisa ukukhiya isikrini kwefoni yakho</string>
+  <string name="action_mark_sensitive">Maka njengokubucayi</string>
+  <string name="action_unmark_sensitive">Akubucayi</string>
+  <string name="snack_marked_sensitive">Kumakwe njengokubucayi. Kufihliwe emiphumeleni manje.</string>
+  <string name="snack_unmarked_sensitive">Akusabucayi.</string>
+  <string name="sensitive_share_title">Yabelana ngento ebucayi?</string>
+  <string name="sensitive_share_body">Umaka lokhu njengokubucayi. Noma ngubani okutholayo angakugcina futhi akudlulisele phambili.</string>
+  <string name="sensitive_share_confirm">Yabelana</string>
+  <string name="sensitive_copy_title">Kopisha into ebucayi?</string>
+  <string name="sensitive_copy_body">Umaka lokhu njengokubucayi. Noma yini okunamathisela kuyo ithola ifayela uqobo lwalo.</string>
+  <string name="sensitive_copy_confirm">Kopisha</string>
+  <string name="sensitive_cancel">Khansela</string>
+  <string name="settings_section_previews">Ukubuka kuqala</string>
+  <string name="settings_blur_title">Fiphalisa ukubuka kuqala okubonakala kuyimfihlo</string>
+  <string name="settings_blur_hint">Kuzenzakalela, ngakho kungaba nephutha. Isithombe esincane kuphela esifiphalisiwe; ifayela lisatholakala. Thinta iso ukuze ulibonise.</string>
+  <string name="settings_blur_panel_title">Fiphalisa kusesho olusheshayo</string>
+  <string name="settings_blur_panel_hint">Kuzenzakalela, ngakho kungaba nephutha. Kuvuliwe ngokuzenzakalelayo lapha, ngoba iphaneli livuleka ngaphezu kwezinye izinhlelo zokusebenza. Ukubonisa isithombe kudinga ifoni yakho ingakhiywa.</string>
+  <string name="settings_blur_needs_pack">Kudinga isengezo esithi \"Fiphalisa ukubuka kuqala okubonakala kuyimfihlo\", ngezansi. Kuze kufakwe lokho, akukho okufiphaliswayo.</string>
+  <string name="action_show_picture">Bonisa isithombe</string>
+  <string name="preview_hidden">ukubuka kuqala kufihliwe, kungaba yimfihlo</string>
+  <string name="quick_unlock_to_show">Vula ifoni yakho ukuze ubonise lesi sithombe.</string>
+  <string name="quick_name">Ukusesha okusheshayo</string>
+  <string name="quick_shortcut_long">Sesha amafayela akho ngokushesha</string>
+  <string name="quick_widget_hint">Sesha amafayela akho</string>
+  <string name="quick_widget_description">Ibha yokusesha evula ukusesha okusheshayo kwe-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ngaphezu kohlelo lokusebenza olukulo.</string>
+  <string name="quick_hint">Sesha amafayela akho</string>
+  <string name="quick_close">Vala ukusesha okusheshayo</string>
+  <string name="quick_clear">Sula</string>
+  <string name="quick_nothing">Akukho okutholiwe kokuthi “%1$s”.</string>
+  <string name="quick_nothing_incomplete">I-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ifunda amafayela akho, ngakho lokhu kungashintsha.</string>
+  <string name="quick_not_set_up">I-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ayikawafundi amafayela akho okwamanje. Vula i-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ukuze uqale.</string>
+  <string name="quick_open_findr">Vula i-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="quick_still_meaning">Ifuna incazelo…</string>
+  <string name="quick_copied">Kukopishiwe. Namathisela engxoxweni.</string>
+  <string name="quick_copy_failed">Ayikwazanga ukukopisha leli fayela.</string>
+  <string name="quick_no_app">Ayikho i-app engavula leli fayela.</string>
+  <string name="quick_add_tile_title">Faka Ukusesha okusheshayo kuzilungiselelo ezisheshayo?</string>
+  <string name="quick_add_tile_body">Khona uzokwazi ukusesha amafayela akho kunoma iyiphi i-app ngokuswayipha kabili.</string>
+  <string name="quick_add_tile_yes">Faka ithayela</string>
+  <string name="quick_add_tile_no">Hhayi manje</string>
+  <string name="settings_storage_remove_named">Susa <xliff:g id="item" example="Speech pack">%1$s</xliff:g></string>
+  <string name="licences_show_named">Bonisa umbhalo ogcwele we-<xliff:g id="licence" example="Apache License 2.0">%1$s</xliff:g></string>
+  <string name="licences_hide_named">Fihla umbhalo ogcwele we-<xliff:g id="licence" example="Apache License 2.0">%1$s</xliff:g></string>
+  <string name="sheet_error_word">Inkinga</string>
+  <string name="switch_on">Kuvuliwe</string>
+  <string name="switch_off">Kucishiwe</string>
+  <string name="language_title">Khetha ulimi lwakho</string>
+  <string name="language_intro">Izikrini ze-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> zizoba ngalolu limi. Ungalushintsha ngokuhamba kwesikhathi kokuthi Izilungiselelo.</string>
+  <string name="language_system">Ulimi lwefoni</string>
+  <string name="language_system_hint">Ilandela izilungiselelo zefoni yakho</string>
+  <string name="language_preview">Ukubuka</string>
+  <string name="settings_language">Ulimi</string>
+  <plurals name="search_status_so_far">
+        
+    
+    <item quantity="one">%1$d kuze kube manje · incazelo maduze</item>
+    <item quantity="other">%1$d kuze kube manje · incazelo maduze</item>
+  </plurals>
+  <string name="search_status_words">Amagama manje · incazelo maduze</string>
+  <plurals name="search_status_found">
+        
+    
+    <item quantity="one">Kutholwe %1$d</item>
+    <item quantity="other">Kutholwe %1$d</item>
+  </plurals>
+  <string name="action_share_file">Yabelana nge-%1$s</string>
+  <string name="action_copy_file">Kopisha i-%1$s</string>
+  <string name="preview_hidden_words">Kubukeka kuyimfihlo · thinta ukuze ubone</string>
+  <string name="filter_group">Bonisa ukuthi imaphi amafayela</string>
+</resources>

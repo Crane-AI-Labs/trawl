@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <!-- Quick search panel: opened from the Quick Settings tile, the launcher shortcut or the home-screen widget. -->
+  <string name="quick_name">Quick search</string>
+  <string name="quick_shortcut_long">Quick search your files</string>
+  <string name="quick_widget_hint">Search your files</string>
+  <string name="quick_widget_description">A search bar that opens <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>\'s quick search over the app you are in.</string>
+  <string name="quick_hint">Search your files</string>
+  <string name="quick_close">Close quick search</string>
+  <string name="quick_clear">Clear</string>
+  <string name="quick_nothing">Nothing found for “%1$s”.</string>
+  <string name="quick_nothing_incomplete"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> is still learning your files, so this may change.</string>
+  <string name="quick_not_set_up"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> has not read your files yet. Open <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> to start.</string>
+  <string name="quick_open_findr">Open <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="quick_still_meaning">Looking for meaning…</string>
+  <string name="quick_copied">Copied. Paste it in the chat.</string>
+  <string name="quick_copy_failed">Could not copy this file.</string>
+  <string name="quick_no_app">No app can open this file.</string>
+  <string name="quick_add_tile_title">Add Quick search to your quick settings?</string>
+  <string name="quick_add_tile_body">Then you can search your files from any app with two swipes.</string>
+  <string name="quick_add_tile_yes">Add tile</string>
+  <string name="quick_add_tile_no">Not now</string>
+</resources>

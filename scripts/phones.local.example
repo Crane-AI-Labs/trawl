@@ -1,0 +1,16 @@
+# scripts/phones.local: YOUR phones and machines. Copy this file to scripts/phones.local (git-ignored) and edit it.
+# scripts/phone-lock.sh sources it (bash syntax) from, in order: $FINDR_PHONES_FILE, scripts/phones.local next to the script,
+# the main checkout's scripts/phones.local (so git worktrees find it), then ~/.config/trawl/phones.local. First one found wins.
+# Every setting is optional. Nothing here is ever committed.
+
+# The phone that scripts use when ANDROID_SERIAL is unset (list yours with `adb devices`).
+DEFAULT_SERIAL=
+# Phones that need an explicit go (FINDR_S24_OK=1) before a script may lock them: a phone that is not a test device.
+# Space-separated serials.
+PERSONAL_SERIALS=""
+# Where the lock files live (default: a "trawl-phone-locks" folder under $TMPDIR). Set it to share locks with other tools.
+LOCK_DIR=
+# A phone plugged into ANOTHER machine: the ssh host name (from your ~/.ssh/config) of that machine and the local port its adb
+# server is forwarded to. phone-lock.sh sets ADB_SERVER_SOCKET through the tunnel when FINDR_REMOTE_ADB=1.
+REMOTE_ADB_HOST=
+REMOTE_ADB_PORT=5038

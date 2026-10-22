@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="keep_action">Continuer l\'analyse</string>
+  <string name="keep_action_hint">Garde l\'écran allumé et assombri pour que <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> analyse vos fichiers quand vous n\'utilisez pas le téléphone. Idéal sur chargeur. Le téléphone reste déverrouillé : ne le faites que dans un lieu sûr.</string>
+  <string name="keep_heading"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> : analyse de vos fichiers</string>
+  <string name="keep_counts">%1$s sur %2$s fichiers analysés</string>
+  <string name="keep_time_left">Temps restant : %1$s</string>
+  <string name="keep_time_unknown">Calcul du temps nécessaire…</string>
+  <string name="keep_charging">En charge</string>
+  <string name="keep_on_battery">Sur batterie. C\'est plus rapide sur chargeur.</string>
+  <string name="keep_unlocked">L\'écran reste allumé et le téléphone déverrouillé pendant que <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> analyse vos fichiers. Ne le laissez que dans un lieu sûr.</string>
+  <string name="keep_tap_to_stop">Appuyez n\'importe où pour arrêter</string>
+  <string name="keep_stop_done_title">Terminé</string>
+  <string name="keep_stop_done"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> a fini l\'analyse de vos fichiers. Vous pouvez maintenant les rechercher.</string>
+  <string name="keep_stop_battery_title">Arrêté : batterie faible</string>
+  <string name="keep_stop_battery">La batterie est sous les 20 %. Branchez le chargeur, puis reprenez depuis l\'écran de progression.</string>
+  <string name="keep_stop_hot_title">Arrêté : téléphone trop chaud</string>
+  <string name="keep_stop_hot">Le téléphone a trop chauffé, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> s\'est arrêté pour le laisser refroidir. Vous pourrez reprendre plus tard.</string>
+  <string name="keep_stop_unplugged_title">Arrêté : chargeur débranché</string>
+  <string name="keep_stop_unplugged">Rebranchez le chargeur, puis reprenez depuis l\'écran de progression.</string>
+  <string name="keep_stop_charger_title">En attente du chargeur</string>
+  <string name="keep_stop_charger">Sur batterie, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ne réalise que les tâches légères, et c\'est fait. Branchez le chargeur, puis reprenez.</string>
+  <string name="keep_stop_paused_title">Arrêté : analyse en pause</string>
+  <string name="keep_stop_paused">Ouvrez l\'écran de progression dans <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> pour voir pourquoi et continuer.</string>
+  <string name="keep_screen_will_sleep">L\'écran va maintenant s\'éteindre tout seul, comme d\'habitude.</string>
+  <string name="keep_close">Fermer</string>
+</resources>

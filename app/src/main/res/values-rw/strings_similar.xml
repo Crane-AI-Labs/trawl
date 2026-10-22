@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="action_find_similar">Shaka ibisa na yo</string>
+  <string name="action_find_similar_help">Shaka ibisa na yo yerekana amafoto asa n\'iyi.</string>
+  <string name="similar_chip">Bisa na %1$s</string>
+  <string name="similar_remove">Hagarika gushaka ibisa na yo</string>
+  <string name="similar_nothing_body">Nta na kimwe mu mafayiro yawe gisa na %1$s kugeza ubu.</string>
+</resources>

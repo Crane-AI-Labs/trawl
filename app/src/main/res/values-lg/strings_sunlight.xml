@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="typing_learning">Kikyasoma: %1$s ku %2$s · ebizuuliddwa ebisingawo biyinza okulabika</string>
+  <string name="typing_learning_charger">Kikyasoma: %1$s ku %2$s · ebisigadde ng\'ossaako chaaja</string>
+  <string name="typing_learning_paused">Esomye %1$s ku %2$s okutuusa kati · ebizuuliddwa ebirala biyinza okulabika</string>
+  <string name="settings_colours">Langi</string>
+  <string name="colours_sunlight">Omusana</string>
+  <string name="colours_sunlight_hint">Langi y\'olupapula ey\'ebbugumu ne kyenvu kimu, byangu okusoma mu musana ogwaka.</string>
+  <string name="colours_wallpaper">Langi z\'ekifaananyi eky\'emabega</string>
+  <string name="colours_wallpaper_hint">Ekozesa langi z\'ekifaananyi kyo eky\'emabega, era zikyuka bwe kikyuka.</string>
+  <string name="settings_brightness">Ekitangaavu oba ezikirivu</string>
+</resources>

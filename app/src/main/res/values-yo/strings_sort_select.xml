@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="sort_best">Ìbámu tó dára jù</string>
+  <string name="sort_newest">Titun jù</string>
+  <string name="sort_oldest">Atijọ́ jù</string>
+  <string name="sort_largest">Tó tóbi jù</string>
+  <string name="sort_name">Orúkọ láti A sí Z</string>
+  <string name="sort_group">Tò nípa</string>
+  <string name="date_any_time">Nígbàkigbà</string>
+  <string name="date_group">Ọjọ́</string>
+  <string name="date_today">Òní</string>
+  <string name="date_yesterday">Àná</string>
+  <string name="date_this_week">Ọ̀sẹ̀ yìí</string>
+  <string name="date_last_week">Ọ̀sẹ̀ tó kọjá</string>
+  <string name="date_this_month">Oṣù yìí</string>
+  <string name="date_last_month">Oṣù tó kọjá</string>
+  <string name="date_this_year">Ọdún yìí</string>
+  <string name="date_last_year">Ọdún tó kọjá</string>
+  <string name="date_weekend">Òpin ọ̀sẹ̀ tó kọjá</string>
+  <string name="date_last_night">Alẹ́ àná</string>
+  <string name="date_this_morning">Òwúrọ̀ yìí</string>
+  <string name="date_this_afternoon">Ọ̀sán yìí</string>
+  <string name="date_this_evening">Ìrọ̀lẹ́ yìí</string>
+  <string name="date_yesterday_morning">Òwúrọ̀ àná</string>
+  <string name="date_yesterday_afternoon">Ọ̀sán àná</string>
+  <string name="date_yesterday_evening">Ìrọ̀lẹ́ àná</string>
+  <string name="date_pick_range">Yan àwọn ọjọ́…</string>
+  <string name="date_range">%1$s – %2$s</string>
+  <string name="date_remove">Yọ àlẹ̀mọ́ ọjọ́</string>
+  <string name="date_from_words">%1$s, láti inú àwọn ọ̀rọ̀ tí o fi wá</string>
+  <string name="date_picker_title">Yan ọjọ́ àkọ́kọ́ àti ọjọ́ ìkẹyìn</string>
+  <string name="date_picker_ok">Lò</string>
+  <plurals name="date_past_days">
+    
+    <item quantity="other">Ọjọ́ %d tó kọjá</item>
+  </plurals>
+  <plurals name="date_past_weeks">
+    
+    <item quantity="other">Ọ̀sẹ̀ %d tó kọjá</item>
+  </plurals>
+  <plurals name="date_past_months">
+    
+    <item quantity="other">Oṣù %d tó kọjá</item>
+  </plurals>
+  <plurals name="date_past_years">
+    
+    <item quantity="other">Ọdún %d tó kọjá</item>
+  </plurals>
+  <plurals name="date_ago_days">
+    
+    <item quantity="other">Ọjọ́ %d sẹ́yìn</item>
+  </plurals>
+  <plurals name="date_ago_weeks">
+    
+    <item quantity="other">Ọ̀sẹ̀ %d sẹ́yìn</item>
+  </plurals>
+  <plurals name="date_ago_months">
+    
+    <item quantity="other">Oṣù %d sẹ́yìn</item>
+  </plurals>
+  <plurals name="date_ago_years">
+    
+    <item quantity="other">Ọdún %d sẹ́yìn</item>
+  </plurals>
+  <string name="action_select">Yan</string>
+  <plurals name="select_count">
+    
+    <item quantity="other">%d ni a yàn</item>
+  </plurals>
+  <string name="select_all">Yan gbogbo rẹ̀</string>
+  <string name="select_none">Má yan ọ̀kan</string>
+  <string name="select_exit">Dá yíyan dúró</string>
+  <string name="select_share_limit">O lè pín fáìlì tó %d lẹ́ẹ̀kan.</string>
+  <string name="sensitive_share_body_many">Diẹ̀ lára àwọn wọ̀nyí ni a sàmì sí gẹ́gẹ́ bí ohun tó ṣe kókó. Ẹnikẹ́ni tó bá gbà wọ́n lè pa wọ́n mọ́, kí ó sì pín wọn síwájú.</string>
+  <string name="sensitive_copy_body_many">Diẹ̀ lára àwọn wọ̀nyí ni a sàmì sí gẹ́gẹ́ bí ohun tó ṣe kókó. Ibi èyíkéyìí tí o bá lẹ̀ wọ́n mọ́ yóò gba àwọn fáìlì náà fúnra wọn.</string>
+  <string name="snack_marked_sensitive_many">A ti sàmì sí wọn pé wọ́n ṣe kókó. Wọ́n ti fipamọ́ kúrò nínú àwọn àbájáde báyìí.</string>
+  <string name="snack_unmarked_sensitive_many">A ti yọ àmì náà kúrò lára wọn. Wọ́n lè tún hàn nínú àwọn àbájáde.</string>
+  <string name="nothing_in_dates">A kò rí ohunkóhun ní %1$s. Gbìyànjú ọjọ́ mìíràn.</string>
+</resources>

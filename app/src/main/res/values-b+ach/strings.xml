@@ -1,0 +1,459 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="kind_document">Waraga</string>
+  <string name="kind_pdf">PDF</string>
+  <string name="kind_photo">Cal</string>
+  <string name="kind_screenshot">Screenshot</string>
+  <string name="kind_video">Vidiyo</string>
+  <string name="kind_audio">Dwon</string>
+  <string name="kind_other">Fayil</string>
+  <string name="filter_all">Weng</string>
+  <string name="filter_photos">Cal</string>
+  <string name="filter_screenshots">Screenshots</string>
+  <string name="filter_videos">Vidiyo</string>
+  <string name="filter_documents">Waraga</string>
+  <string name="filter_audio">Dwon</string>
+  <string name="kind_plural_screenshots">Screenshots</string>
+  <string name="kind_plural_photos">Cal</string>
+  <string name="kind_plural_documents">Waraga ki PDF</string>
+  <string name="kind_plural_videos">Vidiyo</string>
+  <string name="kind_plural_audio">Dwon</string>
+  <string name="section_photos_videos">Cal ki vidiyo</string>
+  <string name="section_documents_text">Waraga ki coc</string>
+  <string name="section_recent_documents">Waraga manyen</string>
+  <string name="section_recent_photos_videos">Cal ki vidiyo manyen</string>
+  <string name="badge_page">p. %1$d</string>
+  <string name="badge_at_time">i %1$s</string>
+  <plurals name="pages_count">
+        
+    
+    <item quantity="one">Pot waraga %d</item>
+    <item quantity="other">Pot waraga %d</item>
+  </plurals>
+  <string name="action_open">Yab</string>
+  <string name="action_share">Nywak</string>
+  <string name="action_copy">Kopi</string>
+  <string name="action_show_folder">Nyut i folda</string>
+  <string name="action_more">Tic mukene</string>
+  <string name="snack_copied">Kikopi woko</string>
+  <string name="meter_title_not_started">Pud pe tye ka kwano</string>
+  <string name="meter_title_scanning">Tye ka yenyo i cim megi</string>
+  <string name="meter_title_indexing">Tye ka kwano fayil megi</string>
+  <string name="meter_title_up_to_date">Weng otum</string>
+  <string name="meter_title_error">Bal mo otimme</string>
+  <string name="meter_sub_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> bicakke ka twero neno fayil megi.</string>
+  <string name="meter_sub_scanning">Onongo fayil %1$s nio kombeddi.</string>
+  <string name="meter_sub_names_first">Nying ki lok kong mukwongo, wek dong itwer yenyo.</string>
+  <string name="meter_sub_progress_eta">%1$s i kin %2$s oniang · odong cokki %3$s</string>
+  <string name="meter_sub_progress_estimating">%1$s i kin %2$s oniang iye · tye ka poro kare</string>
+  <string name="meter_sub_needs_charger">Nying ki lok kombedi. Niang te lok cakke ka icayo cim.</string>
+  <string name="meter_sub_reembed">Tye ka yubu cal pi cal manyen: %1$s i kin %2$s. Yenyo medde ki tic.</string>
+  <string name="meter_sub_reembed_eta">Tye ka yubu cal pi cal manyen: %1$s i kin %2$s · odong kadi %3$s</string>
+  <string name="meter_sub_reembed_battery">Tye ka yubu cal pi cal manyen: %1$s i kin %2$s. Mukene bimedde ka icayo cim.</string>
+  <string name="meter_sub_light_reading">Tye ka kwano cal megi pi yenyo oyotoyot. Berne ducu bitum ka icayo cim.</string>
+  <string name="meter_sub_light_done">Jami ducu twero yenyo kombedi. Berne ducu bitum ka icayo cim.</string>
+  <string name="meter_sub_paused">%1$s i kin %2$s oniang iye. Yenyo pud tiyo.</string>
+  <string name="meter_sub_up_to_date">Fayil %1$s tye atera pi yenyo.</string>
+  <string name="meter_sub_error">Dii pi ngec mukene.</string>
+  <string name="meter_a11y">%1$s. %2$s. Pacent %3$d oniang iye.</string>
+  <string name="meter_open_details">Nyut ngec ikom kwano</string>
+  <string name="pause_not_charging">Tye ka kuro caya</string>
+  <string name="pause_not_charging_detail">Kwano jami ducu i rwom mabecalo tiyo ki batiri madwong, pi meno <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> timo bute meno ka cim tye ka caye. Yenyo tiyo i kare man.</string>
+  <string name="pause_too_hot">Tye ka ngic</string>
+  <string name="pause_too_hot_detail">Cim lyet, pi meno <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> tye ka yweko matin me gwoke. Bimede kene ka cim ongic.</string>
+  <string name="pause_battery_low">Batiri nok</string>
+  <string name="pause_battery_low_detail">Batiri tye i te 30%%, pi meno <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kwano nying ki lok keken me gwoko man madong. Bimede kene ka cim ocaye.</string>
+  <string name="pause_user">I juko woko</string>
+  <string name="pause_user_detail">Kikwano kijuko woko. Yenyo pud tiyo i kom gin ma <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> opwonyo paka kombedi.</string>
+  <string name="pause_no_permission">Mito twero me neno fayil megi</string>
+  <string name="pause_no_permission_detail"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> pe twero neno fayil megi nio ka imiye twero me neno fayil ducu. Kwano keken dok pe loko gin mo.</string>
+  <string name="pause_storage_low">Kaka me cim tye cok opong</string>
+  <string name="pause_storage_low_detail"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> mito kabedo matin me gwoko kwano meere. Wek kabedo mo ci bimede.</string>
+  <string name="action_pause">Juk</string>
+  <string name="action_resume">Medde</string>
+  <string name="action_read_on_battery">Pud ikwan i batiri</string>
+  <string name="action_allow_access">Mii twero</string>
+  <string name="action_free_space">Yab kabedo</string>
+  <string name="action_retry">Tem doki</string>
+  <string name="eta_under_minute">i te dakika acel</string>
+  <string name="eta_minutes">%d min</string>
+  <string name="eta_hours_single">%d h</string>
+  <string name="eta_hours_range">%1$d nio %2$d h</string>
+  <string name="eta_while_charging">%1$s ka tye i caya</string>
+  <string name="sheet_title">Tye ka kwano fayil megi</string>
+  <string name="sheet_detail_up_to_date">Fayil ducu ma <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> twero neno tye atera. Manyen bikwanyogi ka ginyuto.</string>
+  <string name="sheet_detail_scanning"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> tye ka yubu lanyut me fayil megi. Man tero dakika acel nyo aryo.</string>
+  <string name="sheet_detail_light_on_battery">Kikwano nying ki lok kombedi dok kineno cal oyot, pi meno yenyo tiyo con. Berne ducu, ma miyo adwogi maber loyo, bitum ka cim tye ka caye.</string>
+  <string name="sheet_detail_needs_charger">Kitye ka kwano nying ki lok kombedi, pi meno yenyo tiyo con. Niang te cal ki waraga cakke ka cim tye ka caye.</string>
+  <string name="sheet_detail_indexing">Nying ki lok kong gikwano mukwongo, wek yenyo oti oyotoyot. Niang gin ma tye i cal ki waraga tero kare malac, dok ber loyo ka gitimo i dye-wor ka tye i caja.</string>
+  <string name="sheet_detail_error">Kwano ogik aleya. Adwogi ma ikwongo nongo tye maber.</string>
+  <string name="sheet_detail_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> pud pe ocako kwano.</string>
+  <string name="sheet_by_kind">Pi kit me fayil</string>
+  <string name="sheet_reading_now">Tye ka kwano kombedi</string>
+  <string name="sheet_resumes_by_itself">Bimede kene ka kiyubo man.</string>
+  <string name="level_searchable">Twero yenyo ki nying ki lok</string>
+  <string name="level_searchable_hint">Oyot. Weko inongo fayil ki gin ma kicoyo iye.</string>
+  <string name="level_understood">Kiniang gonye</string>
+  <string name="level_understood_hint">Mot. Weko inongo fayil ki lok ma tye iye.</string>
+  <string name="level_quicklook">Neno me oyotoyot: cal ki vidiyo</string>
+  <string name="level_quicklook_hint">Oyot. Model matidi nongo cal ki gin ma tye iye, pi yenyo i Leb Munu. Lok ducu bileye ka kiniang cal acel acel.</string>
+  <string name="meter_quicklook">Neno me oyotoyot: %1$s i kin cal %3$s · Lok ducu: %2$s i kin %3$s</string>
+  <string name="level_a11y">%1$s: %2$s i kin %3$s</string>
+  <string name="count_of">%1$s i kin %2$s</string>
+  <string name="stat_time_left">Kare ma odong</string>
+  <string name="stat_speed">Dwir</string>
+  <string name="stat_index_size">Dit me kwano</string>
+  <string name="stat_model_size">Dit me model</string>
+  <string name="stat_when_charging">Cako ka tye i caja</string>
+  <string name="stat_estimating">Tye ka tamo</string>
+  <string name="stat_measuring">Tye ka pimo</string>
+  <string name="stat_done">Otum</string>
+  <string name="stat_rate_value">%1$s fayil/cawa</string>
+  <string name="onb_next">Mede anyim</string>
+  <string name="onb_back">Cen</string>
+  <string name="onb_start">Cak <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="onb_start_locked"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> mito twero me fayil ducu ma pud pe ocako</string>
+  <string name="onb_allow_access">Ye twero me fayil</string>
+  <string name="onb_page_of">Rwom %1$d i kin %2$d</string>
+  <string name="welcome_line"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yenyo Waraga, Cal ki cal me wang cim megi kun lube ki gin ma tye iye ki ma ginyuto.</string>
+  <string name="welcome_point_ai_body">AI ma niang fayil megi tiyo i cim man. Pe kicwalo gin mo bot seva.</string>
+  <string name="welcome_point_reads_title">Kwano fayil megi keken</string>
+  <string name="welcome_point_reads_body">Pe loko, diro nyo kwanyo gin mo woko. Iromo kwanyo woko gin ma opwonyo cawa mo keken.</string>
+  <string name="onb_choose_folders">Yer folda</string>
+  <string name="onb1_eyebrow">Mung kicel</string>
+  <string name="onb1_title">Fayil megi pe a woko i cim man matwal.</string>
+  <string name="onb1_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> nongo waraga, PDF, cal me skrin, cal, cal me nyero ki vidiyo ki gin ma giwaco ki gin ma ginyuto. Gin ducu time kany, i cim man.</string>
+  <string name="onb1_point_internet_title">Pe tye ki twero me intanɛt</string>
+  <string name="onb1_point_internet_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> pe twero kubbe ki intanɛt matwal. Android kene gengone me cwal gin mo woko.</string>
+  <string name="onb1_point_model_title">AI tye i cim megi</string>
+  <string name="onb1_point_model_body">Model ma niang fayil megi, EmbeddingGemma 2 pa Google, tiyo i cim man. Pe gicwalo gin mo i kom saba wek kiniang.</string>
+  <string name="onb1_point_delete_title">In aye itye ki twero</string>
+  <string name="onb1_point_delete_body">Keng folda mo keken, onyo kwany woko gin ducu ma <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> otyeko kwano, ka imito.</string>
+  <string name="onb2_eyebrow">Gin ma time i ngeye</string>
+  <string name="onb2_title">Yenyo tiyo i dakika manok. Niang tero dye-wor.</string>
+  <string name="onb2_step1_title">I dakika manok</string>
+  <string name="onb2_step1_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yubo lanying me fayil megi ci kwano nyinggi ki lok ma tye i igi. Iromo yenyo cutcut.</string>
+  <string name="onb2_step2_title">I cawa ma lubo</string>
+  <string name="onb2_step2_body">Ci niang gin ma cal ki waraga ki acel acel obedo, wek yenyo calo “risiti me cukul” onong en ma atir kadi bed lok meno pe iye. Man obedo tic mamot pi cim.</string>
+  <string name="onb2_step3_title">Pol kare ka tye ka cajo</string>
+  <string name="onb2_step3_body">Me gwoko batiri megi, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> tiyo but tic mamot-ti ka tye i caja. Weke i cajan pi dye-wor kicel. Iromo neno citte, juko, onyo loko man cawa mo keken.</string>
+  <string name="onb3_eyebrow">Twero aryo</string>
+  <string name="onb3_title">Ye ki <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> me neno fayil megi</string>
+  <string name="onb3_files_title">Twero me fayil ducu</string>
+  <string name="onb3_files_body">Mitte me neno fayil i folda ducu, calo waraga me WhatsApp. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kwano akwana keken. Pe loko, kobo onyo kwanyo woko gin mo.</string>
+  <string name="onb3_files_action">Yab yub</string>
+  <string name="onb3_files_granted">Kiye</string>
+  <string name="onb3_files_hint">I lanying ma yabbere, yab “Ye twero me loyo fayil ducu”, ci idwog cen.</string>
+  <string name="onb3_notif_title">Gikwena (ka imito)</string>
+  <string name="onb3_notif_body">Wek <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> otitti ka otyeko kwano keken. Pe gin mukene.</string>
+  <string name="onb3_notif_action">Ye</string>
+  <string name="onb3_notif_granted">Kiye</string>
+  <string name="onb4_eyebrow">Mede mogo (ka imito)</string>
+  <string name="onb4_title">Med mede?</string>
+  <string name="onb4_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> tiyo labongo magi. Gin acel acel yubo gin mo obed maber. Gin acel acel obedo fayil ma ikopo i Downloads, pien <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> pe donyo i intanete.</string>
+  <string name="onb4_add">Med</string>
+  <string name="onb4_not_now">Pe kombeddi</string>
+  <string name="onb4_added">Kimedo</string>
+  <string name="onb4_skipped">Gikalo. Iromo medo lacen.</string>
+  <string name="onb4_footer">Iromo loko man lacen i Yub → Mede.</string>
+  <string name="search_hint">Yenyo fayil megi</string>
+  <string name="search_hint_a11y">Yenyo fayil megi ki gin ma giwaco onyo ginyuto</string>
+  <string name="search_clear">Jwa yenyo</string>
+  <string name="search_searching">Tye ka yenyo</string>
+  <string name="search_settings">Yub</string>
+  <string name="search_nothing_title">Pe gin mo ma ononge</string>
+  <string name="search_nothing_body">Pe fayil mo ma rwate ki “%1$s”.</string>
+  <string name="search_nothing_try_all">Tem lok manok onyo mapat, onyo iyen Ducu.</string>
+  <string name="search_nothing_incomplete"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> pud tye ka kwano fayil megi, pi meno man romo lokke. Tem doki lacen manok.</string>
+  <string name="search_repairing_note">Yenyo tye ka yube kene. Nying ki wec pud tiyo; yenyo ki te lok bi dwogo i dakika manok.</string>
+  <string name="search_incomplete_note">Nying ki lok tiyo kombeddi. Yenyo pi te lok pud tye ka kwano, wek gin marwate mukene romo nen.</string>
+  <string name="search_incomplete_note_charger">Nying ki lok tiyo kombeddi. Yenyo pi te lok (calo “boda” pi cal me pikipiki) cakkere ka cim tye ka cajo.</string>
+  <string name="search_weak_toggle">Marwate manok (%1$d)</string>
+  <string name="search_weak_only">Pe gin ma rwate matek. Magi aye ma cok loyo.</string>
+  <string name="search_weak_expand">Nyut marwate manok</string>
+  <string name="search_weak_collapse">Kan adwogi ma goro</string>
+  <string name="search_fresh_title">Peke gin mo me nyuto pud</string>
+  <string name="search_fresh_body">Ka ceng <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> oneno fayil megi, manyen gubinen kany. Co malo me yenyo.</string>
+  <string name="search_recent_empty_filter">Fayil ma kit man peke pud.</string>
+  <string name="access_banner_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> pud pe twero neno fayil megi</string>
+  <string name="access_banner_body">Mii twero me fayil ducu wek okwan-gi. Pe loko gin mo matwal.</string>
+  <string name="snack_no_app">Peke app mo i cim man ma twero yabo fayil man.</string>
+  <string name="snack_sample">Man obedo fayil me labol, pe gitwero yabo.</string>
+  <string name="settings_title">Yub</string>
+  <string name="settings_back">Dok cen</string>
+  <string name="settings_section_reading">Kwano</string>
+  <string name="learn_speed_title">Sipid me ma kwano</string>
+  <string name="learn_gentle">Dok dok</string>
+  <string name="learn_gentle_hint">Kwano keken ka tye ka keto mac, ki tic matidi. Batiri ki yat matidi; gin manyen weko ka kuro keto mac.</string>
+  <string name="learn_balanced">Ma romo</string>
+  <string name="learn_balanced_hint">Yoo ma kitiyo kwede. Keto mac kwano cal ducu ma tye i simu ni; ka tye ki batiri, fayil manyen ki neno me oyotoyot keken tiyo.</string>
+  <string name="learn_fast">Oyotoyot</string>
+  <string name="learn_fast_hint">Kwano gin ducu ki ka tye ki batiri bene, ki kuro keken ka i tiyo ki app mukene. Giko oyotoyot, tiyo ki batiri mapol, dok ma yat.</string>
+  <string name="settings_section_kinds">Gin ma kikwano</string>
+  <string name="settings_recordings">Lok mako dwon ki rikodi</string>
+  <string name="settings_recordings_hint">Kwano gin ma kiwaco ki gin ma kiwinyo, wek itwer yenyo-gi.</string>
+  <string name="settings_deeper">Yenyo dwon matut (mot): wer ki dwon mukene</string>
+  <string name="settings_deeper_hint">Nono dwon kit ma gitye kwede, pe ki lok keken. Kwanyo sekon 15 me kwano pi dakika acel acel me dwon i cim ma piny.</string>
+  <string name="settings_section_addons">Mede</string>
+  <string name="addons_intro">Gin ameda ma weko yenyo bedo maber. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> pe donyo i intanet matwal, pi meno acel acel obedo fayil ma ikopo i Downloads kong. Gin ducu gbedo i cim man.</string>
+  <string name="addons_status_not_added">Pe kimedo</string>
+  <string name="addons_status_adding">Tye ka medo</string>
+  <string name="addons_status_added">Kimedo</string>
+  <string name="addons_status_soon">Bino oyot</string>
+  <string name="addons_size">Ditne: %1$s</string>
+  <string name="addons_add">Med</string>
+  <string name="addons_add_with_size">Med (%1$s)</string>
+  <string name="addons_remove">Kwany, gonyo %1$s</string>
+  <string name="addons_on">Tye</string>
+  <string name="addons_off">Kijuko</string>
+  <string name="addons_adding_pct">Tye ka roto dok medo… %1$d%%</string>
+  <string name="addons_adding">Tye ka roto dok medo…</string>
+  <string name="addons_try_again">Tem doki</string>
+  <string name="addons_soon_hint">Pud pe oyubbe. Bibino kany ka oyubbe.</string>
+  <string name="addons_problem_not_found"><xliff:g id="app_name" example="Trawl">%2$s</xliff:g> pe onono %1$s i Downloads. Kop kunnu, ka item doki.</string>
+  <string name="addons_problem_access"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> mito twero me fayil ducu me kwano Downloads. Yab, ka item doki.</string>
+  <string name="addons_problem_bad">Fayil ma i Downloads oballe onyo pe tye kakare, pi meno <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> pe otiyo kwede. Kop doki, ka item doki.</string>
+  <string name="addons_problem_unavailable">Mede man pud pe twero medde i kit man.</string>
+  <string name="addons_add_title">Med %1$s</string>
+  <string name="addons_add_install">Ket</string>
+  <string name="addons_remove_title">Kwany %1$s woko?</string>
+  <string name="addons_remove_body">Man gonyo %1$s dok neke woko. Lok ki te lok ma <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> dong okwano bibedo tye nio ka gikwano fayil magi odoco. Itwero medo odoco cawa mo keken.</string>
+  <string name="addons_remove_confirm">Kwany woko</string>
+  <string name="settings_section_excluded">Folda mukalo woko</string>
+  <string name="settings_excluded_hint"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> pe bikwano gin mo keken i iye folda magi.</string>
+  <string name="settings_excluded_empty">Pe tye. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kwano folda ducu ma twero neno.</string>
+  <string name="settings_excluded_remove">Wek kalo %1$s</string>
+  <string name="settings_excluded_bad">Pe itwero yero folda meno ki kany. Yer acel ki i kabedo me kano jami i cim.</string>
+  <string name="onb_scope_eyebrow">Yer megi</string>
+  <string name="scope_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> myero oyeny ngo?</string>
+  <string name="scope_intro">Nek gin mo keken ma pe imito ni kinongi. Fayil mege biweko yenyo cutcut, dok bidwogo ka iyabo kicel cen.</string>
+  <string name="scope_counts_unknown">Kwan pa fayil binen ka <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> twero neno fayil megi.</string>
+  <string name="scope_private">Folda mukanne, folda ma kiketo calo .nomedia ki folda me mung pa purugram mukene pe gikwano matwal.</string>
+  <string name="scope_added_title">Folda ma imedo</string>
+  <string name="scope_add">Med folda</string>
+  <string name="scope_added_remove">Wek yenyo %1$s</string>
+  <string name="scope_exclude">Kal folda woko</string>
+  <plurals name="scope_files">
+        
+    
+    <item quantity="one">Fayil %1$s</item>
+    <item quantity="other">Fayil %1$s</item>
+  </plurals>
+  <string name="scope_group_camera">Kamera</string>
+  <string name="scope_group_screenshots">Cal me wang cim</string>
+  <string name="scope_group_whatsapp_images">Cal me WhatsApp</string>
+  <string name="scope_group_whatsapp_video">Vidiyo me WhatsApp</string>
+  <string name="scope_group_whatsapp_documents">Waraga me WhatsApp</string>
+  <string name="scope_group_whatsapp_voice">Dwon me WhatsApp</string>
+  <string name="scope_group_whatsapp_status">Status me WhatsApp</string>
+  <string name="scope_group_downloads">Jami ma kigamo</string>
+  <string name="scope_group_documents">Waraga</string>
+  <string name="scope_group_music">Wer ki dwon ma kimako</string>
+  <string name="scope_group_other">Folda mukene</string>
+  <string name="settings_section_storage">Kabedo ma kitiyo kwede</string>
+  <string name="settings_storage_index">Kwano me yenyo</string>
+  <string name="settings_storage_model">Model me AI</string>
+  <string name="settings_delete">Kwany gin ducu ma <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ngeyo woko</string>
+  <string name="settings_delete_hint">Kwanyo gin ma <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> okwano ki i fayil megi woko, ki fayil me tutuno. Fayil megi kikome pe gigudo.</string>
+  <string name="settings_delete_title">Kwany gin ducu ma <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ngeyo woko?</string>
+  <string name="settings_delete_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kwanyo kwan me fayil megi kombeddi: nying-gi, lok ma tye i waraga megi, coc ma okwano ki i cal ki cal me wang cim, lok ma ocoyo ki i vidiyo ki dwon ma kimako, ki ngo ma AI mege oketo pi fayil ki acel acel. Fayil me tutuno ki ripot me peko bene gibiceto.\n\nFayil megi kikome pe gigudo. Yub megi bibedo tye, kwoce ki folda ma ikalo woko.\n\n<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ci biweko kwano. Yenyo bibedo nono nio ka idiyo Medo anyim.</string>
+  <string name="settings_delete_done">Kikwany %1$s woko. <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> kijuko nio ka idiyo Medo anyim.</string>
+  <string name="settings_storage_model_hint">Mitte pi yenyo te lok.</string>
+  <string name="settings_storage_index_hint">Database ki rikod meere.</string>
+  <string name="settings_storage_estimate">Ka kikwano fayil ducu</string>
+  <string name="settings_storage_estimate_value">Rom %1$s</string>
+  <string name="settings_storage_memory">Memory ka tye ka yenyo</string>
+  <string name="settings_storage_memory_hint">Tiyo kwede keken ka <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> tye kayabe. Rom %1$s ka kikwano fayil ducu.</string>
+  <string name="settings_storage_remove">Kwany</string>
+  <string name="settings_storage_no_data"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> pe tiyo ki data me cim matwal: pe tye ki twero me donyo i intanet.</string>
+  <string name="settings_delete_confirm">Kwany woko</string>
+  <string name="settings_cancel">Juki</string>
+  <string name="settings_section_appearance">Nen</string>
+  <string name="settings_theme_system">Sistem</string>
+  <string name="settings_theme_light">Maler</string>
+  <string name="settings_theme_dark">Col</string>
+  <string name="report_card_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ogik atura. Cwal ripot me konyo yube?</string>
+  <string name="report_card_body">Ripot man pe tye ki nying fayil, yenyo onyo lok mogo ki i fayil megi. Ikwano kong, dok pe kicwalo gin mo nio ka idiyo Cwal i app me email mamegi.</string>
+  <string name="report_send">Cwal</string>
+  <string name="report_not_now">Pe kombeddi</string>
+  <string name="report_view">Nen ripot</string>
+  <string name="report_close">Lor</string>
+  <string name="report_send_email">Cwal ki email</string>
+  <string name="report_send_whatsapp">Cwal i WhatsApp</string>
+  <string name="report_send_whatsapp_file">Cwal ripot ducu i WhatsApp</string>
+  <string name="report_no_email">Pe onongo app me email i cim man. Tii ki Nen ripot me kwane, onyo ket app me email.</string>
+  <string name="report_no_whatsapp">Pe otwere me yabo WhatsApp.</string>
+  <string name="report_building">Tye ka yubo ripot…</string>
+  <string name="report_dialog_title">Ripot me peko</string>
+  <string name="report_dialog_hint">Man aye gin ducu ma kicwalo. Fayil megi, folda ki yenyo pe tye iye.</string>
+  <string name="settings_section_report">Cwal ripot me peko</string>
+  <string name="settings_report_hint">Yabo app me email mamegi ki ripot ma oyubbe me acwala. Tye ki kit cim ki kod me <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>, ki bal ducu ma <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> oneno, labongo nying fayil, yenyo onyo lok mogo ki i fayil megi. Ikwano kong, dok pe kicwalo gin mo nio ka idiyo Cwal iye.</string>
+  <string name="settings_report_note">Ngo ma oballe? (ka imito)</string>
+  <string name="settings_report_kept"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kano ripot ma pe kato 10 i cim man, rom 100 KB. “Kwany gin ducu ma <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ngeyo woko” kwanyo gi woko.</string>
+  <string name="settings_section_about">Lok ikom</string>
+  <string name="settings_about_version">Kod %1$s</string>
+  <string name="settings_about_model">Yenyo tiyo ki EmbeddingGemma 2 pa Google (Apache 2.0), i cim man keken.</string>
+  <string name="settings_about_private"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> pe tye ki twero me donyo i intanet. Fayil megi ki gin ma en opwonyo ki iye pe aaka i cim man matwal.</string>
+  <string name="settings_about_maker">Crane AI Labs aye oyubo.</string>
+  <string name="settings_licences">Laicens ki deyo</string>
+  <string name="licences_title">Laicens ki deyo</string>
+  <string name="licences_intro"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kiyubo ki tic ma ite kany. Ngec magi kimito pi laicens, dok aye yo ma wawaco kwede ni apwoyo.</string>
+  <string name="licences_section_required">Ngec</string>
+  <string name="licences_section_components">Jami mukene ducu i <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="licences_section_texts">Coc me layisens ducu</string>
+  <string name="licences_show">Nyut coc ducu</string>
+  <string name="licences_hide">Kan coc ducu</string>
+  <string name="settings_close">Lor</string>
+  <string name="pack_size_mb">%1$d MB</string>
+  <string name="pack_speech_name">Yenyo lok</string>
+  <string name="pack_speech_benefit">Nongo gin ma kiwaco i vidiyo ki kwena me dwon: fayil ma atir kong kare %1$d%% me kaka %2$d%%.</string>
+  <plurals name="pack_speech_cost">
+        
+    
+    <item quantity="one">Medo sekon %1$d i daki acel me vidiyo ka tye ka kwano. Lok me Muno keken kombedi.</item>
+    <item quantity="other">Medo sekon %1$d i daki acel me vidiyo ka tye ka kwano. Lok me Muno keken kombedi.</item>
+  </plurals>
+  <string name="pack_quicklook_name">Neno cal oyot</string>
+  <plurals name="pack_quicklook_benefit">
+        
+    
+    <item quantity="one">Weko kiromo yenyo cal megi weng pi tegi i kin daki me kaka cawa: cal ma romo %1$s i cawa acel me kaka %2$d i cim ma nongo tye yot (yenyo me Muno). Lok mapol tye ka mede i ngeye.</item>
+    <item quantity="other">Weko kiromo yenyo cal megi weng pi tegi i kin daki me kaka cawa: cal ma romo %1$s i cawa acel me kaka %2$d i cim ma nongo tye yot (yenyo me Muno). Lok mapol tye ka mede i ngeye.</item>
+  </plurals>
+  <string name="pack_quicklook_cost">Yenyo me Muno keken: yenyo i leb mukene kuro kwano weng. Kwano weng galle ki romo %1$d%% ka tye ka tic, dok tiyo ki kabedo mukene manok ka tye ka kwano.</string>
+  <string name="pack_privacy_name">Um neno me cal me mung</string>
+  <string name="pack_privacy_benefit">Lworo neno matidi me cal ma nen calo me mung (bedo butu, bongi iye), wek ngat ma ngiyo skrin onen manok. Dii neno me nyutto. Lworo alwora: pe gigwoko onyo gikobo gin mo i adwogi.</string>
+  <string name="pack_privacy_cost">Twalero tero bal yo ducu, dok cal me yotkom (kute, min latin ma tye ka dotho) twero lwore. Kwano cal i ngwec kulu ka cim tye ka caji, dok galle kwano weng ki romo %1$d%% ka tye ka tic.</string>
+  <string name="pack_privacy_recommended">Kimi tam me tic kwede ka itiyo ki but yenyo oyot</string>
+  <string name="pack_how_to_add_downloads"><xliff:g id="app_name" example="Trawl">%3$s</xliff:g> pe donyo i intanet matwal, pi meno pe twero gamo man kene. Gam fayil %1$s (%2$s) ki i Crane AI Labs ci kopy i folda me Downloads me cim man. Ingeye dii Ket iye: <xliff:g id="app_name" example="Trawl">%3$s</xliff:g> roto fayil ci medo. Itwero kwanyo woko .zip i ngeye.</string>
+  <string name="pack_how_to_add_play">Play bi kelo %1$s (%2$s) ka idiyo Ket iye. Petye gin mukene me atima.</string>
+  <string name="notif_channel_name">Kwano cim megi</string>
+  <string name="notif_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> tye ka kwano cim megi</string>
+  <string name="notif_getting_ready">Tye ka yubbe…</string>
+  <string name="notif_reading_photo">Kwano cal</string>
+  <string name="notif_reading_screenshot">Kwano cal me skrin</string>
+  <string name="notif_reading_video">Kwano vidiyo</string>
+  <string name="notif_reading_document">Kwano waraga</string>
+  <string name="notif_reading_recording">Kwano dwon ma kigwoko</string>
+  <string name="notif_reading_file">Kwano fayil</string>
+  <string name="notif_waiting_polite">Tye ka kuro ka in tiyo ki cim</string>
+  <string name="chip_label_action">%1$s  ·  %2$s</string>
+  <string name="a11y_description_note">%1$s. %2$s</string>
+  <string name="meter_a11y_extra">%1$s %2$s.</string>
+  <string name="message_then_sentence">%1$s %2$s</string>
+  <string name="lock_title">Kigedo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="lock_body">Yab ki lwak-lwak cing cimmi, wang, PIN nyo kit me lonyo.</string>
+  <string name="lock_button">Yab</string>
+  <string name="quick_device_locked">Yab cimmi me yenyo.</string>
+  <string name="lock_prompt_title">Yab <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="lock_prompt_subtitle">Tii ki lageng wang cimmi</string>
+  <string name="settings_section_privacy">Mung</string>
+  <string name="privacy_lock_title">Ged <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="privacy_lock_hint">Peny pi lwak-lwak cing, wang, PIN nyo kit me lonyo ma peya onyuto gin mo keken.</string>
+  <string name="privacy_lock_needs_screen_lock">Ket lageng wang cim mukwongo (Yub, Kwo maber). <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> tiyo ki layab acel-lu.</string>
+  <string name="privacy_lock_on_prompt">Cak gedo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="privacy_lock_off_prompt">Juk gedo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="privacy_lock_after_title">Dok iged i nge</string>
+  <string name="privacy_lock_after_now">Kare ducu</string>
+  <string name="privacy_lock_after_minutes">%1$d min</string>
+  <string name="privacy_lock_after_hint">Kare ma <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> twero bedo kwede i nget-te ma peya openyo doki. Dok bene gede ka wang cim onek.</string>
+  <string name="privacy_recents_title">Kan <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> i kin jami manyen</string>
+  <string name="privacy_recents_hint">Wiye pa <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> bedo nono i kin jami manyen. Gin marac: kigengo mako cal me wang cim pa <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> bene.</string>
+  <string name="privacy_show_title">Nyut adwogi me mung</string>
+  <string name="privacy_show_hint">Kineko: fayil ma iketo calo me mung, ki fayil ma i folda me mung, pe binyutere i adwogi nio ka iyabo.</string>
+  <string name="privacy_show_prompt">Nyut adwogi me mung</string>
+  <string name="privacy_pin_note">Ngat mo keken ma ngeyo PIN me cimmi twero neno adwogi me mung. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> pe ki PIN mere kikome.</string>
+  <string name="privacy_no_screen_lock_note">Cimmi pe ki lageng wang cim, pi meno ngat mo keken ma omako twero yabo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ci neno jami ducu. Ket lageng wang cim me gwoko.</string>
+  <string name="privacy_folders_title">Folda me mung</string>
+  <string name="privacy_folders_hint">Jami ducu ma i folda me mung kiterogi calo me mung. Pe calo folda ma kikwanyo woko, man pud gikwano, wek itwer yenyo i nge yabo.</string>
+  <string name="privacy_folders_empty">Folda me mung pe.</string>
+  <string name="privacy_folders_add">Med folda me mung</string>
+  <string name="privacy_folders_bad">Pe twere me keto folda meno me mung. Yer folda ma i kano mukwongo pa cim.</string>
+  <string name="privacy_folders_remove">Juk tero %1$s calo me mung</string>
+  <string name="privacy_folders_remove_prompt">Ket folda wek pe obed me mung</string>
+  <string name="onb_lock_title">Ged <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> (ka imito)</string>
+  <string name="onb_lock_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> twero penyo pi lwak-lwak cing cimmi, wang, PIN nyo kit me lonyo ma peya onyuto gin mo, wek ngat mo keken ma omako cim pe otwer yenyo. Itwero loko man i Yub.</string>
+  <string name="onb_lock_action">Cak gedo</string>
+  <string name="onb_lock_on">Gedo tye ka tiyo</string>
+  <string name="onb_lock_no_screen_lock">Cimmi pud pe ki lageng wang cim. Ket acel i Yub me cim me tiyo ki man.</string>
+  <string name="privacy_hidden_chip">%1$d mukanne</string>
+  <string name="privacy_hidden_action">Nyut</string>
+  <plurals name="privacy_hidden_chip_description">
+        
+    
+    <item quantity="one">Adwogi me mung %1$d tye mukanne. Dii tyen aryo me yabo ki nyutone.</item>
+    <item quantity="other">Adwogi me mung %1$d tye mukanne. Dii tyen aryo me yabo ki nyutogi.</item>
+  </plurals>
+  <string name="privacy_shown_chip">Kinyuto adwogi me mung</string>
+  <string name="privacy_shown_action">Kan</string>
+  <string name="privacy_reveal_title">Nyut adwogi me mung</string>
+  <string name="privacy_reveal_subtitle">Ti ki loka me wang cim ma megi</string>
+  <string name="action_mark_sensitive">Ket ni me mung</string>
+  <string name="action_unmark_sensitive">Pe me mung</string>
+  <string name="snack_marked_sensitive">Kiketo ni me mung. Dong tye mukanne ki i adwogi.</string>
+  <string name="snack_unmarked_sensitive">Dong pe me mung.</string>
+  <string name="sensitive_share_title">Nywak jami me mung?</string>
+  <string name="sensitive_share_body">Iketo man ni me mung. Ngat ma gamo twero gwoko ki nywako bot ngat mukene.</string>
+  <string name="sensitive_share_confirm">Nywak</string>
+  <string name="sensitive_copy_title">Kop jami me mung?</string>
+  <string name="sensitive_copy_body">Iketo man ni me mung. Gin mo keken ma imoko iye binongo fayil-li kene.</string>
+  <string name="sensitive_copy_confirm">Kop</string>
+  <string name="sensitive_cancel">Kwer</string>
+  <string name="settings_section_previews">Nen mukwongo</string>
+  <string name="settings_blur_title">Lil nen mukwongo ma nen calo me mung</string>
+  <string name="settings_blur_hint">Tiyo kene, pi meno twero bedo bal. Cal matidi keken aye kililo; pud kinongo fayil. Dii wang cal me nyuto.</string>
+  <string name="settings_blur_panel_title">Lil i yenyo ma oyot</string>
+  <string name="settings_blur_panel_hint">Tiyo kene, pi meno twero bedo bal. Tye ka tic kany pien paneli yabe i wi purugram mukene. Nyuto cal mito ni iyab loka me cimmi.</string>
+  <string name="settings_blur_needs_pack">Mito mede me \"Lil nen mukwongo ma nen calo me mung\", ma piny. Nio ka kimedo, petye gin mo ma kililo.</string>
+  <string name="action_show_picture">Nyut cal</string>
+  <string name="preview_hidden">nen mukwongo tye mukanne, twero bedo me mung</string>
+  <string name="quick_unlock_to_show">Yab loka me cimmi me nyuto cal man.</string>
+  <string name="quick_name">Yenyo ma oyot</string>
+  <string name="quick_shortcut_long">Yeny fayil megi oyotoyot</string>
+  <string name="quick_widget_hint">Yeny fayil megi</string>
+  <string name="quick_widget_description">Kaba me yenyo ma yabo yenyo ma oyot me <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> i wi purugram ma itye iye.</string>
+  <string name="quick_hint">Yeny fayil megi</string>
+  <string name="quick_close">Lor yenyo ma oyot</string>
+  <string name="quick_clear">Jway</string>
+  <string name="quick_nothing">Pe kinongo gin mo pi “%1$s”.</string>
+  <string name="quick_nothing_incomplete"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> pud tye ka kwano fayil megi, pi meno man twero lokke.</string>
+  <string name="quick_not_set_up"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> pud pe okwano fayil megi. Yab <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> me cako.</string>
+  <string name="quick_open_findr">Yab <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="quick_still_meaning">Tye ka yenyo te lok…</string>
+  <string name="quick_copied">Kikopo woko. Moke i lok.</string>
+  <string name="quick_copy_failed">Pe otwero kopo fayil man.</string>
+  <string name="quick_no_app">App mo peke ma twero yab fayil man.</string>
+  <string name="quick_add_tile_title">Med Yenyo oyot i yub oyot megi?</string>
+  <string name="quick_add_tile_body">Ci itwero yenyo fayil megi ki i app mo keken ki ywayo tyen aryo.</string>
+  <string name="quick_add_tile_yes">Med tile</string>
+  <string name="quick_add_tile_no">Pe kombedi</string>
+  <string name="settings_storage_remove_named">Kwany <xliff:g id="item" example="Speech pack">%1$s</xliff:g> woko</string>
+  <string name="licences_show_named">Nyut lok ducu me <xliff:g id="licence" example="Apache License 2.0">%1$s</xliff:g></string>
+  <string name="licences_hide_named">Kan lok ducu me <xliff:g id="licence" example="Apache License 2.0">%1$s</xliff:g></string>
+  <string name="sheet_error_word">Peko</string>
+  <string name="switch_on">Tye</string>
+  <string name="switch_off">Peke</string>
+  <string name="language_title">Yer lebi</string>
+  <string name="language_intro">Wang wang me <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> bibedo i leb man. Itwero lokone lacen i Yub.</string>
+  <string name="language_system">Leb me cim</string>
+  <string name="language_system_hint">Lubo yub me cim megi</string>
+  <string name="language_preview">Neno</string>
+  <string name="settings_language">Leb</string>
+  <plurals name="search_status_so_far">
+        
+    
+    <item quantity="one">%1$d nio kombedi · te lok i kin kare manok</item>
+    <item quantity="other">%1$d nio kombedi · te lok i kin kare manok</item>
+  </plurals>
+  <string name="search_status_words">Lok kombedi · te lok i kin kare manok</string>
+  <plurals name="search_status_found">
+        
+    
+    <item quantity="one">%1$d nonge</item>
+    <item quantity="other">%1$d nonge</item>
+  </plurals>
+  <string name="action_share_file">Nywak %1$s</string>
+  <string name="action_copy_file">Kopy %1$s</string>
+  <string name="preview_hidden_words">Nen calo me mung · dii me neno</string>
+  <string name="filter_group">Nyut fayil mene</string>
+</resources>

@@ -1,0 +1,6 @@
+# Trawl by Crane AI Labs. This is a public product page: search engines, link previews and AI assistants are all welcome.
+# Nothing is blocked on purpose. Link-preview fetchers (WhatsApp, Facebook, X, LinkedIn, Slack, Telegram) must never be blocked.
+User-agent: *
+Allow: /
+
+Sitemap: https://trawl.craneailabs.com/sitemap.xml

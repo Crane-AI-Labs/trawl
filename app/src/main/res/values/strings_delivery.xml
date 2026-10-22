@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <!-- Getting the search models onto a phone. The app has no internet permission, so the person downloads one file with a browser and the app checks and adds it. %1$d is the file size in MB. -->
+  <string name="models_eyebrow">One download</string>
+  <string name="models_title">Get the search models</string>
+  <string name="models_body">Use Wi-Fi if you can: one file of %1$d MB, downloaded once. Names and words work right away. Meaning search gets better as <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> learns, best after a night on the charger.</string>
+  <string name="models_get">Get the models (%1$d MB)</string>
+  <string name="models_choose">Choose the file</string>
+  <string name="models_hint_choose">Already have the file? Choose it from your phone.</string>
+  <string name="models_hint_access"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> adds the file by itself when it finishes downloading, once you allow access to your files. Or use Choose the file.</string>
+  <string name="models_hint_wait"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> adds the file by itself when the download finishes. You can start now.</string>
+  <string name="models_no_browser">No browser was found on this phone. Copy the file onto it another way, then choose it here.</string>
+  <string name="models_downloading">Downloading… %1$s so far</string>
+  <string name="models_installing_pct">Checking and adding the models… %1$d%%</string>
+  <string name="models_installing">Checking and adding the models…</string>
+  <string name="models_cancel">Cancel</string>
+  <string name="models_done">The models are installed. Search is ready.</string>
+  <string name="models_done_already">The models are already installed.</string>
+  <string name="models_ok">OK</string>
+  <string name="models_free_question">Remove the downloaded file to free %1$s?</string>
+  <string name="models_free_yes">Yes, remove it</string>
+  <string name="models_free_no">No, keep it</string>
+  <string name="models_try_again">Try again</string>
+  <string name="models_refused_wrong_class">This file is for a different kind of phone. Use Get the models to download the one for this phone.</string>
+  <string name="models_refused_damaged">The file is damaged or incomplete, so <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> did not use it. Download it again, then try again.</string>
+  <string name="models_refused_not_signed"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> could not confirm that this file is genuine, so it did not use it. Use Get the models to download it again.</string>
+  <string name="models_refused_older">This file is older than the models already on this phone, so <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kept the newer ones.</string>
+  <string name="models_refused_no_space">There is not enough free space on this phone. Free up about %1$d MB, then try again.</string>
+  <string name="models_refused_cancelled">Stopped. Nothing was changed.</string>
+
+  <!-- Settings → Add-ons: a newer model bundle exists. The cost is stated honestly: some updates make the app read the files again. -->
+  <string name="models_update_title">A better model is available</string>
+  <string name="models_update_body_reread">Adding it makes <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> read your files again. That happens while the phone charges, and search keeps working meanwhile.</string>
+  <string name="models_update_body_light">Adding it does not make <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> read your files again.</string>
+  <string name="models_update_get">Get the update (%1$d MB)</string>
+  <string name="models_update_not_now">Not now</string>
+</resources>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <color name="sun_paper">#15130E</color>
+  <color name="sun_paper2">#211E17</color>
+  <color name="sun_ink">#F4EFE4</color>
+  <color name="sun_ink2">#C8C1B2</color>
+  <color name="sun_line">#C8C1B2</color>
+</resources>

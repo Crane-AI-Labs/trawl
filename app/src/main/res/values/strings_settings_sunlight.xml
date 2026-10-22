@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <!-- Spoken by TalkBack for the icon-less "Remove" text button in Settings, Storage. %1$s is the name of the thing being removed (a model or a pack), so the button says what it removes. -->
+  <string name="settings_storage_remove_named">Remove <xliff:g id="item" example="Speech pack">%1$s</xliff:g></string>
+  <!-- Spoken by TalkBack for the "Show full text" button on a licence row. %1$s is the licence's name, so the button says which text it opens. -->
+  <string name="licences_show_named">Show full text of <xliff:g id="licence" example="Apache License 2.0">%1$s</xliff:g></string>
+  <!-- Same button once the text is open. %1$s is the licence's name. -->
+  <string name="licences_hide_named">Hide full text of <xliff:g id="licence" example="Apache License 2.0">%1$s</xliff:g></string>
+  <!-- One word above the message in the red error box on the indexing sheet, so an error is never shown by colour alone. -->
+  <string name="sheet_error_word">Problem</string>
+</resources>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="typing_learning">አሁንም በመረዳት ላይ፦ %1$s ከ %2$s · ተጨማሪ ውጤቶች ሊታዩ ይችላሉ</string>
+  <string name="typing_learning_charger">አሁንም በመረዳት ላይ፦ %1$s ከ %2$s · የቀረው ቻርጅ ሲያደርጉ</string>
+  <string name="typing_learning_paused">እስካሁን ከ%2$s ውስጥ %1$s ተረድቷል · ተጨማሪ ውጤቶች ሊታዩ ይችላሉ</string>
+  <string name="settings_colours">ቀለሞች</string>
+  <string name="colours_sunlight">የፀሐይ ብርሃን</string>
+  <string name="colours_sunlight_hint">ሞቅ ያለ የወረቀት ቀለም እና አንድ ቢጫ፣ በደማቅ ፀሐይ ለማንበብ ቀላል።</string>
+  <string name="colours_wallpaper">የልጣፍ ቀለሞች</string>
+  <string name="colours_wallpaper_hint">ቀለሞቹን ከልጣፍህ ይወስዳል፣ ልጣፉ ሲቀየርም አብሮ ይቀየራል።</string>
+  <string name="settings_brightness">ብሩህ ወይም ጨለማ</string>
+</resources>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="action_find_similar">Thola okufanayo</string>
+  <string name="action_find_similar_help">Thola okufanayo kubonisa izithombe ezibukeka njengalesi.</string>
+  <string name="similar_chip">Okufana ne-%1$s</string>
+  <string name="similar_remove">Yeka ukuthola okufanayo</string>
+  <string name="similar_nothing_body">Okwamanje akukho lutho kumafayela akho olubukeka njenge-%1$s.</string>
+</resources>

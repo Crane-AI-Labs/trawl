@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- Compose draws everything; this only sets the window behind it so there is no flash between splash and first frame. -->
+  <style name="Theme.Findr" parent="android:Theme.Material.Light.NoActionBar">
+    <item name="android:windowBackground">@color/sun_paper</item>
+    <item name="android:navigationBarColor">@android:color/transparent</item>
+    <item name="android:statusBarColor">@android:color/transparent</item>
+  </style>
+
+  <!-- The quick search panel: a transparent window over whatever app is behind it. Compose draws the scrim and the card. -->
+  <style name="Theme.Findr.Quick" parent="Theme.Findr">
+    <item name="android:windowIsTranslucent">true</item>
+    <item name="android:windowBackground">@android:color/transparent</item>
+    <item name="android:windowNoTitle">true</item>
+    <item name="android:backgroundDimEnabled">false</item>
+  </style>
+
+  <!-- Keep learning: black from the first frame, so starting it never flashes the paper colour at full brightness. -->
+  <style name="Theme.Findr.Keep" parent="Theme.Findr">
+    <item name="android:windowBackground">@android:color/black</item>
+    <item name="android:windowNoTitle">true</item>
+  </style>
+
+  <!--
+    The splash shows the launcher icon itself (the adaptive icon: the mark on marker yellow), masked to the phone's own icon
+    shape, on paper (dark paper in dark mode). Why the yellow never showed before: windowSplashScreenIconBackgroundColor only
+    reaches the platform when the parent is Theme.SplashScreen.IconBackground (core-splashscreen's values-v31), and this theme's
+    parent was Theme.SplashScreen. With that parent the yellow appeared, but the mark (ic_launcher_foreground, then a dp inset)
+    was drawn far bigger than on the launcher and ran over the yellow's edges on the A06 (2026-10-16). The adaptive icon, with
+    a fractional inset, has the launcher's yellow, shape and proportions on every phone, and nothing to keep in step.
+  -->
+  <style name="Theme.Findr.Splash" parent="Theme.SplashScreen">
+    <item name="windowSplashScreenBackground">@color/sun_paper</item>
+    <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+    <item name="postSplashScreenTheme">@style/Theme.Findr</item>
+  </style>
+</resources>

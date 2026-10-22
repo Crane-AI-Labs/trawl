@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="models_eyebrow">Okuwanula kumu</string>
+  <string name="models_title">Funa modeli z\'okunoonya</string>
+  <string name="models_body">Kozesa Wi-Fi bw\'oba osobola: owanula fayiro emu ya %1$d MB, omulundi gumu gwokka. Okunoonya amannya n\'ebigambo kukola amangu ddala. Okunoonya amakulu kweyongera okulungi nga <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> esoma fayiro zo, era kuba kulungi nnyo oluvannyuma lw\'ekiro ng\'essimu eri ku caagi.</string>
+  <string name="models_get">Funa modeli (%1$d MB)</string>
+  <string name="models_choose">Londa fayiro</string>
+  <string name="models_hint_choose">Fayiro wagifuna dda? Gilonde ku ssimu yo.</string>
+  <string name="models_hint_access"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yegattirako fayiro yennyini ng\'okuwanula kuwedde, bw\'ogikkiriza okutuuka ku fayiro zo. Oba kozesa Londa fayiro.</string>
+  <string name="models_hint_wait"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> eteekako fayiro ku bwayo ng\'okuwanula kuwedde. Osobola okutandika kati.</string>
+  <string name="models_no_browser">Tewali bulawuza ezuuliddwa ku ssimu eno. Gissaako fayiro mu ngeri endala, oluvannyuma ogironde wano.</string>
+  <string name="models_downloading">Ewanula… %1$s okutuusa kati</string>
+  <string name="models_installing_pct">Ekebera era egattako modeli… %1$d%%</string>
+  <string name="models_installing">Ekebera era egattako modeli…</string>
+  <string name="models_cancel">Sazaamu</string>
+  <string name="models_done">Modeli ziteekeddwamu. Okunoonya kwetegefu.</string>
+  <string name="models_done_already">Modeli zaateekebwamu dda.</string>
+  <string name="models_ok">Kale</string>
+  <string name="models_free_question">Osangule fayiro eyawanulwa ofune ekifo kya %1$s?</string>
+  <string name="models_free_yes">Yee, gisangule</string>
+  <string name="models_free_no">Nedda, gireke</string>
+  <string name="models_try_again">Gezaako nate</string>
+  <string name="models_refused_wrong_class">Fayiro eno ya kika kya ssimu kirala. Kozesa Funa modeli okuwanula eya ssimu eno.</string>
+  <string name="models_refused_damaged">Fayiro eno yonooneddwa oba tewanuliddwa yonna, n\'olwekyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> teyagikozesezza. Giwanule nate, oluvannyuma ogezeeko nate.</string>
+  <string name="models_refused_not_signed"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> teyasobodde kukakasa nti fayiro eno ya ddala, n\'olwekyo teyagikozesezza. Kozesa Funa modeli okugiwanula nate.</string>
+  <string name="models_refused_older">Fayiro eno nkadde okusinga modeli eziri ku ssimu eno, n\'olwekyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yasigazza empya.</string>
+  <string name="models_refused_no_space">Tewali kifo kimala ku ssimu eno. Funawo ekifo nga %1$d MB, oluvannyuma ogezeeko nate.</string>
+  <string name="models_refused_cancelled">Kiyimiriziddwa. Tewali kikyusiddwa.</string>
+  <string name="models_update_title">Waliwo modeli ennungi okusingawo</string>
+  <string name="models_update_body_reread">Okugigattako kuleetera <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> okusoma fayiro zo nate. Kino kibaawo ng\'essimu essaajibwa, era okunoonya kusigala kukola mu kiseera ekyo.</string>
+  <string name="models_update_body_light">Okugigattako tekireetera <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kusoma fayiro zo nate.</string>
+  <string name="models_update_get">Funa ekipya (%1$d MB)</string>
+  <string name="models_update_not_now">Si kaakano</string>
+</resources>

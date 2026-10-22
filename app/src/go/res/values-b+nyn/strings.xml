@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="welcome_line"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> neezora ebyandiikwa byawe, ebishushani n\'ebishushani bya sikuriini kurugiirira aha maziina gaabyo n\'ebigambo ebibirimu.</string>
+  <string name="onb1_point_model_title">Ekozirwe okukorera aha simu entono</string>
+  <string name="welcome_point_ai_body">Neeshoma fayiro zaawe aha simu egi, kandi torikwetaaga kwiha kintu kyona aha intaneeti. Tihaine kintu kyona ekirikwoherezibwa aha seva.</string>
+  <string name="meter_sub_progress_eta">%1$s ahari %2$s zashomwa · harikuburaho nka %3$s</string>
+  <string name="meter_sub_progress_estimating">%1$s ahari %2$s zashomwa · nikuteebereza obwire</string>
+  <string name="meter_sub_paused">%1$s ahari %2$s zashomwa. Okusherura nikukora.</string>
+  <string name="meter_a11y">%1$s. %2$s. Peresenti %3$d zashomwa.</string>
+  <string name="sheet_detail_indexing">Amaziina nigabanza kushomwa, n\'ahabw\'ekyo okusherura nikukora haihi ahonaaho. Okushoma ebigambo ebiri omu byandiikwa byawe, fayiro za PDF n\'ebishushani nikitwara obwire burikukiraho.</string>
+  <string name="level_searchable">Kusherurwa ahabw\'eiziina</string>
+  <string name="level_searchable_hint">Kya mangu. Nikikubaasisa kuzoora fayiro ahabw\'eiziina ryayo.</string>
+  <string name="level_understood">Ebigambo byashomwa</string>
+  <string name="level_understood_hint">Ky\'ompora. Nikikubaasisa kuzoora fayiro ahabw\'ebigambo ebihandiikirwemu, otwariiremu ebyandiikwa ebiri omu bishushani.</string>
+  <string name="search_hint_a11y">Sherura fayiro zaawe ahabw\'amaziina gaazo n\'ebigambo ebizirimu</string>
+  <string name="search_incomplete_note">Amaziina nigakora hati, kandi ebigambo bikyashomwa, n\'ahabw\'ekyo fayiro ezindi nizibaasa kuzoorwa.</string>
+  <string name="settings_about_model">Sherura neezora fayiro ahabw\'amaziina gaazo n\'ebigambo ebizirimu, byona aha simu egi.</string>
+  <string name="settings_delete_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> neesangura entebeekanisa ya fayiro zaawe hati: amaziina gaazo, ebigambo ebiri omu byandiikwa byawe, n\'ebyandiikwa ebi yashoma omu bishushani n\'eby\'ahari sikuriini. Fayiro zaayo ez\'akaanya na lipoota z\'obuzibu nazo nizisangurwa.\n\nFayiro zaawe tizirikukwatwaho. Entebeekanisa zaawe nzigumaho, otwariiremu foluda ezi warekire.\n\n<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> neegaruka erekyera aho kushoma. Sherura neeguma eyereire okuhitsya waatoonya ahari Garukamu.</string>
+  <string name="pause_battery_low_detail">Betire eri ahansi ya 30%%, n\'ahabw\'ekyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> neehindaho kushoma kubaasa kubiika amaani agasigaireho. Neegumizamu yonyine simu yaatandika kuchaajingwa.</string>
+</resources>

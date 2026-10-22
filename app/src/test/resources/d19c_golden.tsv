@@ -1,0 +1,199 @@
+# id, expected class, expected word weight, query. Class = nearest fp32 centroid as ww_gate3.py fits it; weight 4.0 for LOCAL and OTHER, else 2.0. Vectors: d19c_golden_fp16.bin, same order. Made by scripts/bench/d19c_app_parity.py golden
+d17:ki-ach-00002.q5	ach	4.0	notes me translate leb Acholi to English
+d17:ki-amh-00024.q5	amh	4.0	firefox browser ላይ አማርኛ መጻፊያ
+d17:ki-arb-00146.q4	ara	2.0	نوفاك ارام بطرسبان عيد القيامه
+d17:ki-eng-00110.q1	eng	2.0	kayaking and camping UK islands
+d17:ki-fra-00193.q5	eng	2.0	bon deal reduction photoweb
+d17:ki-hau-00048.q1	swa	2.0	bayani akan tsaunuka a tanzaniya
+d17:ki-kin-00163.q5	kin	4.0	amakaro factory muri Nyagatare
+d17:ki-lgg-00005.q5	lug	4.0	school reopening eyo Masindi Bukedea
+d17:ki-lug-00139.q4	nyn	4.0	emyaka ebiri nup kamwokya
+d17:ki-nyn-00011.q0	lug	4.0	Ebyenguzi omuri Fort Portal Municipality
+d17:ki-por-00008.q0	por	2.0	quintas de leitura figueira foz
+d17:ki-som-00002.q0	hau	4.0	linkbait iyo samaynta cinwaanada
+d17:ki-swh-00104.q2	swa	2.0	kutembelea mahabusu ya vijana wadogo
+d17:ki-teo-00036.q0	teo	4.0	Emusaago loka Isaac Godwin Aisu
+d17:ki-yor-00031.q5	eng	2.0	ancient China inventions flamethrower ati compass
+d17:ki-zul-00028.q0	zul	4.0	umlando ka Helen Joseph
+d17:ki-ach-00002.q1	yor	4.0	pwony me loko leb Acholi
+d17:ki-amh-00051.q5	eng	2.0	ye BX car forum post ስለ pantone
+d17:ki-arb-00072.q3	ara	2.0	الدهماني الساحل الغربي الخوخة
+d17:ki-eng-00056.q2	eng	2.0	2011 winter games cross country venue
+d17:ki-fra-00114.q4	fra	2.0	morvan bourgeaux biograhie
+d17:ki-hau-00042.q5	hau	4.0	river dja da Nki national park
+d17:ki-kin-00199.q1	kin	4.0	amakimbirane yo mu karere n'ikibazo cy'intambara
+d17:ki-lgg-00004.q2	lgg	4.0	ba ma fe wudrikuru ma azo ku sukulua
+d17:ki-lug-00157.q4	lgg	4.0	bety kamya parkyadi kooti
+d17:ki-nyn-00118.q1	lug	4.0	ebigambo byomwegi arikugamba ahari Makerere
+d17:ki-por-00075.q4	por	2.0	sao joao praca do feijao
+d17:ki-som-00042.q1	som	4.0	muddo kordhinta madaxweynaha iyo doorashada
+d17:ki-swh-00084.q0	swa	2.0	Matokeo ya Southampton na Leeds
+d17:ki-teo-00023.q4	ach	4.0	olemukan bukede lc5
+d17:ki-yor-00018.q0	yor	4.0	Ìrántí Matthew Theobald
+d17:ki-zul-00039.q2	zul	4.0	ukwenza ingemuva lesithombe libe lufifi
+d17:ki-ach-00000.q0	ach	4.0	cik angwen me cwiny
+d17:ki-amh-00042.q2	amh	4.0	የወንዝ ውኃ መብዛት የገደበው ባለስልጣን
+d17:ki-arb-00011.q2	ara	2.0	مذكرات ضابط مغربي في زنزانة تحت الارض
+d17:ki-eng-00025.q1	eng	2.0	handling massive cloud datasets modern computing
+d17:ki-fra-00113.q0	fra	2.0	liste sites porno et massage
+d17:ki-hau-00050.q2	hau	4.0	mai shari'a wanda ya binciki rikicin yammacin kasar nan
+d17:ki-kin-00166.q2	kin	4.0	gatete asubiza ku mutekano w'inyubako
+d17:ki-lgg-00001.q0	lgg	4.0	Eyo emba Branham tepu dri
+d17:ki-lug-00064.q1	lug	4.0	omukazi eyasibye omusajja otulo mu loogi
+d17:ki-nyn-00039.q2	lug	4.0	abebembezi barikugambira abantu kureka obutabanguko
+d17:ki-por-00059.q1	por	2.0	projetos selecionados concurso cinema eca
+d17:ki-som-00027.q5	som	4.0	suarez interview wixii dhacay champions league comeback
+d17:ki-swh-00196.q3	swa	2.0	hali ya uduni mkono kuume
+d17:ki-teo-00035.q0	teo	4.0	Akiro nuka aara apese Amuria
+d17:ki-yor-00051.q5	yor	4.0	staff of office Onibapon Oyo state
+d17:ki-zul-00058.q5	zul	4.0	first African woman ukuphatha i-WTO
+d17:ki-ach-00000.q5	ach	4.0	pwony me four spiritual laws
+d17:ki-amh-00014.q5	amh	4.0	ye lidet holiday message ትህትና
+d17:ki-arb-00056.q2	ara	2.0	ملفات التعذيب ومحاكمة غير عادلة بلاهاي
+d17:ki-eng-00172.q1	eng	2.0	band giving out hacked songs for charity
+d17:ki-fra-00008.q4	fra	2.0	convaincre maman serie morobito
+d17:ki-hau-00013.q5	swa	2.0	profile na Ahmed Adams Ghana defender
+d17:ki-kin-00122.q2	kin	4.0	kureka ibishushanyo bagasenga Imana nyayo
+d17:ki-lgg-00006.q1	lgg	4.0	eko sindani avi drio ri
+d17:ki-lug-00153.q2	lug	4.0	okukuba abaserikale amayinja e Kawolo
+d17:ki-nyn-00015.q2	kin	4.0	enguuto mbi n'ebisharara omu rurembo
+d17:ki-por-00135.q0	por	2.0	vinhos da quinta do mouro
+d17:ki-som-00024.q0	som	4.0	taariikhda tuulada geelkusooran buuhoodle
+d17:ki-swh-00008.q0	swa	2.0	thamani ya Liverpool na Man United
+d17:ki-teo-00028.q5	lug	4.0	Burial expenses nuka Governor Mutebile
+d17:ki-yor-00001.q0	yor	4.0	Itọsọna lori kikọ iwe
+d17:ki-zul-00040.q1	zul	4.0	impilo yomculi wesitsonga eLimpopo
+d17:ki-ach-00002.q4	ach	4.0	pwony leb achli
+d17:ki-amh-00039.q2	amh	4.0	በላርሳ መንግስት የወደመችው እና ሌቦች የዘረፏት
+kd:kidev/np-arb-04991.q3	ara	2.0	interview ميغان ماركل الجديد
+kd:kidev/np-eng-05175.q2	eng	2.0	christian view on biblical testimony versus scientism
+kd:kidev/ph-fra-00401.q3	fra	2.0	meme screenshot fake transfert bakary
+kd:kidev/np-kin-01245.q1	kin	4.0	Buravan yatwaye iki muri RFI
+kd:kidev/np-lug-09187.q1	swa	2.0	akazannyo ka VJ Kiwa kalagibwa ddi
+kd:kidev/np-nyn-00231.q2	nyn	4.0	ebigwire ahari motoka yabarweire Kasese
+kd:kidev/np-por-04846.q1	por	2.0	qual a proposta do branding experience
+kd:kidev/np-swh-06776.q2	swa	2.0	mipango ya ununuzi wachezaji Manchester
+kd:kidev/np-arb-01903.q0	ara	2.0	ملخص باريس وبرشلونة ريمونتادا
+kd:kidev/ph-eng-02547.q2	nyn	4.0	ss2 agric notes casava emeka
+kd:kidev/ph-fra-00888.q1	fra	2.0	ordonnance docteur koffi petit garcon fievre
+kd:kidev/np-kin-05046.q3	swa	2.0	ikibazo cya road ya Rutsiro na RTDA
+kd:kidev/np-lug-01301.q2	lug	4.0	abakulembeze b'oludda oluvuganya ku ddagala
+kd:kidev/ph-nyn-01051.q2	zul	4.0	eshabw yamazima kibngo
+kd:kidev/np-por-02171.q3	por	2.0	stats flamengo vs internacional brasileirao
+kd:kidev/np-swh-05587.q1	swa	2.0	watu waliandamana wapi kuhusu waislamu uyghur
+kd:kidev/ph-arb-02921.q1	ara	2.0	طريقة عمل كرات لحمة بصلصة الطماطم والقرفة
+kd:kidev/ph-eng-00371.q1	eng	2.0	money sent to artisan for wood work
+kd:kidev/np-fra-04602.q3	fra	2.0	souvenir visit cathédrale de la treille
+kd:kidev/np-kin-02518.q3	lug	4.0	gospel meditation yuyu munsi kristu
+kd:kidev/ph-lug-01292.q1	lug	4.0	okuggyako amabaati ebanja lyobupangisa
+kd:kidev/ph-nyn-00048.q2	lgg	4.0	ebibiri bya maynaja
+kd:kidev/np-por-03278.q1	por	2.0	montillo e camilo jogam contra olimpia
+kd:kidev/np-swh-05168.q3	hau	4.0	how to book bus ticket Gaborone hadi Mahalapye
+kd:kidev/np-arb-01936.q1	ara	2.0	من الف كتاب التسول والمتسولون
+kd:kidev/ph-eng-00916.q2	lgg	4.0	dr kato st jude malari
+kd:kidev/np-fra-03890.q3	fra	2.0	customer care heures d ouverture
+kd:kidev/np-kin-04245.q2	kin	4.0	uburangare bw abahawe urukingo
+kd:kidev/ph-lug-02670.q0	lug	4.0	endagaano yobutuuze Kigo Mukasa
+kd:kidev/np-nyn-00606.q3	lug	4.0	pupil wa Bukari ayafire during PLE
+kd:kidev/np-por-01267.q3	por	2.0	meu life goal espiritual
+kd:kidev/np-swh-03865.q0	swa	2.0	Farid Tenerife Azam mkopo
+kd:kidev/np-arb-02913.q1	ara	2.0	كم نسبة مكاسب قطاع التكنولوجيا الأوروبي
+kd:kidev/np-eng-05566.q2	eng	2.0	goat reproduction and mating tips
+kd:kidev/np-fra-03997.q0	fra	2.0	film Tandem Jean Rochefort
+kd:kidev/ph-kin-02708.q2	hau	4.0	mp240314 tuzmurane raporo
+kd:kidev/np-lug-01528.q1	lug	4.0	omwana yafudde atya amasannyalaze e Kikawuula
+kd:kidev/np-nyn-00100.q1	kin	4.0	orubanja rwa Byamukama rukaheza ryari kooti
+kd:kidev/np-por-03822.q3	por	2.0	ver meu saldo fgts no app
+kd:kidev/ph-swh-00310.q0	swa	2.0	Uncle Juma Kilifi mchango
+kd:kidev/np-arb-00421.q0	ara	2.0	نكول المتعهد تعويض اضرار
+kd:kidev/np-eng-07709.q0	eng	2.0	Kimberly Pummill cosmetic clinic
+kd:kidev/ph-fra-01195.q2	fra	2.0	note to-do list marché adjamé
+kd:kidev/ph-kin-00980.q1	kin	4.0	umwirondoro wo gutwara amamodoka kanombe
+kd:kidev/np-lug-16074.q1	lug	4.0	kaveera akola atya obulabe ku butonde
+kd:kidev/np-nyn-00891.q1	swa	2.0	Cardoso akagamba ki aha semi final
+kd:kidev/np-por-01347.q0	por	2.0	festa clandestina som apreendido
+kd:kidev/np-swh-08787.q3	swa	2.0	steve nyerere advice kwa magufuli kuhusu social media
+kd:kidev/np-arb-02279.q3	ara	2.0	Ithmaar bank صفقة الشامل
+kd:kidev/ph-eng-02886.q2	lug	4.0	luwombo caterng ntinda
+kd:kidev/np-fra-03374.q1	fra	2.0	comment faire escalier en pierre exterieur
+kd:kidev/ph-kin-02937.q3	nyn	4.0	note ya payment eric motari
+kd:kidev/np-lug-16792.q3	swa	2.0	story ya kidnap ya Nankanja
+kd:kidev/np-nyn-00028.q1	lug	4.0	Sipapa bamushangaho emishango ki eya pooriisi?
+kd:kidev/ph-por-02100.q3	por	2.0	meu driver resume atualizado maputo
+kd:kidev/ph-swh-01834.q1	swa	2.0	oda ya nyama ya mbuzi na mukimo
+kd:kidev/np-arb-05916.q1	ara	2.0	عن ماذا تدور رواية غادة السمان
+kd:kidev/np-eng-04904.q2	eng	2.0	encoding issues in command prompt
+kd:kidev/ph-fra-01252.q1	fra	2.0	recommandations apres vaccin nourrisson cocody
+kd:kidev/np-kin-04551.q1	kin	4.0	ni uwuhe murimo Imana yahaye umuntu
+kd:kidev/ph-lug-03883.q2	lug	4.0	duwwa bwaise haruna nsubuga
+kd:kidev/np-nyn-00321.q3	teo	4.0	election ya speaker Kololo date
+kd:kidev/np-por-05959.q3	por	2.0	gege fala sobre disputa no squad
+kd:kidev/np-swh-06439.q3	swa	2.0	PSG Bordeaux red card ligi ya Ufaransa
+kd:kidev/ph-arb-00265.q2	ara	2.0	مرجع 981240 كيم بلقاسم
+kd:kidev/ph-eng-01958.q0	nyn	4.0	Chuka carpenter Oyingbo timber
+xg:xg-ara-IMG text (30).txt-q4	ara	2.0	عطل فيسبوك واتساب انستقرام
+xg:xg-eng-note_7782.txt-q0	eng	2.0	2006 Logie Awards
+xg:xg-fra-Artémise Ire.txt-q4	fra	2.0	artemise reine des bateaux
+xg:xg-kin-WhatsApp Document (2).txt-q3	kin	4.0	kalendari Gashyantare ibihe
+xg:xg-lug-note_6369.txt-q5	lug	4.0	Bukedde article ya Holy Cross
+xg:xg-por-Deep Throat.txt-q0	por	2.0	Deep Throat clássico adulto
+xg:xg-swa-2 nyakati 32   biblia ya kiswahili.txt-q4	swa	2.0	hezekia dhidi ya senakerbu
+xg:xg-ara-ساكوراجيما.txt-q2	ara	2.0	انفجار ربط جزيرة باليابسة
+xg:xg-eng-file_533.txt-q1	eng	2.0	How scarce metal reshapes algae
+xg:xg-fra-1154 site de rencontre pour instagram.tx-q1	fra	2.0	Instagram pour pécho
+xg:xg-kin-file_6097.txt-q4	teo	4.0	inyma zokeje zitera kanseri
+xg:xg-lug-ssewanyana ne ssegiriinya balwadde bayi -q3	lug	4.0	Mpuuga Ssewanyana Ssegiriinya Kigo
+xg:xg-por-uma hora de sono apos o almoco pode reju-q1	por	2.0	Vantagens da sesta à tarde
+xg:xg-swa-501 tagla yashiriki mkutano wa mwaka wa -q0	swa	2.0	Kongamano la Elimu Masafa Kigali
+xg:xg-ara-WhatsApp Document (3).txt-q0	ara	2.0	بادئة ميتا اليونانية
+xg:xg-eng-Document_7712.txt-q0	eng	2.0	Stranraer Academy History
+xg:xg-fra-Yves P. Pelletier.txt-q0	fra	2.0	Biographie d’Yves Pelletier
+xg:xg-kin-note_223.txt-q4	nyn	4.0	ryan ikirwa colombiya
+xg:xg-lug-omulangira nakibinge awabudde ku nsonga -q0	lug	4.0	Nakibinge n’abasawo b’omu Buwarabu
+xg:xg-por-limiar.txt-q4	por	2.0	moeda caiu no buero
+xg:xg-swa-IMG text (37).txt-q0	swa	2.0	Chemshabongo ya Mirathi
+xg:xg-ara-divajeu.txt-q4	ara	2.0	واتس شات مقارنه لاين
+xg:xg-eng-file_6419.txt-q1	eng	2.0	Shape-shifting bug wants romance
+xg:xg-fra-WhatsApp Document_5891.txt-q2	fra	2.0	commander ses vitamines depuis son téléphone
+xg:xg-kin-Download_9354.txt-q4	kin	4.0	diamnd na zari barashyingiranywe
+xg:xg-lug-poliisi ennyuludde omulambo gwateebereze-q2	lug	4.0	Eyali takyategeerekeka mu maaso
+xg:xg-por-feng shui harmonizando jardim.txt-q0	por	2.0	Feng Shui no jardim
+xg:xg-swa-document_3446.txt-q2	swa	2.0	Vikundi vilitakiwa kupata kibali kwanza
+xg:xg-ara-scan (27).txt-q4	ara	2.0	اريس مريت عداء الحواجز
+xg:xg-eng-María Josefa Pimentel, Duchess of Osuna.-q2	eng	2.0	She ordered spooky artworks from Goya
+xg:xg-fra-Saint-Flavien (Québec).txt-q5	fra	2.0	réserve de gas à Saint-Flavien
+xg:xg-kin-umugore n umugabo basambaniye mu modoka -q1	kin	4.0	Abakundana bakoze imibonano ku karubanda
+xg:xg-lug-Download_8728.txt-q0	lug	4.0	Misinde gya Beene e Bulemeezi
+xg:xg-por-legend of the church of st anthony.txt-q0	por	2.0	Lenda de Santo António
+xg:xg-swa-Download_1682.txt-q5	zul	4.0	Mandela final send-off kule Qunu
+xg:xg-ara-WhatsApp Document (3).txt-q2	ara	2.0	أرسطو سماها بسبب ترتيب كتبه
+xg:xg-eng-Ahmed Abdallah Mohamed Sambi.txt-q2	eng	2.0	Ex-ruler punished with permanent imprisonment
+xg:xg-fra-file_3597.txt-q5	fra	2.0	book design avec Travizory et Ganika
+xg:xg-kin-WhatsApp Document_2103.txt-q2	kin	4.0	Abantu 92 bari guhomba ibyabo
+xg:xg-lug-file_6497.txt-q0	swa	2.0	Tony Kipoi ku mpingu
+xg:xg-por-criador de gossip girl diz desejava outr-q0	por	2.0	Nate seria a Gossip Girl
+xg:xg-swa-mgombea cuf asimamisha biashara sokoni i-q0	teo	4.0	Leopold Mahona sokoni
+xg:xg-ara-file (27) (2).txt-q0	ara	2.0	صفقة شفتشنكو للريال
+xg:xg-eng-Smythson.txt-q1	eng	2.0	posh notebook maker story
+xg:xg-fra-7 etapes pour faire un investissement re-q0	fra	2.0	Placement dans un parking
+xg:xg-kin-umugore yavuze agahinda gakomeye yagize -q1	kin	4.0	Operasiyo y'ubwiza yanze
+xg:xg-lug-IMG text_7935.txt-q2	lug	4.0	omulenzi agoberera muganzi we
+xg:xg-por-WhatsApp Document 2026-08-12.txt-q1	por	2.0	Recadastramento por impressão digital
+xg:xg-swa-file_5700.txt-q4	kin	4.0	biblia ilibadilshwa lini
+xg:xg-ara-file_7183.txt-q1	ara	2.0	انتقاد خطة معارضي الأسد بمصر
+xg:xg-eng-Equid alphaherpesvirus 1.txt-q0	eng	2.0	EHV-1 in Horses
+xg:xg-fra-7 etapes pour faire un investissement re-q1	fra	2.0	Louer un garage pour gagner
+xg:xg-kin-huye leta yafashe icyemezo cyo guhagarik-q0	kin	4.0	Impanuka y’ikirombe cya Kinazi
+xg:xg-lug-abantu babiri bakwatiddwa ku byomuliro o-q3	lug	4.0	Wandegeya eddagala generator
+xg:xg-por-Lodi Vecchio.txt-q0	por	2.0	Lodi Vecchio e sua história
+xg:xg-swa-scan (4) (2).txt-q2	swa	2.0	Wawili huungana mtandaoni wengine wakishuhudia
+xg:xg-ara-Document_4500.txt-q3	ara	2.0	الرنك كمين شاحنات ضحايا
+xg:xg-eng-Ichneutae.txt-q0	yor	4.0	Sophocles' Ichneutae
+xg:xg-fra-Lophiomys imhausi.txt-q5	fra	2.0	rat africain défense poison crazy
+xg:xg-kin-kagame yarababuriye gukomeza kwagaza con-q0	kin	4.0	Ijambo rya Kagame kuri M23
+xg:xg-lug-file (11).txt-q1	lug	4.0	Omukyala eyakolebwako ekivve mu buto
+xg:xg-por-sem reforcos na invicta.txt-q1	por	2.0	baixas físicas na equipa de Wakaso
+xg:xg-swa-air suspension kit golf 67 manufacturer -q5	eng	2.0	Golf air suspension yenye adjustable height
+xg:xg-ara-نادي برشلونة لكرة السلة.txt-q2	ara	2.0	انحل ورجع بطلب الجمهور
+xg:xg-eng-Smythson.txt-q2	eng	2.0	brand bought for eighteen million
+xg:xg-fra-Lophiomys imhausi.txt-q4	fra	2.0	rat venimeux ethiopie

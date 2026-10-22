@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="models_eyebrow">Gam acel keken</string>
+  <string name="models_title">Gam model me yenyo</string>
+  <string name="models_body">Tii ki Wi-Fi ka itwero: fayil acel me %1$d MB, ma kigolo wang acel keken. Yenyo nying ki lok tiyo cut. Yenyo ki te lok bedo maber kun <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> tye ka kwano fayil megi, dok bedo maber loyo inge dyewor acel i caja.</string>
+  <string name="models_get">Gam model (%1$d MB)</string>
+  <string name="models_choose">Yer fayil</string>
+  <string name="models_hint_choose">Fayil dong tye boti? Yer ki i cim mamegi.</string>
+  <string name="models_hint_access"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> medo fayil pire kene ka tyeko gamo, lacen ka imiye twero me donyo i fayil megi. Onyo ti ki Yer fayil.</string>
+  <string name="models_hint_wait"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> medo fayil pire kene ka golo otum. Iromo cako kombedi.</string>
+  <string name="models_no_browser">Pe kinongo layeny me intanet i cim man. Ket fayil i cim man ki yoo mukene, ci iyer kany.</string>
+  <string name="models_downloading">Tye ka gamo… %1$s dong kigamo</string>
+  <string name="models_installing_pct">Tye ka roto ki medo model… %1$d%%</string>
+  <string name="models_installing">Tye ka roto ki medo model…</string>
+  <string name="models_cancel">Juk</string>
+  <string name="models_done">Model dong kiketo. Yenyo dong tye atera.</string>
+  <string name="models_done_already">Model dong kiketo con.</string>
+  <string name="models_ok">Kakare</string>
+  <string name="models_free_question">Kwany fayil ma kigamo wek inong kabedo ma nono %1$s?</string>
+  <string name="models_free_yes">Ee, kwany woko</string>
+  <string name="models_free_no">Pe, gwok</string>
+  <string name="models_try_again">Tem doki</string>
+  <string name="models_refused_wrong_class">Fayil man obedo pi kit cim mapat. Ti ki Gam model me gamo ma pi cim man.</string>
+  <string name="models_refused_damaged">Fayil man obale onyo pe opong, pi meno <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> pe otiyo kwede. Gam odoco, ka item doki.</string>
+  <string name="models_refused_not_signed"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> pe otwero moko ni fayil man obedo me ada, pi meno pe otiyo kwede. Ti ki Gam model me gamo odoco.</string>
+  <string name="models_refused_older">Fayil man oti loyo model ma dong tye i cim man, pi meno <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ogwoko ma nyen loyo.</string>
+  <string name="models_refused_no_space">Kabedo ma nono pe rom i cim man. Yab kabedo maromo MB %1$d, ka item doki.</string>
+  <string name="models_refused_cancelled">Kijuko. Pe tye gin mo ma oloke.</string>
+  <string name="models_update_title">Model maber loyo tye</string>
+  <string name="models_update_body_reread">Medo model man bimiyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kwano fayil megi odoco. Man timme kun cim tye ka cwale, dok Yenyo mede ki tic i kare meno.</string>
+  <string name="models_update_body_light">Medo model man pe miyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kwano fayil megi odoco.</string>
+  <string name="models_update_get">Gam mayen (%1$d MB)</string>
+  <string name="models_update_not_now">Pe kombedi</string>
+</resources>

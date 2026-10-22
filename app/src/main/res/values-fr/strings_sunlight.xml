@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="typing_learning">Analyse en cours : %1$s sur %2$s · d\'autres résultats peuvent apparaître</string>
+  <string name="typing_learning_charger">Analyse en cours : %1$s sur %2$s · la suite pendant la charge</string>
+  <string name="typing_learning_paused">%1$s sur %2$s analysés pour l\'instant · d\'autres résultats peuvent apparaître</string>
+  <string name="settings_colours">Couleurs</string>
+  <string name="colours_sunlight">Soleil</string>
+  <string name="colours_sunlight_hint">Des tons papier chaleureux et une touche de jaune, bien lisibles en plein soleil.</string>
+  <string name="colours_wallpaper">Couleurs du fond d’écran</string>
+  <string name="colours_wallpaper_hint">Reprend les couleurs de votre fond d’écran et change avec lui.</string>
+  <string name="settings_brightness">Clair ou sombre</string>
+</resources>

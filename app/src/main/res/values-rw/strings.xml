@@ -1,0 +1,459 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="kind_document">Inyandiko</string>
+  <string name="kind_pdf">PDF</string>
+  <string name="kind_photo">Ifoto</string>
+  <string name="kind_screenshot">Ifoto ya sikirini</string>
+  <string name="kind_video">Videwo</string>
+  <string name="kind_audio">Amajwi</string>
+  <string name="kind_other">Fayiro</string>
+  <string name="filter_all">Byose</string>
+  <string name="filter_photos">Amafoto</string>
+  <string name="filter_screenshots">Amafoto ya sikirini</string>
+  <string name="filter_videos">Videwo</string>
+  <string name="filter_documents">Inyandiko</string>
+  <string name="filter_audio">Amajwi</string>
+  <string name="kind_plural_screenshots">Amafoto ya sikirini</string>
+  <string name="kind_plural_photos">Amafoto</string>
+  <string name="kind_plural_documents">Inyandiko na PDF</string>
+  <string name="kind_plural_videos">Videwo</string>
+  <string name="kind_plural_audio">Amajwi</string>
+  <string name="section_photos_videos">Amafoto na videwo</string>
+  <string name="section_documents_text">Inyandiko n\'umwandiko</string>
+  <string name="section_recent_documents">Inyandiko ziheruka</string>
+  <string name="section_recent_photos_videos">Amafoto na videwo biheruka</string>
+  <string name="badge_page">urup. %1$d</string>
+  <string name="badge_at_time">kuri %1$s</string>
+  <plurals name="pages_count">
+        
+    
+    <item quantity="one">Urupapuro %d</item>
+    <item quantity="other">Impapuro %d</item>
+  </plurals>
+  <string name="action_open">Gufungura</string>
+  <string name="action_share">Gusangiza</string>
+  <string name="action_copy">Gukoporora</string>
+  <string name="action_show_folder">Kwereka mu bubiko</string>
+  <string name="action_more">Ibikorwa bindi</string>
+  <string name="snack_copied">Byakoporowe</string>
+  <string name="meter_title_not_started">Ntiriratangira gusoma</string>
+  <string name="meter_title_scanning">Gushakisha muri telefone yawe</string>
+  <string name="meter_title_indexing">Gusoma amafayiro yawe</string>
+  <string name="meter_title_up_to_date">Byose biragezweho</string>
+  <string name="meter_title_error">Hari ikitagenda neza</string>
+  <string name="meter_sub_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> izatangira nimara kubona amafayiro yawe.</string>
+  <string name="meter_sub_scanning">Amafayiro %1$s amaze kuboneka.</string>
+  <string name="meter_sub_names_first">Amazina n\'amagambo mbere, kugira ngo ushobore gushakisha.</string>
+  <string name="meter_sub_progress_eta">%1$s kuri %2$s byasobanutse · hasigaye hafi %3$s</string>
+  <string name="meter_sub_progress_estimating">%1$s kuri %2$s byamaze kumvikana · kubara igihe bisaba</string>
+  <string name="meter_sub_needs_charger">Amazina n\'amagambo ubu. Ibisobanuro bizatangira nucomeka umuriro.</string>
+  <string name="meter_sub_reembed">Kuvugurura amafoto kuri moderi nshya: %1$s kuri %2$s. Shakisha iracyakora.</string>
+  <string name="meter_sub_reembed_eta">Kuvugurura amafoto kuri moderi nshya: %1$s kuri %2$s · hasigaye nka %3$s</string>
+  <string name="meter_sub_reembed_battery">Kuvugurura amafoto kuri moderi nshya: %1$s kuri %2$s. Ibisigaye bizakomeza nucomeka umuriro.</string>
+  <string name="meter_sub_light_reading">Gusoma amafoto yawe kugira ngo ushakishe byihuse. Ubuziranenge bwuzuye buzarangira nucomeka umuriro.</string>
+  <string name="meter_sub_light_done">Buri kintu cyose gishobora gushakishwa ubu. Ubuziranenge bwuzuye buzarangira nucomeka umuriro.</string>
+  <string name="meter_sub_paused">%1$s kuri %2$s byasobanutse. Shakisha iracyakora.</string>
+  <string name="meter_sub_up_to_date">Amafayiro %1$s yiteguye gushakishwa.</string>
+  <string name="meter_sub_error">Kanda hano ubone amakuru arambuye.</string>
+  <string name="meter_a11y">%1$s. %2$s. %3$d ku ijana byasobanutse.</string>
+  <string name="meter_open_details">Erekana amakuru arambuye yo gusoma</string>
+  <string name="pause_not_charging">Gutegereza ko icomekwa ku muriro</string>
+  <string name="pause_not_charging_detail">Gusoma buri kintu mu buziranenge bwuzuye bitwara bateri nyinshi, bityo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ibikora telefone iri ku muriro. Hagati aho, Shakisha irakora.</string>
+  <string name="pause_too_hot">Kugabanya ubushyuhe</string>
+  <string name="pause_too_hot_detail">Telefone irashyushye, bityo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yafashe akaruhuko ngo iyirinde. Irakomeza ubwayo telefone nimara gukonja.</string>
+  <string name="pause_battery_low">Bateri iri hasi</string>
+  <string name="pause_battery_low_detail">Bateri iri munsi ya 30%%, bityo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> isoma amazina n\'amagambo gusa ngo ibungabunge isigaye. Irakomeza ubwayo telefone nimara gucomekwa.</string>
+  <string name="pause_user">Yahagaritswe nawe</string>
+  <string name="pause_user_detail">Gusoma byahagaritswe. Shakisha iracyakora ku byo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yize kugeza ubu.</string>
+  <string name="pause_no_permission">Ikeneye uburenganzira ku mafayiro yawe</string>
+  <string name="pause_no_permission_detail"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ntishobora kubona amafayiro yawe utabanje kwemerera uburenganzira ku Mafayiro yose. Iyisoma gusa kandi ntacyo ihindura na kimwe.</string>
+  <string name="pause_storage_low">Ububiko bwa telefone bwenda kuzura</string>
+  <string name="pause_storage_low_detail"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ikeneye umwanya muto wo kubika gusesengura kwayo. Fungura umwanya kugira ngo ikomeze.</string>
+  <string name="action_pause">Hagarika</string>
+  <string name="action_resume">Komeza</string>
+  <string name="action_read_on_battery">Soma ku muriro wa bateri n\'ubundi</string>
+  <string name="action_allow_access">Emeza uburenganzira</string>
+  <string name="action_free_space">Fungura umwanya</string>
+  <string name="action_retry">Ongera ugerageze</string>
+  <string name="eta_under_minute">munsi y\'umunota</string>
+  <string name="eta_minutes">%d min</string>
+  <string name="eta_hours_single">%d h</string>
+  <string name="eta_hours_range">%1$d kugeza kuri %2$d h</string>
+  <string name="eta_while_charging">%1$s iri ku muriro</string>
+  <string name="sheet_title">Gusoma amafayiro yawe</string>
+  <string name="sheet_detail_up_to_date">Buri fayiro <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ishobora kubona iriteguye. Inshya zishyirwamo uko zigaragaye.</string>
+  <string name="sheet_detail_scanning"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> irimo gukora urutonde rw\'amafayiro yawe. Ibi bifata umunota umwe cyangwa ibiri.</string>
+  <string name="sheet_detail_light_on_battery">Amazina n\'amagambo byasomwe ubu kandi amafoto arebwa byihuse, bityo Shakisha irakora ubu. Ubuziranenge bwuzuye, butanga ibisubizo byiza kurushaho, buzarangira telefone iri ku muriro.</string>
+  <string name="sheet_detail_needs_charger">Amazina n\'amagambo arimo gusomwa ubu, bityo Shakisha irakora. Gusobanukirwa ibiri mu mafoto n\'inyandiko bizatangira telefone iri ku muriro.</string>
+  <string name="sheet_detail_indexing">Amazina n\'amagambo biheraho, bityo gushakisha bigakora ako kanya. Gusobanukirwa ibiri mu mafoto n\'inyandiko bitwara igihe kirekire, kandi bikorwa neza nijoro telefone iri ku muriro.</string>
+  <string name="sheet_detail_error">Gusoma byahagaze bitunguranye. Ibisubizo byawe bya mbere biratekanye.</string>
+  <string name="sheet_detail_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ntaratangira gusoma.</string>
+  <string name="sheet_by_kind">Ubwoko bwa fayiro</string>
+  <string name="sheet_reading_now">Birimo gusomwa ubu</string>
+  <string name="sheet_resumes_by_itself">Bizakomeza ubwabyo nikimara gukemuka.</string>
+  <string name="level_searchable">Gushakisha ku izina n\'amagambo</string>
+  <string name="level_searchable_hint">Byihuse. Bigufasha kubona fayiro ukurikije ibyanditswemo.</string>
+  <string name="level_understood">Gusobanurwa n\'ubusobanuro</string>
+  <string name="level_understood_hint">Bitinda gato. Bigufasha kubona fayiro ukurikije icyo ivugaho.</string>
+  <string name="level_quicklook">Kureba byihuse: amafoto na videwo</string>
+  <string name="level_quicklook_hint">Byihuse. Modeli nto ibona amafoto ukurikije ibirimo, mu gushakisha mu Cyongereza. Ibisobanuro birambuye bibisimbura uko buri foto isobanukiwe.</string>
+  <string name="meter_quicklook">Kureba byihuse: %1$s kuri %3$s by\'amafoto · Ibisobanuro birambuye: %2$s kuri %3$s</string>
+  <string name="level_a11y">%1$s: %2$s kuri %3$s</string>
+  <string name="count_of">%1$s kuri %2$s</string>
+  <string name="stat_time_left">Igihe gisigaye</string>
+  <string name="stat_speed">Umuvuduko</string>
+  <string name="stat_index_size">Ingano y\'isesengura</string>
+  <string name="stat_model_size">Ingano ya modeli</string>
+  <string name="stat_when_charging">Bitangira iyo iri ku muriro</string>
+  <string name="stat_estimating">Birimo kubarwa</string>
+  <string name="stat_measuring">Birimo gupimwa</string>
+  <string name="stat_done">Byarangiye</string>
+  <string name="stat_rate_value">%1$s amafayiro/h</string>
+  <string name="onb_next">Komeza</string>
+  <string name="onb_back">Inyuma</string>
+  <string name="onb_start">Tangira <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="onb_start_locked"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ikeneye uruhushya rw\'Amafayiro yose mbere yo gutangira</string>
+  <string name="onb_allow_access">Emerera kwinjira mu mafayiro</string>
+  <string name="onb_page_of">Intambwe ya %1$d kuri %2$d</string>
+  <string name="welcome_line"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ibona inyandiko, amafoto n\'amafoto ya ecran ikurikije ibyanditsemo n\'ibigaragaramo.</string>
+  <string name="welcome_point_ai_body">Ubwenge buhangano bwumva amafayiro yawe bukorera kuri iyi telefone. Nta kintu cyoherezwa kuri seriveri.</string>
+  <string name="welcome_point_reads_title">Isoma amafayiro yawe gusa</string>
+  <string name="welcome_point_reads_body">Ntihindura, ntiyimura cyangwa ngo isibe ikintu na kimwe. Ushobora gusiba ibyo yize igihe icyo ari cyo cyose.</string>
+  <string name="onb_choose_folders">Hitamo ububiko</string>
+  <string name="onb1_eyebrow">Byubakiye ku buzima bwite</string>
+  <string name="onb1_title">Amafayiro yawe ntasohoka kuri iyi telefone.</string>
+  <string name="onb1_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ibona inyandiko, za PDF, amashusho ya ecran, amafoto, memes na videwo ukurikije ibyo bivuga n\'ibyo byerekana. Byose bibera hano, kuri iyi telefone.</string>
+  <string name="onb1_point_internet_title">Nta ruhushya rwa interineti</string>
+  <string name="onb1_point_internet_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ntishobora na gato kujya kuri interineti. Android ubwayo iyibuza kohereza ikintu icyo ari cyo cyose hanze.</string>
+  <string name="onb1_point_model_title">AI iba kuri telefone yawe</string>
+  <string name="onb1_point_model_body">Modeli isobanukirwa amafayiro yawe, EmbeddingGemma 2 ya Google, ikorera kuri iyi telefone. Nta kintu cyoherezwa kuri seriveri ngo gisobanurwe.</string>
+  <string name="onb1_point_delete_title">Ni wowe ubyigenzura</string>
+  <string name="onb1_point_delete_body">Simbuka ububiko ubwo ari bwo bwose, cyangwa usibe ibyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yasomye byose, igihe cyose ubishakiye.</string>
+  <string name="onb2_eyebrow">Ibikurikira</string>
+  <string name="onb2_title">Gushakisha bikora mu minota mike. Gusobanukirwa bitwara ijoro ryose.</string>
+  <string name="onb2_step1_title">Mu minota mike</string>
+  <string name="onb2_step1_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ikora urutonde rw\'amafayiro yawe ikamenya amazina yayo n\'amagambo ayarimo. Ushobora guhita ushakisha ako kanya.</string>
+  <string name="onb2_step2_title">Mu masaha akurikiraho</string>
+  <string name="onb2_step2_body">Hanyuma isobanukirwa icyo buri foto n\'inyandiko bivugaho, ku buryo gushakisha nka “inyemezabwishyu y’ishuri” bibona ifoto cyangwa inyandiko nyayo nubwo ayo magambo ataba arimo. Ibi biratinda kuri telefone.</string>
+  <string name="onb2_step3_title">Cyane cyane igihe iri ku muriro</string>
+  <string name="onb2_step3_body">Kugira ngo uzigame umuriro, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ikora igice gitinda igihe telefone iri ku muriro. Yishyire ku muriro ijoro rimwe. Ushobora kureba uko bigenda, kubihagarika gato, cyangwa kubihindura igihe cyose.</string>
+  <string name="onb3_eyebrow">Uburenganzira bubiri</string>
+  <string name="onb3_title">Emerera <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kubona amafayiro yawe</string>
+  <string name="onb3_files_title">Uburenganzira ku mafayiro yose</string>
+  <string name="onb3_files_body">Bikenewe kugira ngo ibone amafayiro muri buri bubiko, nk\'inyandiko za WhatsApp. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> irasoma gusa. Nta kintu na kimwe ihindura, yimura cyangwa isiba.</string>
+  <string name="onb3_files_action">Gufungura igenamiterere</string>
+  <string name="onb3_files_granted">Byemewe</string>
+  <string name="onb3_files_hint">Ku rutonde rufunguka, fungura “Allow access to manage all files”, hanyuma ugaruke.</string>
+  <string name="onb3_notif_title">Imenyekanisha (ku bushake)</string>
+  <string name="onb3_notif_body">Ni ukugira ngo gusa <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ikumenyeshe nisoza gusoma. Nta kindi.</string>
+  <string name="onb3_notif_action">Emerera</string>
+  <string name="onb3_notif_granted">Byemewe</string>
+  <string name="onb4_eyebrow">Inyongera z\'amahitamo</string>
+  <string name="onb4_title">Kongeramo inyongera?</string>
+  <string name="onb4_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ikora na batarimo ibi. Buri kimwe kinoza ikintu kimwe. Buri kimwe ni fayiro ukoporora muri Downloads, kuko <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> idakoresha interineti na rimwe.</string>
+  <string name="onb4_add">Ongeraho</string>
+  <string name="onb4_not_now">Si ubu</string>
+  <string name="onb4_added">Byongeweho</string>
+  <string name="onb4_skipped">Byasimbitswe. Ushobora kubyongeraho nyuma.</string>
+  <string name="onb4_footer">Ushobora kubihindura nyuma muri Igenamiterere → Inyongera.</string>
+  <string name="search_hint">Shakisha mu mafayiro yawe</string>
+  <string name="search_hint_a11y">Shakisha mu mafayiro yawe ukurikije icyo avuga cyangwa yerekana</string>
+  <string name="search_clear">Siba ibyashakishijwe</string>
+  <string name="search_searching">Gushakisha...</string>
+  <string name="search_settings">Igenamiterere</string>
+  <string name="search_nothing_title">Nta cyabonetse</string>
+  <string name="search_nothing_body">Nta fayiro ihuye na “%1$s”.</string>
+  <string name="search_nothing_try_all">Gerageza amagambo make cyangwa atandukanye, cyangwa ushakishe Byose.</string>
+  <string name="search_nothing_incomplete"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> iracyari muri gahunda yo gusoma amafayiro yawe, bityo ibi bishobora guhinduka. Ongera ugerageze mu kanya.</string>
+  <string name="search_repairing_note">Shakisha irimo kwisana. Amazina n\'amagambo biracyakora; gushakisha ku busobanuro biragaruka mu minota mike.</string>
+  <string name="search_incomplete_note">Amazina n\'amagambo birakora ubu. Gusoma ibiranga ibindi biracyakorwa, bityo ibindi bishobora kuboneka.</string>
+  <string name="search_incomplete_note_charger">Amazina n\'amagambo birakora ubu. Gushakisha hashingiwe ku busobanuro (nka “boda” ku ifoto ya moto) bitangira iyo telefone iri ku muriro.</string>
+  <string name="search_weak_toggle">Ibihuye bidashyitse (%1$d)</string>
+  <string name="search_weak_only">Nta bihuye neza neza. Ibi nibyo byegereye.</string>
+  <string name="search_weak_expand">Erekana ibihuye bidashyitse</string>
+  <string name="search_weak_collapse">Hisha ibihuye gake</string>
+  <string name="search_fresh_title">Nta cyo kwerekana kiraboneka</string>
+  <string name="search_fresh_body">Igihe <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ibonye amafayiro yawe, aya vuba azagaragara hano. Andika hejuru kugira ngo ushakishe.</string>
+  <string name="search_recent_empty_filter">Nta mafayiro yo muri ubu bwoko araboneka.</string>
+  <string name="access_banner_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ntirashobora kubona amafayiro yawe</string>
+  <string name="access_banner_body">Emeza uburenganzira ku mafayiro yose kugira ngo ibashe kuyasoma. Nta kintu na kimwe ihindura.</string>
+  <string name="snack_no_app">Nta porogaramu kuri iyi telefone ishobora gufungura iyi fayiro.</string>
+  <string name="snack_sample">Iyi ni fayiro y\'icyitegererezo, ntishobora gufungurwa.</string>
+  <string name="settings_title">Igenamiterere</string>
+  <string name="settings_back">Inyuma</string>
+  <string name="settings_section_reading">Gusoma</string>
+  <string name="learn_speed_title">Umuvuduko wo kwiga</string>
+  <string name="learn_gentle">Buhoro</string>
+  <string name="learn_gentle_hint">Isoma gusa igihe iri ku muriro, ikoresha imirongo mike. Bateri n\'ubushyuhe bike cyane; ibishya byose bitegereza umuriro.</string>
+  <string name="learn_balanced">Hagati</string>
+  <string name="learn_balanced_hint">Uburyo busanzwe. Umuriro usoma amafoto yose; kuri bateri hakora gusa amafayiro mashya no kureba byihuse.</string>
+  <string name="learn_fast">Byihuse</string>
+  <string name="learn_fast_hint">Isoma byose no kuri bateri, igategereza gusa igihe ukoresha indi porogaramu. Irangira vuba, ikoresha bateri nyinshi kandi irashyuha cyane.</string>
+  <string name="settings_section_kinds">Ibyo gusoma</string>
+  <string name="settings_recordings">Ubutumwa bw\'amajwi n\'ibyafashwe</string>
+  <string name="settings_recordings_hint">Bisoma ibyavuzwe n\'ibyumviswe, kugira ngo ushobore kubishakisha.</string>
+  <string name="settings_deeper">Gushakisha amajwi byimbitse (biratinda): umuziki n\'ayandi majwi</string>
+  <string name="settings_deeper_hint">Bishakisha amajwi hakurikijwe uko ateye, bitari amagambo gusa. Bifata amasegonda agera kuri 15 yo gusoma kuri buri munota w\'ijwi kuri telefone isanzwe.</string>
+  <string name="settings_section_addons">Inyongera</string>
+  <string name="addons_intro">Inyongera z\'amahitamo zituma gushakisha birushaho kuba byiza. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ntijya kuri interineti na rimwe, bityo buri nyongera ni fayiro ubanza gukoporora mu Byakuruwe (Downloads). Buri kintu kiguma kuri iyi telefone.</string>
+  <string name="addons_status_not_added">Ntibyongewemo</string>
+  <string name="addons_status_adding">Birimo kongerwamo</string>
+  <string name="addons_status_added">Yongewemo</string>
+  <string name="addons_status_soon">Bizaza vuba</string>
+  <string name="addons_size">Ingano: %1$s</string>
+  <string name="addons_add">Ongeraho</string>
+  <string name="addons_add_with_size">Ongeraho (%1$s)</string>
+  <string name="addons_remove">Kuraho, birekure %1$s</string>
+  <string name="addons_on">Bifunguye</string>
+  <string name="addons_off">Bifunze</string>
+  <string name="addons_adding_pct">Gusuzuma no kongeramo… %1$d%%</string>
+  <string name="addons_adding">Gusuzuma no kongeramo…</string>
+  <string name="addons_try_again">Ongera ugerageze</string>
+  <string name="addons_soon_hint">Ntibiratungana. Bizagaragara hano nibimara kuboneka.</string>
+  <string name="addons_problem_not_found"><xliff:g id="app_name" example="Trawl">%2$s</xliff:g> ntiyashoboye kubona %1$s muri Downloads. Yikopiyeyo, hanyuma wongere ugerageze.</string>
+  <string name="addons_problem_access"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ikeneye uburenganzira ku mafayiro yose kugira ngo isome Downloads. Bwemerere, hanyuma wongere ugerageze.</string>
+  <string name="addons_problem_bad">Fayiro iri muri Downloads yarangiritse cyangwa si yo, bityo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ntiyayikoresheje. Ongera uyikopiyeyo, hanyuma wongere ugerageze.</string>
+  <string name="addons_problem_unavailable">Iyi nyongera ntirashobora kongerwamo muri iyi verisiyo.</string>
+  <string name="addons_add_title">Ongeraho %1$s</string>
+  <string name="addons_add_install">Shyiramo</string>
+  <string name="addons_remove_title">Gukuraho %1$s?</string>
+  <string name="addons_remove_body">Ibi birarekura %1$s kandi biyikureho. Amagambo n\'ubusobanuro <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> yasomye bizagumaho kugeza ayo mafayiro yongeye gusomwa. Ushobora kongera kuyishyiraho igihe icyo ari cyo cyose.</string>
+  <string name="addons_remove_confirm">Kuraho</string>
+  <string name="settings_section_excluded">Ububiko bwasimbuswe</string>
+  <string name="settings_excluded_hint"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ntizasoma ikintu na kimwe kiri muri ubu bubiko.</string>
+  <string name="settings_excluded_empty">Nta na bumwe. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> isoma buri bubiko bwose ibona.</string>
+  <string name="settings_excluded_remove">Hagarika gusimbuka %1$s</string>
+  <string name="settings_excluded_bad">Ubwo bubiko ntibushobora guhitwamo hano. Hitamo buri ku bubiko bukuru bwa telefone.</string>
+  <string name="onb_scope_eyebrow">Ibyo wahisemo</string>
+  <string name="scope_title">Ni iki <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> igomba gushakisha?</string>
+  <string name="scope_intro">Zimya icyo udashaka ko kiboneka. Amafayiro yacyo ahita ava muri Shakisha ako kanya, maze akagaruka nuyatsa nanone.</string>
+  <string name="scope_counts_unknown">Umubare w\'amafayiro uzagaragara niba <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ishobora kubona amafayiro yawe.</string>
+  <string name="scope_private">Ububiko bwihishe, ububiko burimo .nomedia n\'ububiko bwite bw\'izindi porogaramu ntibisomwa na rimwe.</string>
+  <string name="scope_added_title">Ububiko wongeyeho</string>
+  <string name="scope_add">Ongeraho ububiko</string>
+  <string name="scope_added_remove">Hagarika gushakisha %1$s</string>
+  <string name="scope_exclude">Simbuka ububiko</string>
+  <plurals name="scope_files">
+        
+    
+    <item quantity="one">Fayiro %1$s</item>
+    <item quantity="other">Amafayiro %1$s</item>
+  </plurals>
+  <string name="scope_group_camera">Kamera</string>
+  <string name="scope_group_screenshots">Amafoto ya ecran</string>
+  <string name="scope_group_whatsapp_images">Amafoto ya WhatsApp</string>
+  <string name="scope_group_whatsapp_video">Videwo za WhatsApp</string>
+  <string name="scope_group_whatsapp_documents">Inyandiko za WhatsApp</string>
+  <string name="scope_group_whatsapp_voice">Ubutumwa bw\'amajwi bwa WhatsApp</string>
+  <string name="scope_group_whatsapp_status">Status ya WhatsApp</string>
+  <string name="scope_group_downloads">Ibyamanuwe</string>
+  <string name="scope_group_documents">Inyandiko</string>
+  <string name="scope_group_music">Muzika n\'amajwi yafashwe</string>
+  <string name="scope_group_other">Ubundi bubiko</string>
+  <string name="settings_section_storage">Ububiko bwakoreshejwe</string>
+  <string name="settings_storage_index">Gusesengura gushakisha</string>
+  <string name="settings_storage_model">Icyitegererezo cya AI</string>
+  <string name="settings_delete">Siba ibyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> izi byose</string>
+  <string name="settings_delete_hint">Bisiba ibyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yasomye mu mafayiro yawe n\'amafayiro yayo y\'agateganyo. Amafayiro yawe ntakorwaho.</string>
+  <string name="settings_delete_title">Gusiba ibyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> izi byose?</string>
+  <string name="settings_delete_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> igiye gusiba ibyo yasesenguye ku mafayiro yawe: amazina yayo, amagambo ari mu nyandiko zawe, inyandiko yasomye mu mafoto n\'amafoto ya ecran, amagambo yanditse mu mavideo n\'ubutumwa bw\'amajwi, n\'ibyo AI yayo yabonye kuri buri fayiro. Amafayiro yayo y\'agateganyo na raporo z\'ibibazo na byo birasibwa.\n\nAmafayiro yawe ntakorwaho. Igenamiterere ryawe rigumaho, harimo n\'ububiko wasimbutse.\n\n<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ihita ihagarika gusoma. Shakisha izaguma irimo ubusa kugeza ukanze Komeza.</string>
+  <string name="settings_delete_done">Hasibwe %1$s. <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> irahagaritswe kugeza ukanze Komeza.</string>
+  <string name="settings_storage_model_hint">Bikenerwa mu gushakisha hisunzwe ubusobanuro.</string>
+  <string name="settings_storage_index_hint">Ububiko bw\'amakuru n\'amateka yabwo.</string>
+  <string name="settings_storage_estimate">Iyo buri fayiro imaze gusomwa</string>
+  <string name="settings_storage_estimate_value">Hafi %1$s</string>
+  <string name="settings_storage_memory">Ububiko mu gushakisha</string>
+  <string name="settings_storage_memory_hint">Bikoreshwa gusa igihe <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> ifunguye. Hafi %1$s iyo buri fayiro imaze gusomwa.</string>
+  <string name="settings_storage_remove">Kuraho</string>
+  <string name="settings_storage_no_data"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ntiyigera ikoresha interineti igendanwa: nta buhuza bwa interineti ifite.</string>
+  <string name="settings_delete_confirm">Gusiba</string>
+  <string name="settings_cancel">Kureka</string>
+  <string name="settings_section_appearance">Imiterere</string>
+  <string name="settings_theme_system">Sisitemu</string>
+  <string name="settings_theme_light">Urumuri</string>
+  <string name="settings_theme_dark">Umwijima</string>
+  <string name="report_card_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yahagaze mu buryo butunguranye. Ohereza raporo kugira ngo ifashe kuyikosora?</string>
+  <string name="report_card_body">Raporo ntirimo amazina y\'amafayiro, ibyashakishijwe cyangwa inyandiko zo mu mafayiro yawe. Ubanza kuyisoma, kandi nta cyoherezwa kugeza igihe ukanze Ohereza muri imeyili yawe bwite.</string>
+  <string name="report_send">Ohereza</string>
+  <string name="report_not_now">Si ubu</string>
+  <string name="report_view">Reba raporo</string>
+  <string name="report_close">Funga</string>
+  <string name="report_send_email">Ohereza kuri imeyili</string>
+  <string name="report_send_whatsapp">Ohereza kuri WhatsApp</string>
+  <string name="report_send_whatsapp_file">Ohereza raporo yose kuri WhatsApp</string>
+  <string name="report_no_email">Nta porogaramu ya imeyili yabonetse kuri iyi telefone. Kanda kuri Reba raporo kugira ngo uyisome, cyangwa ushyiremo porogaramu ya imeyili.</string>
+  <string name="report_no_whatsapp">WhatsApp ntiyashoboye gufunguka.</string>
+  <string name="report_building">Gutunganya raporo…</string>
+  <string name="report_dialog_title">Raporo y\'ikibazo</string>
+  <string name="report_dialog_hint">Ibi ni byo byose byoherezwa. Amafayiro, ububiko n\'ibyashakishijwe ntibirimo.</string>
+  <string name="settings_section_report">Tanga raporo y\'ikibazo</string>
+  <string name="settings_report_hint">Ifungura porogaramu yawe ya imeyili irimo raporo yiteguye koherezwa. Irangira imiterere ya telefone na verisiyo ya <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>, n\'amakosa <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yahuye na yo, nta mazina y\'amafayiro, ibyashakishijwe cyangwa inyandiko zivuye mu mafayiro yawe. Ubanza kuyisoma, kandi nta cyoherezwa kugeza igihe ukanze Ohereza aho.</string>
+  <string name="settings_report_note">Ni iki kitagenze neza? (si ngombwa)</string>
+  <string name="settings_report_kept"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ibika raporo zitarenze 10 kuri iyi telefone, hafi KB 100. “Siba ibyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> izi byose” birabikuraho.</string>
+  <string name="settings_section_about">Ibyerekeye</string>
+  <string name="settings_about_version">Verisiyo %1$s</string>
+  <string name="settings_about_model">Gushakisha bikorwa na EmbeddingGemma 2 ya Google (Apache 2.0), byose bikabera kuri iyi telefone.</string>
+  <string name="settings_about_private"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> nta burenganzira bwa interineti ifite. Amafayiro yawe n\'ibyo iyigaho ntibigera biva kuri iyi telefone.</string>
+  <string name="settings_about_maker">Yakozwe na Crane AI Labs.</string>
+  <string name="settings_licences">Impushya n\'ishimwe</string>
+  <string name="licences_title">Impushya n\'ishimwe</string>
+  <string name="licences_intro"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yubakiye ku mirimo ikurikira. Ubu butumwa busabwa n\'impushya, kandi ni n\'uburyo bwo gushimira.</string>
+  <string name="licences_section_required">Amatangazo</string>
+  <string name="licences_section_components">Ibindi byose muri <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="licences_section_texts">Inyandiko zuzuye z\'impushya</string>
+  <string name="licences_show">Erekana inyandiko yose</string>
+  <string name="licences_hide">Hisha inyandiko yose</string>
+  <string name="settings_close">Funga</string>
+  <string name="pack_size_mb">%1$d MB</string>
+  <string name="pack_speech_name">Gushakisha mu majwi</string>
+  <string name="pack_speech_benefit">Bishakisha ibyavuzwe muri videwo no mu majwi: fayiro nyayo iza mbere kuri %1$d%% by\'igihe aho kuba %2$d%%.</string>
+  <plurals name="pack_speech_cost">
+        
+    
+    <item quantity="one">Byongeraho hafi isogonda %1$d kuri buri munota wa videwo mu gihe irimo isomwa. Mu Cyongereza gusa kugeza ubu.</item>
+    <item quantity="other">Byongeraho hafi amasogonda %1$d kuri buri munota wa videwo mu gihe irimo isomwa. Mu Cyongereza gusa kugeza ubu.</item>
+  </plurals>
+  <string name="pack_quicklook_name">Kureba amafoto byihuse</string>
+  <plurals name="pack_quicklook_benefit">
+        
+    
+    <item quantity="one">Bituma ububiko bwose bw\'amafoto bushakishwa mu minota aho kuba amasaha: hafi ifoto %1$s ku isaha aho kuba %2$d kuri telefone iciriritse (mu Cyongereza). Amakuru arambuye akomeza kwiyongeraho.</item>
+    <item quantity="other">Bituma ububiko bwose bw\'amafoto bushakishwa mu minota aho kuba amasaha: hafi amafoto %1$s ku isaha aho kuba %2$d kuri telefone iciriritse (mu Cyongereza). Amakuru arambuye akomeza kwiyongeraho.</item>
+  </plurals>
+  <string name="pack_quicklook_cost">Gushakisha mu Cyongereza gusa: gushakisha mu zindi ndimi bibanza gutegereza isoma ryuzuye. Isoma ryuzuye ritinda hafi %1$d%% igihe ririmo gukora, kandi rikoresha ububiko burenzeho gato mu gihe risoma.</string>
+  <string name="pack_privacy_name">Huma amashusho y\'ibanze y\'ubuzima bwite</string>
+  <string name="pack_privacy_benefit">Bihuma agashusho k\'ibanze k\'ifoto igaragara nk\'ubuzima bwite (ubwambure, imyenda y\'imbere), kugira ngo ureba kuri ecran atabibona byose. Kanda ku gashusho kugira ngo kagaragare. Bihuma gusa: nta kintu cyihishe cyangwa cyimuwe mu bisubizo.</string>
+  <string name="pack_privacy_cost">Bishobora kwibeshya impande zombi, kandi amafoto y\'ubuzima (ibiheri, umubyeyi wonsa) ashobora guhumwa. Bisoma amafoto mu ibanga igihe iri ku muriro, kandi bitinza isoma ryuzuye hafi %1$d%% mu gihe birimo gukora.</string>
+  <string name="pack_privacy_recommended">Birasabwa niba ukoresha akadirishya ko gushakisha vuba</string>
+  <string name="pack_how_to_add_downloads"><xliff:g id="app_name" example="Trawl">%3$s</xliff:g> ntiyigera ijya kuri interineti, bityo ntishobora kubyimanurira ubwayo. Shakira fayiro %1$s (%2$s) kuri Crane AI Labs maze uyikoporore mu bubiko bwa Downloads bw\'iyi telefone. Hanyuma kanda Kwinjiza: <xliff:g id="app_name" example="Trawl">%3$s</xliff:g> irasuzuma fayiro maze iyongereho. Ushobora gusiba .zip nyuma yaho.</string>
+  <string name="pack_how_to_add_play">Play izatanga %1$s (%2$s) nukanda Kwinjiza. Nta kindi usabwa gukora.</string>
+  <string name="notif_channel_name">Gusoma telefone yawe</string>
+  <string name="notif_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> irimo irasoma telefone yawe</string>
+  <string name="notif_getting_ready">Kwitegura…</string>
+  <string name="notif_reading_photo">Gusoma ifoto</string>
+  <string name="notif_reading_screenshot">Gusoma ifoto ya ecran</string>
+  <string name="notif_reading_video">Gusoma videwo</string>
+  <string name="notif_reading_document">Gusoma inyandiko</string>
+  <string name="notif_reading_recording">Gusoma amajwi yafashwe</string>
+  <string name="notif_reading_file">Gusoma fayiro</string>
+  <string name="notif_waiting_polite">Gutegereza ugikoresha telefone</string>
+  <string name="chip_label_action">%1$s  ·  %2$s</string>
+  <string name="a11y_description_note">%1$s. %2$s</string>
+  <string name="meter_a11y_extra">%1$s %2$s.</string>
+  <string name="message_then_sentence">%1$s %2$s</string>
+  <string name="lock_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ifunze</string>
+  <string name="lock_body">Fungura ukoresheje igikumwe, isura, PIN cyangwa igishushanyo cya telefone yawe.</string>
+  <string name="lock_button">Fungura</string>
+  <string name="quick_device_locked">Fungura telefone yawe kugira ngo ushakishe.</string>
+  <string name="lock_prompt_title">Fungura <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="lock_prompt_subtitle">Koresha uburyo bwa telefone bwo gufunga ecran</string>
+  <string name="settings_section_privacy">Ubuzima bwite</string>
+  <string name="privacy_lock_title">Funga <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="privacy_lock_hint">Baza igikumwe, isura, PIN cyangwa igishushanyo mbere yo kwerekana ikintu cyose.</string>
+  <string name="privacy_lock_needs_screen_lock">Banza ushyireho ifunga-ecran kuri telefone yawe (Igenamiterere, Umutekano). <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ikoresha ubwo buryo bwo gufungura.</string>
+  <string name="privacy_lock_on_prompt">Funga <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="privacy_lock_off_prompt">Kuraho ifunga rya <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="privacy_lock_after_title">Ongera ufunge nyuma ya</string>
+  <string name="privacy_lock_after_now">Buri gihe</string>
+  <string name="privacy_lock_after_minutes">%1$d min</string>
+  <string name="privacy_lock_after_hint">Igihe <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ishobora kumara muri gahunda zo mu nsi mbere yo kongera kubaza. Nanone yifunga iyo ecran izimye.</string>
+  <string name="privacy_recents_title">Hisha <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> muri porogaramu ziheruka</string>
+  <string name="privacy_recents_hint">Ikarita ya <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> irabura ku rutonde rwa porogaramu ziheruka. Icyitonderwa: amafoto ya ecran ya <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> na yo arahagarikwa.</string>
+  <string name="privacy_show_title">Erekana ibisubizo byihariye</string>
+  <string name="privacy_show_hint">Bikizimye: amafayiro washyizeho akamenyetso k\'ubwitonzi n\'ari mu bubiko bwite ntabwo agaragara mu bisubizo no mu gice cyihuse kugeza uyafunguye.</string>
+  <string name="privacy_show_prompt">Erekana ibisubizo byihariye</string>
+  <string name="privacy_pin_note">Umuntu wese uzi PIN ya telefone yawe ashobora kureba ibisubizo byihariye. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> nta PIN yayo bwite igira.</string>
+  <string name="privacy_no_screen_lock_note">Telefone yawe nta funga-ecran igira, bityo uyifite wese ashobora gufungura <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> akabona byose. Shyiraho ifunga-ecran kugira ngo uyirinde.</string>
+  <string name="privacy_folders_title">Ububiko bwite</string>
+  <string name="privacy_folders_hint">Buri kintu kiri mu bubiko bwite gifatwa nk\'icyihariye. Bitandukanye n\'ububiko bwahejejwe inyuma, bwo burasomwa, ku buryo ushobora kubushakishamo umaze gufungura.</string>
+  <string name="privacy_folders_empty">Nta bubiko bwite buhari.</string>
+  <string name="privacy_folders_add">Ongeramo ububiko bwite</string>
+  <string name="privacy_folders_bad">Ubwo bubiko ntibushobora kugirwa ubwite. Hitamo ububiko buri mu bubiko rusange bwa telefone.</string>
+  <string name="privacy_folders_remove">Reka gufata %1$s nk\'ubwite</string>
+  <string name="privacy_folders_remove_prompt">Kora ku buryo ububiko butaba ubwite</string>
+  <string name="onb_lock_title">Funga <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> (ubishaka)</string>
+  <string name="onb_lock_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ishobora kubaza igikumwe, isura, PIN cyangwa igishushanyo cya telefone yawe mbere yo kugira icyo yerekana, kugira ngo ufite telefone yawe adashobora gushakisha. Ushobora kubihindura mu Igenamiterere.</string>
+  <string name="onb_lock_action">Gukoresha ifunga</string>
+  <string name="onb_lock_on">Ifunga rirakora</string>
+  <string name="onb_lock_no_screen_lock">Telefone yawe nta funga-ecran iragira. Shyiraho imwe mu Igenamiterere rya telefone kugira ngo ukoreshe iyi ngingo.</string>
+  <string name="privacy_hidden_chip">%1$d byihishe</string>
+  <string name="privacy_hidden_action">Erekana</string>
+  <plurals name="privacy_hidden_chip_description">
+        
+    
+    <item quantity="one">Igisubizo %1$d cyo mu buzima bwite kirihishe. Kanda kabiri kugira ngo ufungure maze ukirebe.</item>
+    <item quantity="other">Ibisubizo %1$d byo mu buzima bwite birihishe. Kanda kabiri kugira ngo ufungure maze ubirebe.</item>
+  </plurals>
+  <string name="privacy_shown_chip">Ibisubizo byo mu buzima bwite birerekanwa</string>
+  <string name="privacy_shown_action">Hisha</string>
+  <string name="privacy_reveal_title">Erekana ibisubizo byo mu buzima bwite</string>
+  <string name="privacy_reveal_subtitle">Koresha ifunga rya ecran ya telefone yawe</string>
+  <string name="action_mark_sensitive">Shyira mu buzima bwite</string>
+  <string name="action_unmark_sensitive">Si ibyo mu buzima bwite</string>
+  <string name="snack_marked_sensitive">Bishyizwe mu buzima bwite. Ubu byihishe mu bisubizo.</string>
+  <string name="snack_unmarked_sensitive">Ntibikiri mu buzima bwite.</string>
+  <string name="sensitive_share_title">Gusangiza ikintu cyo mu buzima bwite?</string>
+  <string name="sensitive_share_body">Wabishyize mu buzima bwite. Ubibonye wese ashobora kubibikana no kubisangiza abandi.</string>
+  <string name="sensitive_share_confirm">Gusangiza</string>
+  <string name="sensitive_copy_title">Gukoporora ikintu cyo mu buzima bwite?</string>
+  <string name="sensitive_copy_body">Wabishyize mu buzima bwite. Ahantu hose ubishyize hahabwa fayiro ubwayo.</string>
+  <string name="sensitive_copy_confirm">Koporora</string>
+  <string name="sensitive_cancel">Kureka</string>
+  <string name="settings_section_previews">Ibibanziriza</string>
+  <string name="settings_blur_title">Kutagaragaza neza amashusho y\'ubuzima bwite</string>
+  <string name="settings_blur_hint">Bikora byikoresheje, bityo hashobora kubaho amakosa. Ifoto nto ni yo itagaragara neza gusa; fayiro iracyaboneka. Kanda ku jisho kugira ngo uyerekane.</string>
+  <string name="settings_blur_panel_title">Kutagaragaza neza mu gushakisha byihuse</string>
+  <string name="settings_blur_panel_hint">Bikora byikoresheje, bityo hashobora kubaho amakosa. Biba bikora kuko aka kadirishya gafungukira hejuru y\'izindi porogaramu. Kwerekana ifoto bisaba gufungura telefone yawe.</string>
+  <string name="settings_blur_needs_pack">Bisaba inyongera ya \"Kutagaragaza neza amashusho y\'ubuzima bwite\" iri hasi. Kugeza yongereweho, nta kizahishwa.</string>
+  <string name="action_show_picture">Erekana ifoto</string>
+  <string name="preview_hidden">ishusho irihishe, ishobora kuba iy\'ubuzima bwite</string>
+  <string name="quick_unlock_to_show">Fungura telefone yawe kugira ngo werekane iyi foto.</string>
+  <string name="quick_name">Gushakisha byihuse</string>
+  <string name="quick_shortcut_long">Shakisha byihuse mu mafayiro yawe</string>
+  <string name="quick_widget_hint">Shakisha mu mafayiro yawe</string>
+  <string name="quick_widget_description">Akarongo ko gushakisha gafungura uburyo bwo gushakisha byihuse bwa <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> hejuru ya porogaramu urimo.</string>
+  <string name="quick_hint">Shakisha mu mafayiro yawe</string>
+  <string name="quick_close">Funga gushakisha byihuse</string>
+  <string name="quick_clear">Hanagura</string>
+  <string name="quick_nothing">Nta kibonetse kuri “%1$s”.</string>
+  <string name="quick_nothing_incomplete"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> iracyari muri gusoma amafayiro yawe, bityo ibi bishobora guhinduka.</string>
+  <string name="quick_not_set_up"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ntarasoma amafayiro yawe. Fungura <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kugira ngo utangire.</string>
+  <string name="quick_open_findr">Fungura <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="quick_still_meaning">Gushakisha ibisobanuro…</string>
+  <string name="quick_copied">Byakoporowe. Bishyire mu kiganiro.</string>
+  <string name="quick_copy_failed">Ntibyakunze gukoporora iyi fayiro.</string>
+  <string name="quick_no_app">Nta porogaramu ishobora gufungura iyi fayiro.</string>
+  <string name="quick_add_tile_title">Ongeraho Shakisha byihuse mu igenamiterere ryihuse?</string>
+  <string name="quick_add_tile_body">Bityo ushobora gushakisha amafayiro yawe muri porogaramu iyo ari yo yose ukuruye kabiri.</string>
+  <string name="quick_add_tile_yes">Ongeraho buto</string>
+  <string name="quick_add_tile_no">Si ubu</string>
+  <string name="settings_storage_remove_named">Gukuraho <xliff:g id="item" example="Speech pack">%1$s</xliff:g></string>
+  <string name="licences_show_named">Erekana inyandiko yose ya <xliff:g id="licence" example="Apache License 2.0">%1$s</xliff:g></string>
+  <string name="licences_hide_named">Hisha inyandiko yose ya <xliff:g id="licence" example="Apache License 2.0">%1$s</xliff:g></string>
+  <string name="sheet_error_word">Ikibazo</string>
+  <string name="switch_on">Bifunguye</string>
+  <string name="switch_off">Bifunze</string>
+  <string name="language_title">Hitamo ururimi rwawe</string>
+  <string name="language_intro">Imigaragarire ya <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> izaba iri muri uru rurimi. Ushobora kubihindura nyuma mu Igenamiterere.</string>
+  <string name="language_system">Ururimi rwa telefone</string>
+  <string name="language_system_hint">Bikurikiza igenamiterere rya telefone yawe</string>
+  <string name="language_preview">Igerageza</string>
+  <string name="settings_language">Ururimi</string>
+  <plurals name="search_status_so_far">
+        
+    
+    <item quantity="one">%1$d kugeza ubu · ibisobanuro mu kanya gato</item>
+    <item quantity="other">%1$d kugeza ubu · ibisobanuro mu kanya gato</item>
+  </plurals>
+  <string name="search_status_words">Amagambo nonaha · ibisobanuro mu kanya gato</string>
+  <plurals name="search_status_found">
+        
+    
+    <item quantity="one">Habonetse %1$d</item>
+    <item quantity="other">Habonetse %1$d</item>
+  </plurals>
+  <string name="action_share_file">Sangiza %1$s</string>
+  <string name="action_copy_file">Koporora %1$s</string>
+  <string name="preview_hidden_words">Bisa n\'ubuzima bwite · kanda urebe</string>
+  <string name="filter_group">Erekana amafayiro ayahe</string>
+</resources>

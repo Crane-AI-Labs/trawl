@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <!-- Trawl Go (the light edition for small Android Go phones) finds files by their names and the words in them. It has no AI model,
+       so these replace the full edition's copy about meaning, models and understanding. Every other string is shared with the full app. -->
+  <string name="welcome_line"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> finds your documents, photos and screenshots by their names and the words in them.</string>
+  <!-- Welcome page, second point: title, then body. Says the app is light and has nothing to download. -->
+  <string name="onb1_point_model_title">Made for small phones</string>
+  <string name="welcome_point_ai_body">It reads your files here, with nothing to download. Nothing is sent to a server.</string>
+  <string name="meter_sub_progress_eta">%1$s of %2$s read · about %3$s left</string>
+  <string name="meter_sub_progress_estimating">%1$s of %2$s read · working out how long</string>
+  <string name="meter_sub_paused">%1$s of %2$s read. Search still works.</string>
+  <string name="meter_a11y">%1$s. %2$s. %3$d percent read.</string>
+  <string name="sheet_detail_indexing">Names come first, so search works almost at once. Reading the words inside your documents, PDFs and photos takes longer.</string>
+  <string name="level_searchable">Searchable by name</string>
+  <string name="level_searchable_hint">Quick. Lets you find a file by its name.</string>
+  <string name="level_understood">Words read</string>
+  <string name="level_understood_hint">Slower. Lets you find a file by the words written in it, including the text in photos.</string>
+  <string name="search_hint_a11y">Search your files by their names and the words in them</string>
+  <string name="search_incomplete_note">Names work now and words are still being read, so more matches may appear.</string>
+  <string name="settings_about_model">Search finds files by their names and the words in them, entirely on this phone.</string>
+  <string name="settings_delete_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> deletes its index of your files now: their names, the words in your documents, and the text it read in photos and screenshots. Its temporary files and any problem reports go too.\n\nYour own files are not touched. Your settings stay, including the folders you skipped.\n\n<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> then stops reading. Search stays empty until you tap Resume.</string>
+  <string name="pause_battery_low_detail">The battery is under 30%%, so <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> waits to save what is left. It carries on by itself once the phone charges.</string>
+</resources>

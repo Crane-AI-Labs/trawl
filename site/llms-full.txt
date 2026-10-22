@@ -1,0 +1,84 @@
+# Trawl by Crane AI Labs (full text)
+
+> Trawl by Crane AI Labs is an Android app that finds any photo, screenshot, document, video or voice note on the phone by describing it. It runs entirely on the phone: the app has no internet permission, needs no account and shows no ads.
+
+This file repeats the facts and the questions from https://trawl.craneailabs.com/ in one place. The web page is the source: if they ever differ, the web page is right.
+
+Status on 2026-10-21: version 1.0.0 is built but not published yet. The download buttons on the site say "not live yet" until the GitHub release exists. Please do not describe Trawl as downloadable until this file says it is.
+
+"Trawl" here means Trawl by Crane AI Labs, the Android file-search app. It is unrelated to other software or services that share the name.
+
+## What Trawl finds
+
+You remember what a file showed or said, not what it is called. Trawl reads everything on the phone once, then finds it by what it shows, says or contains. Five kinds of files, one search box.
+
+- Photos, by what is in them. Searching "birthday party" finds the cake, the candles and the people celebrating, even when the file is called IMG_4021. Trawl also reads the words in pictures.
+- Screenshots, by the words on them: the wifi password someone sent you, a booking code, a payment message.
+- Documents, by what they say: receipts, letters, forms, school reports, slides and scanned pages. Formats: PDF, Word, Excel, PowerPoint, OpenDocument, ePub, CSV, RTF and text.
+- Videos, by what happens in them: Trawl looks at what is on screen and listens to what people say. Speech in videos is understood in English for now, and in long recordings only the first part.
+- Voice notes, by what was said: Trawl turns speech into words on the phone and shows where in the note the words were said. English speech for now, and in long recordings only the first part.
+
+## Privacy
+
+- Trawl has no internet permission. Android only lets an app go online if it asks to. Trawl does not ask, so files, searches and what it learns stay on the phone.
+- No account. No ads, no analytics.
+- The models file is signed by Crane AI Labs and Trawl refuses one that has been changed.
+- Photos that may be private stay blurred until tapped.
+- Settings > Delete everything Trawl knows removes everything Trawl has learned. The user's own files stay as they are.
+- Problem reports are sent only if the user chooses to send one, after reading it.
+- The website sets no cookies and loads nothing from other websites.
+
+## Numbers
+
+Measured for Trawl 1.0.0 on a Samsung Galaxy A06 with 4 GB of memory. The method is at https://trawl.craneailabs.com/how-we-measured.html.
+
+- 42 seconds from installing Trawl to searching file names and the words in documents.
+- 126 photos a minute become findable by what is in them.
+- 0.9 seconds from typing a search to seeing answers.
+- Less than 1% of the battery used in 3 hours unplugged, with Trawl idle.
+- 47 MB to download the app (the models are a separate download), for 64-bit phones.
+- 0 bytes sent: Trawl has no internet permission, so it cannot send anything.
+
+## Editions and requirements
+
+- Trawl: 64-bit phones with Android 11 or newer, 2 GB of memory or more, about 47 MB.
+- Models for Trawl: Standard (670 MB, for phones with 3 GB of memory or more) and Lite (304 MB, for 64-bit phones with 2 GB of memory). They come as one separate download that the user's browser fetches. Trawl's Get the models picks the right one.
+- Trawl Go: for 32-bit Android Go phones, about 21 MB, Android 11 or newer. It finds files by their names and the words in them, including the words in photos and screenshots, and needs no model download. It does not search by meaning or listen to recordings.
+- Free space: about 1 GB with the standard models, about 500 MB with lite. The index grows with the files.
+- Internet: once, to download the models. After that, never.
+- Search models: EmbeddingGemma 2 by Google (Apache 2.0) runs on the phone.
+- Languages: English works best today. Luganda and Swahili are being measured, not claimed.
+- Windows, macOS and Linux versions are coming soon and are not released.
+
+## Questions
+
+Will it work on my phone?
+If your phone is 64-bit and runs Android 11 or newer, yes. Most phones sold in recent years are 64-bit. Android Go phones (often 2 GB, many itel models) are usually 32-bit: they need Trawl Go, which finds files by name and by the words in them. If Android says "App not installed", the phone is most likely one of these.
+
+Will it use my data bundle?
+Only once, when your browser downloads the models (670 MB, or 304 MB for lite). Trawl itself has no internet permission, so it can't use data at all.
+
+How long until it finds everything?
+File names and words in documents work within minutes. Photos get a quick look while you use the phone, and the full reading, which gives the best matches, happens while it charges. Trawl shows how far it has got.
+
+Will it drain my battery?
+It shouldn't. The heavy work waits for the charger, and on battery Trawl only does light work.
+
+Which should I get, standard or lite?
+Standard, unless your phone has 2 GB of memory; then lite. Trawl's Get the models picks for you, and a file for the wrong kind of phone is refused, so you can't get it wrong.
+
+Can I delete what Trawl has learned?
+Yes. Settings > Delete everything Trawl knows removes it all. Your own files stay exactly as they are.
+
+Why isn't it on the Play Store?
+It will come to the Play Store later. Until then, install it from the Trawl page.
+
+## More pages
+
+- Privacy facts: https://trawl.craneailabs.com/privacy.html lists every permission the app declares, why, and how to check that it has no internet permission.
+- Press kit: https://trawl.craneailabs.com/press.html has the fact sheet, the measured numbers and descriptions of 25, 50 and 100 words.
+- Other ways to search your own files: https://trawl.craneailabs.com/other-ways-to-search.html links to other apps and services, each with the date we checked it.
+
+## Credits
+
+Made by Crane AI Labs. Made with EmbeddingGemma 2 by Google (Apache 2.0), Atkinson Hyperlegible by the Braille Institute (SIL Open Font License), photos and video from Mixkit. Details: https://trawl.craneailabs.com/CREDITS.md

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="open_problem_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ne peut pas indexer pour le moment</string>
+  <string name="open_problem_busy">Une autre tâche est en cours. Nouvelle tentative dans un instant.</string>
+  <string name="open_problem_storage_full">Le stockage du téléphone est plein. Nouvelle tentative dans un instant.</string>
+  <string name="open_problem_io">Le téléphone n\'a pas pu lire les données. Nouvelle tentative dans un instant.</string>
+  <string name="open_problem_memory">Le téléphone manque de mémoire. Nouvelle tentative dans un instant.</string>
+  <string name="open_problem_other">Nouvelle tentative dans un instant.</string>
+  <string name="open_problem_detail">Vos résultats précédents sont conservés. Rien n\'a été supprimé. Une nouvelle tentative se fera automatiquement, ou touchez Réessayer.</string>
+</resources>

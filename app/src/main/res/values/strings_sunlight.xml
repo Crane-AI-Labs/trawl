@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <!-- Written inside a switch's track, so on and off never depend on colour alone. Keep each to one short word. -->
+  <string name="switch_on">On</string>
+  <string name="switch_off">Off</string>
+
+  <!-- Choosing the app's language: the first onboarding page, and Settings, Appearance. Each language is listed in its own name. -->
+  <string name="language_title">Choose your language</string>
+  <string name="language_intro">The screens of <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> will be in this language. You can change it later in Settings.</string>
+  <!-- A row in the language list: follow whatever language the phone itself is set to. -->
+  <string name="language_system">The phone’s language</string>
+  <string name="language_system_hint">Follows your phone’s settings</string>
+  <!-- A small tag after a language whose translation is still being checked. One short word. -->
+  <string name="language_preview">Preview</string>
+  <!-- Settings row title; the current language is shown under it. -->
+  <string name="settings_language">Language</string>
+
+  <!-- One line above the search box while a search runs. "Words" = matches by the words in a file's name or text; "meaning" =
+       matches by what a file is about, which arrive a moment later. -->
+  <plurals name="search_status_so_far">
+    <item quantity="one">%1$d so far · meaning in a moment</item>
+    <item quantity="other">%1$d so far · meaning in a moment</item>
+  </plurals>
+  <string name="search_status_words">Words now · meaning in a moment</string>
+  <plurals name="search_status_found">
+    <item quantity="one">%1$d found</item>
+    <item quantity="other">%1$d found</item>
+  </plurals>
+  <!-- TalkBack labels for the Share and Copy buttons on a result row; %1$s is the file's name. -->
+  <string name="action_share_file">Share %1$s</string>
+  <string name="action_copy_file">Copy %1$s</string>
+  <!-- Over a blurred thumbnail: the picture may be private and is hidden until tapped. Keep short (it sits on a small tile). -->
+  <string name="preview_hidden_words">Looks private · tap to see</string>
+  <!-- TalkBack name of the group of filter tiles above the results. -->
+  <string name="filter_group">Show which files</string>
+
+  <!-- While typing, the progress meter folds into the line under the results. %1$s = files understood so far, %2$s = files
+       found on the phone (both already formatted, like "1,240" and "3,000"). "Learning" = the app reading what files are about. -->
+  <string name="typing_learning">Still learning: %1$s of %2$s · more results may appear</string>
+  <!-- The same while the slow part waits for the phone to be charging. -->
+  <string name="typing_learning_charger">Still learning: %1$s of %2$s · the rest when you charge</string>
+  <!-- The same while learning is paused (by the person, or because the phone is warm or its battery is low). -->
+  <string name="typing_learning_paused">Learned %1$s of %2$s so far · more results may appear</string>
+
+  <!-- Settings, Appearance: which colours the app uses. A small label above two choices. -->
+  <string name="settings_colours">Colours</string>
+  <!-- The app's own colours (warm paper, one yellow). "Sunlight" is the name of the look; translate the idea, keep it short. -->
+  <string name="colours_sunlight">Sunlight</string>
+  <string name="colours_sunlight_hint">Warm paper and one yellow, easy to read in bright sun.</string>
+  <!-- Colours taken from the phone's wallpaper (Android's own "dynamic colour"). -->
+  <string name="colours_wallpaper">Wallpaper colours</string>
+  <string name="colours_wallpaper_hint">Takes its colours from your wallpaper, and changes when it does.</string>
+  <!-- Settings, Appearance: a small label above the Light / Dark / System choices. -->
+  <string name="settings_brightness">Light or dark</string>
+</resources>

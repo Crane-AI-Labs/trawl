@@ -1,0 +1,452 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="kind_document">Àkọsílẹ̀</string>
+  <string name="kind_pdf">PDF</string>
+  <string name="kind_photo">Fọ́tò</string>
+  <string name="kind_screenshot">Àwòrán ìbòjú</string>
+  <string name="kind_video">Fídíò</string>
+  <string name="kind_audio">Ohùn</string>
+  <string name="kind_other">Fáìlì</string>
+  <string name="filter_all">Gbogbo</string>
+  <string name="filter_photos">Àwọn fọ́tò</string>
+  <string name="filter_screenshots">Àwọn àwòrán ìbòjú</string>
+  <string name="filter_videos">Àwọn fídíò</string>
+  <string name="filter_documents">Àwọn àkọsílẹ̀</string>
+  <string name="filter_audio">Ohùn</string>
+  <string name="kind_plural_screenshots">Àwọn àwòrán ìbòjú</string>
+  <string name="kind_plural_photos">Àwọn fọ́tò</string>
+  <string name="kind_plural_documents">Àwọn àkọsílẹ̀ àti PDF</string>
+  <string name="kind_plural_videos">Àwọn fídíò</string>
+  <string name="kind_plural_audio">Ohùn</string>
+  <string name="section_photos_videos">Àwọn fọ́tò àti fídíò</string>
+  <string name="section_documents_text">Àwọn àkọsílẹ̀ àti ọ̀rọ̀</string>
+  <string name="section_recent_documents">Àwọn àkọsílẹ̀ àìpẹ́</string>
+  <string name="section_recent_photos_videos">Àwọn fọ́tò àti fídíò àìpẹ́</string>
+  <string name="badge_page">o. %1$d</string>
+  <string name="badge_at_time">ní %1$s</string>
+  <plurals name="pages_count">
+        
+    
+    <item quantity="other">ojú ìwé %d</item>
+  </plurals>
+  <string name="action_open">Ṣí</string>
+  <string name="action_share">Pín</string>
+  <string name="action_copy">Dàkọ</string>
+  <string name="action_show_folder">Fi hàn nínú fódà</string>
+  <string name="action_more">Àwọn ìgbéṣẹ̀ síi</string>
+  <string name="snack_copied">Ti dàkọ</string>
+  <string name="meter_title_not_started">Kò tíì bẹ̀rẹ̀ kíkà</string>
+  <string name="meter_title_scanning">Ń yẹ fóònù rẹ wò</string>
+  <string name="meter_title_indexing">Ń kẹ́kọ̀ọ́ àwọn fáìlì rẹ</string>
+  <string name="meter_title_up_to_date">Gbogbo rẹ̀ ti pé</string>
+  <string name="meter_title_error">Àṣìṣe kan wáyé</string>
+  <string name="meter_sub_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yóò bẹ̀rẹ̀ ní kété tí ó bá lè rí àwọn fáìlì rẹ.</string>
+  <string name="meter_sub_scanning">Ti rí àwọn fáìlì %1$s títí di báyìí.</string>
+  <string name="meter_sub_names_first">Àwọn orúkọ àti ọ̀rọ̀ kọ́kọ́, kí o lè bẹ̀rẹ̀ sí í wá.</string>
+  <string name="meter_sub_progress_eta">%1$s nínú %2$s ti yé e · ó kù nǹkan bí %3$s</string>
+  <string name="meter_sub_progress_estimating">%1$s nínú %2$s ti yé e · ń ṣírò àkókò tó kù</string>
+  <string name="meter_sub_needs_charger">Orúkọ àti ọ̀rọ̀ báyìí. Ìtumọ̀ yóò bẹ̀rẹ̀ nígbà tí o bá gba iná.</string>
+  <string name="meter_sub_reembed">Ń sọ àwọn fọ́tò dọ̀tun fún àwòṣe tuntun: %1$s nínú %2$s. Wá ṣì ń ṣiṣẹ́.</string>
+  <string name="meter_sub_reembed_eta">Ń sọ àwọn fọ́tò dọ̀tun fún àwòṣe tuntun: %1$s nínú %2$s · ó kù nǹkan bí %3$s</string>
+  <string name="meter_sub_reembed_battery">Ń sọ àwọn fọ́tò dọ̀tun fún àwòṣe tuntun: %1$s nínú %2$s. Ìyókù yóò tẹ̀síwájú nígbà tí o bá gba iná.</string>
+  <string name="meter_sub_light_reading">Ń ka àwọn fọ́tò rẹ fún wíwá kíákíá. Dídára pípé yóò parí nígbà tí o bá gba iná.</string>
+  <string name="meter_sub_light_done">Gbogbo nǹkan ṣe é wá báyìí. Dídára pípé yóò parí nígbà tí o bá gba iná.</string>
+  <string name="meter_sub_paused">%1$s nínú %2$s ti yé e. Wá ṣì ń ṣiṣẹ́.</string>
+  <string name="meter_sub_up_to_date">Àwọn fáìlì %1$s ti ṣetán láti wá.</string>
+  <string name="meter_sub_error">Fọwọ́ tọ̀ ọ́ fún ẹ̀kúnrẹ́rẹ́.</string>
+  <string name="meter_a11y">%1$s. %2$s. Ìpín %3$d nínú ọgọ́rùn-ún ti yé e.</string>
+  <string name="meter_open_details">Fi ẹ̀kúnrẹ́rẹ́ kíkà hàn</string>
+  <string name="pause_not_charging">Ń dúró de ẹ̀rọ amúnáwá</string>
+  <string name="pause_not_charging_detail">Kíkà gbogbo nǹkan ní dídára pípé ń lo ọ̀pọ̀ bátìrì, torí náà <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ń ṣe apá yẹn nígbà tí fóònù bá ń gba iná. Wá ṣì ń ṣiṣẹ́ lásìkò yìí.</string>
+  <string name="pause_too_hot">Ń dín gbígbóná kù</string>
+  <string name="pause_too_hot_detail">Fóònù náà gbóná, torí náà <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ń sinmi láti dáàbò bò ó. Yóò tẹ̀síwájú fúnra rẹ̀ nígbà tí fóònù bá tutù.</string>
+  <string name="pause_battery_low">Bátìrì ti lọ sílẹ̀</string>
+  <string name="pause_battery_low_detail">Bátìrì kò tó 30%%, torí náà <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ń ka àwọn orúkọ àti ọ̀rọ̀ nìkan láti fi ìyókù pamọ́. Yóò tẹ̀síwájú fúnra rẹ̀ nígbà tí fóònù bá gba iná.</string>
+  <string name="pause_user">Ìwọ ló dádúró</string>
+  <string name="pause_user_detail">A ti dá kíkà dúró. Wá ṣì ń ṣiṣẹ́ lórí ohun tí <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ti kọ́ títí di báyìí.</string>
+  <string name="pause_no_permission">Nílò àyè sí àwọn fáìlì rẹ</string>
+  <string name="pause_no_permission_detail"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kò lè rí àwọn fáìlì rẹ àyàfi tí o bá fún un ní àyè sí Gbogbo fáìlì. Kíkà nìkan ló ń kà wọ́n, kò sì ní yí ohunkóhun padà.</string>
+  <string name="pause_storage_low">Àyè ìpamọ́ fóònù ti fẹ́rẹ̀ẹ́ kún</string>
+  <string name="pause_storage_low_detail"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> nílò àyè díẹ̀ láti tọ́jú ìṣàyẹ̀wò rẹ̀. Gbà àyè sílẹ̀ díẹ̀, yóò sì tẹ̀síwájú.</string>
+  <string name="action_pause">Dádúró</string>
+  <string name="action_resume">Tẹ̀síwájú</string>
+  <string name="action_read_on_battery">Kà á lórí bátìrì bẹ́ẹ̀</string>
+  <string name="action_allow_access">Fún ní àyè</string>
+  <string name="action_free_space">Gbà àyè sílẹ̀</string>
+  <string name="action_retry">Gbìyànjú lẹ́ẹ̀kan síi</string>
+  <string name="eta_under_minute">kò tó ìṣẹ́jú kan</string>
+  <string name="eta_minutes">ìṣẹ́jú %d</string>
+  <string name="eta_hours_single">wákàtí %d</string>
+  <string name="eta_hours_range">wákàtí %1$d sí %2$d</string>
+  <string name="eta_while_charging">%1$s lórí ẹ̀rọ amúnáwá</string>
+  <string name="sheet_title">Ń ka àwọn fáìlì rẹ</string>
+  <string name="sheet_detail_up_to_date">Gbogbo fáìlì tí <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> lè rí ti ṣetán. Àwọn tuntun yóò wọlé bí wọ́n ṣe ń dé.</string>
+  <string name="sheet_detail_scanning"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ń ṣe àtòjọ àwọn fáìlì rẹ. Èyí yóò gba ìṣẹ́jú kan tàbí méjì.</string>
+  <string name="sheet_detail_light_on_battery">A ti ka àwọn orúkọ àti ọ̀rọ̀ báyìí, a sì wo àwọn fọ́tò ní ṣókí, torí náà Wá ti ń ṣiṣẹ́. Dídára pípé, tó ń fúnni ní àbájáde tó dára jùlọ, yóò parí nígbà tí fóònù bá ń gba iná.</string>
+  <string name="sheet_detail_needs_charger">A ń ka àwọn orúkọ àti ọ̀rọ̀ báyìí, torí náà Wá ti ń ṣiṣẹ́. Lílóye ohun tí àwọn fọ́tò àti àkọsílẹ̀ dá lé lórí yóò bẹ̀rẹ̀ nígbà tí fóònù bá ń gba iná.</string>
+  <string name="sheet_detail_indexing">Àwọn orúkọ àti ọ̀rọ̀ ló ń kọ́kọ́ wá, kí wíwá lè tètè bẹ̀rẹ̀. Lílóye ohun tí àwọn fọ́tò àti àkọsílẹ̀ dá lé lórí ń gba àkókò púpọ̀, ó sì dára jù láti ṣe lálẹ́ lórí ṣájà.</string>
+  <string name="sheet_detail_error">Kíka dáwọ́ dúró lójijì. Àwọn àbájáde rẹ ti tẹ́lẹ̀ wà ní ààbò.</string>
+  <string name="sheet_detail_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kò tíì bẹ̀rẹ̀ sí í kà á.</string>
+  <string name="sheet_by_kind">Nípa irú fáìlì</string>
+  <string name="sheet_reading_now">Ń kà á lọ́wọ́lọ́wọ́</string>
+  <string name="sheet_resumes_by_itself">Yóò tẹ̀síwájú fúnra rẹ̀ tí a bá tún èyí ṣe.</string>
+  <string name="level_searchable">Ṣeé wá nípa orúkọ àti ọ̀rọ̀</string>
+  <string name="level_searchable_hint">Ó yára. Ó ń jẹ́ kó o wá fáìlì nípa ohun tí a kọ sínú rẹ̀.</string>
+  <string name="level_understood">Lílóye nípa ìtumọ̀</string>
+  <string name="level_understood_hint">Ó lọ́ra díẹ̀. Ó ń jẹ́ kó o wá fáìlì nípa ohun tí ó dá lé lórí.</string>
+  <string name="level_quicklook">Ìwòrán kánkán: àwọn fọ́tò àti fídíò</string>
+  <string name="level_quicklook_hint">Ó yára. Àwòṣe kékeré kan ń wá àwọn fọ́tò nípa ohun tó wà nínú wọn, fún wíwá ní èdè Gẹ̀ẹ́sì. Àkọsílẹ̀ kíkún yóò rọ́pò rẹ̀ bí a ṣe ń lóye fọ́tò kọ̀ọ̀kan.</string>
+  <string name="meter_quicklook">Ìwòrán kánkán: %1$s nínú %3$s àwọn fọ́tò · Kíkún: %2$s nínú %3$s</string>
+  <string name="level_a11y">%1$s: %2$s nínú %3$s</string>
+  <string name="count_of">%1$s nínú %2$s</string>
+  <string name="stat_time_left">Àkókò tó kù</string>
+  <string name="stat_speed">Ìyára</string>
+  <string name="stat_index_size">Ìwọ̀n àyẹ̀wò</string>
+  <string name="stat_model_size">Ìwọ̀n àwòṣe</string>
+  <string name="stat_when_charging">Yóò bẹ̀rẹ̀ lórí ṣájà</string>
+  <string name="stat_estimating">Ń ṣírò rẹ̀</string>
+  <string name="stat_measuring">Ń wọ̀n ọ́n</string>
+  <string name="stat_done">Ó ti parí</string>
+  <string name="stat_rate_value">%1$s fáìlì/w</string>
+  <string name="onb_next">Tókàn</string>
+  <string name="onb_back">Padà</string>
+  <string name="onb_start">Bẹ̀rẹ̀ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="onb_start_locked"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> nílò àyè sí Gbogbo àwọn fáìlì kí ó tó lè bẹ̀rẹ̀</string>
+  <string name="onb_allow_access">Fún ní àyè sí àwọn fáìlì</string>
+  <string name="onb_page_of">Ìgbésẹ̀ %1$d nínú %2$d</string>
+  <string name="welcome_line"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ń wá àwọn àkọsílẹ̀, fọ́tò àti àwòrán ojú iboju rẹ nípasẹ̀ ohun tí wọ́n sọ àti fi hàn.</string>
+  <string name="welcome_point_ai_body">Ọgbọ́n àtọwọ́dá tó lóye àwọn fáìlì rẹ ń ṣiṣẹ́ lórí fóònù yìí. Kò sí ohun tí a fi ránṣẹ́ sí sáfà.</string>
+  <string name="welcome_point_reads_title">Ó kàn ń ka àwọn fáìlì rẹ</string>
+  <string name="welcome_point_reads_body">Kì í yí ohunkóhun padà, gbé e tàbí pa á rẹ́. O lè pa gbogbo ohun tó ti kọ́ nígbàkigbà.</string>
+  <string name="onb_choose_folders">Yan àwọn fódà</string>
+  <string name="onb1_eyebrow">Ìpamọ́ láti ìbẹ̀rẹ̀</string>
+  <string name="onb1_title">Àwọn fáìlì rẹ kò ní kúrò lórí fóònù yìí láéláé.</string>
+  <string name="onb1_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ń wá àkọsílẹ̀, PDF, àwòrán ìbòjú, àwọn fọ́tò, àwòrán apanilẹ́rìn-ín àti fídíò nípa ohun tí wọ́n sọ àti ohun tí wọ́n fi hàn. Gbogbo rẹ̀ ń ṣẹlẹ̀ níbí, lórí fóònù yìí.</string>
+  <string name="onb1_point_internet_title">Kò ní àṣẹ íntánẹ́ẹ̀tì</string>
+  <string name="onb1_point_internet_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kò lè so pọ̀ mọ́ íntánẹ́ẹ̀tì rárá. Android fúnra rẹ̀ ń dí i lọ́wọ́ láti fi ohunkóhun ránṣẹ́ síta.</string>
+  <string name="onb1_point_model_title">AI náà ń gbé lórí fóònù rẹ</string>
+  <string name="onb1_point_model_body">Àwòṣe tó ń lóye àwọn fáìlì rẹ, EmbeddingGemma 2 láti ọwọ́ Google, ń ṣiṣẹ́ lórí fóònù yìí. A kì í fi ohunkóhun ránṣẹ́ sí sáfà kí a tó lóye rẹ̀.</string>
+  <string name="onb1_point_delete_title">Ìwọ ló ń darí</string>
+  <string name="onb1_point_delete_body">Fò fódà èyíkéyìí, tàbí pa gbogbo ohun tí <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ti kọ́ rẹ́, nígbàkúgbà tó o bá fẹ́.</string>
+  <string name="onb2_eyebrow">Ohun tó máa ṣẹlẹ̀ lẹ́yìn náà</string>
+  <string name="onb2_title">Wíwá máa ń ṣiṣẹ́ láàárín ìṣẹ́jú díẹ̀. Òye gígba ń gba gbogbo òru.</string>
+  <string name="onb2_step1_title">Láàárín ìṣẹ́jú díẹ̀</string>
+  <string name="onb2_step1_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> máa ṣe àtòjọ àwọn fáìlì rẹ, yóò sì kẹ́kọ̀ọ́ orúkọ wọn àti àwọn ọ̀rọ̀ inú wọn. O lè wá nǹkan lẹ́sẹ̀kẹsẹ̀.</string>
+  <string name="onb2_step2_title">Láàárín àwọn wákàtí díẹ̀ tó ń bọ̀</string>
+  <string name="onb2_step2_body">Lẹ́yìn náà, yóò kẹ́kọ̀ọ́ ohun tí fọ́tò àti àkọsílẹ̀ kọ̀ọ̀kan dá lélórí, kí ìwárí bíi “ìwé ẹ̀rí owó ilé-ìwé” lè rí èyí tó tọ́ kódà tí àwọn ọ̀rọ̀ yẹn kò bá sí nínú rẹ̀. Èyí jẹ́ iṣẹ́ tó lọ́ra fún fóònù.</string>
+  <string name="onb2_step3_title">Púpọ̀ jùlọ nígbà tí ó bá wà lórí iná</string>
+  <string name="onb2_step3_body">Láti fi bẹ́tìrì rẹ pamọ́, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> máa ń ṣe iṣẹ́ tó lọ́ra náà nígbà tí fóònù wà lórí iná. Fi sí orí iná mọ́jú lẹ́ẹ̀kan ṣoṣo. O lè wo bí ó ṣe ń lọ, dánudúró, tàbí yí èyí padà nígbàkigbà.</string>
+  <string name="onb3_eyebrow">Àṣẹ méjì</string>
+  <string name="onb3_title">Gba <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> láyè láti rí àwọn fáìlì rẹ</string>
+  <string name="onb3_files_title">Àyè sí gbogbo àwọn fáìlì</string>
+  <string name="onb3_files_body">A nílò rẹ̀ láti rí àwọn fáìlì nínú fódà kọ̀ọ̀kan, bíi àwọn àkọsílẹ̀ WhatsApp. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kàn ń kàwé nìkan ni. Kò ní yí nǹkankan padà, gbé e, tàbí pa á rẹ́ láéláé.</string>
+  <string name="onb3_files_action">Ṣí ètò</string>
+  <string name="onb3_files_granted">Gba àyè</string>
+  <string name="onb3_files_hint">Nínú àtòjọ tí ó ṣí, tẹ “Gba àyè láti ṣàkóso gbogbo àwọn fáìlì”, lẹ́yìn náà padà wá.</string>
+  <string name="onb3_notif_title">Ìkìlọ̀ (kò pọn dandan)</string>
+  <string name="onb3_notif_body">Kí <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> lè sọ fún ọ nígbà tí ó bá parí kíka nǹkan nìkan ni. Kò sí nǹkan mìíràn.</string>
+  <string name="onb3_notif_action">Gba àyè</string>
+  <string name="onb3_notif_granted">Gba àyè</string>
+  <string name="onb4_eyebrow">Àwọn àfikún àṣàyàn</string>
+  <string name="onb4_title">Ṣe àfikún?</string>
+  <string name="onb4_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ń ṣiṣẹ́ láìsí àwọn wọ̀nyí. Ọ̀kọ̀ọ̀kan ń mú ohun kan sunwọ̀n sí i. Ọ̀kọ̀ọ̀kan jẹ́ fáìlì tí o máa kọ́kọ́ dà sí Downloads, nítorí pé <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kì í lọ sí orí ayélujára rárá.</string>
+  <string name="onb4_add">Ṣe àfikún</string>
+  <string name="onb4_not_now">Kì í ṣe báyìí</string>
+  <string name="onb4_added">Ti fi kún un</string>
+  <string name="onb4_skipped">Fò kọjá. O lè fi kún un nígbà mìíràn.</string>
+  <string name="onb4_footer">O lè yí èyí padà nígbà mìíràn nínú Ètò → Àwọn àfikún.</string>
+  <string name="search_hint">Wá àwọn fáìlì rẹ</string>
+  <string name="search_hint_a11y">Wá àwọn fáìlì rẹ nípa ohun tí wọ́n sọ tàbí fi hàn</string>
+  <string name="search_clear">Pa ìwárí rẹ́</string>
+  <string name="search_searching">Ń wá nǹkan</string>
+  <string name="search_settings">Ètò</string>
+  <string name="search_nothing_title">A kò rí nǹkankan</string>
+  <string name="search_nothing_body">Kò sí fáìlì tó bá “%1$s” mu.</string>
+  <string name="search_nothing_try_all">Gbìyànjú àwọn ọ̀rọ̀ díẹ̀ tàbí ọ̀tọ̀, tàbí wá Gbogbo rẹ̀.</string>
+  <string name="search_nothing_incomplete"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ṣì ń kẹ́kọ̀ọ́ àwọn fáìlì rẹ, nítorí náà èyí lè yípadà. Gbìyànjú lẹ́ẹ̀kan sí i láìpẹ́.</string>
+  <string name="search_repairing_note">Wíwá ń tún ara rẹ̀ ṣe. Àwọn orúkọ àti ọ̀rọ̀ ṣì ń ṣiṣẹ́; wíwá nípasẹ̀ ìtumọ̀ yóò padà dé láàárín ìṣẹ́jú díẹ̀.</string>
+  <string name="search_incomplete_note">Àwọn orúkọ àti ọ̀rọ̀ ń ṣiṣẹ́ báyìí. A ṣì ń kẹ́kọ̀ọ́ ìwárí nípa ìtumọ̀, nítorí náà àwọn àbájáde púpọ̀ sí i lè yọjú.</string>
+  <string name="search_incomplete_note_charger">Àwọn orúkọ àti ọ̀rọ̀ ń ṣiṣẹ́ báyìí. Ìwárí nípa ìtumọ̀ (bíi “ọ́kàdà” fún fọ́tò alùpùpù) máa bẹ̀rẹ̀ ní kété tí fóònù bá wà lórí iná.</string>
+  <string name="search_weak_toggle">Àwọn àbájáde tí kò fi bẹ́ẹ̀ bá a mu (%1$d)</string>
+  <string name="search_weak_only">Kò sí àbájáde tó bá a mu dáadáa. Àwọn wọ̀nyí ló sún mọ́ ọn jùlọ.</string>
+  <string name="search_weak_expand">Fi àwọn àbájáde tí kò fi bẹ́ẹ̀ bá a mu hàn</string>
+  <string name="search_weak_collapse">Fipamọ́ àwọn àbájáde tí kò lágbára</string>
+  <string name="search_fresh_title">Kò tíì sí ohun kankan láti fi hàn</string>
+  <string name="search_fresh_body">Gbàrà tí <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> bá ti rí àwọn fáìlì rẹ, àwọn tuntun jù yóò hàn níhìn-ín. Tẹ̀ sí òkè láti wá.</string>
+  <string name="search_recent_empty_filter">Kò tíì sí àwọn fáìlì irú èyí.</string>
+  <string name="access_banner_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kò tíì lè rí àwọn fáìlì rẹ</string>
+  <string name="access_banner_body">Gba ààyè Gbogbo fáìlì láàyè kí ó lè kà wọ́n. Kò kì í yí ohunkóhun padà láé.</string>
+  <string name="snack_no_app">Kò sí àpù kankan lórí fóònù yìí tí ó lè ṣí fáìlì yìí.</string>
+  <string name="snack_sample">Àpẹẹrẹ fáìlì ni èyí, nítorí náà a kò lè ṣí i.</string>
+  <string name="settings_title">Ètò</string>
+  <string name="settings_back">Padà</string>
+  <string name="settings_section_reading">Kíkà</string>
+  <string name="learn_speed_title">Ìyára kíkọ́</string>
+  <string name="learn_gentle">Jẹ́jẹ́</string>
+  <string name="learn_gentle_hint">Ó máa ń kà nígbà tí ó bá ń gba iná nìkan, pẹ̀lú àwọn okùn díẹ̀. Bátìrì àti ooru díẹ̀ jù; ohunkóhun tuntun máa dúró de ẹ̀rọ amúnáwá.</string>
+  <string name="learn_balanced">Déédé</string>
+  <string name="learn_balanced_hint">Ọ̀nà àtìwọ́dá. Ẹ̀rọ amúnáwá máa ń ka gbogbo àwòrán inú fóònù rẹ; lórí bátìrì, àwọn fáìlì tuntun àti wíwo kíákíá nìkan ló máa ń ṣiṣẹ́.</string>
+  <string name="learn_fast">Kíákíá</string>
+  <string name="learn_fast_hint">Ó máa ń ka ohun gbogbo lórí bátìrì pẹ̀lú, ó sì máa ń dúró nígbà tí o bá ń lo ohun èlò mìíràn nìkan. Ó parí ní kùtùkùtù, ó ń lo bátìrì jù, ó sì ń gbóná jù.</string>
+  <string name="settings_section_kinds">Ohun tí a ó kà</string>
+  <string name="settings_recordings">Àwọn àkọsílẹ̀ ohùn àti àwọn gbigbasílẹ̀</string>
+  <string name="settings_recordings_hint">Kà á fún ohun tí a sọ àti ohun tí a gbọ́, kí o lè wá wọn.</string>
+  <string name="settings_deeper">Wíwá ìró jinlẹ̀ síi (ó lọ́ra): orin àti àwọn ìró mìíràn</string>
+  <string name="settings_deeper_hint">Ń wá àwọn ìró nípa bí wọ́n ṣe rí, kì í ṣe nípa àwọn ọ̀rọ̀ nìkan. Ó máa ń gba nǹkan bí ìṣẹ́jú àáyá 15 ti kíkà fún ìṣẹ́jú kọ̀ọ̀kan ti ìró lórí fóònù lásán.</string>
+  <string name="settings_section_addons">Àwọn àfikún</string>
+  <string name="addons_intro">Àwọn àfikún àyànfẹ́ tí ó mú kí wíwá sunwọ̀n síi. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kì í lọ sí orí ayélujára láé, nítorí náà ọ̀kọ̀ọ̀kan jẹ́ fáìlì tí o kọ́kọ́ dà kọ sínú Downloads. Gbogbo nǹkan ló ń wà lórí fóònù yìí.</string>
+  <string name="addons_status_not_added">A kò fi kún un</string>
+  <string name="addons_status_adding">Ń fi kún un</string>
+  <string name="addons_status_added">Ti fi kún un</string>
+  <string name="addons_status_soon">Ń bọ̀ láìpẹ́</string>
+  <string name="addons_size">Ìwọ̀n: %1$s</string>
+  <string name="addons_add">Fi kún un</string>
+  <string name="addons_add_with_size">Fi kún un (%1$s)</string>
+  <string name="addons_remove">Yọ ọ́ kúrò, ó gba %1$s sílẹ̀</string>
+  <string name="addons_on">Tàn</string>
+  <string name="addons_off">Pa</string>
+  <string name="addons_adding_pct">Ń yẹ̀ ẹ́ wò àti fífi kún un… %1$d%%</string>
+  <string name="addons_adding">Ń yẹ̀ ẹ́ wò àti fífi kún un…</string>
+  <string name="addons_try_again">Gbìyànjú lẹ́ẹ̀kan síi</string>
+  <string name="addons_soon_hint">Kò tíì tán báyìí. Yóò hàn níhìn-ín nígbà tí ó bá ṣe tán.</string>
+  <string name="addons_problem_not_found"><xliff:g id="app_name" example="Trawl">%2$s</xliff:g> kò lè rí %1$s nínú Downloads. Dà á kọ sí bẹ̀, lẹ́yìn náà gbìyànjú lẹ́ẹ̀kan síi.</string>
+  <string name="addons_problem_access"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> nílò ààyè Gbogbo fáìlì láti ka Downloads. Tàn án, lẹ́yìn náà gbìyànjú lẹ́ẹ̀kan síi.</string>
+  <string name="addons_problem_bad">Fáìlì tí ó wà nínú Downloads ti bàjẹ́ tàbí kò tọ̀nà, nítorí náà <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kò lò ó. Dà á kọ lẹ́ẹ̀kan síi, lẹ́yìn náà gbìyànjú lẹ́ẹ̀kan síi.</string>
+  <string name="addons_problem_unavailable">A kò tíì lè fi àfikún yìí kún un lórí àtẹ̀jáde yìí.</string>
+  <string name="addons_add_title">Fi %1$s kún un</string>
+  <string name="addons_add_install">Fi sí i</string>
+  <string name="addons_remove_title">Yọ %1$s kúrò?</string>
+  <string name="addons_remove_body">Èyí yóò gba %1$s sílẹ̀ yóò sì pa á. Àwọn ọ̀rọ̀ àti ìtumọ̀ tí <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> ti kọ́ tẹ́lẹ̀ yóò wà títí tí a ó fi ka àwọn fáìlì yẹn lẹ́ẹ̀kan sí i. O lè tún fi kún un nígbàkúgbà.</string>
+  <string name="addons_remove_confirm">Yọ kúrò</string>
+  <string name="settings_section_excluded">Àwọn fódà tí a fò dá</string>
+  <string name="settings_excluded_hint"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kò ní ka ohunkóhun nínú àwọn fódà wọ̀nyí.</string>
+  <string name="settings_excluded_empty">Kò sí. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ń ka gbogbo fódà tí ó lè rí.</string>
+  <string name="settings_excluded_remove">Dẹ́kun fífò %1$s dá</string>
+  <string name="settings_excluded_bad">A kò lè yan fódà yẹn láti ibí. Yan ọ̀kan lórí ibi ìfipamọ́ pàtàkì ti fóònù náà.</string>
+  <string name="onb_scope_eyebrow">Àṣàyàn rẹ</string>
+  <string name="scope_title">Kí ni kí <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> wá?</string>
+  <string name="scope_intro">Pa ohunkóhun tí o kò fẹ́ kí a rí. Àwọn fáìlì rẹ̀ yóò kúrò níbi ìwárí lẹ́sẹ̀kẹsẹ̀, wọn yóò sì padà wá tí o bá tún tàn án.</string>
+  <string name="scope_counts_unknown">Iye àwọn fáìlì yóò hàn ní kété tí <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> bá lè rí àwọn fáìlì rẹ.</string>
+  <string name="scope_private">Àwọn fódà tó fipamọ́, àwọn fódà tí a sàmì sí .nomedia àti àwọn fódà ìkọ̀kọ̀ ti àwọn àpù mìíràn kò ní jẹ́ kíkà láéláé.</string>
+  <string name="scope_added_title">Àwọn fódà tí o fi kún un</string>
+  <string name="scope_add">Fi fódà kún un</string>
+  <string name="scope_added_remove">Dẹ́kun wíwá %1$s</string>
+  <string name="scope_exclude">Fò fódà kan dá</string>
+  <plurals name="scope_files">
+        
+    
+    <item quantity="other">%1$s fáìlì</item>
+  </plurals>
+  <string name="scope_group_camera">Kámẹ́rà</string>
+  <string name="scope_group_screenshots">Àwòrán ojú ìbòjú</string>
+  <string name="scope_group_whatsapp_images">Àwọn fọ́tò WhatsApp</string>
+  <string name="scope_group_whatsapp_video">Àwọn fídíò WhatsApp</string>
+  <string name="scope_group_whatsapp_documents">Àwọn àkọsílẹ̀ WhatsApp</string>
+  <string name="scope_group_whatsapp_voice">Àwọn àkọsílẹ̀ ohùn WhatsApp</string>
+  <string name="scope_group_whatsapp_status">Ipò WhatsApp</string>
+  <string name="scope_group_downloads">Àwọn ìgbàsílẹ̀</string>
+  <string name="scope_group_documents">Àwọn àkọsílẹ̀</string>
+  <string name="scope_group_music">Orin àti àwọn ìgbàsílẹ̀</string>
+  <string name="scope_group_other">Àwọn fódà mìíràn</string>
+  <string name="settings_section_storage">Ibi ìfipamọ́ tí a lò</string>
+  <string name="settings_storage_index">Ṣàyẹ̀wò ìwárí</string>
+  <string name="settings_storage_model">Àwòṣe AI</string>
+  <string name="settings_delete">Pa gbogbo ohun tí <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> mọ̀ rẹ́</string>
+  <string name="settings_delete_hint">Ó ń pa ohun tí <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ti kà nínú àwọn fáìlì rẹ rẹ́, pẹ̀lú àwọn fáìlì ìgbà díẹ̀ rẹ̀. A kò fọwọ́ kan àwọn fáìlì tirẹ̀.</string>
+  <string name="settings_delete_title">Pa gbogbo ohun tí <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> mọ̀ rẹ́?</string>
+  <string name="settings_delete_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ń pa àyẹ̀wò àwọn fáìlì rẹ rẹ́ báyìí: orúkọ wọn, àwọn ọ̀rọ̀ nínú àwọn àkọsílẹ̀ rẹ, ọ̀rọ̀ tí ó kà nínú àwọn fọ́tò àti àwòrán ojú ìbòjú, ọ̀rọ̀ tí ó gbọ́ láti inú àwọn fídíò àti àkọsílẹ̀ ohùn, àti ohun tí AI rẹ̀ kíyèsí nípa fáìlì kọ̀ọ̀kan. Àwọn fáìlì ìgbà díẹ̀ rẹ̀ àti ìròyìn ìṣòro yóò lọ pẹ̀lú.\n\nA kò fọwọ́ kan àwọn fáìlì tirẹ̀. Ètò rẹ yóò wà níbẹ̀, títí kan àwọn fódà tí o fò dá.\n\n<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yóò wá dẹ́kun kíkà. Wíwá yóò wà ní òfo títí tí o ó fi tẹ Tẹ̀síwájú.</string>
+  <string name="settings_delete_done">Ti pa %1$s rẹ́. A dá <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> dúró títí tí o ó fi tẹ Tẹ̀síwájú.</string>
+  <string name="settings_storage_model_hint">A nílò rẹ̀ fún wíwá nípa ìtumọ̀.</string>
+  <string name="settings_storage_index_hint">Àkójọ ìsọfúnni àti àkọsílẹ̀ rẹ̀.</string>
+  <string name="settings_storage_estimate">Nígbà tí a bá ka gbogbo fáìlì tán</string>
+  <string name="settings_storage_estimate_value">Bíi %1$s</string>
+  <string name="settings_storage_memory">Ìrántí nígbà wíwá</string>
+  <string name="settings_storage_memory_hint">A máa lò ó nígbà tí <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> bá wà ní ṣíṣí nìkan. Bíi %1$s nígbà tí a bá ka gbogbo fáìlì tán.</string>
+  <string name="settings_storage_remove">Mú kúrò</string>
+  <string name="settings_storage_no_data"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kò lo dátà fóònù rárá: kò ní àyè sí intanẹ́ẹ̀tì.</string>
+  <string name="settings_delete_confirm">Pa rẹ́</string>
+  <string name="settings_cancel">Fagilé</string>
+  <string name="settings_section_appearance">Ìrísí</string>
+  <string name="settings_theme_system">Ti ètò fóònù</string>
+  <string name="settings_theme_light">Mọ́lẹ̀</string>
+  <string name="settings_theme_dark">Ṣókùnkùn</string>
+  <string name="report_card_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> dẹ́kun láìròtẹ́lẹ̀. Ṣé kí a fi ìjábọ̀ ránṣẹ́ láti ṣàtúnṣe rẹ̀?</string>
+  <string name="report_card_body">Ìjábọ̀ náà kò ní orúkọ fáìlì, àwọn àwárí tàbí ọ̀rọ̀ láti àwọn fáìlì rẹ nínú. Ìwọ yóò kọ́kọ́ kà á, a kò sì ní fi ohunkóhun ránṣẹ́ títí tí o ó fi tẹ Ránṣẹ́ nínú àpù ímeèlì rẹ.</string>
+  <string name="report_send">Ránṣẹ́</string>
+  <string name="report_not_now">Kì í ṣe báyìí</string>
+  <string name="report_view">Wo ìjábọ̀</string>
+  <string name="report_close">Pa dé</string>
+  <string name="report_send_email">Fi ránṣẹ́ nípasẹ̀ ímeèlì</string>
+  <string name="report_send_whatsapp">Fi ránṣẹ́ lórí WhatsApp</string>
+  <string name="report_send_whatsapp_file">Fi gbogbo ìjábọ̀ náà ránṣẹ́ lórí WhatsApp</string>
+  <string name="report_no_email">A kò rí àpù ímeèlì kankan lórí fóònù yìí. Lo Wo ìjábọ̀ láti kà á, tàbí fi àpù ímeèlì sí i.</string>
+  <string name="report_no_whatsapp">Kò lè ṣí WhatsApp.</string>
+  <string name="report_building">Ń pèsè ìjábọ̀ náà…</string>
+  <string name="report_dialog_title">Ìjábọ̀ ìṣòro</string>
+  <string name="report_dialog_hint">Èyí ni gbogbo ohun tí a ó fi ránṣẹ́. Àwọn fáìlì, àwọn fódà àti àwọn àwárí rẹ kò sí nínú rẹ̀.</string>
+  <string name="settings_section_report">Ṣe ìjábọ̀ ìṣòro kan</string>
+  <string name="settings_report_hint">Yóò ṣí àpù ímeèlì rẹ pẹ̀lú ìjábọ̀ tí ó ti ṣe tán láti ránṣẹ́. Ó ní oríṣi fóònù àti ẹ̀dà <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>, pẹ̀lú àwọn àṣìṣe tí <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> rí, láìsí orúkọ fáìlì, àwọn àwárí tàbí ọ̀rọ̀ láti àwọn fáìlì rẹ. Ìwọ yóò kọ́kọ́ kà á, a kò sì ní fi ohunkóhun ránṣẹ́ títí tí o ó fi tẹ Ránṣẹ́ níbẹ̀.</string>
+  <string name="settings_report_note">Kí ló ṣẹlẹ̀? (kò pọn dandan)</string>
+  <string name="settings_report_kept"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> máa ń tọ́jú ìjábọ̀ 10 púpọ̀ jùlọ lórí fóònù yìí, bíi 100 KB. “Pa gbogbo ohun tí <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> mọ̀ rẹ́” máa yọ wọ́n kúrò.</string>
+  <string name="settings_section_about">Nípa</string>
+  <string name="settings_about_version">Ẹ̀dà %1$s</string>
+  <string name="settings_about_model">Wíwá nǹkan ń lo EmbeddingGemma 2 láti ọwọ́ Google (Apache 2.0), pátápátá lórí fóònù yìí.</string>
+  <string name="settings_about_private"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kò ní àyè láti lo intanẹ́ẹ̀tì. Àwọn fáìlì rẹ àti ohun tí ó kọ́ láti inú wọn kì í jáde kúrò lórí fóònù rárá.</string>
+  <string name="settings_about_maker">Crane AI Labs ló ṣe é.</string>
+  <string name="settings_licences">Àwọn ìwé àṣẹ àti ìmoore</string>
+  <string name="licences_title">Àwọn ìwé àṣẹ àti ìmoore</string>
+  <string name="licences_intro"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> dá lórí àwọn iṣẹ́ tí ó wà nísàlẹ̀ yìí. Àwọn ìwé àṣẹ bèèrè fún àwọn àkíyèsí wọ̀nyí, bẹ́ẹ̀ sì ni a ṣe ń dúpẹ́ pẹ̀lú.</string>
+  <string name="licences_section_required">Àwọn àkíyèsí</string>
+  <string name="licences_section_components">Gbogbo nǹkan mìíràn nínú <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="licences_section_texts">Àwọn àkọsílẹ̀ àṣẹ ní kíkún</string>
+  <string name="licences_show">Fi àkọsílẹ̀ kíkún hàn</string>
+  <string name="licences_hide">Fipamọ́ àkọsílẹ̀ kíkún</string>
+  <string name="settings_close">Pa dé</string>
+  <string name="pack_size_mb">%1$d MB</string>
+  <string name="pack_speech_name">Wá ọ̀rọ̀ sísọ</string>
+  <string name="pack_speech_benefit">Ń wá ohun tí a sọ nínú àwọn fídíò àti àkọsílẹ̀ ohùn: fáìlì tó tọ́ kọ́kọ́ ń jáde ní %1$d%% ìgbà dípò %2$d%%.</string>
+  <plurals name="pack_speech_cost">
+        
+    
+    <item quantity="other">Ń fi bíi ìṣẹ́jú àáyá %1$d kún ìṣẹ́jú kọ̀ọ̀kan ti fídíò nígbà tí ń kà á. Ọ̀rọ̀ Gẹ̀ẹ́sì nìkan báyìí ná.</item>
+  </plurals>
+  <string name="pack_quicklook_name">Ìwò kíákíá fún àwọn fọ́tò</string>
+  <plurals name="pack_quicklook_benefit">
+        
+    
+    <item quantity="other">Mú kí gbogbo àtẹ àwọn fọ́tò rẹ ṣe é wá nípa ìtumọ̀ láàárín ìṣẹ́jú díẹ̀ dípò wákàtí: bíi fọ́tò %1$s ní wákàtí kan dípò %2$d lórí fóònù olówó pọ́ọ́kú (wíwá lédè Gẹ̀ẹ́sì). Kúlẹ̀kúlẹ̀ kíkún yóò ṣì wọlé lẹ́yìn rẹ̀.</item>
+  </plurals>
+  <string name="pack_quicklook_cost">Wíwá lédè Gẹ̀ẹ́sì nìkan: wíwá ní àwọn èdè mìíràn yóò dúró fún kíkà kíkún. Kíkà kíkún máa ń lọra ní bíi %1$d%% nígbà tí ó bá ń ṣiṣẹ́, ó sì ń lo agbára ìrántí àfikún díẹ̀ nígbà kíkà.</string>
+  <string name="pack_privacy_name">Ṣe àwọn àkọ́yẹ̀wò tó jọ ti ìpamọ́ ní bàìbàì</string>
+  <string name="pack_privacy_benefit">Ó máa ń ṣe àkọ́yẹ̀wò kékeré ti fọ́tò tó jọ ti ìpamọ́ (ìhòòhò, aṣọ abẹ́) ní bàìbàì, kí ẹnikẹ́ni tó bá wo ojú ìbojú rẹ má rí púpọ̀. Tẹ àkọ́yẹ̀wò kan láti fi hàn. Ó ń ṣe é ní bàìbàì nìkan: kò sí ohun tí a fipamọ́ tàbí kó kúrò nínú àwọn àbájáde.</string>
+  <string name="pack_privacy_cost">Ó lè ṣe àṣìṣe lọ́nà méjèèjì, àwọn fọ́tò ìlera (èéyi, ìyá tó ń fúnmọ́lọ́mú) sì lè di bàìbàì. Ó ń ka àwọn fọ́tò lábẹ́lẹ̀ nígbà tí fóònù ń gba iná, ó sì ń mú kí kíkà kíkún lọra ní bíi %1$d%% nígbà tí ó bá ń ṣiṣẹ́.</string>
+  <string name="pack_privacy_recommended">A gbani nímọ̀ràn tí o bá ń lo pílẹ́ẹ̀tì wíwá kíákíá</string>
+  <string name="pack_how_to_add_downloads"><xliff:g id="app_name" example="Trawl">%3$s</xliff:g> kì í lọ sórí ayélujára rárá, torí náà kò lè gba èyí wọlé fúnra rẹ̀. Gba fáìlì %1$s (%2$s) láti Crane AI Labs kí o sì dà á kọ sínú fódà Downloads ti fóònù yìí. Lẹ́yìn náà, tẹ Fi sori ẹrọ: <xliff:g id="app_name" example="Trawl">%3$s</xliff:g> yóò ṣàyẹ̀wò fáìlì náà yóò sì fi kún un. O lè pa .zip náà rẹ́ lẹ́yìn náà.</string>
+  <string name="pack_how_to_add_play">Play yóò pèsè %1$s (%2$s) nígbà tí o bá tẹ Fi sori ẹrọ. Kò sí ohun mìíràn láti ṣe mọ́.</string>
+  <string name="notif_channel_name">Ń kẹ́kọ̀ọ́ fóònù rẹ</string>
+  <string name="notif_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ń kẹ́kọ̀ọ́ fóònù rẹ</string>
+  <string name="notif_getting_ready">Ń múra sílẹ̀…</string>
+  <string name="notif_reading_photo">Ń ka fọ́tò kan</string>
+  <string name="notif_reading_screenshot">Ń ka àwòrán ojú ìbojú kan</string>
+  <string name="notif_reading_video">Ń ka fídíò kan</string>
+  <string name="notif_reading_document">Ń ka àkọsílẹ̀ kan</string>
+  <string name="notif_reading_recording">Ń ka ohun tí a gbà sílẹ̀ kan</string>
+  <string name="notif_reading_file">Ń ka fáìlì kan</string>
+  <string name="notif_waiting_polite">Ń dúró nígbà tí o ń lo fóònù</string>
+  <string name="chip_label_action">%1$s  ·  %2$s</string>
+  <string name="a11y_description_note">%1$s. %2$s</string>
+  <string name="meter_a11y_extra">%1$s %2$s.</string>
+  <string name="message_then_sentence">%1$s %2$s</string>
+  <string name="lock_title">A ti ti <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> pa</string>
+  <string name="lock_body">Ṣí i pẹ̀lú ìka ọwọ́, ojú, PIN tàbí àpẹẹrẹ fóònù rẹ.</string>
+  <string name="lock_button">Ṣí i</string>
+  <string name="quick_device_locked">Ṣí fóònù rẹ láti wá.</string>
+  <string name="lock_prompt_title">Ṣí <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="lock_prompt_subtitle">Lo ìtìpa ojú-fóònù rẹ</string>
+  <string name="settings_section_privacy">Ìpamọ́</string>
+  <string name="privacy_lock_title">Ti <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> pa</string>
+  <string name="privacy_lock_hint">Béèrè fún ìka ọwọ́, ojú, PIN tàbí àpẹẹrẹ rẹ kí ó tó fi ohunkóhun hàn.</string>
+  <string name="privacy_lock_needs_screen_lock">Kọ́kọ́ fi ìtìpa ojú-fóònù sí fóònù rẹ (Ètò, Ààbò). Ìṣípa kan náà ni <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ń lò.</string>
+  <string name="privacy_lock_on_prompt">Tan ìtìpa <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="privacy_lock_off_prompt">Pa ìtìpa <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="privacy_lock_after_title">Tún ti pa lẹ́yìn</string>
+  <string name="privacy_lock_after_now">Ní gbogbo ìgbà</string>
+  <string name="privacy_lock_after_minutes">Ìṣẹ́jú %1$d</string>
+  <string name="privacy_lock_after_hint">Bí <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ṣe lè pẹ́ tó ní abẹ́lẹ̀ kí ó tó tún béèrè. Yóò tún ti pa tí ojú-fóònù bá kú.</string>
+  <string name="privacy_recents_title">Fipamọ́ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> nínú àwọn àpù àìpẹ́</string>
+  <string name="privacy_recents_hint">Káàdì <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kò ní fi nǹkan hàn nínú àkójọ àwọn àpù àìpẹ́. Àbùkù rẹ̀: a kò ní lè ya àwòrán ojú-fóònù <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> pẹ̀lú.</string>
+  <string name="privacy_show_title">Fi àwọn àbájáde tó ní àṣírí hàn</string>
+  <string name="privacy_show_hint">Tí a bá pa á: àwọn fáìlì tí o sàmì sí gẹ́gẹ́ bíi àṣírí, àti àwọn fáìlì inú fódà àpamọ́, kò ní hàn nínú àbájáde àti panẹ́ẹ̀lì kíákíá títí tí o ó fi ṣí wọn.</string>
+  <string name="privacy_show_prompt">Fi àwọn àbájáde tó ní àṣírí hàn</string>
+  <string name="privacy_pin_note">Ẹnikẹ́ni tó mọ PIN fóònù rẹ lè rí àwọn àbájáde tó ní àṣírí. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kò ní PIN ti ara rẹ̀.</string>
+  <string name="privacy_no_screen_lock_note">Fóònù rẹ kò ní ìtìpa ojú-fóònù, torí náà ẹnikẹ́ni tó bá mú un lè ṣí <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kí ó sì rí gbogbo nǹkan. Fi ìtìpa ojú-fóònù sí i láti dáàbò bò ó.</string>
+  <string name="privacy_folders_title">Àwọn fódà àpamọ́</string>
+  <string name="privacy_folders_hint">Gbogbo nǹkan nínú fódà àpamọ́ ni a kà sí àṣírí. Yàtọ̀ sí àwọn fódà tí a yọ sílẹ̀, a ṣì máa ń kà á, torí náà o lè wá a lẹ́yìn tí o bá ṣí i.</string>
+  <string name="privacy_folders_empty">Kò sí fódà àpamọ́ kankan.</string>
+  <string name="privacy_folders_add">Fi fódà àpamọ́ kún un</string>
+  <string name="privacy_folders_bad">A kò lè fi fódà yẹn pamọ́. Yan fódà kan lórí ibi ìpamọ́ àkọ́kọ́ ti fóònù.</string>
+  <string name="privacy_folders_remove">Dẹ́kun kíkà %1$s sí àpamọ́</string>
+  <string name="privacy_folders_remove_prompt">Yọ fódà kúrò ní àpamọ́</string>
+  <string name="onb_lock_title">Ti <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> pa (àṣàyàn)</string>
+  <string name="onb_lock_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> lè béèrè fún ìka ọwọ́, ojú, PIN tàbí àpẹẹrẹ fóònù rẹ kí ó tó fi ohunkóhun hàn, kí ẹnikẹ́ni tó mú fóònù rẹ má bàa wá nǹkan nínú rẹ̀. O lè yí èyí pa dà nínú Ètò.</string>
+  <string name="onb_lock_action">Tan ìtìpa</string>
+  <string name="onb_lock_on">Ìtìpa ti wà ní títàn</string>
+  <string name="onb_lock_no_screen_lock">Fóònù rẹ kò tíì ní ìtìpa ojú-fóònù. Ṣètò ọ̀kan nínú Ètò fóònù láti lo èyí.</string>
+  <string name="privacy_hidden_chip">%1$d fipamọ́</string>
+  <string name="privacy_hidden_action">Fi hàn</string>
+  <plurals name="privacy_hidden_chip_description">
+        
+    
+    <item quantity="other">%1$d àbájáde ẹlẹgẹ́ wà ní fipamọ́. Tẹ lẹ́ẹ̀mejì láti ṣí i kí o sì fi hàn.</item>
+  </plurals>
+  <string name="privacy_shown_chip">Àbájáde ẹlẹgẹ́ hàn</string>
+  <string name="privacy_shown_action">Fipamọ́</string>
+  <string name="privacy_reveal_title">Fi àbájáde ẹlẹgẹ́ hàn</string>
+  <string name="privacy_reveal_subtitle">Lo ìtìpa ojú ìbòjú fóònù rẹ</string>
+  <string name="action_mark_sensitive">Sàmì sí bí ẹlẹgẹ́</string>
+  <string name="action_unmark_sensitive">Kì í ṣe ẹlẹgẹ́</string>
+  <string name="snack_marked_sensitive">A ti sàmì sí i bí ẹlẹgẹ́. Ó ti fipamọ́ kúrò nínú àbájáde báyìí.</string>
+  <string name="snack_unmarked_sensitive">Kò jẹ́ ẹlẹgẹ́ mọ́.</string>
+  <string name="sensitive_share_title">Pín ohun ẹlẹgẹ́ bí?</string>
+  <string name="sensitive_share_body">O sàmì sí èyí bí ẹlẹgẹ́. Ẹnikẹ́ni tí ó bá gbà á lè tọ́jú rẹ̀ kí ó sì fi ránṣẹ́ sí ẹlòmíràn.</string>
+  <string name="sensitive_share_confirm">Pín</string>
+  <string name="sensitive_copy_title">Ṣe àwòkọ ohun ẹlẹgẹ́ bí?</string>
+  <string name="sensitive_copy_body">O sàmì sí èyí bí ẹlẹgẹ́. Ohunkóhun tí o lẹ̀ mọ́ yóò gba fáìlì náà fúnra rẹ̀.</string>
+  <string name="sensitive_copy_confirm">Ṣe àwòkọ</string>
+  <string name="sensitive_cancel">Fagilé</string>
+  <string name="settings_section_previews">Àwòtẹ́lẹ̀</string>
+  <string name="settings_blur_title">Ṣe àwòtẹ́lẹ̀ tó jọ ti àṣírí ní bàìbàì</string>
+  <string name="settings_blur_hint">Ó ń ṣiṣẹ́ fúnra rẹ̀, torí náà ó lè ṣàṣìṣe. Àwòrán kékeré nìkan ló máa bàìbàì; a ṣì rí fáìlì náà. Tẹ ojú náà láti fi hàn.</string>
+  <string name="settings_blur_panel_title">Ṣe bàìbàì nínú wíwá kíákíá</string>
+  <string name="settings_blur_panel_hint">Ó ń ṣiṣẹ́ fúnra rẹ̀, torí náà ó lè ṣàṣìṣe. Ó wà ní títàn lábẹ́nú níhìn-ín, torí pé pẹpẹ náà máa ń ṣí lórí àwọn àpù mìíràn. Fífi àwòrán hàn gba pé kí o ṣí fóònù rẹ.</string>
+  <string name="settings_blur_needs_pack">Ó nílò àfikún \"Ṣe àwòtẹ́lẹ̀ tó jọ ti àṣírí ní bàìbàì\" ní ìsàlẹ̀. Àyàfi tí a bá fi kún un, kò sí ohun tí yóò bàìbàì.</string>
+  <string name="action_show_picture">Fi àwòrán hàn</string>
+  <string name="preview_hidden">àwòtẹ́lẹ̀ fipamọ́, ó lè jẹ́ ti àṣírí</string>
+  <string name="quick_unlock_to_show">Ṣí fóònù rẹ láti fi àwòrán yìí hàn.</string>
+  <string name="quick_name">Wíwá kíákíá</string>
+  <string name="quick_shortcut_long">Wá àwọn fáìlì rẹ kíákíá</string>
+  <string name="quick_widget_hint">Wá àwọn fáìlì rẹ</string>
+  <string name="quick_widget_description">Pẹpẹ ìwárí tí ń ṣí wíwá kíákíá ti <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>\'s lórí àpù tí o wà nínú rẹ̀.</string>
+  <string name="quick_hint">Wá àwọn fáìlì rẹ</string>
+  <string name="quick_close">Pa wíwá kíákíá dé</string>
+  <string name="quick_clear">Pa rẹ́</string>
+  <string name="quick_nothing">A kò rí nǹkankan fún “%1$s”.</string>
+  <string name="quick_nothing_incomplete"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ṣì ń kẹ́kọ̀ọ́ àwọn fáìlì rẹ, torí náà èyí lè yípadà.</string>
+  <string name="quick_not_set_up"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kò tíì ka àwọn fáìlì rẹ. Ṣí <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> láti bẹ̀rẹ̀.</string>
+  <string name="quick_open_findr">Ṣí <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="quick_still_meaning">Ń wá ìtumọ̀…</string>
+  <string name="quick_copied">A ti ṣe àwòkọ rẹ̀. Lẹ̀ ẹ́ sínú ìfọ̀rọ̀wérọ̀.</string>
+  <string name="quick_copy_failed">Kò lè ṣe ẹ̀dà fáìlì yìí.</string>
+  <string name="quick_no_app">Kò sí àpù tó lè ṣí fáìlì yìí.</string>
+  <string name="quick_add_tile_title">Fi Wá kíákíá kún àwọn ètò kíákíá rẹ?</string>
+  <string name="quick_add_tile_body">Nígbà náà o lè wá àwọn fáìlì rẹ láti àpù èyíkéyìí pẹ̀lú fífà lẹ́ẹ̀mejì.</string>
+  <string name="quick_add_tile_yes">Fi táìlì kún un</string>
+  <string name="quick_add_tile_no">Kì í ṣe báyìí</string>
+  <string name="settings_storage_remove_named">Mú <xliff:g id="item" example="Speech pack">%1$s</xliff:g> kúrò</string>
+  <string name="licences_show_named">Fi gbogbo ọ̀rọ̀ <xliff:g id="licence" example="Apache License 2.0">%1$s</xliff:g> hàn</string>
+  <string name="licences_hide_named">Fi gbogbo ọ̀rọ̀ <xliff:g id="licence" example="Apache License 2.0">%1$s</xliff:g> pamọ́</string>
+  <string name="sheet_error_word">Ìṣòro</string>
+  <string name="switch_on">Tàn</string>
+  <string name="switch_off">Pa</string>
+  <string name="language_title">Yan èdè rẹ</string>
+  <string name="language_intro">Àwọn ojú ìbòjú ti <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yóò wà ní èdè yìí. O lè yí i padà nígbà tó yá nínú Ètò.</string>
+  <string name="language_system">Èdè fóònù náà</string>
+  <string name="language_system_hint">Ń tẹ̀lé ètò fóònù rẹ</string>
+  <string name="language_preview">Àkọ́wò</string>
+  <string name="settings_language">Èdè</string>
+  <plurals name="search_status_so_far">
+        
+    
+    <item quantity="other">%1$d títí di báyìí · ìtumọ̀ ń bọ̀ láìpẹ́</item>
+  </plurals>
+  <string name="search_status_words">Àwọn ọ̀rọ̀ báyìí · ìtumọ̀ ń bọ̀ láìpẹ́</string>
+  <plurals name="search_status_found">
+        
+    
+    <item quantity="other">A rí %1$d</item>
+  </plurals>
+  <string name="action_share_file">Pín %1$s</string>
+  <string name="action_copy_file">Ṣe ẹ̀dà %1$s</string>
+  <string name="preview_hidden_words">Ó jọ ti ìpamọ́ · tẹ̀ ẹ́ láti wò ó</string>
+  <string name="filter_group">Fi àwọn fáìlì wo hàn</string>
+</resources>

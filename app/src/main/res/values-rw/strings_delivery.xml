@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="models_eyebrow">Gukuramo rimwe</string>
+  <string name="models_title">Fata moderi zo gushakisha</string>
+  <string name="models_body">Koresha Wi-Fi niba ubishoboye: fayiro imwe ya %1$d MB, ikururwa rimwe gusa. Amazina n\'amagambo bihita bikora. Gushakisha ukurikije ibisobanuro birushaho kuba byiza uko <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> igenda isoma amafayiro yawe, bikaba byiza cyane imaze ijoro ku muriro.</string>
+  <string name="models_get">Fata moderi (%1$d MB)</string>
+  <string name="models_choose">Hitamo fayiro</string>
+  <string name="models_hint_choose">Usanzwe ufite fayiro? Yihitemo kuri telefone yawe.</string>
+  <string name="models_hint_access"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yishyiriramo fayiro iyo imaze gukururwa, umaze kuyiha uruhushya rwo kugera ku mafayiro yawe. Cyangwa uhitemo Hitamo fayiro.</string>
+  <string name="models_hint_wait"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ihita yongeramo fayiro iyo imaze gukururwa. Ushobora gutangira ubu.</string>
+  <string name="models_no_browser">Nta mucukumbuzi wabonetse kuri iyi telefone. Yishyireho fayiro mu bundi buryo, hanyuma uyihitemo hano.</string>
+  <string name="models_downloading">Birimo gukururwa… %1$s kugeza ubu</string>
+  <string name="models_installing_pct">Moderi ziragenzurwa kandi zirongerwamo… %1$d%%</string>
+  <string name="models_installing">Moderi ziragenzurwa kandi zirongerwamo…</string>
+  <string name="models_cancel">Hagarika</string>
+  <string name="models_done">Moderi zashyizwemo. Ubu ushobora gushakisha.</string>
+  <string name="models_done_already">Moderi zamaze gushyirwamo.</string>
+  <string name="models_ok">Ni byo</string>
+  <string name="models_free_question">Usibe fayiro yakuwe kugira ngo haboneke umwanya wa %1$s?</string>
+  <string name="models_free_yes">Yego, yisibe</string>
+  <string name="models_free_no">Oya, yigumemo</string>
+  <string name="models_try_again">Ongera ugerageze</string>
+  <string name="models_refused_wrong_class">Iyi fayiro ni iy\'ubundi bwoko bwa telefone. Kanda Fata moderi kugira ngo ukuremo ijyanye n\'iyi telefone.</string>
+  <string name="models_refused_damaged">Fayiro yangiritse cyangwa ntiyuzuye, bityo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ntiyayikoresheje. Ongera uyikuremo, hanyuma wongere ugerageze.</string>
+  <string name="models_refused_not_signed"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ntiyashoboye kwemeza ko iyi fayiro ari nyayo, bityo ntiyayikoresheje. Kanda Fata moderi kugira ngo wongere uyikuremo.</string>
+  <string name="models_refused_older">Iyi fayiro irashaje kurusha moderi zisanzwe kuri iyi telefone, bityo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yagumanye izigezweho.</string>
+  <string name="models_refused_no_space">Nta mwanya uhagije uri kuri iyi telefone. Shaka umwanya ungana na %1$d MB, hanyuma wongere ugerageze.</string>
+  <string name="models_refused_cancelled">Byahagaritswe. Nta cyahindutse.</string>
+  <string name="models_update_title">Hari moderi nziza kurushaho</string>
+  <string name="models_update_body_reread">Kuyongeramo bituma <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yongera gusoma amafayiro yawe. Ibyo bikorwa telefone iri ku muriro, kandi hagati aho ushobora gukomeza gushakisha.</string>
+  <string name="models_update_body_light">Kuyongeramo ntibituma <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yongera gusoma amafayiro yawe.</string>
+  <string name="models_update_get">Fata ivugurura (%1$d MB)</string>
+  <string name="models_update_not_now">Si ubu</string>
+</resources>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="sort_best">Okuhambisana kakhulu</string>
+  <string name="sort_newest">Okusha kakhulu</string>
+  <string name="sort_oldest">Okudala kakhulu</string>
+  <string name="sort_largest">Okukhulu kakhulu</string>
+  <string name="sort_name">Igama A kuya ku-Z</string>
+  <string name="sort_group">Hlunga ngokuthi</string>
+  <string name="date_any_time">Noma nini</string>
+  <string name="date_group">Idethi</string>
+  <string name="date_today">Namuhla</string>
+  <string name="date_yesterday">Izolo</string>
+  <string name="date_this_week">Kuleli sonto</string>
+  <string name="date_last_week">Ngesonto eledlule</string>
+  <string name="date_this_month">Kule nyanga</string>
+  <string name="date_last_month">Ngenyanga edlule</string>
+  <string name="date_this_year">Kulo nyaka</string>
+  <string name="date_last_year">Ngonyaka odlule</string>
+  <string name="date_weekend">Ngempelasonto edlule</string>
+  <string name="date_last_night">Izolo ebusuku</string>
+  <string name="date_this_morning">Namuhla ekuseni</string>
+  <string name="date_this_afternoon">Namuhla ntambama</string>
+  <string name="date_this_evening">Namuhla kusihlwa</string>
+  <string name="date_yesterday_morning">Izolo ekuseni</string>
+  <string name="date_yesterday_afternoon">Izolo ntambama</string>
+  <string name="date_yesterday_evening">Izolo kusihlwa</string>
+  <string name="date_pick_range">Khetha amadethi…</string>
+  <string name="date_range">%1$s – %2$s</string>
+  <string name="date_remove">Susa isihlungi sedethi</string>
+  <string name="date_from_words">%1$s, kusuka emagameni osesho lwakho</string>
+  <string name="date_picker_title">Khetha usuku lokuqala nolokugcina</string>
+  <string name="date_picker_ok">Sebenzisa</string>
+  <plurals name="date_past_days">
+    
+    <item quantity="one">Kusukela osukwini olungu-%d olwedlule</item>
+    <item quantity="other">Kusukela ezinsukwini ezingu-%d ezedlule</item>
+  </plurals>
+  <plurals name="date_past_weeks">
+    
+    <item quantity="one">Kusukela esontweni elingu-%d eledlule</item>
+    <item quantity="other">Kusukela emasontweni angu-%d edlule</item>
+  </plurals>
+  <plurals name="date_past_months">
+    
+    <item quantity="one">Kusukela enyangeni engu-%d edlule</item>
+    <item quantity="other">Kusukela ezinyangeni ezingu-%d ezedlule</item>
+  </plurals>
+  <plurals name="date_past_years">
+    
+    <item quantity="one">Kusukela onyakeni ongu-%d odlule</item>
+    <item quantity="other">Kusukela eminyakeni engu-%d edlule</item>
+  </plurals>
+  <plurals name="date_ago_days">
+    
+    <item quantity="one">Osukwini olungu-%d olwedlule</item>
+    <item quantity="other">Ezinsukwini ezingu-%d ezedlule</item>
+  </plurals>
+  <plurals name="date_ago_weeks">
+    
+    <item quantity="one">Esontweni elingu-%d eledlule</item>
+    <item quantity="other">Emasontweni angu-%d edlule</item>
+  </plurals>
+  <plurals name="date_ago_months">
+    
+    <item quantity="one">Enyangeni engu-%d edlule</item>
+    <item quantity="other">Ezinyangeni ezingu-%d ezedlule</item>
+  </plurals>
+  <plurals name="date_ago_years">
+    
+    <item quantity="one">Onyakeni ongu-%d odlule</item>
+    <item quantity="other">Eminyakeni engu-%d edlule</item>
+  </plurals>
+  <string name="action_select">Khetha</string>
+  <plurals name="select_count">
+    
+    <item quantity="one">Kukhethwe %d</item>
+    <item quantity="other">Kukhethwe %d</item>
+  </plurals>
+  <string name="select_all">Khetha konke</string>
+  <string name="select_none">Ungakhethi lutho</string>
+  <string name="select_exit">Yeka ukukhetha</string>
+  <string name="select_share_limit">Ungabelana ngamafayela afinyelela kwangu-%d ngesikhathi esisodwa.</string>
+  <string name="sensitive_share_body_many">Amanye alawa amakwe njengabucayi. Noma ubani owamukelayo angawagcina futhi awadlulisele kwabanye.</string>
+  <string name="sensitive_copy_body_many">Amanye alawa amakwe njengabucayi. Noma yini onamathisela kuyo ithola amafayela ngokwawo.</string>
+  <string name="snack_marked_sensitive_many">Amakwe njengabucayi. Manje afihliwe emiphumeleni.</string>
+  <string name="snack_unmarked_sensitive_many">Awasekho amakwe. Angaphinda avele emiphumeleni.</string>
+  <string name="nothing_in_dates">%1$s: akukho okutholakele. Zama enye idethi.</string>
+</resources>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="welcome_line">يعثر <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> على مستنداتك وصورك ولقطات الشاشة حسب أسمائها والكلمات فيها.</string>
+  <string name="onb1_point_model_title">مصمم للهواتف الصغيرة</string>
+  <string name="welcome_point_ai_body">يقرأ ملفاتك هنا من دون تنزيل أي شيء. لا يُرسل أي شيء إلى خادم.</string>
+  <string name="meter_sub_progress_eta">تمت قراءة %1$s من %2$s · متبقٍ نحو %3$s</string>
+  <string name="meter_sub_progress_estimating">تمت قراءة %1$s من %2$s · جارٍ تقدير المدة</string>
+  <string name="meter_sub_paused">تمت قراءة %1$s من %2$s. لا يزال البحث يعمل.</string>
+  <string name="meter_a11y">%1$s. %2$s. تمت قراءة %3$d بالمئة.</string>
+  <string name="sheet_detail_indexing">تُقرأ الأسماء أولاً، لذا يعمل البحث فوراً تقريباً. تستغرق قراءة الكلمات داخل مستنداتك وملفات PDF وصورك وقتاً أطول.</string>
+  <string name="level_searchable">قابل للبحث بالاسم</string>
+  <string name="level_searchable_hint">سريع. يتيح لك العثور على ملف باسمه.</string>
+  <string name="level_understood">تمت قراءة الكلمات</string>
+  <string name="level_understood_hint">أبطأ. يتيح لك العثور على ملف بالكلمات المكتوبة فيه، بما في ذلك النصوص في الصور.</string>
+  <string name="search_hint_a11y">بحث في ملفاتك حسب أسمائها والكلمات فيها</string>
+  <string name="search_incomplete_note">البحث بالأسماء يعمل الآن، وما زالت الكلمات قيد القراءة، لذا قد تظهر نتائج أكثر.</string>
+  <string name="settings_about_model">يعثر البحث على الملفات حسب أسمائها والكلمات فيها، بالكامل على هذا الهاتف.</string>
+  <string name="settings_delete_body">يحذف <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> الآن فهرسة ملفاتك: أسماءها، والكلمات في مستنداتك، والنصوص التي قرأها في الصور ولقطات الشاشة. كما تُحذف ملفاته المؤقتة وأي تقارير عن المشكلات.\n\nلن يتم المساس بملفاتك. ستبقى إعداداتك كما هي، بما في ذلك المجلدات التي تخطيتها.\n\nيتوقف <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> بعد ذلك عن القراءة. يظل البحث فارغاً حتى تضغط على استئناف.</string>
+  <string name="pause_battery_low_detail">نسبة البطارية أقل من 30%%، لذا ينتظر <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> للحفاظ على ما تبقى من الشحن. يتابع تلقائياً بمجرد شحن الهاتف.</string>
+</resources>

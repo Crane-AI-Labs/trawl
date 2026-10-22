@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="sort_best">Ezisinga okukwatagana</string>
+  <string name="sort_newest">Ezisinga obupya</string>
+  <string name="sort_oldest">Ezisinga obukadde</string>
+  <string name="sort_largest">Ezisinga obunene</string>
+  <string name="sort_name">Erinnya okuva ku A okutuuka ku Z</string>
+  <string name="sort_group">Tegeka okusinziira ku</string>
+  <string name="date_any_time">Ekiseera kyonna</string>
+  <string name="date_group">Olunaku</string>
+  <string name="date_today">Leero</string>
+  <string name="date_yesterday">Jjo</string>
+  <string name="date_this_week">Wiiki eno</string>
+  <string name="date_last_week">Wiiki ewedde</string>
+  <string name="date_this_month">Omwezi guno</string>
+  <string name="date_last_month">Omwezi oguwedde</string>
+  <string name="date_this_year">Omwaka guno</string>
+  <string name="date_last_year">Omwaka oguwedde</string>
+  <string name="date_weekend">Enkomerero ya wiiki ewedde</string>
+  <string name="date_last_night">Ekiro ekiwedde</string>
+  <string name="date_this_morning">Leero ku makya</string>
+  <string name="date_this_afternoon">Leero olweggulo</string>
+  <string name="date_this_evening">Leero akawungeezi</string>
+  <string name="date_yesterday_morning">Jjo ku makya</string>
+  <string name="date_yesterday_afternoon">Jjo olweggulo</string>
+  <string name="date_yesterday_evening">Jjo akawungeezi</string>
+  <string name="date_pick_range">Londa ennaku…</string>
+  <string name="date_range">%1$s – %2$s</string>
+  <string name="date_remove">Ggyawo ekkomo ly\'olunaku</string>
+  <string name="date_from_words">%1$s, okuva mu bigambo by\'onoonya</string>
+  <string name="date_picker_title">Londa olunaku olusooka n\'olusembayo</string>
+  <string name="date_picker_ok">Kozesa</string>
+  <plurals name="date_past_days">
+    
+    <item quantity="one">Olunaku %d oluyise</item>
+    <item quantity="other">Ennaku %d eziyise</item>
+  </plurals>
+  <plurals name="date_past_weeks">
+    
+    <item quantity="one">Wiiki %d ewedde</item>
+    <item quantity="other">Wiiki %d eziyise</item>
+  </plurals>
+  <plurals name="date_past_months">
+    
+    <item quantity="one">Omwezi %d oguyise</item>
+    <item quantity="other">Emyezi %d egiyise</item>
+  </plurals>
+  <plurals name="date_past_years">
+    
+    <item quantity="one">Omwaka %d oguyise</item>
+    <item quantity="other">Emyaka %d egiyise</item>
+  </plurals>
+  <plurals name="date_ago_days">
+    
+    <item quantity="one">Olunaku %d emabega</item>
+    <item quantity="other">Ennaku %d emabega</item>
+  </plurals>
+  <plurals name="date_ago_weeks">
+    
+    <item quantity="one">Wiiki %d emabega</item>
+    <item quantity="other">Wiiki %d emabega</item>
+  </plurals>
+  <plurals name="date_ago_months">
+    
+    <item quantity="one">Omwezi %d emabega</item>
+    <item quantity="other">Emyezi %d emabega</item>
+  </plurals>
+  <plurals name="date_ago_years">
+    
+    <item quantity="one">Omwaka %d emabega</item>
+    <item quantity="other">Emyaka %d emabega</item>
+  </plurals>
+  <string name="action_select">Londa</string>
+  <plurals name="select_count">
+    
+    <item quantity="one">Fayiro %d erondeddwa</item>
+    <item quantity="other">Fayiro %d zirondeddwa</item>
+  </plurals>
+  <string name="select_all">Londa zonna</string>
+  <string name="select_none">Ggyawo byonna ebirondeddwa</string>
+  <string name="select_exit">Lekera awo okulonda</string>
+  <string name="select_share_limit">Osobola okugabana fayiro ezitasukka %d omulundi gumu.</string>
+  <string name="sensitive_share_body_many">Ezimu ku zino ziteekeddwako nti za kyama. Buli azifuna asobola okuzikuuma n\'azigabira abalala.</string>
+  <string name="sensitive_copy_body_many">Ezimu ku zino ziteekeddwako nti za kyama. Buli kintu mw\'oziteeka kifuna fayiro zennyini.</string>
+  <string name="snack_marked_sensitive_many">Ziteekeddwako nti za kyama. Kati zikisiddwa obutalabika mu bizuuliddwa.</string>
+  <string name="snack_unmarked_sensitive_many">Akabonero kaggyiddwako. Zisobola nate okulabika mu bizuuliddwa.</string>
+  <string name="nothing_in_dates">%1$s, tewali kizuuliddwa. Gezaako olunaku olulala.</string>
+</resources>

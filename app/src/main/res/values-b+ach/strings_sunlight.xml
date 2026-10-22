@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="typing_learning">Pud tye ka kwano: %1$s i kin %2$s · adwogi mukene twero nen</string>
+  <string name="typing_learning_charger">Pud tye ka kwano: %1$s i kin %2$s · mukene ka iketo caji</string>
+  <string name="typing_learning_paused">Okwano %1$s i kin %2$s kombeddi · adwogi mukene twero nen</string>
+  <string name="settings_colours">Rangi</string>
+  <string name="colours_sunlight">Lero pa ceng</string>
+  <string name="colours_sunlight_hint">Rangi me nge macalo karatac ma lyet, ki rangi ma ratong acel; yot me kwano i ceng ma ryeny.</string>
+  <string name="colours_wallpaper">Rangi pa cal ma i nge</string>
+  <string name="colours_wallpaper_hint">Kwanyo rangi ki i cal ma i nge, dok loke ka cal meno oloke.</string>
+  <string name="settings_brightness">Maler onyo col</string>
+</resources>

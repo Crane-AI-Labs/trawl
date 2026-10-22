@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="bg_title">Iyi telefone ihagarika porogaramu</string>
+  <string name="bg_body">Telefone zimwe zihagarika porogaramu iyo ekara izimye. Iyi ni imwe muri zo, bityo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> isoma dosiye zawe gusa igihe ifunguye. Kugira ngo isome ububiko burimo amafoto menshi, koresha Komeza gusoma ubu telefone iri kuri sharijeri ijoro ryose.</string>
+  <string name="bg_open">Fungura igenamiterere rya telefone</string>
+  <string name="bg_settings_section">Kuri iyi telefone</string>
+  <string name="bg_settings_hint">Telefone zimwe zihagarika porogaramu iyo ekara izimye. Iyi ni imwe muri zo, bityo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> isoma dosiye zawe gusa igihe ifunguye. Ku bubiko burimo amafoto menshi, koresha Komeza gusoma ubu telefone iri kuri sharijeri. Igenamiterere rya telefone riri hasi rituma gusa porogaramu yongera gutangira telefone imaze kongera kwaka.</string>
+  <string name="bgs_title">Samsung ishobora guhagarika iyi porogaramu nijoro</string>
+  <string name="bgs_body">Telefoni za Samsung zishobora gusinzirisha porogaramu cyangwa kuzifunga nijoro, bityo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> igahagarika kwiga dosiye zawe. Muri Battery, hitamo «Unrestricted» kuri <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>.</string>
+  <string name="bgs_open">Fungura igenamiterere rya batiri</string>
+</resources>

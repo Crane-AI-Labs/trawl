@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="sort_best">ምርጥ ተዛማጅ</string>
+  <string name="sort_newest">አዲሱ</string>
+  <string name="sort_oldest">አሮጌው</string>
+  <string name="sort_largest">ትልቁ</string>
+  <string name="sort_name">ስም በፊደል ቅደም ተከተል</string>
+  <string name="sort_group">በዚህ ደርድር</string>
+  <string name="date_any_time">ማንኛውም ጊዜ</string>
+  <string name="date_group">ቀን</string>
+  <string name="date_today">ዛሬ</string>
+  <string name="date_yesterday">ትናንት</string>
+  <string name="date_this_week">ይህ ሳምንት</string>
+  <string name="date_last_week">ያለፈው ሳምንት</string>
+  <string name="date_this_month">ይህ ወር</string>
+  <string name="date_last_month">ያለፈው ወር</string>
+  <string name="date_this_year">ይህ ዓመት</string>
+  <string name="date_last_year">ያለፈው ዓመት</string>
+  <string name="date_weekend">ያለፈው የሳምንት መጨረሻ</string>
+  <string name="date_last_night">ትናንት ማታ</string>
+  <string name="date_this_morning">ዛሬ ጠዋት</string>
+  <string name="date_this_afternoon">ዛሬ ከሰዓት</string>
+  <string name="date_this_evening">ዛሬ ምሽት</string>
+  <string name="date_yesterday_morning">ትናንት ጠዋት</string>
+  <string name="date_yesterday_afternoon">ትናንት ከሰዓት</string>
+  <string name="date_yesterday_evening">ትናንት ምሽት</string>
+  <string name="date_pick_range">ቀናትን ምረጥ…</string>
+  <string name="date_range">%1$s – %2$s</string>
+  <string name="date_remove">የቀን ማጣሪያውን አስወግድ</string>
+  <string name="date_from_words">%1$s፣ ከፍለጋ ቃላትህ</string>
+  <string name="date_picker_title">የመጀመሪያውንና የመጨረሻውን ቀን ምረጥ</string>
+  <string name="date_picker_ok">ተግብር</string>
+  <plurals name="date_past_days">
+    
+    <item quantity="one">ያለፈው %d ቀን</item>
+    <item quantity="other">ያለፉት %d ቀናት</item>
+  </plurals>
+  <plurals name="date_past_weeks">
+    
+    <item quantity="one">ያለፈው %d ሳምንት</item>
+    <item quantity="other">ያለፉት %d ሳምንታት</item>
+  </plurals>
+  <plurals name="date_past_months">
+    
+    <item quantity="one">ያለፈው %d ወር</item>
+    <item quantity="other">ያለፉት %d ወራት</item>
+  </plurals>
+  <plurals name="date_past_years">
+    
+    <item quantity="one">ያለፈው %d ዓመት</item>
+    <item quantity="other">ያለፉት %d ዓመታት</item>
+  </plurals>
+  <plurals name="date_ago_days">
+    
+    <item quantity="one">ከ%d ቀን በፊት</item>
+    <item quantity="other">ከ%d ቀናት በፊት</item>
+  </plurals>
+  <plurals name="date_ago_weeks">
+    
+    <item quantity="one">ከ%d ሳምንት በፊት</item>
+    <item quantity="other">ከ%d ሳምንታት በፊት</item>
+  </plurals>
+  <plurals name="date_ago_months">
+    
+    <item quantity="one">ከ%d ወር በፊት</item>
+    <item quantity="other">ከ%d ወራት በፊት</item>
+  </plurals>
+  <plurals name="date_ago_years">
+    
+    <item quantity="one">ከ%d ዓመት በፊት</item>
+    <item quantity="other">ከ%d ዓመታት በፊት</item>
+  </plurals>
+  <string name="action_select">ምረጥ</string>
+  <plurals name="select_count">
+    
+    <item quantity="one">%d ተመርጧል</item>
+    <item quantity="other">%d ተመርጠዋል</item>
+  </plurals>
+  <string name="select_all">ሁሉንም ምረጥ</string>
+  <string name="select_none">ምርጫውን አጽዳ</string>
+  <string name="select_exit">መምረጥ አቁም</string>
+  <string name="select_share_limit">በአንድ ጊዜ እስከ %d ፋይሎች ማጋራት ትችላለህ።</string>
+  <string name="sensitive_share_body_many">ከእነዚህ አንዳንዶቹ ስሱ እንደሆኑ ተመልክተዋል። የተቀበላቸው ሰው ሊያስቀምጣቸውና ለሌሎች ሊያስተላልፋቸው ይችላል።</string>
+  <string name="sensitive_copy_body_many">ከእነዚህ አንዳንዶቹ ስሱ እንደሆኑ ተመልክተዋል። የምትለጥፋቸው ማንኛውም ቦታ ፋይሎቹን ራሳቸውን ይቀበላል።</string>
+  <string name="snack_marked_sensitive_many">ስሱ እንደሆኑ ተመልክተዋል። አሁን ከውጤቶች ተደብቀዋል።</string>
+  <string name="snack_unmarked_sensitive_many">ምልክቱ ተወግዷል። እንደገና በውጤቶች ሊታዩ ይችላሉ።</string>
+  <string name="nothing_in_dates">በ%1$s ምንም አልተገኘም። ሌላ ቀን ሞክር።</string>
+</resources>

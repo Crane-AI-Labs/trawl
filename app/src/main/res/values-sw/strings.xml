@@ -1,0 +1,459 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="kind_document">Hati</string>
+  <string name="kind_pdf">PDF</string>
+  <string name="kind_photo">Picha</string>
+  <string name="kind_screenshot">Picha ya skrini</string>
+  <string name="kind_video">Video</string>
+  <string name="kind_audio">Sauti</string>
+  <string name="kind_other">Faili</string>
+  <string name="filter_all">Yote</string>
+  <string name="filter_photos">Picha</string>
+  <string name="filter_screenshots">Picha za skrini</string>
+  <string name="filter_videos">Video</string>
+  <string name="filter_documents">Hati</string>
+  <string name="filter_audio">Sauti</string>
+  <string name="kind_plural_screenshots">Picha za skrini</string>
+  <string name="kind_plural_photos">Picha</string>
+  <string name="kind_plural_documents">Hati na PDF</string>
+  <string name="kind_plural_videos">Video</string>
+  <string name="kind_plural_audio">Sauti</string>
+  <string name="section_photos_videos">Picha na video</string>
+  <string name="section_documents_text">Hati na maandishi</string>
+  <string name="section_recent_documents">Hati za hivi karibuni</string>
+  <string name="section_recent_photos_videos">Picha na video za hivi karibuni</string>
+  <string name="badge_page">uk. %1$d</string>
+  <string name="badge_at_time">kwenye %1$s</string>
+  <plurals name="pages_count">
+        
+    
+    <item quantity="one">ukurasa %d</item>
+    <item quantity="other">kurasa %d</item>
+  </plurals>
+  <string name="action_open">Fungua</string>
+  <string name="action_share">Shiriki</string>
+  <string name="action_copy">Nakili</string>
+  <string name="action_show_folder">Onyesha kwenye folda</string>
+  <string name="action_more">Vitendo zaidi</string>
+  <string name="snack_copied">Imenakiliwa</string>
+  <string name="meter_title_not_started">Bado haijaanza kusoma</string>
+  <string name="meter_title_scanning">Inakagua simu yako</string>
+  <string name="meter_title_indexing">Kusoma mafaili yako</string>
+  <string name="meter_title_up_to_date">Yote yamesasishwa</string>
+  <string name="meter_title_error">Hitilafu imetokea</string>
+  <string name="meter_sub_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> itaanza mara tu itakapoweza kuona mafaili yako.</string>
+  <string name="meter_sub_scanning">Mafaili %1$s yamepatikana hadi sasa.</string>
+  <string name="meter_sub_names_first">Majina na maneno kwanza, ili uweze kutafuta sasa hivi.</string>
+  <string name="meter_sub_progress_eta">%1$s kati ya %2$s yamesomwa · imebaki takriban %3$s</string>
+  <string name="meter_sub_progress_estimating">%1$s kati ya %2$s yameeleweka · inakadiria muda</string>
+  <string name="meter_sub_needs_charger">Majina na maneno sasa. Maana itaanza ukichaji.</string>
+  <string name="meter_sub_reembed">Inasasisha picha za modeli mpya: %1$s kati ya %2$s. Tafuta inaendelea kufanya kazi.</string>
+  <string name="meter_sub_reembed_eta">Inasasisha picha za modeli mpya: %1$s kati ya %2$s · zimesalia kama %3$s</string>
+  <string name="meter_sub_reembed_battery">Inasasisha picha za modeli mpya: %1$s kati ya %2$s. Yaliyobaki yataendelea ukichaji.</string>
+  <string name="meter_sub_light_reading">Inasoma picha zako kwa utafutaji wa haraka. Ubora kamili utakamilika ukichaji.</string>
+  <string name="meter_sub_light_done">Kila kitu kinaweza kutafutwa sasa. Ubora kamili utakamilika ukichaji.</string>
+  <string name="meter_sub_paused">%1$s kati ya %2$s yameeleweka. Tafuta bado inafanya kazi.</string>
+  <string name="meter_sub_up_to_date">Mafaili %1$s yako tayari kutafutwa.</string>
+  <string name="meter_sub_error">Gusa ili uone maelezo.</string>
+  <string name="meter_a11y">%1$s. %2$s. Asilimia %3$d imeeleweka.</string>
+  <string name="meter_open_details">Onyesha maelezo ya usomaji</string>
+  <string name="pause_not_charging">Inasubiri chaja</string>
+  <string name="pause_not_charging_detail">Kusoma kila kitu kwa ubora kamili hutumia betri nyingi, kwa hivyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> hufanya sehemu hiyo simu inapochajiwa. Tafuta bado inafanya kazi.</string>
+  <string name="pause_too_hot">Inapunguza joto</string>
+  <string name="pause_too_hot_detail">Simu ina joto, kwa hivyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> inasitisha kwa muda ili kuilinda. Itaendelea yenyewe simu ikishapoa.</string>
+  <string name="pause_battery_low">Betri iko chini</string>
+  <string name="pause_battery_low_detail">Betri iko chini ya 30%%, kwa hivyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> inasoma majina na maneno tu ili kuokoa iliyobaki. Itaendelea yenyewe simu ikianza kuchaji.</string>
+  <string name="pause_user">Imesitishwa na wewe</string>
+  <string name="pause_user_detail">Usomaji umesitishwa. Tafuta bado inafanya kazi kwenye yale ambayo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> imejifunza hadi sasa.</string>
+  <string name="pause_no_permission">Inahitaji idhini ya kufikia mafaili yako</string>
+  <string name="pause_no_permission_detail"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> haiwezi kuona mafaili yako hadi uruhusu ufikiaji wa Mafaili yote. Inayasoma tu na kamwe haibadilishi chochote.</string>
+  <string name="pause_storage_low">Hifadhi ya simu inakaribia kujaa</string>
+  <string name="pause_storage_low_detail"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> inahitaji nafasi kidogo ili kuhifadhi orodha yake. Pata nafasi zaidi nayo itaendelea.</string>
+  <string name="action_pause">Sitisha</string>
+  <string name="action_resume">Endelea</string>
+  <string name="action_read_on_battery">Soma kwa betri hata hivyo</string>
+  <string name="action_allow_access">Ruhusu ufikiaji</string>
+  <string name="action_free_space">Pata nafasi zaidi</string>
+  <string name="action_retry">Jaribu tena</string>
+  <string name="eta_under_minute">chini ya dakika moja</string>
+  <string name="eta_minutes">%d dak</string>
+  <string name="eta_hours_single">%d h</string>
+  <string name="eta_hours_range">saa %1$d hadi %2$d</string>
+  <string name="eta_while_charging">%1$s kwenye chaja</string>
+  <string name="sheet_title">Kusoma mafaili yako</string>
+  <string name="sheet_detail_up_to_date">Kila faili ambalo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> inaweza kuona liko tayari. Mapya huongezwa yanapotokea.</string>
+  <string name="sheet_detail_scanning"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> inatengeneza orodha ya mafaili yako. Hii inachukua dakika moja au mbili.</string>
+  <string name="sheet_detail_light_on_battery">Majina na maneno yanasomwa sasa na picha huangaliwa haraka, kwa hivyo Tafuta tayari inafanya kazi. Ubora kamili, ambao hutoa matokeo bora zaidi, utakamilika simu inapochajiwa.</string>
+  <string name="sheet_detail_needs_charger">Majina na maneno yanasomwa sasa, kwa hivyo Tafuta tayari inafanya kazi. Kuelewa picha na hati zinahusu nini kutaanza simu inapochajiwa.</string>
+  <string name="sheet_detail_indexing">Majina na maneno huanza kwanza, hivyo basi Tafuta hufanya kazi mara moja. Kuelewa picha na hati zinahusu nini huchukua muda mrefu, na hufanyika vizuri usiku ikiwa kwenye chaja.</string>
+  <string name="sheet_detail_error">Kusoma kumekatika bila kutarajiwa. Matokeo yako ya awali yapo salama.</string>
+  <string name="sheet_detail_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> bado haijaanza kusoma.</string>
+  <string name="sheet_by_kind">Kwa aina ya faili</string>
+  <string name="sheet_reading_now">Inasoma sasa</string>
+  <string name="sheet_resumes_by_itself">Itaendelea yenyewe tatizo hili likirekebishwa.</string>
+  <string name="level_searchable">Inatafutika kwa jina na maneno</string>
+  <string name="level_searchable_hint">Haraka. Inakuwezesha kupata faili kwa kile kilichoandikwa ndani yake.</string>
+  <string name="level_understood">Imeeleweka kwa maana</string>
+  <string name="level_understood_hint">Polepole zaidi. Inakuwezesha kupata faili kwa kile inachohusu.</string>
+  <string name="level_quicklook">Mwonekano wa haraka: picha na video</string>
+  <string name="level_quicklook_hint">Haraka. Muundo mdogo zaidi hupata picha kwa kile kilicho ndani, kwa utafutaji wa Kiingereza. Maelezo kamili huchukua nafasi yake kila picha inapoeleweka.</string>
+  <string name="meter_quicklook">Mwonekano wa haraka: picha %1$s kati ya %3$s · Maelezo kamili: %2$s kati ya %3$s</string>
+  <string name="level_a11y">%1$s: %2$s kati ya %3$s</string>
+  <string name="count_of">%1$s kati ya %2$s</string>
+  <string name="stat_time_left">Muda uliobaki</string>
+  <string name="stat_speed">Kasi</string>
+  <string name="stat_index_size">Ukubwa wa faharasa</string>
+  <string name="stat_model_size">Ukubwa wa muundo</string>
+  <string name="stat_when_charging">Huanza ikichajiwa</string>
+  <string name="stat_estimating">Inakadiria</string>
+  <string name="stat_measuring">Inapima</string>
+  <string name="stat_done">Imekamilika</string>
+  <string name="stat_rate_value">mafaili %1$s/saa</string>
+  <string name="onb_next">Endelea</string>
+  <string name="onb_back">Nyuma</string>
+  <string name="onb_start">Anzisha <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="onb_start_locked"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> inahitaji ruhusa ya Mafaili yote kabla ya kuanza</string>
+  <string name="onb_allow_access">Ruhusu ufikiaji wa mafaili</string>
+  <string name="onb_page_of">Hatua ya %1$d kati ya %2$d</string>
+  <string name="welcome_line"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> hupata hati, picha na picha za skrini zako kulingana na zinachosema na kuonyesha.</string>
+  <string name="welcome_point_ai_body">AI inayoelewa mafaili yako hufanya kazi kwenye simu hii. Hakuna chochote kinachotumwa kwenye seva.</string>
+  <string name="welcome_point_reads_title">Husoma mafaili yako tu</string>
+  <string name="welcome_point_reads_body">Haibadilishi, haisogezi wala haifuti chochote. Unaweza kufuta ilichojifunza wakati wowote.</string>
+  <string name="onb_choose_folders">Chagua folda</string>
+  <string name="onb1_eyebrow">Faragha tangu mwanzo</string>
+  <string name="onb1_title">Mafaili yako hayatoki kamwe kwenye simu hii.</string>
+  <string name="onb1_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> hupata hati, PDF, picha za skrini, picha, vibonzo na video kwa kile kinachosemwa na kuonyeshwa. Yote hufanyika hapa, kwenye simu hii.</string>
+  <string name="onb1_point_internet_title">Hakuna ruhusa ya intaneti</string>
+  <string name="onb1_point_internet_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> haiwezi kabisa kuunganishwa kwenye intaneti. Android yenyewe huizuia kutuma chochote nje.</string>
+  <string name="onb1_point_model_title">AI iko kwenye simu yako</string>
+  <string name="onb1_point_model_body">Muundo unaoelewa mafaili yako, EmbeddingGemma 2 kutoka Google, hufanya kazi kwenye simu hii. Hakuna kinachotumwa kwenye seva ili kueleweka.</string>
+  <string name="onb1_point_delete_title">Uko kwenye udhibiti</string>
+  <string name="onb1_point_delete_body">Ruka folda yoyote, au Futa kila kitu ambacho <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> imejifunza, wakati wowote upendao.</string>
+  <string name="onb2_eyebrow">Kinachofuata</string>
+  <string name="onb2_title">Tafuta hufanya kazi kwa dakika chache. Kuelewa huchukua usiku mzima.</string>
+  <string name="onb2_step1_title">Kwa dakika chache</string>
+  <string name="onb2_step1_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> huorodhesha mafaili yako na kusoma majina na maneno yaliyomo. Unaweza kutafuta mara moja.</string>
+  <string name="onb2_step2_title">Katika saa chache zijazo</string>
+  <string name="onb2_step2_body">Kisha huelewa maudhui ya kila picha na hati, ili utafutaji kama \"risiti ya karo\" uipate hata bila maneno hayo kuwemo. Hii huchukua muda kwenye simu.</string>
+  <string name="onb2_step3_title">Hasa wakati simu inachaji</string>
+  <string name="onb2_step3_body">Ili kubana betri, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> hufanya kazi hii nzito inapochaji. Iache kwenye chaji usiku mmoja. Unaweza kuona maendeleo, kusitisha, au kubadilisha hili wakati wowote.</string>
+  <string name="onb3_eyebrow">Ruhusa mbili</string>
+  <string name="onb3_title">Ruhusu <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kuona mafaili yako</string>
+  <string name="onb3_files_title">Kufikia mafaili yote</string>
+  <string name="onb3_files_body">Inahitajika ili kuona mafaili katika kila folda, kama hati za WhatsApp. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> husoma tu. Haibadilishi, haihamishi wala haifuti chochote.</string>
+  <string name="onb3_files_action">Fungua mipangilio</string>
+  <string name="onb3_files_granted">Imeruhusiwa</string>
+  <string name="onb3_files_hint">Kwenye orodha inayofunguka, washa \"Ruhusu udhibiti wa mafaili yote\", kisha urudi hapa.</string>
+  <string name="onb3_notif_title">Arifa (si lazima)</string>
+  <string name="onb3_notif_body">Ni ili tu <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ikujulishe ikimaliza kusoma. Hakuna kingine.</string>
+  <string name="onb3_notif_action">Ruhusu</string>
+  <string name="onb3_notif_granted">Imeruhusiwa</string>
+  <string name="onb4_eyebrow">Viongezi vya hiari</string>
+  <string name="onb4_title">Uongeze viongezi?</string>
+  <string name="onb4_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> inafanya kazi bila hivi. Kila kimoja huboresha kitu fulani. Kila kimoja ni faili unalonakili kwenye Vipakuliwa, kwani <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> haitumii kamwe intaneti.</string>
+  <string name="onb4_add">Ongeza</string>
+  <string name="onb4_not_now">Si sasa</string>
+  <string name="onb4_added">Imeongezwa</string>
+  <string name="onb4_skipped">Imerukwa. Unaweza kuiongeza baadaye.</string>
+  <string name="onb4_footer">Unaweza kubadilisha hili baadaye katika Mipangilio → Viongezi.</string>
+  <string name="search_hint">Tafuta mafaili yako</string>
+  <string name="search_hint_a11y">Tafuta mafaili yako kwa maandishi au picha</string>
+  <string name="search_clear">Futa utafutaji</string>
+  <string name="search_searching">Inatafuta</string>
+  <string name="search_settings">Mipangilio</string>
+  <string name="search_nothing_title">Hakuna kilichoonekana</string>
+  <string name="search_nothing_body">Hakuna faili linalolingana na \"%1$s\".</string>
+  <string name="search_nothing_try_all">Jaribu maneno machache au tofauti, au tafuta Yote.</string>
+  <string name="search_nothing_incomplete"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> bado inaendelea kusoma mafaili yako, kwa hivyo matokeo yanaweza kubadilika. Jaribu tena baadaye kidogo.</string>
+  <string name="search_repairing_note">Tafuta inajirekebisha. Majina na maneno bado yanafanya kazi; kutafuta kwa maana kutarudi baada ya dakika chache.</string>
+  <string name="search_incomplete_note">Majina na maneno yanafanya kazi sasa. Utafutaji kwa maana bado unaendelea kusomwa, kwa hivyo matokeo zaidi yanaweza kuonekana.</string>
+  <string name="search_incomplete_note_charger">Majina na maneno yanafanya kazi sasa. Kutafuta kwa maana (kama \"boda\" kwa picha ya pikipiki) kutaanza simu inapowekwa kwenye chaji.</string>
+  <string name="search_weak_toggle">Matokeo yasiyo na uhakika sana (%1$d)</string>
+  <string name="search_weak_only">Hakuna matokeo kamili. Haya ndiyo ya karibu zaidi.</string>
+  <string name="search_weak_expand">Onyesha matokeo yasiyo na uhakika sana</string>
+  <string name="search_weak_collapse">Ficha matokeo dhaifu</string>
+  <string name="search_fresh_title">Hakuna cha kuonyesha bado</string>
+  <string name="search_fresh_body">Mara tu <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> inapoona mafaili yako, mapya zaidi yataonekana hapa. Andika juu ili kutafuta.</string>
+  <string name="search_recent_empty_filter">Bado hakuna mafaili ya aina hii.</string>
+  <string name="access_banner_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> haiwezi kuona mafaili yako bado</string>
+  <string name="access_banner_body">Ruhusu ufikiaji wa Mafaili yote ili iweze kuyasoma. Haibadilishi chochote kamwe.</string>
+  <string name="snack_no_app">Hakuna programu kwenye simu hii inayoweza kufungua faili hili.</string>
+  <string name="snack_sample">Hili ni faili la mfano, kwa hivyo haliwezi kufunguliwa.</string>
+  <string name="settings_title">Mipangilio</string>
+  <string name="settings_back">Rudi</string>
+  <string name="settings_section_reading">Kusoma</string>
+  <string name="learn_speed_title">Kasi ya kujifunza</string>
+  <string name="learn_gentle">Taratibu</string>
+  <string name="learn_gentle_hint">Husoma tu inapochaji, kwa nyuzi chache. Betri na joto kidogo zaidi; kila kipya kinasubiri chaja.</string>
+  <string name="learn_balanced">Wastani</string>
+  <string name="learn_balanced_hint">Njia ya kawaida. Chaja husoma ghala lako lote; kwenye betri ni mafaili mapya na mwonekano wa haraka tu vinavyofanya kazi.</string>
+  <string name="learn_fast">Haraka</string>
+  <string name="learn_fast_hint">Husoma kila kitu hata kwenye betri na husubiri tu unapotumia programu nyingine. Humaliza mapema, hutumia betri zaidi na huwa na joto zaidi.</string>
+  <string name="settings_section_kinds">Vya kusoma</string>
+  <string name="settings_recordings">Nukuu za sauti na rekodi</string>
+  <string name="settings_recordings_hint">Inasoma yaliyosemwa na yanayosikika, ili uweze kuyatafuta.</string>
+  <string name="settings_deeper">Utafutaji wa kina wa sauti (polepole): muziki na sauti nyingine</string>
+  <string name="settings_deeper_hint">Hutafuta sauti kulingana na jinsi zilivyo, si kwa maneno tu. Inachukua takriban sekunde 15 za kusoma kwa kila dakika ya sauti kwenye simu ya kawaida.</string>
+  <string name="settings_section_addons">Viongezi</string>
+  <string name="addons_intro">Vitu vya hiari vinavyoboresha utafutaji. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> haitumii mtandao kamwe, kwa hivyo kila kimoja ni faili unalonakili kwenye Vipakuliwa kwanza. Kila kitu kinabaki kwenye simu hii.</string>
+  <string name="addons_status_not_added">Haijaongezwa</string>
+  <string name="addons_status_adding">Inaongeza</string>
+  <string name="addons_status_added">Imeongezwa</string>
+  <string name="addons_status_soon">Inakuja hivi karibuni</string>
+  <string name="addons_size">Ukubwa: %1$s</string>
+  <string name="addons_add">Ongeza</string>
+  <string name="addons_add_with_size">Ongeza (%1$s)</string>
+  <string name="addons_remove">Ondoa, inatoa nafasi ya %1$s</string>
+  <string name="addons_on">Imewashwa</string>
+  <string name="addons_off">Imezimwa</string>
+  <string name="addons_adding_pct">Inakagua na kuongeza… %1$d%%</string>
+  <string name="addons_adding">Inakagua na kuongeza…</string>
+  <string name="addons_try_again">Jaribu tena</string>
+  <string name="addons_soon_hint">Bado haiko tayari. Itaonekana hapa itakapokuwa tayari.</string>
+  <string name="addons_problem_not_found"><xliff:g id="app_name" example="Trawl">%2$s</xliff:g> haikuweza kupata %1$s kwenye Vipakuliwa. Linakili hapo, kisha jaribu tena.</string>
+  <string name="addons_problem_access"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> inahitaji ufikiaji wa Mafaili yote ili kusoma Vipakuliwa. Iwashe, kisha jaribu tena.</string>
+  <string name="addons_problem_bad">Faili lililo kwenye Vipakuliwa limeharibika au siyo sahihi, kwa hivyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> haijalitumia. Linakili tena, kisha jaribu tena.</string>
+  <string name="addons_problem_unavailable">Kiongezi hiki hakiwezi kuongezwa katika toleo hili bado.</string>
+  <string name="addons_add_title">Ongeza %1$s</string>
+  <string name="addons_add_install">Sakinisha</string>
+  <string name="addons_remove_title">Ungependa kuondoa %1$s?</string>
+  <string name="addons_remove_body">Hii hutoa nafasi ya %1$s na kuizima. Maneno na maana ambazo <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> ilishajifunza hubaki hadi mafaili hayo yasomwe tena. Unaweza kuiongeza tena wakati wowote.</string>
+  <string name="addons_remove_confirm">Ondoa</string>
+  <string name="settings_section_excluded">Folda zilizorukwa</string>
+  <string name="settings_excluded_hint"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> haitasoma chochote ndani ya folda hizi.</string>
+  <string name="settings_excluded_empty">Hakuna. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> husoma kila folda inayoweza kuona.</string>
+  <string name="settings_excluded_remove">Acha kuruka %1$s</string>
+  <string name="settings_excluded_bad">Folda hiyo haiwezi kuchaguliwa hapa. Chagua folda kwenye hifadhi kuu ya simu.</string>
+  <string name="onb_scope_eyebrow">Uchaguzi wako</string>
+  <string name="scope_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> itafute nini?</string>
+  <string name="scope_intro">Zima chochote usichotaka kipatikane. Mafaili yake yataondoka kwenye utafutaji mara moja, na kurudi ukiwasha tena.</string>
+  <string name="scope_counts_unknown">Idadi ya mafaili itaonekana mara tu <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> inapoweza kuona mafaili yako.</string>
+  <string name="scope_private">Folda zilizofichwa, folda zenye alama ya .nomedia na folda za faragha za programu nyingine hazisomwi kamwe.</string>
+  <string name="scope_added_title">Folda ulizoongeza</string>
+  <string name="scope_add">Ongeza folda</string>
+  <string name="scope_added_remove">Acha kutafuta %1$s</string>
+  <string name="scope_exclude">Tenga folda</string>
+  <plurals name="scope_files">
+        
+    
+    <item quantity="one">Faili %1$s</item>
+    <item quantity="other">Mafaili %1$s</item>
+  </plurals>
+  <string name="scope_group_camera">Kamera</string>
+  <string name="scope_group_screenshots">Picha za skrini</string>
+  <string name="scope_group_whatsapp_images">Picha za WhatsApp</string>
+  <string name="scope_group_whatsapp_video">Video za WhatsApp</string>
+  <string name="scope_group_whatsapp_documents">Hati za WhatsApp</string>
+  <string name="scope_group_whatsapp_voice">Ujumbe wa sauti wa WhatsApp</string>
+  <string name="scope_group_whatsapp_status">Hali ya WhatsApp</string>
+  <string name="scope_group_downloads">Vipakuliwa</string>
+  <string name="scope_group_documents">Hati</string>
+  <string name="scope_group_music">Muziki na rekodi</string>
+  <string name="scope_group_other">Folda nyingine</string>
+  <string name="settings_section_storage">Nafasi iliyotumika</string>
+  <string name="settings_storage_index">Kielezo cha utafutaji</string>
+  <string name="settings_storage_model">Muundo wa AI</string>
+  <string name="settings_delete">Futa kila kitu ambacho <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> inajua</string>
+  <string name="settings_delete_hint">Hufuta kile ambacho <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> imesoma kutoka kwenye mafaili yako, pamoja na mafaili yake ya muda. Mafaili yako binafsi hayaguswi.</string>
+  <string name="settings_delete_title">Ungependa kufuta kila kitu ambacho <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> inajua?</string>
+  <string name="settings_delete_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> inafuta kielezo chake cha mafaili yako sasa: majina yake, maneno kwenye hati zako, maandishi iliyosoma kwenye picha na picha za skrini, sauti iliyoandika kutoka kwenye video na ujumbe wa sauti, na kile ambacho AI yake ilibaini kuhusu kila faili. Mafaili yake ya muda na ripoti zozote za matatizo zitaondolewa pia.\n\nMafaili yako binafsi hayaguswi. Mipangilio yako inabaki, ikiwa ni pamoja na folda ulizoruka.\n\nKisha <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> itaacha kusoma. Utafutaji utabaki mtupu hadi uguse Endelea.</string>
+  <string name="settings_delete_done">Imefuta %1$s. <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> imesitishwa hadi uguse Endelea.</string>
+  <string name="settings_storage_model_hint">Inahitajika kwa ajili ya kutafuta kwa maana.</string>
+  <string name="settings_storage_index_hint">Hifadhidata na kumbukumbu yake.</string>
+  <string name="settings_storage_estimate">Kila faili linaposomwa</string>
+  <string name="settings_storage_estimate_value">Takriban %1$s</string>
+  <string name="settings_storage_memory">Kumbukumbu wakati wa kutafuta</string>
+  <string name="settings_storage_memory_hint">Hutumiwa tu wakati <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> imefunguliwa. Takriban %1$s kila faili linaposomwa.</string>
+  <string name="settings_storage_remove">Ondoa</string>
+  <string name="settings_storage_no_data"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> haitumii kamwe data ya mtandao: haina uwezo wa kufikia intaneti.</string>
+  <string name="settings_delete_confirm">Futa</string>
+  <string name="settings_cancel">Ghairi</string>
+  <string name="settings_section_appearance">Mwonekano</string>
+  <string name="settings_theme_system">Mfumo</string>
+  <string name="settings_theme_light">Mwangaza</string>
+  <string name="settings_theme_dark">Giza</string>
+  <string name="report_card_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> imeacha kufanya kazi bila kutarajiwa. Tuma ripoti ili kusaidia kurekebisha?</string>
+  <string name="report_card_body">Ripoti haina majina ya mafaili, utafutaji au maandishi kutoka kwenye mafaili yako. Unaisoma kwanza, na hakuna kinachotumwa hadi ubonyeze Tuma katika programu yako ya barua pepe.</string>
+  <string name="report_send">Tuma</string>
+  <string name="report_not_now">Si sasa</string>
+  <string name="report_view">Angalia ripoti</string>
+  <string name="report_close">Funga</string>
+  <string name="report_send_email">Tuma kwa barua pepe</string>
+  <string name="report_send_whatsapp">Tuma kupitia WhatsApp</string>
+  <string name="report_send_whatsapp_file">Tuma ripoti kamili katika WhatsApp</string>
+  <string name="report_no_email">Hakuna programu ya barua pepe iliyopatikana kwenye simu hii. Tumia Angalia ripoti ili kuisoma, au sakinisha programu ya barua pepe.</string>
+  <string name="report_no_whatsapp">WhatsApp haikuweza kufunguliwa.</string>
+  <string name="report_building">Inatayarisha ripoti…</string>
+  <string name="report_dialog_title">Ripoti ya tatizo</string>
+  <string name="report_dialog_hint">Hiki ndicho kila kitu kitakachotumwa. Mafaili yako, folda na ulichotafuta havimo.</string>
+  <string name="settings_section_report">Ripoti tatizo</string>
+  <string name="settings_report_hint">Hufungua programu yako ya barua pepe ikiwa na ripoti iliyo tayari kutumwa. Ina taarifa ya simu na toleo la <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>, na hitilafu zozote ambazo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> imekumbana nazo, bila majina ya mafaili, utafutaji au maandishi kutoka kwenye mafaili yako. Unaisoma kwanza, na hakuna kinachotumwa hadi ubonyeze Tuma huko.</string>
+  <string name="settings_report_note">Tatizo lilikuwa nini? (si lazima)</string>
+  <string name="settings_report_kept"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> huweka ripoti zisizozidi 10 kwenye simu hii, takriban KB 100. “Futa kila kitu ambacho <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> inajua” huziondoa.</string>
+  <string name="settings_section_about">Kuhusu</string>
+  <string name="settings_about_version">Toleo la %1$s</string>
+  <string name="settings_about_model">Tafuta hutumia EmbeddingGemma 2 kutoka Google (Apache 2.0), yote kwenye simu hii.</string>
+  <string name="settings_about_private"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> haina ruhusa ya intaneti. Mafaili yako na yale inayojifunza kutoka kwayo hayatoki kamwe kwenye simu.</string>
+  <string name="settings_about_maker">Imetengenezwa na Crane AI Labs.</string>
+  <string name="settings_licences">Leseni na shukrani</string>
+  <string name="licences_title">Leseni na shukrani</string>
+  <string name="licences_intro"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> imeundwa kwa kazi iliyo hapa chini. Ilani hizi zinahitajika na leseni, na pia ndiyo njia yetu ya kutoa shukrani.</string>
+  <string name="licences_section_required">Ilani</string>
+  <string name="licences_section_components">Kila kitu kingine katika <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="licences_section_texts">Maandishi kamili ya leseni</string>
+  <string name="licences_show">Onyesha maandishi kamili</string>
+  <string name="licences_hide">Ficha maandishi kamili</string>
+  <string name="settings_close">Funga</string>
+  <string name="pack_size_mb">%1$d MB</string>
+  <string name="pack_speech_name">Tafuta kwa sauti</string>
+  <string name="pack_speech_benefit">Hupata yaliyosemwa kwenye video na ujumbe wa sauti: faili sahihi hutokea kwanza kwa %1$d%% ya wakati badala ya %2$d%%.</string>
+  <plurals name="pack_speech_cost">
+        
+    
+    <item quantity="one">Huongeza takriban sekunde %1$d kwa kila dakika ya video wakati wa kusoma. Kwa sasa ni mazungumzo ya Kiingereza tu.</item>
+    <item quantity="other">Huongeza takriban sekunde %1$d kwa kila dakika ya video wakati wa kusoma. Kwa sasa ni mazungumzo ya Kiingereza tu.</item>
+  </plurals>
+  <string name="pack_quicklook_name">Mtazamo wa haraka wa picha</string>
+  <plurals name="pack_quicklook_benefit">
+        
+    
+    <item quantity="one">Huwezesha ghala yako yote kutafutika kwa maana ndani ya dakika badala ya saa: takriban picha %1$s kwa saa badala ya %2$d kwenye simu ya kawaida (utafutaji wa Kiingereza). Maelezo kamili yataendelea kuongezwa baadaye.</item>
+    <item quantity="other">Huwezesha ghala yako yote kutafutika kwa maana ndani ya dakika badala ya saa: takriban picha %1$s kwa saa badala ya %2$d kwenye simu ya kawaida (utafutaji wa Kiingereza). Maelezo kamili yataendelea kuongezwa baadaye.</item>
+  </plurals>
+  <string name="pack_quicklook_cost">Utafutaji wa Kiingereza tu: utafutaji wa lugha nyingine husubiri usomaji kamili. Usomaji kamili huwa wa polepole kwa takriban %1$d%% inapofanya kazi, na hutumia kumbukumbu ya ziada wakati wa kusoma.</string>
+  <string name="pack_privacy_name">Weka ukungu kwenye picha za faragha</string>
+  <string name="pack_privacy_benefit">Huweka ukungu kwenye picha ndogo ya kukagua inayoonekana kuwa ya faragha (utupu, nguo za ndani), ili anayetazama skrini yako asione mengi. Gusa picha ya kukagua ili kuifichua. Huweka ukungu tu: hakuna kilichofichwa au kuhamishwa kwenye matokeo.</string>
+  <string name="pack_privacy_cost">Inaweza kukosea, na picha za afya (upele, mama anayenyonyesha) zinaweza kuwekewa ukungu. Husoma picha chinichini wakati simu inachaji, na hupunguza kasi ya usomaji kamili kwa takriban %1$d%% inapofanya kazi.</string>
+  <string name="pack_privacy_recommended">Inapendekezwa ikiwa unatumia paneli ya utafutaji wa haraka</string>
+  <string name="pack_how_to_add_downloads"><xliff:g id="app_name" example="Trawl">%3$s</xliff:g> haiingii mtandaoni kamwe, kwa hivyo haiwezi kupakua hii yenyewe. Pata faili ya %1$s (%2$s) kutoka Crane AI Labs na uinakili kwenye folda ya Vipakuliwa kwenye simu hii. Kisha gusa Sakinisha: <xliff:g id="app_name" example="Trawl">%3$s</xliff:g> hukagua faili na kuiongeza. Unaweza kufuta faili ya .zip baadaye.</string>
+  <string name="pack_how_to_add_play">Play itatoa %1$s (%2$s) unapogusa Sakinisha. Hakuna kingine cha kufanya.</string>
+  <string name="notif_channel_name">Kusoma simu yako</string>
+  <string name="notif_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> inasoma simu yako</string>
+  <string name="notif_getting_ready">Inajitayarisha…</string>
+  <string name="notif_reading_photo">Inasoma picha</string>
+  <string name="notif_reading_screenshot">Inasoma picha ya skrini</string>
+  <string name="notif_reading_video">Inasoma video</string>
+  <string name="notif_reading_document">Inasoma hati</string>
+  <string name="notif_reading_recording">Inasoma rekodi</string>
+  <string name="notif_reading_file">Inasoma faili</string>
+  <string name="notif_waiting_polite">Inasubiri ukitumia simu</string>
+  <string name="chip_label_action">%1$s  ·  %2$s</string>
+  <string name="a11y_description_note">%1$s. %2$s</string>
+  <string name="meter_a11y_extra">%1$s %2$s.</string>
+  <string name="message_then_sentence">%1$s %2$s</string>
+  <string name="lock_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> imefungwa</string>
+  <string name="lock_body">Fungua kwa alama ya kidole, uso, PIN au mchoro wa simu yako.</string>
+  <string name="lock_button">Fungua</string>
+  <string name="quick_device_locked">Fungua simu yako ili utafute.</string>
+  <string name="lock_prompt_title">Fungua <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="lock_prompt_subtitle">Tumia mbinu ya kufunga skrini ya simu yako</string>
+  <string name="settings_section_privacy">Faragha</string>
+  <string name="privacy_lock_title">Funga <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="privacy_lock_hint">Uliza alama ya kidole, uso, PIN au mchoro kabla ya kuonyesha chochote.</string>
+  <string name="privacy_lock_needs_screen_lock">Weka kufunga skrini kwanza kwenye simu yako (Mipangilio, Usalama). <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> hutumia njia hiyo hiyo kufungua.</string>
+  <string name="privacy_lock_on_prompt">Washa mbinu ya kufunga <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="privacy_lock_off_prompt">Zima mbinu ya kufunga <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="privacy_lock_after_title">Funga tena baada ya</string>
+  <string name="privacy_lock_after_now">Kila wakati</string>
+  <string name="privacy_lock_after_minutes">Dak %1$d</string>
+  <string name="privacy_lock_after_hint">Muda ambao <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> inaweza kubaki chinichini kabla ya kuuliza tena. Pia hujifunga skrini inapozimika.</string>
+  <string name="privacy_recents_title">Ficha <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kwenye programu za hivi karibuni</string>
+  <string name="privacy_recents_hint">Kadi ya <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> itakuwa tupu kwenye orodha ya programu za hivi karibuni. Angalizo: picha za skrini za <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> pia zitazuiwa.</string>
+  <string name="privacy_show_title">Onyesha matokeo nyeti</string>
+  <string name="privacy_show_hint">Ikizimwa: mafaili uliyoweka alama ya unyeti, na mafaili ya kwenye folda za faragha, hayatatokea kwenye matokeo au paneli ya haraka hadi uyafungue.</string>
+  <string name="privacy_show_prompt">Onyesha matokeo nyeti</string>
+  <string name="privacy_pin_note">Mtu yeyote anayejua PIN ya simu yako anaweza kuona matokeo nyeti. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> haina PIN yake yenyewe.</string>
+  <string name="privacy_no_screen_lock_note">Simu yako haina kufunga skrini, kwa hivyo yeyote aliye nayo anaweza kufungua <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> na kuona kila kitu. Weka kufunga skrini ili kuilinda.</string>
+  <string name="privacy_folders_title">Folda za faragha</string>
+  <string name="privacy_folders_hint">Kila kitu katika folda ya faragha huchukuliwa kama nyeti. Tofauti na folda zilizotengwa, bado husomwa, hivyo unaweza kutafuta ndani yake baada ya kufungua.</string>
+  <string name="privacy_folders_empty">Hakuna folda za faragha.</string>
+  <string name="privacy_folders_add">Ongeza folda ya faragha</string>
+  <string name="privacy_folders_bad">Folda hiyo haiwezi kuwekwa kuwa ya faragha. Chagua folda kwenye hifadhi kuu ya simu.</string>
+  <string name="privacy_folders_remove">Acha kuchukulia %1$s kama ya faragha</string>
+  <string name="privacy_folders_remove_prompt">Ondoa folda kwenye faragha</string>
+  <string name="onb_lock_title">Funga <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> (si lazima)</string>
+  <string name="onb_lock_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> inaweza kuuliza alama ya kidole, uso, PIN au mchoro kabla ya kuonyesha chochote, ili mtu mwingine asitafute kwenye simu yako. Unaweza kubadilisha hili kwenye Mipangilio.</string>
+  <string name="onb_lock_action">Washa kufunga</string>
+  <string name="onb_lock_on">Kufunga kumewashwa</string>
+  <string name="onb_lock_no_screen_lock">Simu yako bado haina kufunga skrini. Weka kwenye Mipangilio ya simu ili utumie kipengele hiki.</string>
+  <string name="privacy_hidden_chip">%1$d iliyofichwa</string>
+  <string name="privacy_hidden_action">Onyesha</string>
+  <plurals name="privacy_hidden_chip_description">
+        
+    
+    <item quantity="one">Tokeo %1$d nyeti limefichwa. Gusa mara mbili ili kufungua na kulionyesha.</item>
+    <item quantity="other">Matokeo %1$d nyeti yamefichwa. Gusa mara mbili ili kufungua na kuyaonyesha.</item>
+  </plurals>
+  <string name="privacy_shown_chip">Matokeo nyeti yameonyeshwa</string>
+  <string name="privacy_shown_action">Ficha</string>
+  <string name="privacy_reveal_title">Onyesha matokeo nyeti</string>
+  <string name="privacy_reveal_subtitle">Tumia kifungio cha skrini ya simu yako</string>
+  <string name="action_mark_sensitive">Weka alama kuwa nyeti</string>
+  <string name="action_unmark_sensitive">Si nyeti</string>
+  <string name="snack_marked_sensitive">Imetiwa alama kuwa nyeti. Sasa imefichwa kwenye matokeo.</string>
+  <string name="snack_unmarked_sensitive">Si nyeti tena.</string>
+  <string name="sensitive_share_title">Shiriki kipengee nyeti?</string>
+  <string name="sensitive_share_body">Uliweka alama kuwa hiki ni nyeti. Yeyote anayekipokea anaweza kukihifadhi na kukisambaza.</string>
+  <string name="sensitive_share_confirm">Shiriki</string>
+  <string name="sensitive_copy_title">Nakili kipengee nyeti?</string>
+  <string name="sensitive_copy_body">Uliweka alama kuwa hiki ni nyeti. Chochote unachokibandika humo hupokea faili yenyewe.</string>
+  <string name="sensitive_copy_confirm">Nakili</string>
+  <string name="sensitive_cancel">Ghairi</string>
+  <string name="settings_section_previews">Maonyesho ya kukagua</string>
+  <string name="settings_blur_title">Tia ukungu maonyesho yanayoonekana kuwa ya faragha</string>
+  <string name="settings_blur_hint">Ni ya kiotomatiki, hivyo inaweza kukosea. Ni picha ndogo tu inayotiwa ukungu; faili bado inapatikana. Gusa jicho ili kuionyesha.</string>
+  <string name="settings_blur_panel_title">Tia ukungu katika utafutaji wa haraka</string>
+  <string name="settings_blur_panel_hint">Ni ya kiotomatiki, hivyo inaweza kukosea. Imewashwa kwa chaguo-msingi hapa, kwa sababu paneli hufunguka juu ya programu nyingine. Kuonyesha picha kunahitaji simu yako ifunguliwe.</string>
+  <string name="settings_blur_needs_pack">Inahitaji kiongezi cha \"Tia ukungu maonyesho yanayoonekana kuwa ya faragha\", hapa chini. Hadi kiongezwe, hakuna kitakachotiwa ukungu.</string>
+  <string name="action_show_picture">Onyesha picha</string>
+  <string name="preview_hidden">onyesho la kukagua limefichwa, linaweza kuwa la faragha</string>
+  <string name="quick_unlock_to_show">Fungua simu yako ili kuonyesha picha hii.</string>
+  <string name="quick_name">Utafutaji wa haraka</string>
+  <string name="quick_shortcut_long">Tafuta mafaili yako kwa haraka</string>
+  <string name="quick_widget_hint">Tafuta mafaili yako</string>
+  <string name="quick_widget_description">Upau wa kutafutia unaofungua utafutaji wa haraka wa <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> juu ya programu unayotumia.</string>
+  <string name="quick_hint">Tafuta mafaili yako</string>
+  <string name="quick_close">Funga utafutaji wa haraka</string>
+  <string name="quick_clear">Futa</string>
+  <string name="quick_nothing">Hakuna kilichopatikana cha “%1$s”.</string>
+  <string name="quick_nothing_incomplete"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> bado inasoma mafaili yako, hivyo hii inaweza kubadilika.</string>
+  <string name="quick_not_set_up"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> bado haijasoma mafaili yako. Fungua <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ili kuanza.</string>
+  <string name="quick_open_findr">Fungua <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="quick_still_meaning">Inatafuta maana…</string>
+  <string name="quick_copied">Imenakiliwa. Ibandike kwenye gumzo.</string>
+  <string name="quick_copy_failed">Haikuweza kunakili faili hili.</string>
+  <string name="quick_no_app">Hakuna programu inayoweza kufungua faili hili.</string>
+  <string name="quick_add_tile_title">Ongeza Tafuta ya haraka kwenye mipangilio ya haraka?</string>
+  <string name="quick_add_tile_body">Kisha unaweza kutafuta mafaili yako kutoka kwenye programu yoyote kwa kutelezesha mara mbili.</string>
+  <string name="quick_add_tile_yes">Ongeza kigae</string>
+  <string name="quick_add_tile_no">Si sasa</string>
+  <string name="settings_storage_remove_named">Ondoa <xliff:g id="item" example="Speech pack">%1$s</xliff:g></string>
+  <string name="licences_show_named">Onyesha maandishi kamili ya <xliff:g id="licence" example="Apache License 2.0">%1$s</xliff:g></string>
+  <string name="licences_hide_named">Ficha maandishi kamili ya <xliff:g id="licence" example="Apache License 2.0">%1$s</xliff:g></string>
+  <string name="sheet_error_word">Tatizo</string>
+  <string name="switch_on">Washa</string>
+  <string name="switch_off">Zima</string>
+  <string name="language_title">Chagua lugha yako</string>
+  <string name="language_intro">Skrini za <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> zitakuwa katika lugha hii. Unaweza kuibadilisha baadaye kwenye Mipangilio.</string>
+  <string name="language_system">Lugha ya simu</string>
+  <string name="language_system_hint">Inafuata mipangilio ya simu yako</string>
+  <string name="language_preview">Onyesho</string>
+  <string name="settings_language">Lugha</string>
+  <plurals name="search_status_so_far">
+        
+    
+    <item quantity="one">%1$d kufikia sasa · maana punde</item>
+    <item quantity="other">%1$d kufikia sasa · maana punde</item>
+  </plurals>
+  <string name="search_status_words">Maneno sasa · maana punde</string>
+  <plurals name="search_status_found">
+        
+    
+    <item quantity="one">%1$d imepatikana</item>
+    <item quantity="other">%1$d zimepatikana</item>
+  </plurals>
+  <string name="action_share_file">Shiriki %1$s</string>
+  <string name="action_copy_file">Nakili %1$s</string>
+  <string name="preview_hidden_words">Inaonekana ya faragha · gusa ili uone</string>
+  <string name="filter_group">Onyesha mafaili yapi</string>
+</resources>

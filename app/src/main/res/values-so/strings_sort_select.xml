@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="sort_best">Ugu habboon</string>
+  <string name="sort_newest">Ugu cusub</string>
+  <string name="sort_oldest">Ugu qadiimsan</string>
+  <string name="sort_largest">Ugu weyn</string>
+  <string name="sort_name">Magaca A ilaa Z</string>
+  <string name="sort_group">Ku kala sooc</string>
+  <string name="date_any_time">Wakhti kasta</string>
+  <string name="date_group">Taariikh</string>
+  <string name="date_today">Maanta</string>
+  <string name="date_yesterday">Shalay</string>
+  <string name="date_this_week">Toddobaadkan</string>
+  <string name="date_last_week">Toddobaadkii hore</string>
+  <string name="date_this_month">Bishan</string>
+  <string name="date_last_month">Bishii hore</string>
+  <string name="date_this_year">Sannadkan</string>
+  <string name="date_last_year">Sannadkii hore</string>
+  <string name="date_weekend">Dhammaadkii toddobaadkii hore</string>
+  <string name="date_last_night">Xalay</string>
+  <string name="date_this_morning">Saaka</string>
+  <string name="date_this_afternoon">Galabta</string>
+  <string name="date_this_evening">Fiidkan</string>
+  <string name="date_yesterday_morning">Shalay subax</string>
+  <string name="date_yesterday_afternoon">Shalay galabtii</string>
+  <string name="date_yesterday_evening">Shalay fiidkii</string>
+  <string name="date_pick_range">Dooro taariikhaha…</string>
+  <string name="date_range">%1$s – %2$s</string>
+  <string name="date_remove">Ka saar shaandhada taariikhda</string>
+  <string name="date_from_words">%1$s, oo laga helay ereyada aad raadisay</string>
+  <string name="date_picker_title">Dooro maalinta koowaad iyo tan ugu dambaysa</string>
+  <string name="date_picker_ok">Dhaqan geli</string>
+  <plurals name="date_past_days">
+    
+    <item quantity="one">%d-dii maalin ee la soo dhaafay</item>
+    <item quantity="other">%d-dii maalmood ee la soo dhaafay</item>
+  </plurals>
+  <plurals name="date_past_weeks">
+    
+    <item quantity="one">%d-dii toddobaad ee la soo dhaafay</item>
+    <item quantity="other">%d-dii toddobaad ee la soo dhaafay</item>
+  </plurals>
+  <plurals name="date_past_months">
+    
+    <item quantity="one">%d-dii bil ee la soo dhaafay</item>
+    <item quantity="other">%d-dii bilood ee la soo dhaafay</item>
+  </plurals>
+  <plurals name="date_past_years">
+    
+    <item quantity="one">%d-dii sano ee la soo dhaafay</item>
+    <item quantity="other">%d-dii sano ee la soo dhaafay</item>
+  </plurals>
+  <plurals name="date_ago_days">
+    
+    <item quantity="one">%d maalin ka hor</item>
+    <item quantity="other">%d maalmood ka hor</item>
+  </plurals>
+  <plurals name="date_ago_weeks">
+    
+    <item quantity="one">%d toddobaad ka hor</item>
+    <item quantity="other">%d toddobaad ka hor</item>
+  </plurals>
+  <plurals name="date_ago_months">
+    
+    <item quantity="one">%d bil ka hor</item>
+    <item quantity="other">%d bilood ka hor</item>
+  </plurals>
+  <plurals name="date_ago_years">
+    
+    <item quantity="one">%d sano ka hor</item>
+    <item quantity="other">%d sano ka hor</item>
+  </plurals>
+  <string name="action_select">Dooro</string>
+  <plurals name="select_count">
+    
+    <item quantity="one">%d la doortay</item>
+    <item quantity="other">%d la doortay</item>
+  </plurals>
+  <string name="select_all">Dooro dhammaan</string>
+  <string name="select_none">Midna ha dooran</string>
+  <string name="select_exit">Jooji doorashada</string>
+  <string name="select_share_limit">Waxaad hal mar wadaagi kartaa ugu badnaan %d fayl.</string>
+  <string name="sensitive_share_body_many">Qaar ka mid ah kuwan waxaa loo calaamadeeyay inay xasaasi yihiin. Qofkii hela wuu haysan karaa oo cid kale ayuu u gudbin karaa.</string>
+  <string name="sensitive_copy_body_many">Qaar ka mid ah kuwan waxaa loo calaamadeeyay inay xasaasi yihiin. Wax kasta oo aad ku dhejiso waxay helayaan faylasha laftooda.</string>
+  <string name="snack_marked_sensitive_many">Waxaa loo calaamadeeyay xasaasi. Hadda way ka qarsoon yihiin natiijooyinka.</string>
+  <string name="snack_unmarked_sensitive_many">Calaamaddii waa laga saaray. Mar kale ayay ka muuqan karaan natiijooyinka.</string>
+  <string name="nothing_in_dates">%1$s waxba lagama helin. Isku day taariikh kale.</string>
+</resources>

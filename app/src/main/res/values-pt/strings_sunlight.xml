@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="typing_learning">Ainda analisando: %1$s de %2$s · mais resultados podem aparecer</string>
+  <string name="typing_learning_charger">Ainda analisando: %1$s de %2$s · o restante ao carregar</string>
+  <string name="typing_learning_paused">Analisados %1$s de %2$s até agora · mais resultados podem aparecer</string>
+  <string name="settings_colours">Cores</string>
+  <string name="colours_sunlight">Luz do sol</string>
+  <string name="colours_sunlight_hint">Papel em tom quente e um único amarelo, fáceis de ler sob o sol forte.</string>
+  <string name="colours_wallpaper">Cores do papel de parede</string>
+  <string name="colours_wallpaper_hint">Usa as cores do papel de parede e muda junto com ele.</string>
+  <string name="settings_brightness">Claro ou escuro</string>
+</resources>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="welcome_line"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yana nemo takardunku, hotuna da hotunan allo ta sunayensu da kalmomin da ke cikinsu.</string>
+  <string name="onb1_point_model_title">An yi shi don ƙananan wayoyi</string>
+  <string name="welcome_point_ai_body">Yana karanta fayilolinku a nan, ba tare da sauke komai ba. Ba a aika komai zuwa saba.</string>
+  <string name="meter_sub_progress_eta">An karanta %1$s cikin %2$s · saura kusan %3$s</string>
+  <string name="meter_sub_progress_estimating">An karanta %1$s cikin %2$s · ana lissafin lokacin da zai ɗauka</string>
+  <string name="meter_sub_paused">An karanta %1$s cikin %2$s. Bincika na ci gaba da aiki.</string>
+  <string name="meter_a11y">%1$s. %2$s. An karanta kashi %3$d cikin ɗari.</string>
+  <string name="sheet_detail_indexing">Ana fara da sunaye, don Bincika ya yi aiki kusan nan take. Karanta kalmomin da ke cikin takardunku, fayilolin PDF da hotuna yana ɗaukar lokaci.</string>
+  <string name="level_searchable">Za a iya bincika da suna</string>
+  <string name="level_searchable_hint">Da sauri. Yana ba ka damar nemo fayil ta sunansa.</string>
+  <string name="level_understood">An karanta kalmomi</string>
+  <string name="level_understood_hint">A hankali. Yana ba ka damar nemo fayil ta kalmomin da ke cikinsa, har da rubutun da ke cikin hotuna.</string>
+  <string name="search_hint_a11y">Bincika fayilolinku ta sunayensu da kalmomin da ke cikinsu</string>
+  <string name="search_incomplete_note">Sunaye suna aiki yanzu, kuma har yanzu ana karanta kalmomi, don haka ƙarin sakamako na iya bayyana.</string>
+  <string name="settings_about_model">Bincika yana nemo fayiloli ta sunayensu da kalmomin da ke cikinsu, gaba ɗaya a wannan wayar.</string>
+  <string name="settings_delete_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> za ta goge Fihirisar fayilolinku a yanzu: sunayensu, kalmomin da ke cikin takardunku, da rubutun da ta karanta a hotuna da hotunan allo. Fayilolinta na wucin-gadi da duk rahotannin matsaloli ma za a goge su.\n\nBa za a taɓa fayilolinku na kanku ba. Saitunanku za su tsaya, ciki har da foldodin da kuka tsallake.\n\nDaga nan <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> za ta daina karantawa. Sakamakon Bincika zai kasance babu komai har sai kun danna Ci gaba.</string>
+  <string name="pause_battery_low_detail">Batir bai kai 30%% ba, shi ya sa <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ke jira don adana sauran batir. Za ta ci gaba da kanta da zarar an fara cajin wayar.</string>
+</resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="bg_title">Simu egi erekyeraho puroguramu</string>
+  <string name="bg_body">Simu ezimwe, harimu n\'egi, zirekyeraho puroguramu esikrini yaaba ezimire. N\'ahabw\'ekyo, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> neshoma fayiro zaawe yaaba eigwirwe kwonka. Okushoma fayiro nyingi, koresa Gumizamu okushoma esimu yaaba eri aha chaaja ekiro kyona.</string>
+  <string name="bg_open">Igura entebeekanisa z\'esimu</string>
+  <string name="bg_settings_section">Aha simu egi</string>
+  <string name="bg_settings_hint">Simu ezimwe, harimu n\'egi, zirekyeraho puroguramu esikrini yaaba ezimire. N\'ahabw\'ekyo, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> neshoma fayiro zaawe yaaba eigwirwe kwonka. Okushoma fayiro nyingi, koresa Gumizamu okushoma esimu yaaba eri aha chaaja. Entebeekanisa y\'esimu eri ahansi neikiriza puroguramu kutandika busya yonka esimu yaamara kutandika busya.</string>
+  <string name="bgs_title">Samsung nigubaasa kuhagarika app egi ekiro</string>
+  <string name="bgs_body">Esimu za Samsung nizibaasa kuryamisa app nari kuzigara ekiro, nahabweki <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> neehagarika kwega fayiro zawe. Omuri Battery, hitamu «Unrestricted» ya <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>.</string>
+  <string name="bgs_open">Yeggura ebishoboorora bya batiri</string>
+</resources>

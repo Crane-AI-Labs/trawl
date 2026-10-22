@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="sort_best">Ekirikuhikaana munonga</string>
+  <string name="sort_newest">Empyaka munonga</string>
+  <string name="sort_oldest">Enkuru munonga</string>
+  <string name="sort_largest">Enkooto munonga</string>
+  <string name="sort_name">Eiziina, A kuhika Z</string>
+  <string name="sort_group">Tebeekanisa kurugiirira aha</string>
+  <string name="date_any_time">Obwire bwona</string>
+  <string name="date_group">Ebiro</string>
+  <string name="date_today">Eriizooba</string>
+  <string name="date_yesterday">Nyomwabazyo</string>
+  <string name="date_this_week">Saabiiti egi</string>
+  <string name="date_last_week">Saabiiti ehwaire</string>
+  <string name="date_this_month">Okwezi oku</string>
+  <string name="date_last_month">Okwezi okuhwaire</string>
+  <string name="date_this_year">Omwaka ogu</string>
+  <string name="date_last_year">Omwaka oguhwaire</string>
+  <string name="date_weekend">Emperu ya saabiiti ehwaire</string>
+  <string name="date_last_night">Ekiro ekihwaire</string>
+  <string name="date_this_morning">Akasheeshe aka</string>
+  <string name="date_this_afternoon">Nyomushana egi</string>
+  <string name="date_this_evening">Omwabazyo ogu</string>
+  <string name="date_yesterday_morning">Akasheeshe ka nyomwabazyo</string>
+  <string name="date_yesterday_afternoon">Nyomushana ya nyomwabazyo</string>
+  <string name="date_yesterday_evening">Omwabazyo gwa nyomwabazyo</string>
+  <string name="date_pick_range">Toorana ebiro…</string>
+  <string name="date_range">%1$s – %2$s</string>
+  <string name="date_remove">Ihaho akacencuro k\'ebiro</string>
+  <string name="date_from_words">%1$s, kuruga omu bigambo by\'okusherura kwawe</string>
+  <string name="date_picker_title">Toorana eizooba ry\'okubanza n\'ery\'aha muheru</string>
+  <string name="date_picker_ok">Koresa</string>
+  <plurals name="date_past_days">
+    
+    <item quantity="one">Omu izooba %d erihwaire</item>
+    <item quantity="other">Omu biro %d ebihwaire</item>
+  </plurals>
+  <plurals name="date_past_weeks">
+    
+    <item quantity="one">Omu saabiiti %d ehwaire</item>
+    <item quantity="other">Omu saabiiti %d ezihwaire</item>
+  </plurals>
+  <plurals name="date_past_months">
+    
+    <item quantity="one">Omu kwezi %d okuhwaire</item>
+    <item quantity="other">Omu meezi %d agahwaire</item>
+  </plurals>
+  <plurals name="date_past_years">
+    
+    <item quantity="one">Omu mwaka %d oguhwaire</item>
+    <item quantity="other">Omu myaka %d ehwaire</item>
+  </plurals>
+  <plurals name="date_ago_days">
+    
+    <item quantity="one">Eizooba %d enyima</item>
+    <item quantity="other">Ebiro %d enyima</item>
+  </plurals>
+  <plurals name="date_ago_weeks">
+    
+    <item quantity="one">Saabiiti %d enyima</item>
+    <item quantity="other">Saabiiti %d enyima</item>
+  </plurals>
+  <plurals name="date_ago_months">
+    
+    <item quantity="one">Okwezi %d enyima</item>
+    <item quantity="other">Ameezi %d enyima</item>
+  </plurals>
+  <plurals name="date_ago_years">
+    
+    <item quantity="one">Omwaka %d enyima</item>
+    <item quantity="other">Emyaka %d enyima</item>
+  </plurals>
+  <string name="action_select">Toorana</string>
+  <plurals name="select_count">
+    
+    <item quantity="one">Fayiro %d etoorainwe</item>
+    <item quantity="other">Fayiro %d zitoorainwe</item>
+  </plurals>
+  <string name="select_all">Toorana zoona</string>
+  <string name="select_none">Ihamu zoona</string>
+  <string name="select_exit">Reka kutoorana</string>
+  <string name="select_share_limit">Noobaasa kugabanisa fayiro ezirikuhika %d ahonaaho.</string>
+  <string name="sensitive_share_body_many">Ezimu ahari ezi ziteirweho akamanyiso k\'obusherekyerize. Weena orikuziheebwa naabaasa kuzigumya n\'okuzigabanisa abandi.</string>
+  <string name="sensitive_copy_body_many">Ezimu ahari ezi ziteirweho akamanyiso k\'obusherekyerize. Byona ebi orikuzitaahamu nibyo birikuheebwa fayiro zenyini.</string>
+  <string name="snack_marked_sensitive_many">Ziteirweho akamanyiso k\'obusherekyerize. Hati tizirikureebwa omu byazoorwa.</string>
+  <string name="snack_unmarked_sensitive_many">Akamanyiso kaihirweho. Nizibaasa kwongyera kureebwa omu byazoorwa.</string>
+  <string name="nothing_in_dates">Tihariho kyazoirwe omu %1$s. Gyezaho ebiro ebindi.</string>
+</resources>

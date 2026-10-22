@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="open_problem_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kò lè Ṣí Ṣàyẹ̀wò rẹ̀ báyìí</string>
+  <string name="open_problem_busy">Iṣẹ́ mìíràn ń lò ó. Yóò gbìyànjú lẹ́ẹ̀kan síi láìpẹ́.</string>
+  <string name="open_problem_storage_full">Ibi ìpamọ́ fóònù ti kún. Yóò gbìyànjú lẹ́ẹ̀kan síi láìpẹ́.</string>
+  <string name="open_problem_io">Fóònù kò lè kà á. Yóò gbìyànjú lẹ́ẹ̀kan síi láìpẹ́.</string>
+  <string name="open_problem_memory">Fóònù kò ní àyè ìrántí tó. Yóò gbìyànjú lẹ́ẹ̀kan síi láìpẹ́.</string>
+  <string name="open_problem_other">Yóò gbìyànjú lẹ́ẹ̀kan síi láìpẹ́.</string>
+  <string name="open_problem_detail">Àwọn àbájáde rẹ ti tẹ́lẹ̀ wà ní ààbò, a kò sì pa ohunkóhun rẹ́. Ó máa gbìyànjú lẹ́ẹ̀kan síi fúnra rẹ̀, tàbí tẹ Gbìyànjú lẹ́ẹ̀kan síi.</string>
+</resources>

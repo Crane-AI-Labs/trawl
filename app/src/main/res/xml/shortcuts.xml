@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Long-press on the Findr icon. targetPackage has to be a literal: a @string reference is not resolved here and the launcher
+     then fails to start the panel. A side-by-side build (-PappIdSuffix) gets a generated copy of this file with the suffixed
+     package (see app/build.gradle.kts). -->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+  <shortcut
+    android:enabled="true"
+    android:icon="@drawable/ic_shortcut_quick_search"
+    android:shortcutId="quick_search"
+    android:shortcutLongLabel="@string/quick_shortcut_long"
+    android:shortcutShortLabel="@string/quick_name">
+    <intent
+      android:action="android.intent.action.VIEW"
+      android:targetClass="com.craneai.findr.quick.QuickSearchActivity"
+      android:targetPackage="com.craneai.findr">
+      <extra android:name="source" android:value="shortcut" />
+    </intent>
+  </shortcut>
+</shortcuts>

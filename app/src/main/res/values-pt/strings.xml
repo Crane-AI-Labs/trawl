@@ -1,0 +1,466 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="kind_document">Documento</string>
+  <string name="kind_pdf">PDF</string>
+  <string name="kind_photo">Foto</string>
+  <string name="kind_screenshot">Captura de tela</string>
+  <string name="kind_video">Vídeo</string>
+  <string name="kind_audio">Áudio</string>
+  <string name="kind_other">Arquivo</string>
+  <string name="filter_all">Tudo</string>
+  <string name="filter_photos">Fotos</string>
+  <string name="filter_screenshots">Capturas de tela</string>
+  <string name="filter_videos">Vídeos</string>
+  <string name="filter_documents">Documentos</string>
+  <string name="filter_audio">Áudio</string>
+  <string name="kind_plural_screenshots">Capturas de tela</string>
+  <string name="kind_plural_photos">Fotos</string>
+  <string name="kind_plural_documents">Documentos e PDFs</string>
+  <string name="kind_plural_videos">Vídeos</string>
+  <string name="kind_plural_audio">Áudio</string>
+  <string name="section_photos_videos">Fotos e vídeos</string>
+  <string name="section_documents_text">Documentos e texto</string>
+  <string name="section_recent_documents">Documentos recentes</string>
+  <string name="section_recent_photos_videos">Fotos e vídeos recentes</string>
+  <string name="badge_page">p. %1$d</string>
+  <string name="badge_at_time">às %1$s</string>
+  <plurals name="pages_count">
+        
+    
+    <item quantity="one">%d página</item>
+    <item quantity="many">%d páginas</item>
+    <item quantity="other">%d páginas</item>
+  </plurals>
+  <string name="action_open">Abrir</string>
+  <string name="action_share">Compartilhar</string>
+  <string name="action_copy">Copiar</string>
+  <string name="action_show_folder">Mostrar na pasta</string>
+  <string name="action_more">Mais ações</string>
+  <string name="snack_copied">Copiado</string>
+  <string name="meter_title_not_started">Ainda não começou a ler</string>
+  <string name="meter_title_scanning">Examinando seu celular</string>
+  <string name="meter_title_indexing">Analisando seus arquivos</string>
+  <string name="meter_title_up_to_date">Tudo em dia</string>
+  <string name="meter_title_error">Algo deu errado</string>
+  <string name="meter_sub_not_started">O <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> começará assim que puder ver seus arquivos.</string>
+  <string name="meter_sub_scanning">%1$s arquivos encontrados até agora.</string>
+  <string name="meter_sub_names_first">Nomes e palavras primeiro, para você já poder buscar.</string>
+  <string name="meter_sub_progress_eta">%1$s de %2$s analisados · cerca de %3$s restantes</string>
+  <string name="meter_sub_progress_estimating">%1$s de %2$s analisados · calculando o tempo</string>
+  <string name="meter_sub_needs_charger">Nomes e palavras agora. O significado começa ao carregar.</string>
+  <string name="meter_sub_reembed">Atualizando fotos para o novo modelo: %1$s de %2$s. A busca continua funcionando.</string>
+  <string name="meter_sub_reembed_eta">Atualizando fotos para o novo modelo: %1$s de %2$s · cerca de %3$s restantes</string>
+  <string name="meter_sub_reembed_battery">Atualizando fotos para o novo modelo: %1$s de %2$s. O restante continua ao carregar.</string>
+  <string name="meter_sub_light_reading">Lendo suas fotos para uma busca rápida. A qualidade máxima termina ao carregar.</string>
+  <string name="meter_sub_light_done">Já é possível buscar tudo. A qualidade máxima termina ao carregar.</string>
+  <string name="meter_sub_paused">%1$s de %2$s analisados. A busca ainda funciona.</string>
+  <string name="meter_sub_up_to_date">%1$s arquivos prontos para buscar.</string>
+  <string name="meter_sub_error">Toque para ver detalhes.</string>
+  <string name="meter_a11y">%1$s. %2$s. %3$d por cento analisado.</string>
+  <string name="meter_open_details">Mostrar detalhes da leitura</string>
+  <string name="pause_not_charging">Aguardando o carregador</string>
+  <string name="pause_not_charging_detail">Ler tudo em qualidade máxima consome muita bateria, por isso o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> faz essa parte quando o celular está carregando. A busca continua funcionando enquanto isso.</string>
+  <string name="pause_too_hot">Esfriando</string>
+  <string name="pause_too_hot_detail">O celular está quente, então o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> pausou para protegê-lo. Ele continua sozinho assim que o celular esfriar.</string>
+  <string name="pause_battery_low">Bateria fraca</string>
+  <string name="pause_battery_low_detail">A bateria está abaixo de 30%%, por isso o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> lê apenas nomes e palavras para economizar energia. Ele continua sozinho assim que o celular carregar.</string>
+  <string name="pause_user">Pausado por você</string>
+  <string name="pause_user_detail">A leitura está pausada. A busca ainda funciona com o que o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> analisou até agora.</string>
+  <string name="pause_no_permission">Precisa de acesso aos seus arquivos</string>
+  <string name="pause_no_permission_detail">O <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> só pode ver seus arquivos se você permitir o acesso a Todos os arquivos. Ele apenas lê o conteúdo e nunca altera nada.</string>
+  <string name="pause_storage_low">Armazenamento do celular quase cheio</string>
+  <string name="pause_storage_low_detail">O <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> precisa de um pouco de espaço para manter o índice. Libere espaço e ele continuará.</string>
+  <string name="action_pause">Pausar</string>
+  <string name="action_resume">Retomar</string>
+  <string name="action_read_on_battery">Ler na bateria mesmo assim</string>
+  <string name="action_allow_access">Permitir acesso</string>
+  <string name="action_free_space">Liberar espaço</string>
+  <string name="action_retry">Tentar novamente</string>
+  <string name="eta_under_minute">menos de um minuto</string>
+  <string name="eta_minutes">%d min</string>
+  <string name="eta_hours_single">%d h</string>
+  <string name="eta_hours_range">%1$d a %2$d h</string>
+  <string name="eta_while_charging">%1$s no carregador</string>
+  <string name="sheet_title">Lendo seus arquivos</string>
+  <string name="sheet_detail_up_to_date">Todos os arquivos que o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> pode ver estão prontos. Novos arquivos são adicionados conforme surgirem.</string>
+  <string name="sheet_detail_scanning">O <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> está listando seus arquivos. Isso leva um ou dois minutos.</string>
+  <string name="sheet_detail_light_on_battery">Nomes e palavras são lidos agora e fotos recebem uma análise rápida, então a busca já funciona. A qualidade máxima, que traz os melhores resultados, termina ao carregar o celular.</string>
+  <string name="sheet_detail_needs_charger">Nomes e palavras estão sendo lidos agora, então a busca já funciona. Analisar o conteúdo de fotos e documentos começa quando o celular estiver carregando.</string>
+  <string name="sheet_detail_indexing">Nomes e palavras vêm primeiro, para buscar quase na hora. Entender o conteúdo de fotos e documentos leva mais tempo e é melhor fazer à noite no carregador.</string>
+  <string name="sheet_detail_error">A leitura parou inesperadamente. Seus resultados anteriores estão seguros.</string>
+  <string name="sheet_detail_not_started">O <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ainda não começou a ler.</string>
+  <string name="sheet_by_kind">Por tipo de arquivo</string>
+  <string name="sheet_reading_now">Lendo agora</string>
+  <string name="sheet_resumes_by_itself">Continua sozinho quando isso for resolvido.</string>
+  <string name="level_searchable">Busca por nome e palavras</string>
+  <string name="level_searchable_hint">Rápido. Encontre um arquivo pelo que está escrito nele.</string>
+  <string name="level_understood">Entendido pelo significado</string>
+  <string name="level_understood_hint">Mais lento. Encontre um arquivo pelo que ele trata.</string>
+  <string name="level_quicklook">Visualização rápida: fotos e vídeos</string>
+  <string name="level_quicklook_hint">Rápido. Um modelo menor encontra fotos pelo conteúdo, para buscas em inglês. Detalhes completos substituem isso conforme cada foto for compreendida.</string>
+  <string name="meter_quicklook">Visualização rápida: %1$s de %3$s fotos · Detalhes completos: %2$s de %3$s</string>
+  <string name="level_a11y">%1$s: %2$s de %3$s</string>
+  <string name="count_of">%1$s de %2$s</string>
+  <string name="stat_time_left">Tempo restante</string>
+  <string name="stat_speed">Velocidade</string>
+  <string name="stat_index_size">Tamanho do índice</string>
+  <string name="stat_model_size">Tamanho do modelo</string>
+  <string name="stat_when_charging">Inicia no carregador</string>
+  <string name="stat_estimating">Calculando</string>
+  <string name="stat_measuring">Medindo</string>
+  <string name="stat_done">Concluído</string>
+  <string name="stat_rate_value">%1$s arquivos/h</string>
+  <string name="onb_next">Avançar</string>
+  <string name="onb_back">Voltar</string>
+  <string name="onb_start">Iniciar o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="onb_start_locked">O <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> precisa de acesso a todos os arquivos para iniciar</string>
+  <string name="onb_allow_access">Permitir acesso aos arquivos</string>
+  <string name="onb_page_of">Etapa %1$d de %2$d</string>
+  <string name="welcome_line"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> encontra seus documentos, fotos e capturas de tela pelo que dizem e mostram.</string>
+  <string name="welcome_point_ai_body">A IA que entende seus arquivos funciona neste celular. Nada é enviado para um servidor.</string>
+  <string name="welcome_point_reads_title">Só lê seus arquivos</string>
+  <string name="welcome_point_reads_body">Nunca altera, move nem apaga nada. Você pode apagar o que ela aprendeu a qualquer momento.</string>
+  <string name="onb_choose_folders">Escolher pastas</string>
+  <string name="onb1_eyebrow">Privacidade por padrão</string>
+  <string name="onb1_title">Seus arquivos nunca saem deste celular.</string>
+  <string name="onb1_body">O <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> encontra documentos, PDFs, capturas de tela, fotos, memes e vídeos pelo que dizem e mostram. Tudo acontece aqui, neste celular.</string>
+  <string name="onb1_point_internet_title">Sem permissão de internet</string>
+  <string name="onb1_point_internet_body">O <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> não pode se conectar à internet. O próprio Android impede o envio de qualquer informação.</string>
+  <string name="onb1_point_model_title">A IA fica no seu celular</string>
+  <string name="onb1_point_model_body">O modelo que compreende seus arquivos, EmbeddingGemma 2 do Google, roda neste celular. Nada é enviado a um servidor para ser compreendido.</string>
+  <string name="onb1_point_delete_title">Você está no controle</string>
+  <string name="onb1_point_delete_body">Pule qualquer pasta ou apague tudo o que o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> aprendeu quando quiser.</string>
+  <string name="onb2_eyebrow">O que acontece a seguir</string>
+  <string name="onb2_title">A busca funciona em minutos. Compreender leva uma noite.</string>
+  <string name="onb2_step1_title">Em poucos minutos</string>
+  <string name="onb2_step1_body">O <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> lista seus arquivos e aprende o nome deles e as palavras dentro deles. Você já pode buscar na hora.</string>
+  <string name="onb2_step2_title">Nas próximas horas</string>
+  <string name="onb2_step2_body">Depois, ele aprende sobre o que é cada foto e documento, para que buscas como “recibo da escola” achem o item certo mesmo sem essas palavras nele. Isso exige tempo do celular.</string>
+  <string name="onb2_step3_title">Principalmente ao carregar</string>
+  <string name="onb2_step3_body">Para economizar bateria, o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> faz a parte demorada no carregador. Deixe conectado durante a noite uma vez. Você pode ver o progresso, pausar ou mudar isso quando quiser.</string>
+  <string name="onb3_eyebrow">Duas permissões</string>
+  <string name="onb3_title">Permita que o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> veja seus arquivos</string>
+  <string name="onb3_files_title">Acesso a todos os arquivos</string>
+  <string name="onb3_files_body">Necessário para ver arquivos em todas as pastas, como documentos do WhatsApp. O <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> apenas lê. Nunca altera, move ou apaga nada.</string>
+  <string name="onb3_files_action">Abrir configurações</string>
+  <string name="onb3_files_granted">Permitido</string>
+  <string name="onb3_files_hint">Na lista que abrir, ative “Permitir acesso para gerenciar todos os arquivos” e depois volte.</string>
+  <string name="onb3_notif_title">Notificações (opcional)</string>
+  <string name="onb3_notif_body">Apenas para o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> avisar quando terminar a leitura. Nada mais.</string>
+  <string name="onb3_notif_action">Permitir</string>
+  <string name="onb3_notif_granted">Permitido</string>
+  <string name="onb4_eyebrow">Recursos extras opcionais</string>
+  <string name="onb4_title">Adicionar recursos extras?</string>
+  <string name="onb4_body">O <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> funciona sem eles. Cada um melhora algo específico. Cada um é um arquivo que você copia para Downloads, pois o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> nunca acessa a internet.</string>
+  <string name="onb4_add">Adicionar</string>
+  <string name="onb4_not_now">Agora não</string>
+  <string name="onb4_added">Adicionado</string>
+  <string name="onb4_skipped">Ignorado. Você pode adicionar depois.</string>
+  <string name="onb4_footer">Você pode mudar isso depois em Configurações → Extensões.</string>
+  <string name="search_hint">Buscar seus arquivos</string>
+  <string name="search_hint_a11y">Buscar seus arquivos pelo que dizem ou mostram</string>
+  <string name="search_clear">Limpar busca</string>
+  <string name="search_searching">Buscando</string>
+  <string name="search_settings">Configurações</string>
+  <string name="search_nothing_title">Nada encontrado</string>
+  <string name="search_nothing_body">Nenhum arquivo corresponde a “%1$s”.</string>
+  <string name="search_nothing_try_all">Tente menos palavras, termos diferentes ou busque em Tudo.</string>
+  <string name="search_nothing_incomplete">O <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ainda está analisando seus arquivos, então isso pode mudar. Tente novamente mais tarde.</string>
+  <string name="search_repairing_note">A busca está se reparando. Nomes e palavras ainda funcionam; a busca por significado volta em alguns minutos.</string>
+  <string name="search_incomplete_note">Nomes e palavras já funcionam. A busca por significado ainda está em aprendizado, então mais resultados podem aparecer.</string>
+  <string name="search_incomplete_note_charger">Nomes e palavras já funcionam. A busca por significado (como “boda” para a foto de uma moto) começa assim que o celular estiver carregando.</string>
+  <string name="search_weak_toggle">Resultados aproximados (%1$d)</string>
+  <string name="search_weak_only">Nenhum resultado exato. Estes são os mais próximos.</string>
+  <string name="search_weak_expand">Mostrar resultados aproximados</string>
+  <string name="search_weak_collapse">Ocultar correspondências mais fracas</string>
+  <string name="search_fresh_title">Nada para mostrar ainda</string>
+  <string name="search_fresh_body">Assim que <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> vir seus arquivos, os mais recentes aparecerão aqui. Digite acima para buscar.</string>
+  <string name="search_recent_empty_filter">Nenhum arquivo deste tipo ainda.</string>
+  <string name="access_banner_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ainda não pode ver seus arquivos</string>
+  <string name="access_banner_body">Permita o acesso a Todos os arquivos para poder lê-los. O app nunca altera nada.</string>
+  <string name="snack_no_app">Nenhum app neste celular pode abrir este arquivo.</string>
+  <string name="snack_sample">Este é um arquivo de exemplo e não pode ser aberto.</string>
+  <string name="settings_title">Configurações</string>
+  <string name="settings_back">Voltar</string>
+  <string name="settings_section_reading">Leitura</string>
+  <string name="learn_speed_title">Velocidade de aprendizado</string>
+  <string name="learn_gentle">Suave</string>
+  <string name="learn_gentle_hint">Lê apenas ao carregar, com menos threads. Menos bateria e menos aquecimento; tudo o que é novo espera o carregador.</string>
+  <string name="learn_balanced">Equilibrada</string>
+  <string name="learn_balanced_hint">O modo habitual. O carregador lê toda a sua galeria; na bateria, só rodam os novos arquivos e a visualização rápida.</string>
+  <string name="learn_fast">Rápida</string>
+  <string name="learn_fast_hint">Lê tudo também na bateria e só espera enquanto você usa outro app. Termina mais cedo, gasta mais bateria e esquenta mais.</string>
+  <string name="settings_section_kinds">O que ler</string>
+  <string name="settings_recordings">Notas de voz e gravações</string>
+  <string name="settings_recordings_hint">Lê o que foi dito e ouvido para que você possa buscá-los.</string>
+  <string name="settings_deeper">Busca aprofundada de som (lenta): músicas e outros sons</string>
+  <string name="settings_deeper_hint">Encontra sons pelo tipo de áudio, não apenas por palavras. Leva cerca de 15 segundos de leitura para cada minuto de áudio em um celular básico.</string>
+  <string name="settings_section_addons">Extensões</string>
+  <string name="addons_intro">Recursos opcionais que melhoram a busca. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> nunca se conecta à internet, então cada um é um arquivo que você copia para Downloads primeiro. Tudo permanece neste celular.</string>
+  <string name="addons_status_not_added">Não adicionada</string>
+  <string name="addons_status_adding">Adicionando</string>
+  <string name="addons_status_added">Adicionada</string>
+  <string name="addons_status_soon">Em breve</string>
+  <string name="addons_size">Tamanho: %1$s</string>
+  <string name="addons_add">Adicionar</string>
+  <string name="addons_add_with_size">Adicionar (%1$s)</string>
+  <string name="addons_remove">Remover, libera %1$s</string>
+  <string name="addons_on">Ativado</string>
+  <string name="addons_off">Desativado</string>
+  <string name="addons_adding_pct">Verificando e adicionando… %1$d%%</string>
+  <string name="addons_adding">Verificando e adicionando…</string>
+  <string name="addons_try_again">Tentar novamente</string>
+  <string name="addons_soon_hint">Ainda não disponível. Aparecerá aqui quando estiver pronto.</string>
+  <string name="addons_problem_not_found"><xliff:g id="app_name" example="Trawl">%2$s</xliff:g> não encontrou %1$s em Downloads. Copie o arquivo para lá e tente novamente.</string>
+  <string name="addons_problem_access"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> precisa de acesso a Todos os arquivos para ler Downloads. Ative a permissão e tente novamente.</string>
+  <string name="addons_problem_bad">O arquivo em Downloads está danificado ou incorreto, então <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> não o usou. Copie-o novamente e tente de novo.</string>
+  <string name="addons_problem_unavailable">Esta extensão ainda não pode ser adicionada nesta versão.</string>
+  <string name="addons_add_title">Adicionar %1$s</string>
+  <string name="addons_add_install">Instalar</string>
+  <string name="addons_remove_title">Remover %1$s?</string>
+  <string name="addons_remove_body">Isso libera %1$s e desativa a extensão. As palavras e significados que o <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> já aprendeu continuam até esses arquivos serem lidos de novo. Você pode adicioná-la de volta a qualquer momento.</string>
+  <string name="addons_remove_confirm">Remover</string>
+  <string name="settings_section_excluded">Pastas ignoradas</string>
+  <string name="settings_excluded_hint">O <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> não lerá nada dentro destas pastas.</string>
+  <string name="settings_excluded_empty">Nenhuma. O <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> lê todas as pastas que consegue acessar.</string>
+  <string name="settings_excluded_remove">Parar de ignorar %1$s</string>
+  <string name="settings_excluded_bad">Essa pasta não pode ser escolhida aqui. Escolha uma no armazenamento principal do celular.</string>
+  <string name="onb_scope_eyebrow">Sua escolha</string>
+  <string name="scope_title">O que o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> deve buscar?</string>
+  <string name="scope_intro">Desative o que você não quer encontrar. Os arquivos saem da busca na hora e voltam se você ativar novamente.</string>
+  <string name="scope_counts_unknown">A contagem de arquivos aparece assim que o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> puder ver seus arquivos.</string>
+  <string name="scope_private">Pastas ocultas, pastas com .nomedia e pastas privadas de outros apps nunca são lidas.</string>
+  <string name="scope_added_title">Pastas adicionadas</string>
+  <string name="scope_add">Adicionar pasta</string>
+  <string name="scope_added_remove">Parar de buscar em %1$s</string>
+  <string name="scope_exclude">Ignorar pasta</string>
+  <plurals name="scope_files">
+        
+    
+    <item quantity="one">%1$s arquivo</item>
+    <item quantity="many">%1$s de arquivos</item>
+    <item quantity="other">%1$s arquivos</item>
+  </plurals>
+  <string name="scope_group_camera">Câmera</string>
+  <string name="scope_group_screenshots">Capturas de tela</string>
+  <string name="scope_group_whatsapp_images">Imagens do WhatsApp</string>
+  <string name="scope_group_whatsapp_video">Vídeos do WhatsApp</string>
+  <string name="scope_group_whatsapp_documents">Documentos do WhatsApp</string>
+  <string name="scope_group_whatsapp_voice">Áudios do WhatsApp</string>
+  <string name="scope_group_whatsapp_status">Status do WhatsApp</string>
+  <string name="scope_group_downloads">Downloads</string>
+  <string name="scope_group_documents">Documentos</string>
+  <string name="scope_group_music">Músicas e gravações</string>
+  <string name="scope_group_other">Outras pastas</string>
+  <string name="settings_section_storage">Armazenamento usado</string>
+  <string name="settings_storage_index">Índice de busca</string>
+  <string name="settings_storage_model">Modelo de IA</string>
+  <string name="settings_delete">Apagar tudo o que o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> sabe</string>
+  <string name="settings_delete_hint">Apaga o que o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> leu dos seus arquivos e os arquivos temporários dele. Seus próprios arquivos não são tocados.</string>
+  <string name="settings_delete_title">Apagar tudo o que o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> sabe?</string>
+  <string name="settings_delete_body">O <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> apagará o índice dos seus arquivos agora: nomes, palavras nos documentos, texto lido em fotos e capturas de tela, falas transcritas de vídeos e áudios e o que a IA anotou sobre cada arquivo. Arquivos temporários e relatórios de erro também serão apagados.\n\nSeus próprios arquivos não são tocados. Suas configurações continuam, incluindo as pastas ignoradas.\n\nDepois, o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> para de analisar seus dados. A busca fica vazia até você tocar em Retomar.</string>
+  <string name="settings_delete_done">Apagou %1$s. O <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> fica pausado até você tocar em Retomar.</string>
+  <string name="settings_storage_model_hint">Necessário para buscar por significado.</string>
+  <string name="settings_storage_index_hint">O banco de dados e seu registro.</string>
+  <string name="settings_storage_estimate">Quando todos os arquivos forem lidos</string>
+  <string name="settings_storage_estimate_value">Cerca de %1$s</string>
+  <string name="settings_storage_memory">Memória ao buscar</string>
+  <string name="settings_storage_memory_hint">Usada apenas enquanto o <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> estiver aberto. Cerca de %1$s quando todos os arquivos forem lidos.</string>
+  <string name="settings_storage_remove">Remover</string>
+  <string name="settings_storage_no_data">O <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> nunca usa dados móveis: não tem acesso à internet.</string>
+  <string name="settings_delete_confirm">Apagar</string>
+  <string name="settings_cancel">Cancelar</string>
+  <string name="settings_section_appearance">Aparência</string>
+  <string name="settings_theme_system">Sistema</string>
+  <string name="settings_theme_light">Claro</string>
+  <string name="settings_theme_dark">Escuro</string>
+  <string name="report_card_title">O <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> parou inesperadamente. Enviar um relatório para ajudar a corrigir?</string>
+  <string name="report_card_body">O relatório não contém nomes de arquivos, buscas nem textos dos seus arquivos. Você pode lê-lo antes, e nada é enviado até tocar em Enviar no seu app de e-mail.</string>
+  <string name="report_send">Enviar</string>
+  <string name="report_not_now">Agora não</string>
+  <string name="report_view">Ver relatório</string>
+  <string name="report_close">Fechar</string>
+  <string name="report_send_email">Enviar por e-mail</string>
+  <string name="report_send_whatsapp">Enviar pelo WhatsApp</string>
+  <string name="report_send_whatsapp_file">Enviar relatório completo pelo WhatsApp</string>
+  <string name="report_no_email">Nenhum app de e-mail foi encontrado neste celular. Use Ver relatório para lê-lo ou instale um app de e-mail.</string>
+  <string name="report_no_whatsapp">Não foi possível abrir o WhatsApp.</string>
+  <string name="report_building">Preparando o relatório…</string>
+  <string name="report_dialog_title">Relatório de problema</string>
+  <string name="report_dialog_hint">Isto é tudo o que seria enviado. Seus arquivos, pastas e buscas não estão aqui.</string>
+  <string name="settings_section_report">Relatar um problema</string>
+  <string name="settings_report_hint">Abre seu app de e-mail com um relatório pronto para envio. Ele contém a versão do celular e do <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>, além de erros que o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> encontrou, sem nomes de arquivos, buscas ou textos dos seus arquivos. Você pode lê-lo antes, e nada é enviado até tocar em Enviar lá.</string>
+  <string name="settings_report_note">O que deu errado? (opcional)</string>
+  <string name="settings_report_kept">O <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> guarda no máximo 10 relatórios neste celular, cerca de 100 KB. “Apagar tudo o que o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> sabe” remove todos eles.</string>
+  <string name="settings_section_about">Sobre</string>
+  <string name="settings_about_version">Versão %1$s</string>
+  <string name="settings_about_model">A busca usa o EmbeddingGemma 2 do Google (Apache 2.0), totalmente neste celular.</string>
+  <string name="settings_about_private">O <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> não tem permissão de internet. Seus arquivos e o que ele aprende com eles nunca saem do celular.</string>
+  <string name="settings_about_maker">Feito por Crane AI Labs.</string>
+  <string name="settings_licences">Licenças e créditos</string>
+  <string name="licences_title">Licenças e créditos</string>
+  <string name="licences_intro">O <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> é desenvolvido sobre o trabalho abaixo. Estes avisos são exigidos pelas licenças e são também nossa forma de agradecer.</string>
+  <string name="licences_section_required">Avisos</string>
+  <string name="licences_section_components">Todo o restante no <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="licences_section_texts">Textos completos das licenças</string>
+  <string name="licences_show">Mostrar texto completo</string>
+  <string name="licences_hide">Ocultar texto completo</string>
+  <string name="settings_close">Fechar</string>
+  <string name="pack_size_mb">%1$d MB</string>
+  <string name="pack_speech_name">Busca por fala</string>
+  <string name="pack_speech_benefit">Encontra o que foi dito em vídeos e notas de voz: o arquivo certo primeiro em %1$d%% das vezes, em vez de %2$d%%.</string>
+  <plurals name="pack_speech_cost">
+        
+    
+    <item quantity="one">Adiciona cerca de %1$d segundo por minuto de vídeo durante a leitura. Por enquanto, apenas fala em inglês.</item>
+    <item quantity="many">Adiciona cerca de %1$d segundos por minuto de vídeo durante a leitura. Por enquanto, apenas fala em inglês.</item>
+    <item quantity="other">Adiciona cerca de %1$d segundos por minuto de vídeo durante a leitura. Por enquanto, apenas fala em inglês.</item>
+  </plurals>
+  <string name="pack_quicklook_name">Visualização rápida de fotos</string>
+  <plurals name="pack_quicklook_benefit">
+        
+    
+    <item quantity="one">Permite buscar em toda a galeria por significado em minutos, em vez de horas: cerca de %1$s foto por hora em vez de %2$d em um celular básico (buscas em inglês). Os detalhes completos continuam sendo analisados aos poucos.</item>
+    <item quantity="many">Permite buscar em toda a galeria por significado em minutos, em vez de horas: cerca de %1$s fotos por hora em vez de %2$d em um celular básico (buscas em inglês). Os detalhes completos continuam sendo analisados aos poucos.</item>
+    <item quantity="other">Permite buscar em toda a galeria por significado em minutos, em vez de horas: cerca de %1$s fotos por hora em vez de %2$d em um celular básico (buscas em inglês). Os detalhes completos continuam sendo analisados aos poucos.</item>
+  </plurals>
+  <string name="pack_quicklook_cost">Apenas buscas em inglês: buscas em outros idiomas aguardam a leitura completa. A leitura completa fica cerca de %1$d%% mais lenta enquanto funciona, além de usar um pouco mais de memória ao ler.</string>
+  <string name="pack_privacy_name">Desfocar prévias privadas</string>
+  <string name="pack_privacy_benefit">Desfoca a miniatura de uma foto que pareça íntima (nudez, roupas íntimas), para que olhares curiosos vejam menos. Toque na prévia para exibi-la. Apenas desfoca: nada fica oculto nem é movido nos resultados.</string>
+  <string name="pack_privacy_cost">Pode haver falsos positivos ou negativos, e fotos de saúde (uma erupção cutânea, amamentação) podem ser desfocadas. Lê fotos em segundo plano enquanto carrega e reduz a leitura completa em cerca de %1$d%% enquanto funciona.</string>
+  <string name="pack_privacy_recommended">Recomendado se você usa o painel de busca rápida</string>
+  <string name="pack_how_to_add_downloads">O <xliff:g id="app_name" example="Trawl">%3$s</xliff:g> nunca se conecta à internet, então não pode baixar isso sozinho. Baixe o arquivo %1$s (%2$s) da Crane AI Labs e copie para a pasta Downloads deste celular. Depois, toque em Instalar: o <xliff:g id="app_name" example="Trawl">%3$s</xliff:g> verifica o arquivo e o adiciona. Você pode apagar o .zip depois.</string>
+  <string name="pack_how_to_add_play">O Play fornecerá %1$s (%2$s) quando você tocar em Instalar. Não é preciso fazer mais nada.</string>
+  <string name="notif_channel_name">Analisando seu celular</string>
+  <string name="notif_title">O <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> está analisando seu celular</string>
+  <string name="notif_getting_ready">Preparando…</string>
+  <string name="notif_reading_photo">Lendo uma foto</string>
+  <string name="notif_reading_screenshot">Lendo uma captura de tela</string>
+  <string name="notif_reading_video">Lendo um vídeo</string>
+  <string name="notif_reading_document">Lendo um documento</string>
+  <string name="notif_reading_recording">Lendo uma gravação</string>
+  <string name="notif_reading_file">Lendo um arquivo</string>
+  <string name="notif_waiting_polite">Aguardando enquanto você usa o telefone</string>
+  <string name="chip_label_action">%1$s  ·  %2$s</string>
+  <string name="a11y_description_note">%1$s. %2$s</string>
+  <string name="meter_a11y_extra">%1$s %2$s.</string>
+  <string name="message_then_sentence">%1$s %2$s</string>
+  <string name="lock_title">O <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> está bloqueado</string>
+  <string name="lock_body">Desbloqueie com a impressão digital, reconhecimento facial, PIN ou padrão do celular.</string>
+  <string name="lock_button">Desbloquear</string>
+  <string name="quick_device_locked">Desbloqueie seu celular para buscar.</string>
+  <string name="lock_prompt_title">Desbloquear o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="lock_prompt_subtitle">Use o bloqueio de tela do celular</string>
+  <string name="settings_section_privacy">Privacidade</string>
+  <string name="privacy_lock_title">Bloquear o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="privacy_lock_hint">Pedir impressão digital, reconhecimento facial, PIN ou padrão antes de mostrar algo.</string>
+  <string name="privacy_lock_needs_screen_lock">Defina um bloqueio de tela no seu celular primeiro (Configurações, Segurança). O <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> usa o mesmo desbloqueio.</string>
+  <string name="privacy_lock_on_prompt">Ativar bloqueio do <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="privacy_lock_off_prompt">Desativar bloqueio do <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="privacy_lock_after_title">Bloquear novamente após</string>
+  <string name="privacy_lock_after_now">Sempre</string>
+  <string name="privacy_lock_after_minutes">%1$d min</string>
+  <string name="privacy_lock_after_hint">Quanto tempo o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> pode ficar em segundo plano antes de pedir de novo. Também bloqueia ao desligar a tela.</string>
+  <string name="privacy_recents_title">Ocultar o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> nos apps recentes</string>
+  <string name="privacy_recents_hint">O card do <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> fica em branco nos apps recentes. Capturas de tela do <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> também serão bloqueadas.</string>
+  <string name="privacy_show_title">Mostrar resultados sensíveis</string>
+  <string name="privacy_show_hint">Desativado: arquivos marcados como sensíveis e arquivos em pastas privadas ficam fora dos resultados e do painel rápido até serem desbloqueados.</string>
+  <string name="privacy_show_prompt">Mostrar resultados sensíveis</string>
+  <string name="privacy_pin_note">Quem souber o PIN do seu celular pode ver resultados sensíveis. O <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> não tem PIN próprio.</string>
+  <string name="privacy_no_screen_lock_note">Seu celular não tem bloqueio de tela, então qualquer pessoa com ele pode abrir o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> e ver tudo. Defina um bloqueio de tela para protegê-lo.</string>
+  <string name="privacy_folders_title">Pastas privadas</string>
+  <string name="privacy_folders_hint">Tudo em uma pasta privada é tratado como sensível. Ao contrário das pastas ignoradas, ela ainda é lida para que você possa buscar após desbloquear.</string>
+  <string name="privacy_folders_empty">Nenhuma pasta privada.</string>
+  <string name="privacy_folders_add">Adicionar pasta privada</string>
+  <string name="privacy_folders_bad">Essa pasta não pode ser marcada como privada. Escolha uma pasta no armazenamento principal do celular.</string>
+  <string name="privacy_folders_remove">Deixar de tratar %1$s como privada</string>
+  <string name="privacy_folders_remove_prompt">Desmarcar pasta como privada</string>
+  <string name="onb_lock_title">Bloquear o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> (opcional)</string>
+  <string name="onb_lock_body">O <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> pode pedir a impressão digital, reconhecimento facial, PIN ou padrão do celular antes de mostrar algo, impedindo que outras pessoas façam buscas. Altere isso nas Configurações.</string>
+  <string name="onb_lock_action">Ativar bloqueio</string>
+  <string name="onb_lock_on">Bloqueio ativado</string>
+  <string name="onb_lock_no_screen_lock">Seu celular ainda não tem bloqueio de tela. Defina um nas Configurações do celular para usar isso.</string>
+  <string name="privacy_hidden_chip">%1$d ocultos</string>
+  <string name="privacy_hidden_action">Mostrar</string>
+  <plurals name="privacy_hidden_chip_description">
+        
+    
+    <item quantity="one">%1$d resultado sensível está oculto. Toque duas vezes para desbloquear e mostrar.</item>
+    <item quantity="many">%1$d resultados sensíveis estão ocultos. Toque duas vezes para desbloquear e mostrar.</item>
+    <item quantity="other">%1$d resultados sensíveis estão ocultos. Toque duas vezes para desbloquear e mostrar.</item>
+  </plurals>
+  <string name="privacy_shown_chip">Resultados sensíveis exibidos</string>
+  <string name="privacy_shown_action">Ocultar</string>
+  <string name="privacy_reveal_title">Mostrar resultados sensíveis</string>
+  <string name="privacy_reveal_subtitle">Use o bloqueio de tela do celular</string>
+  <string name="action_mark_sensitive">Marcar como sensível</string>
+  <string name="action_unmark_sensitive">Não é sensível</string>
+  <string name="snack_marked_sensitive">Marcado como sensível. Oculto dos resultados a partir de agora.</string>
+  <string name="snack_unmarked_sensitive">Não é mais sensível.</string>
+  <string name="sensitive_share_title">Compartilhar item sensível?</string>
+  <string name="sensitive_share_body">Você marcou isso como sensível. Quem receber pode guardar e repassar.</string>
+  <string name="sensitive_share_confirm">Compartilhar</string>
+  <string name="sensitive_copy_title">Copiar item sensível?</string>
+  <string name="sensitive_copy_body">Você marcou isso como sensível. Onde você colar receberá o próprio arquivo.</string>
+  <string name="sensitive_copy_confirm">Copiar</string>
+  <string name="sensitive_cancel">Cancelar</string>
+  <string name="settings_section_previews">Pré-vias</string>
+  <string name="settings_blur_title">Desfocar pré-vias privadas</string>
+  <string name="settings_blur_hint">Automático, por isso pode errar. Apenas a imagem é desfocada; o arquivo ainda pode ser encontrado. Toque no olho para mostrar.</string>
+  <string name="settings_blur_panel_title">Desfocar na busca rápida</string>
+  <string name="settings_blur_panel_hint">Automático, por isso pode errar. Ativado por padrão, pois o painel abre sobre outros apps. Para mostrar a imagem, desbloqueie o celular.</string>
+  <string name="settings_blur_needs_pack">Requer a extensão \"Desfocar pré-vias privadas\", abaixo. Até ser adicionada, nada será desfocado.</string>
+  <string name="action_show_picture">Mostrar imagem</string>
+  <string name="preview_hidden">pré-via oculta, pode ser privada</string>
+  <string name="quick_unlock_to_show">Desbloqueie o celular para mostrar esta imagem.</string>
+  <string name="quick_name">Busca rápida</string>
+  <string name="quick_shortcut_long">Buscar arquivos rapidamente</string>
+  <string name="quick_widget_hint">Buscar seus arquivos</string>
+  <string name="quick_widget_description">Barra de busca que abre a busca rápida do <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> sobre o app em uso.</string>
+  <string name="quick_hint">Buscar seus arquivos</string>
+  <string name="quick_close">Fechar busca rápida</string>
+  <string name="quick_clear">Limpar</string>
+  <string name="quick_nothing">Nada encontrado para “%1$s”.</string>
+  <string name="quick_nothing_incomplete">O <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ainda está analisando seus arquivos, então isso pode mudar.</string>
+  <string name="quick_not_set_up">O <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ainda não leu seus arquivos. Abra o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> para começar.</string>
+  <string name="quick_open_findr">Abrir <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="quick_still_meaning">Buscando significado…</string>
+  <string name="quick_copied">Copiado. Cole na conversa.</string>
+  <string name="quick_copy_failed">Não foi possível copiar este arquivo.</string>
+  <string name="quick_no_app">Nenhum app pode abrir este arquivo.</string>
+  <string name="quick_add_tile_title">Adicionar a Busca rápida às configurações rápidas?</string>
+  <string name="quick_add_tile_body">Assim, você pode buscar seus arquivos de qualquer app com dois deslizes.</string>
+  <string name="quick_add_tile_yes">Adicionar bloco</string>
+  <string name="quick_add_tile_no">Agora não</string>
+  <string name="settings_storage_remove_named">Remover <xliff:g id="item" example="Speech pack">%1$s</xliff:g></string>
+  <string name="licences_show_named">Mostrar texto completo de <xliff:g id="licence" example="Apache License 2.0">%1$s</xliff:g></string>
+  <string name="licences_hide_named">Ocultar texto completo de <xliff:g id="licence" example="Apache License 2.0">%1$s</xliff:g></string>
+  <string name="sheet_error_word">Problema</string>
+  <string name="switch_on">Ligado</string>
+  <string name="switch_off">Desligado</string>
+  <string name="language_title">Escolha seu idioma</string>
+  <string name="language_intro">As telas do <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> estarão neste idioma. Você pode mudar isso mais tarde nas configurações.</string>
+  <string name="language_system">Idioma do celular</string>
+  <string name="language_system_hint">Segue as configurações do seu celular</string>
+  <string name="language_preview">Prévia</string>
+  <string name="settings_language">Idioma</string>
+  <plurals name="search_status_so_far">
+        
+    
+    <item quantity="one">%1$d até agora · significado em instantes</item>
+    <item quantity="many">%1$d até agora · significado em instantes</item>
+    <item quantity="other">%1$d até agora · significado em instantes</item>
+  </plurals>
+  <string name="search_status_words">Palavras agora · significado em instantes</string>
+  <plurals name="search_status_found">
+        
+    
+    <item quantity="one">%1$d encontrado</item>
+    <item quantity="many">%1$d encontrados</item>
+    <item quantity="other">%1$d encontrados</item>
+  </plurals>
+  <string name="action_share_file">Compartilhar %1$s</string>
+  <string name="action_copy_file">Copiar %1$s</string>
+  <string name="preview_hidden_words">Parece privado · toque para ver</string>
+  <string name="filter_group">Mostrar quais arquivos</string>
+</resources>

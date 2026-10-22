@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A search bar with no logic: tapping anywhere opens the quick search panel (QuickSearchWidget sets the click). -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@+id/widget_root"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="@drawable/widget_bar_bg"
+  android:gravity="center_vertical"
+  android:orientation="horizontal"
+  android:paddingStart="18dp"
+  android:paddingEnd="18dp">
+
+  <ImageView
+    android:layout_width="22dp"
+    android:layout_height="22dp"
+    android:importantForAccessibility="no"
+    android:src="@drawable/ic_quick_search"
+    android:tint="@color/sun_ink" />
+
+  <TextView
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="12dp"
+    android:layout_weight="1"
+    android:ellipsize="end"
+    android:maxLines="1"
+    android:text="@string/quick_widget_hint"
+    android:textColor="@color/sun_ink2"
+    android:textSize="16sp" />
+</LinearLayout>

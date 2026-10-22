@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="typing_learning">التعرّف مستمر: %1$s من %2$s · قد تظهر المزيد من النتائج</string>
+  <string name="typing_learning_charger">التعرّف مستمر: %1$s من %2$s · الباقي أثناء الشحن</string>
+  <string name="typing_learning_paused">تم التعرّف على %1$s من %2$s حتى الآن · قد تظهر المزيد من النتائج</string>
+  <string name="settings_colours">الألوان</string>
+  <string name="colours_sunlight">ضوء الشمس</string>
+  <string name="colours_sunlight_hint">لون ورق دافئ ولون أصفر واحد، لقراءة سهلة في ضوء الشمس الساطع.</string>
+  <string name="colours_wallpaper">ألوان خلفية الشاشة</string>
+  <string name="colours_wallpaper_hint">يأخذ ألوانه من خلفية الشاشة، ويتغيّر بتغيّرها.</string>
+  <string name="settings_brightness">فاتح أم داكن</string>
+</resources>

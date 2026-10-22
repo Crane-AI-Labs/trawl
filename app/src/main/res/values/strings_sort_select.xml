@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- Sorting the list. Best match = the search's own order of relevance. Shown on a small button with the current choice. -->
+  <string name="sort_best">Best match</string>
+  <string name="sort_newest">Newest</string>
+  <string name="sort_oldest">Oldest</string>
+  <string name="sort_largest">Largest</string>
+  <string name="sort_name">Name A to Z</string>
+  <!-- Screen-reader name of the sort button and its menu, said before the current choice. -->
+  <string name="sort_group">Sort by</string>
+
+  <!-- The date chip. "Any time" = no date limit. -->
+  <string name="date_any_time">Any time</string>
+  <string name="date_group">Date</string>
+  <string name="date_today">Today</string>
+  <string name="date_yesterday">Yesterday</string>
+  <string name="date_this_week">This week</string>
+  <string name="date_last_week">Last week</string>
+  <string name="date_this_month">This month</string>
+  <string name="date_last_month">Last month</string>
+  <string name="date_this_year">This year</string>
+  <string name="date_last_year">Last year</string>
+  <string name="date_weekend">Last weekend</string>
+  <string name="date_last_night">Last night</string>
+  <string name="date_this_morning">This morning</string>
+  <string name="date_this_afternoon">This afternoon</string>
+  <string name="date_this_evening">This evening</string>
+  <string name="date_yesterday_morning">Yesterday morning</string>
+  <string name="date_yesterday_afternoon">Yesterday afternoon</string>
+  <string name="date_yesterday_evening">Yesterday evening</string>
+  <!-- A menu choice that opens a calendar to pick a first and a last day. -->
+  <string name="date_pick_range">Pick dates…</string>
+  <!-- Two dates with the word between them is a range: "5 Mar 2024 – 9 Mar 2024". %1$s = first day, %2$s = last day. -->
+  <string name="date_range">%1$s – %2$s</string>
+  <!-- The cross on the date chip. -->
+  <string name="date_remove">Remove date filter</string>
+  <!-- Said by the screen reader for a date chip that Trawl read out of the words typed in the box. %1$s = the date ("Last week"). -->
+  <string name="date_from_words">%1$s, from your search words</string>
+  <!-- The calendar's buttons. -->
+  <string name="date_picker_title">Pick the first and last day</string>
+  <string name="date_picker_ok">Apply</string>
+  <!-- Rolling spans: "Last 7 days" means the 7 days up to now. %d = how many. -->
+  <plurals name="date_past_days">
+    <item quantity="one">Last %d day</item>
+    <item quantity="other">Last %d days</item>
+  </plurals>
+  <plurals name="date_past_weeks">
+    <item quantity="one">Last %d week</item>
+    <item quantity="other">Last %d weeks</item>
+  </plurals>
+  <plurals name="date_past_months">
+    <item quantity="one">Last %d month</item>
+    <item quantity="other">Last %d months</item>
+  </plurals>
+  <plurals name="date_past_years">
+    <item quantity="one">Last %d year</item>
+    <item quantity="other">Last %d years</item>
+  </plurals>
+  <!-- A whole day, week, month or year that long ago: "3 weeks ago". -->
+  <plurals name="date_ago_days">
+    <item quantity="one">%d day ago</item>
+    <item quantity="other">%d days ago</item>
+  </plurals>
+  <plurals name="date_ago_weeks">
+    <item quantity="one">%d week ago</item>
+    <item quantity="other">%d weeks ago</item>
+  </plurals>
+  <plurals name="date_ago_months">
+    <item quantity="one">%d month ago</item>
+    <item quantity="other">%d months ago</item>
+  </plurals>
+  <plurals name="date_ago_years">
+    <item quantity="one">%d year ago</item>
+    <item quantity="other">%d years ago</item>
+  </plurals>
+
+  <!-- Choosing several files. A long press starts it. -->
+  <string name="action_select">Select</string>
+  <!-- How many files are chosen: "3 selected". -->
+  <plurals name="select_count">
+    <item quantity="one">%d selected</item>
+    <item quantity="other">%d selected</item>
+  </plurals>
+  <string name="select_all">Select all</string>
+  <string name="select_none">Select none</string>
+  <!-- The cross that leaves selection. -->
+  <string name="select_exit">Stop selecting</string>
+  <!-- Said when too many files are chosen to hand to another app in one go. %d = the most allowed. -->
+  <string name="select_share_limit">You can share up to %d files at once.</string>
+  <!-- The confirmation when some of the chosen files are marked sensitive. -->
+  <string name="sensitive_share_body_many">Some of these are marked sensitive. Whoever receives them can keep them and pass them on.</string>
+  <string name="sensitive_copy_body_many">Some of these are marked sensitive. Anything you paste them into receives the files themselves.</string>
+  <!-- Shown after marking or unmarking many files at once. -->
+  <string name="snack_marked_sensitive_many">Marked sensitive. They are hidden from results now.</string>
+  <string name="snack_unmarked_sensitive_many">Unmarked. They can show in results again.</string>
+  <!-- Nothing matched inside the chosen dates. %1$s = the date ("Last week"). -->
+  <string name="nothing_in_dates">Nothing found in %1$s. Try another date.</string>
+</resources>

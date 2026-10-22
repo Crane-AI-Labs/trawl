@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="open_problem_title">تعذر على <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> فتح الفهرسة الآن</string>
+  <string name="open_problem_busy">هناك مهمة أخرى تستخدم الفهرسة. سيحاول مرة أخرى بعد قليل.</string>
+  <string name="open_problem_storage_full">مساحة تخزين الهاتف ممتلئة. سيحاول مرة أخرى بعد قليل.</string>
+  <string name="open_problem_io">تعذر على الهاتف قراءة الفهرسة. سيحاول مرة أخرى بعد قليل.</string>
+  <string name="open_problem_memory">لا توجد ذاكرة كافية في الهاتف. سيحاول مرة أخرى بعد قليل.</string>
+  <string name="open_problem_other">سيحاول مرة أخرى بعد قليل.</string>
+  <string name="open_problem_detail">نتائجك السابقة بأمان ولم يُحذف شيء. يحاول من تلقاء نفسه، أو اضغط على إعادة المحاولة.</string>
+</resources>

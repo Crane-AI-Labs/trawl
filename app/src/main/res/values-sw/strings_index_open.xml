@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="open_problem_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> haikuweza kufungua Orodhesha yake kwa sasa</string>
+  <string name="open_problem_busy">Kazi nyingine inaitumia. Itajaribu tena baada ya muda mfupi.</string>
+  <string name="open_problem_storage_full">Hifadhi ya simu imejaa. Itajaribu tena baada ya muda mfupi.</string>
+  <string name="open_problem_io">Simu haikuweza kuisoma. Itajaribu tena baada ya muda mfupi.</string>
+  <string name="open_problem_memory">Simu haina kumbukumbu ya kutosha. Itajaribu tena baada ya muda mfupi.</string>
+  <string name="open_problem_other">Itajaribu tena baada ya muda mfupi.</string>
+  <string name="open_problem_detail">Matokeo yako ya awali yapo salama, na hakuna kilichofutwa. Inajaribu tena yenyewe, au gusa Jaribu tena.</string>
+</resources>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Debug builds only: the benchmark harness, started from adb (scripts/bench.sh). Never in a release APK. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <!-- WallpaperBenchActivity sets a TEST phone's wallpaper for the wallpaper-colours check, and restores it. Debug builds only. -->
+  <uses-permission android:name="android.permission.SET_WALLPAPER" />
+  <application>
+    <activity
+      android:name=".bench.BenchActivity"
+      android:exported="true"
+      android:screenOrientation="portrait" />
+    <activity
+      android:name=".bench.VisionBenchActivity"
+      android:exported="true"
+      android:screenOrientation="portrait" />
+    <activity
+      android:name=".bench.PrivacyBenchActivity"
+      android:exported="true"
+      android:screenOrientation="portrait" />
+    <!-- Formats sweep: runs a list of queries through the real search (bench/FormatsBenchActivity). -->
+    <activity
+      android:name=".bench.FormatsBenchActivity"
+      android:exported="true"
+      android:screenOrientation="portrait" />
+    <!-- Makes Findr crash or hang on purpose, to check the problem-report path on a phone (diag/CrashTestActivity). -->
+    <activity
+      android:name=".diag.CrashTestActivity"
+      android:exported="true" />
+    <!-- What encrypting the index would cost, and what secure delete costs (the research notes). -->
+    <activity
+      android:name=".bench.SecurityBenchActivity"
+      android:exported="true"
+      android:screenOrientation="portrait" />
+    <!--
+      The quick search panel, startable from adb for screenshots and UI checks: the real activity is not exported (only the
+      tile, widget and shortcut start it, with intents they own). Debug builds only, never in a release APK.
+        adb shell am start -n <package>/com.craneai.findr.quick.QuickSearchDebugEntry
+    -->
+    <activity-alias
+      android:name=".quick.QuickSearchDebugEntry"
+      android:exported="true"
+      android:targetActivity=".quick.QuickSearchActivity" />
+    <!-- Sets and restores a TEST phone's home-screen wallpaper (bench/WallpaperBenchActivity). -->
+    <activity
+      android:name=".bench.WallpaperBenchActivity"
+      android:exported="true"
+      android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+  </application>
+</manifest>

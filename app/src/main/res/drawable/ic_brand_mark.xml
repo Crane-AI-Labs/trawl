@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The app's mark, the one file to swap when the logo changes (the launcher icon, the monochrome themed icon, the splash and the
+  in-app wordmark all draw this). Trawl's mark is Crane AI Labs' own: the X of two rounded strokes with four hollow diamonds at
+  north, east, south and west (craneailabs.com), with one change: the lower-right arm of the X runs on and thickens into a
+  magnifier's handle, so the mark reads as Crane, searching (concept e, "Handle arm", chosen 2026-10-16).
+  One filled shape with real holes (evenOdd) in ink on Sunlight's 64-unit grid, so it survives a monochrome themed icon; the
+  launcher puts it on marker yellow (ic_launcher.xml). Its ink box is centred, half a unit low; the farthest ink is 28.6 units
+  out, which the launcher's 18.5% inset turns into 30.4 dp of the 33 dp safe circle (BrandMarkGeometryTest).
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+  android:width="68dp"
+  android:height="68dp"
+  android:viewportWidth="64"
+  android:viewportHeight="64">
+  <path android:fillColor="#111111" android:fillType="evenOdd" android:pathData="M31.36 11.6 30.95 11.82 25.72 17.05 25.55 17.31 25.49 17.62 25.55 17.93 25.72 18.19 30.95 23.41 31.21 23.59 31.52 23.65 31.83 23.59 32.09 23.41 37.32 18.19 37.49 17.93 37.55 17.62 37.49 17.31 37.32 17.05 32.09 11.82 31.83 11.65ZM33.69 17.78 31.68 19.79 31.52 19.86 31.36 19.79 29.35 17.78 29.28 17.62 29.35 17.46 31.36 15.44 31.52 15.38 31.68 15.44 33.69 17.46 33.76 17.62ZM16.72 26.07 11.37 31.4 11.2 31.66 11.14 31.97 11.2 32.28 11.37 32.54 16.6 37.76 16.86 37.94 17.17 38 17.48 37.94 17.74 37.76 22.97 32.54 23.14 32.28 23.2 31.97 23.14 31.66 22.97 31.4 17.74 26.17 17.48 26 17.17 25.93ZM17.25 34.19 17.01 34.14 15 32.13 14.93 31.97 15 31.81 17.01 29.79 17.17 29.73 17.33 29.79 19.34 31.81 19.41 31.97 19.34 32.13ZM22.05 20.82 21.62 20.88 21.21 21.05 20.86 21.31 20.6 21.66 20.43 22.07 20.37 22.5 20.43 22.94 20.6 23.34 20.86 23.69 29.14 31.97 20.72 40.41 20.43 41 20.39 41.65 20.5 42.08 20.86 42.62 21.41 42.99 21.83 43.1 22.49 43.06 23.08 42.77 31.46 34.4 47.95 52.58 48.43 52.92 48.95 53.16 49.52 53.29 50.1 53.31 50.67 53.21 51.21 53.01 52 52.45 52.37 52 52.64 51.49 52.81 50.93 52.86 50.35 52.81 49.78 52.64 49.22 52.13 48.4 33.96 31.91 42.32 23.53 42.61 22.94 42.65 22.28 42.54 21.86 42.17 21.31 41.63 20.95 40.98 20.82 40.55 20.88 39.96 21.17 31.52 29.59 23.24 21.31 22.7 20.95ZM45.56 26 45.3 26.17 40.07 31.4 39.9 31.66 39.84 31.97 39.9 32.28 40.07 32.54 45.3 37.76 45.56 37.94 45.87 38 46.18 37.94 46.44 37.76 51.67 32.54 51.84 32.28 51.9 31.97 51.84 31.66 51.67 31.4 46.44 26.17 46.03 25.95ZM46.03 34.14 45.87 34.21 45.71 34.14 43.7 32.13 43.63 31.97 43.7 31.81 45.71 29.79 45.87 29.73 46.03 29.79 48.04 31.81 48.11 31.97 48.04 32.13ZM31.07 40.42 25.72 45.75 25.55 46.01 25.49 46.32 25.55 46.63 25.72 46.89 30.95 52.11 31.21 52.29 31.52 52.35 31.83 52.29 32.09 52.11 37.32 46.89 37.49 46.63 37.55 46.32 37.49 46.01 37.32 45.75 32.09 40.52 31.83 40.35 31.52 40.28ZM31.6 48.54 31.36 48.49 29.35 46.48 29.28 46.32 29.35 46.16 31.36 44.14 31.52 44.08 31.68 44.14 33.69 46.16 33.76 46.32 33.69 46.48Z" />
+</vector>

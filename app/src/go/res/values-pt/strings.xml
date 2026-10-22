@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="welcome_line"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> encontra seus documentos, fotos e capturas de tela pelos nomes e pelas palavras neles.</string>
+  <string name="onb1_point_model_title">Feito para celulares pequenos</string>
+  <string name="welcome_point_ai_body">Ele lê seus arquivos aqui, sem precisar baixar nada. Nada é enviado para um servidor.</string>
+  <string name="meter_sub_progress_eta">%1$s de %2$s lidos · cerca de %3$s restantes</string>
+  <string name="meter_sub_progress_estimating">%1$s de %2$s lidos · calculando o tempo</string>
+  <string name="meter_sub_paused">%1$s de %2$s lidos. A busca ainda funciona.</string>
+  <string name="meter_a11y">%1$s. %2$s. %3$d por cento lido.</string>
+  <string name="sheet_detail_indexing">Os nomes vêm primeiro, para a busca funcionar quase na hora. Ler as palavras nos seus documentos, PDFs e fotos leva mais tempo.</string>
+  <string name="level_searchable">Busca por nome</string>
+  <string name="level_searchable_hint">Rápido. Encontre um arquivo pelo nome.</string>
+  <string name="level_understood">Palavras lidas</string>
+  <string name="level_understood_hint">Mais lento. Encontre um arquivo pelas palavras escritas nele, incluindo o texto em fotos.</string>
+  <string name="search_hint_a11y">Buscar seus arquivos pelos nomes e pelas palavras neles</string>
+  <string name="search_incomplete_note">Os nomes já funcionam e as palavras ainda estão sendo lidas, então mais resultados podem aparecer.</string>
+  <string name="settings_about_model">A busca encontra arquivos pelos nomes e pelas palavras neles, totalmente neste celular.</string>
+  <string name="settings_delete_body">O <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> apagará agora o índice dos seus arquivos: os nomes, as palavras nos documentos e o texto lido em fotos e capturas de tela. Os arquivos temporários e relatórios de problemas também serão apagados.\n\nSeus próprios arquivos não são tocados. Suas configurações continuam, incluindo as pastas ignoradas.\n\nDepois, o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> para de ler. A busca fica vazia até você tocar em Retomar.</string>
+  <string name="pause_battery_low_detail">A bateria está abaixo de 30%%, por isso o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> espera para poupar a carga restante. Ele continua sozinho assim que o celular carregar.</string>
+</resources>

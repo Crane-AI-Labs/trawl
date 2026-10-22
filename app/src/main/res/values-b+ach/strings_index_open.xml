@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="open_problem_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> pe otwero yabo Kwano mere kombedi</string>
+  <string name="open_problem_busy">Tic mukene tye ka tic kwede. Bitemo doki cokcoki.</string>
+  <string name="open_problem_storage_full">Kakano jami me cim opong. Bitemo doki cokcoki.</string>
+  <string name="open_problem_io">Cim pe otwero kwano ne. Bitemo doki cokcoki.</string>
+  <string name="open_problem_memory">Kakano me tic i cim nok. Bitemo doki cokcoki.</string>
+  <string name="open_problem_other">Bitemo doki cokcoki.</string>
+  <string name="open_problem_detail">Adwogi mamegi macon tye maber, dok pe gikwanyo gin mo woko. Bitemo doki kene, onyo dii Tem doki.</string>
+</resources>

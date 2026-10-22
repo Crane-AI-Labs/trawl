@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <!-- Blurring previews that look private. Blur only: results are never hidden or reordered. -->
+  <string name="settings_section_previews">Previews</string>
+  <string name="settings_blur_title">Blur private-looking previews</string>
+  <string name="settings_blur_hint">Automatic, so it can be wrong. Only the small picture is blurred; the file is still found. Tap the eye to show it.</string>
+  <string name="settings_blur_panel_title">Blur in quick search</string>
+  <string name="settings_blur_panel_hint">Automatic, so it can be wrong. On by default here, because the panel opens over other apps. Showing a picture needs your phone unlocked.</string>
+  <string name="settings_blur_needs_pack">Needs the \"Blur private-looking previews\" add-on, below. Until it is added, nothing is blurred.</string>
+  <string name="action_show_picture">Show picture</string>
+  <string name="preview_hidden">preview hidden, it may be private</string>
+  <string name="quick_unlock_to_show">Unlock your phone to show this picture.</string>
+</resources>

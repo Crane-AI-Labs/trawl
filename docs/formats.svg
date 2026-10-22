@@ -1,0 +1,325 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 874" width="480" height="874" role="img" aria-label="What Trawl can read, by family and format. Read by content: photos, screenshots, video, audio, voice notes and documents, including spreadsheets, slides and e-books. Every format is attempted. Fails safely: a format this phone can't open is marked failed and stays findable by name. Skipped: clutter only. Damaged or fake files are noted without a crash." font-family="system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">
+<title>What Trawl can read, by family and format. Read by content: photos, screenshots, video, audio, voice notes and documents, including spreadsheets, slides and e-books. Every format is attempted. Fails safely: a format this phone can't open is marked failed and stays findable by name. Skipped: clutter only. Damaged or fake files are noted without a crash.</title>
+<defs><clipPath id="card"><rect width="480" height="874" rx="16"/></clipPath></defs>
+<g clip-path="url(#card)"><rect width="480" height="874" fill="#FFFBF2"/><rect width="480" height="6" fill="#FFD400"/>
+<text x="16" y="33" font-size="18" font-weight="700" fill="#111111">What Trawl can read</text>
+<text x="16" y="53" font-size="12" fill="#3D3A33">241 test files on 3 real phones, 0 crashes.</text>
+<text x="16" y="90" font-size="12.5" font-weight="700" fill="#111111">Photos</text>
+<rect x="100" y="75" width="64" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M108 86.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="119" y="90.0" font-size="11.5" fill="#111111">JPEG*</text>
+<rect x="169" y="75" width="50" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M177 86.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="188" y="90.0" font-size="11.5" fill="#111111">PNG</text>
+<rect x="224" y="75" width="50" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M232 86.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="243" y="90.0" font-size="11.5" fill="#111111">GIF</text>
+<rect x="279" y="75" width="57" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M287 86.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="298" y="90.0" font-size="11.5" fill="#111111">WebP</text>
+<rect x="341" y="75" width="50" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M349 86.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="360" y="90.0" font-size="11.5" fill="#111111">BMP</text>
+<rect x="396" y="75" width="50" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M404 86.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="415" y="90.0" font-size="11.5" fill="#111111">ICO</text>
+<rect x="100" y="102" width="57" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M108 113.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="119" y="117.0" font-size="11.5" fill="#111111">HEIC</text>
+<rect x="162" y="102" width="57" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M170 113.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="181" y="117.0" font-size="11.5" fill="#111111">AVIF</text>
+<rect x="224" y="102" width="57" height="22" rx="11" fill="#F6F0E2" stroke="#3D3A33" stroke-width="1"/>
+<circle cx="235.2" cy="113.0" r="3.2" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M233 115.2 L237.4 110.8" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="243" y="117.0" font-size="11.5" fill="#111111">TIFF</text>
+<rect x="286" y="102" width="91" height="22" rx="11" fill="#F6F0E2" stroke="#3D3A33" stroke-width="1"/>
+<circle cx="297.2" cy="113.0" r="3.2" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M295 115.2 L299.4 110.8" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="305" y="117.0" font-size="11.5" fill="#111111">JPEG 2000</text>
+<rect x="382" y="102" width="50" height="22" rx="11" fill="#F6F0E2" stroke="#3D3A33" stroke-width="1"/>
+<circle cx="393.2" cy="113.0" r="3.2" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M391 115.2 L395.4 110.8" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="401" y="117.0" font-size="11.5" fill="#111111">TGA</text>
+<rect x="100" y="129" width="50" height="22" rx="11" fill="#F6F0E2" stroke="#3D3A33" stroke-width="1"/>
+<circle cx="111.2" cy="140.0" r="3.2" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M109 142.2 L113.4 137.8" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="119" y="144.0" font-size="11.5" fill="#111111">PCX</text>
+<rect x="155" y="129" width="50" height="22" rx="11" fill="#F6F0E2" stroke="#3D3A33" stroke-width="1"/>
+<circle cx="166.2" cy="140.0" r="3.2" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M164 142.2 L168.4 137.8" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="174" y="144.0" font-size="11.5" fill="#111111">PPM</text>
+<rect x="210" y="129" width="77" height="22" rx="11" fill="#F6F0E2" stroke="#3D3A33" stroke-width="1"/>
+<circle cx="221.2" cy="140.0" r="3.2" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M219 142.2 L223.4 137.8" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="229" y="144.0" font-size="11.5" fill="#111111">JPEG XL</text>
+<rect x="292" y="129" width="146" height="22" rx="11" fill="#FFFBF2" stroke="#8C867A" stroke-width="1" stroke-dasharray="3 2.5"/>
+<path d="M300 143.0 L306.5 137.0" fill="none" stroke="#3D3A33" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="311" y="144.0" font-size="11.5" fill="#3D3A33">thumbnail folders</text>
+<rect x="100" y="156" width="132" height="22" rx="11" fill="#FFFBF2" stroke="#8C867A" stroke-width="1" stroke-dasharray="3 2.5"/>
+<path d="M108 170.0 L114.5 164.0" fill="none" stroke="#3D3A33" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="119" y="171.0" font-size="11.5" fill="#3D3A33">sticker folders</text>
+<rect x="237" y="156" width="105" height="22" rx="11" fill="#FFFBF2" stroke="#8C867A" stroke-width="1" stroke-dasharray="3 2.5"/>
+<path d="M245 170.0 L251.5 164.0" fill="none" stroke="#3D3A33" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="256" y="171.0" font-size="11.5" fill="#3D3A33">tiny images</text>
+<line x1="16" x2="464" y1="187" y2="187" stroke="#8C867A" stroke-width="0.6" opacity="0.4"/>
+<text x="16" y="207" font-size="12.5" font-weight="700" fill="#111111">Screenshots</text>
+<rect x="100" y="192" width="57" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M108 203.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="119" y="207.0" font-size="11.5" fill="#111111">JPEG</text>
+<rect x="162" y="192" width="50" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M170 203.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="181" y="207.0" font-size="11.5" fill="#111111">PNG</text>
+<rect x="217" y="192" width="98" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M225 203.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="236" y="207.0" font-size="11.5" fill="#111111">words read</text>
+<line x1="16" x2="464" y1="223" y2="223" stroke="#8C867A" stroke-width="0.6" opacity="0.4"/>
+<text x="16" y="243" font-size="12.5" font-weight="700" fill="#111111">Video</text>
+<rect x="100" y="228" width="50" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M108 239.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="119" y="243.0" font-size="11.5" fill="#111111">MP4</text>
+<rect x="155" y="228" width="50" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M163 239.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="174" y="243.0" font-size="11.5" fill="#111111">MOV</text>
+<rect x="210" y="228" width="50" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M218 239.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="229" y="243.0" font-size="11.5" fill="#111111">M4V</text>
+<rect x="265" y="228" width="50" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M273 239.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="284" y="243.0" font-size="11.5" fill="#111111">3GP</text>
+<rect x="320" y="228" width="50" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M328 239.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="339" y="243.0" font-size="11.5" fill="#111111">3G2</text>
+<rect x="375" y="228" width="50" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M383 239.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="394" y="243.0" font-size="11.5" fill="#111111">MKV</text>
+<rect x="100" y="255" width="57" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M108 266.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="119" y="270.0" font-size="11.5" fill="#111111">WebM</text>
+<rect x="162" y="255" width="57" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M170 266.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="181" y="270.0" font-size="11.5" fill="#111111">AVI*</text>
+<rect x="224" y="255" width="57" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M232 266.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="243" y="270.0" font-size="11.5" fill="#111111">FLV*</text>
+<rect x="286" y="255" width="77" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M294 266.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="305" y="270.0" font-size="11.5" fill="#111111">MPEG-TS</text>
+<rect x="368" y="255" width="50" height="22" rx="11" fill="#F6F0E2" stroke="#3D3A33" stroke-width="1"/>
+<circle cx="379.2" cy="266.0" r="3.2" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M377 268.2 L381.4 263.8" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="387" y="270.0" font-size="11.5" fill="#111111">WMV</text>
+<rect x="100" y="282" width="77" height="22" rx="11" fill="#F6F0E2" stroke="#3D3A33" stroke-width="1"/>
+<circle cx="111.2" cy="293.0" r="3.2" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M109 295.2 L113.4 290.8" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="119" y="297.0" font-size="11.5" fill="#111111">MPEG-PS</text>
+<rect x="182" y="282" width="50" height="22" rx="11" fill="#F6F0E2" stroke="#3D3A33" stroke-width="1"/>
+<circle cx="193.2" cy="293.0" r="3.2" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M191 295.2 L195.4 290.8" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="201" y="297.0" font-size="11.5" fill="#111111">OGV</text>
+<line x1="16" x2="464" y1="313" y2="313" stroke="#8C867A" stroke-width="0.6" opacity="0.4"/>
+<text x="16" y="333" font-size="12.5" font-weight="700" fill="#111111">Audio</text>
+<text x="16" y="346" font-size="10.5" fill="#3D3A33">and voice notes</text>
+<rect x="100" y="318" width="50" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M108 329.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="119" y="333.0" font-size="11.5" fill="#111111">MP3</text>
+<rect x="155" y="318" width="57" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M163 329.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="174" y="333.0" font-size="11.5" fill="#111111">MP2*</text>
+<rect x="217" y="318" width="50" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M225 329.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="236" y="333.0" font-size="11.5" fill="#111111">AAC</text>
+<rect x="272" y="318" width="57" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M280 329.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="291" y="333.0" font-size="11.5" fill="#111111">M4A*</text>
+<rect x="334" y="318" width="57" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M342 329.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="353" y="333.0" font-size="11.5" fill="#111111">WAV*</text>
+<rect x="396" y="318" width="57" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M404 329.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="415" y="333.0" font-size="11.5" fill="#111111">FLAC</text>
+<rect x="100" y="345" width="50" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M108 356.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="119" y="360.0" font-size="11.5" fill="#111111">Ogg</text>
+<rect x="155" y="345" width="57" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M163 356.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="174" y="360.0" font-size="11.5" fill="#111111">Opus</text>
+<rect x="217" y="345" width="64" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M225 356.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="236" y="360.0" font-size="11.5" fill="#111111">WAPTT</text>
+<rect x="286" y="345" width="50" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M294 356.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="305" y="360.0" font-size="11.5" fill="#111111">AMR</text>
+<rect x="341" y="345" width="50" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M349 356.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="360" y="360.0" font-size="11.5" fill="#111111">3GA</text>
+<rect x="396" y="345" width="50" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M404 356.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="415" y="360.0" font-size="11.5" fill="#111111">MKA</text>
+<rect x="100" y="372" width="64" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M108 383.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="119" y="387.0" font-size="11.5" fill="#111111">WebM*</text>
+<rect x="169" y="372" width="57" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M177 383.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="188" y="387.0" font-size="11.5" fill="#111111">MIDI</text>
+<rect x="231" y="372" width="70" height="22" rx="11" fill="#E9DFC6" stroke="#E9DFC6" stroke-width="1"/>
+<path d="M239 380.5 h6.5 M239 383.5 h6.5 M239 386.5 h4" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="250" y="387.0" font-size="11.5" fill="#111111">Speex*</text>
+<rect x="306" y="372" width="50" height="22" rx="11" fill="#F6F0E2" stroke="#3D3A33" stroke-width="1"/>
+<circle cx="317.2" cy="383.0" r="3.2" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M315 385.2 L319.4 380.8" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="325" y="387.0" font-size="11.5" fill="#111111">WMA</text>
+<rect x="361" y="372" width="57" height="22" rx="11" fill="#F6F0E2" stroke="#3D3A33" stroke-width="1"/>
+<circle cx="372.2" cy="383.0" r="3.2" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M370 385.2 L374.4 380.8" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="380" y="387.0" font-size="11.5" fill="#111111">AC-3</text>
+<rect x="100" y="399" width="57" height="22" rx="11" fill="#F6F0E2" stroke="#3D3A33" stroke-width="1"/>
+<circle cx="111.2" cy="410.0" r="3.2" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M109 412.2 L113.4 407.8" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="119" y="414.0" font-size="11.5" fill="#111111">AIFF</text>
+<rect x="162" y="399" width="50" height="22" rx="11" fill="#F6F0E2" stroke="#3D3A33" stroke-width="1"/>
+<circle cx="173.2" cy="410.0" r="3.2" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M171 412.2 L175.4 407.8" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="181" y="414.0" font-size="11.5" fill="#111111">CAF</text>
+<rect x="217" y="399" width="43" height="22" rx="11" fill="#F6F0E2" stroke="#3D3A33" stroke-width="1"/>
+<circle cx="228.2" cy="410.0" r="3.2" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M226 412.2 L230.4 407.8" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="236" y="414.0" font-size="11.5" fill="#111111">AU</text>
+<line x1="16" x2="464" y1="430" y2="430" stroke="#8C867A" stroke-width="0.6" opacity="0.4"/>
+<text x="16" y="450" font-size="12.5" font-weight="700" fill="#111111">Documents</text>
+<rect x="100" y="435" width="57" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M108 446.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="119" y="450.0" font-size="11.5" fill="#111111">TXT*</text>
+<rect x="162" y="435" width="84" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M170 446.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="181" y="450.0" font-size="11.5" fill="#111111">Markdown</text>
+<rect x="251" y="435" width="50" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M259 446.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="270" y="450.0" font-size="11.5" fill="#111111">RTF</text>
+<rect x="306" y="435" width="57" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M314 446.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="325" y="450.0" font-size="11.5" fill="#111111">DOCX</text>
+<rect x="368" y="435" width="50" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M376 446.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="387" y="450.0" font-size="11.5" fill="#111111">ODT</text>
+<rect x="100" y="462" width="57" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M108 473.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="119" y="477.0" font-size="11.5" fill="#111111">HTML</text>
+<rect x="162" y="462" width="50" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M170 473.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="181" y="477.0" font-size="11.5" fill="#111111">CSV</text>
+<rect x="217" y="462" width="50" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M225 473.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="236" y="477.0" font-size="11.5" fill="#111111">TSV</text>
+<rect x="272" y="462" width="57" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M280 473.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="291" y="477.0" font-size="11.5" fill="#111111">JSON</text>
+<rect x="334" y="462" width="57" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M342 473.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="353" y="477.0" font-size="11.5" fill="#111111">XLSX</text>
+<rect x="396" y="462" width="57" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M404 473.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="415" y="477.0" font-size="11.5" fill="#111111">PPTX</text>
+<rect x="100" y="489" width="50" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M108 500.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="119" y="504.0" font-size="11.5" fill="#111111">ODS</text>
+<rect x="155" y="489" width="50" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M163 500.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="174" y="504.0" font-size="11.5" fill="#111111">ODP</text>
+<rect x="210" y="489" width="57" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M218 500.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="229" y="504.0" font-size="11.5" fill="#111111">EPUB</text>
+<rect x="272" y="489" width="50" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M280 500.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="291" y="504.0" font-size="11.5" fill="#111111">PDF</text>
+<rect x="327" y="489" width="50" height="22" rx="11" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M335 500.0 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="346" y="504.0" font-size="11.5" fill="#111111">SVG</text>
+<rect x="382" y="489" width="50" height="22" rx="11" fill="#E9DFC6" stroke="#E9DFC6" stroke-width="1"/>
+<path d="M390 497.5 h6.5 M390 500.5 h6.5 M390 503.5 h4" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="401" y="504.0" font-size="11.5" fill="#111111">XML</text>
+<rect x="100" y="516" width="50" height="22" rx="11" fill="#E9DFC6" stroke="#E9DFC6" stroke-width="1"/>
+<path d="M108 524.5 h6.5 M108 527.5 h6.5 M108 530.5 h4" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="119" y="531.0" font-size="11.5" fill="#111111">VCF</text>
+<rect x="155" y="516" width="50" height="22" rx="11" fill="#E9DFC6" stroke="#E9DFC6" stroke-width="1"/>
+<path d="M163 524.5 h6.5 M163 527.5 h6.5 M163 530.5 h4" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="174" y="531.0" font-size="11.5" fill="#111111">APK</text>
+<rect x="210" y="516" width="50" height="22" rx="11" fill="#E9DFC6" stroke="#E9DFC6" stroke-width="1"/>
+<path d="M218 524.5 h6.5 M218 527.5 h6.5 M218 530.5 h4" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="229" y="531.0" font-size="11.5" fill="#111111">ZIP</text>
+<rect x="265" y="516" width="50" height="22" rx="11" fill="#F6F0E2" stroke="#3D3A33" stroke-width="1"/>
+<circle cx="276.2" cy="527.0" r="3.2" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M274 529.2 L278.4 524.8" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="284" y="531.0" font-size="11.5" fill="#111111">DOC</text>
+<line x1="16" x2="464" y1="547" y2="547" stroke="#8C867A" stroke-width="0.6" opacity="0.4"/>
+<text x="16" y="567" font-size="12.5" font-weight="700" fill="#111111">Any file</text>
+<rect x="100" y="552" width="126" height="22" rx="11" fill="#FFFBF2" stroke="#8C867A" stroke-width="1" stroke-dasharray="3 2.5"/>
+<path d="M108 566.0 L114.5 560.0" fill="none" stroke="#3D3A33" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="119" y="567.0" font-size="11.5" fill="#3D3A33">hidden folders</text>
+<rect x="231" y="552" width="139" height="22" rx="11" fill="#FFFBF2" stroke="#8C867A" stroke-width="1" stroke-dasharray="3 2.5"/>
+<path d="M239 566.0 L245.5 560.0" fill="none" stroke="#3D3A33" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="250" y="567.0" font-size="11.5" fill="#3D3A33">.nomedia folders</text>
+<rect x="100" y="579" width="119" height="22" rx="11" fill="#FFFBF2" stroke="#8C867A" stroke-width="1" stroke-dasharray="3 2.5"/>
+<path d="M108 593.0 L114.5 587.0" fill="none" stroke="#3D3A33" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="119" y="594.0" font-size="11.5" fill="#3D3A33">trashed files</text>
+<rect x="224" y="579" width="112" height="22" rx="11" fill="#FFFBF2" stroke="#8C867A" stroke-width="1" stroke-dasharray="3 2.5"/>
+<path d="M232 593.0 L238.5 587.0" fill="none" stroke="#3D3A33" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="243" y="594.0" font-size="11.5" fill="#3D3A33">hidden files</text>
+<rect x="341" y="579" width="105" height="22" rx="11" fill="#FFFBF2" stroke="#8C867A" stroke-width="1" stroke-dasharray="3 2.5"/>
+<path d="M349 593.0 L355.5 587.0" fill="none" stroke="#3D3A33" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="360" y="594.0" font-size="11.5" fill="#3D3A33">empty files</text>
+<rect x="100" y="606" width="112" height="22" rx="11" fill="#FFFBF2" stroke="#8C867A" stroke-width="1" stroke-dasharray="3 2.5"/>
+<path d="M108 620.0 L114.5 614.0" fill="none" stroke="#3D3A33" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="119" y="621.0" font-size="11.5" fill="#3D3A33">temp and log</text>
+<rect x="217" y="606" width="105" height="22" rx="11" fill="#FFFBF2" stroke="#8C867A" stroke-width="1" stroke-dasharray="3 2.5"/>
+<path d="M225 620.0 L231.5 614.0" fill="none" stroke="#3D3A33" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="236" y="621.0" font-size="11.5" fill="#3D3A33">Trawl packs</text>
+<line x1="16" x2="464" y1="637" y2="637" stroke="#8C867A" stroke-width="0.6" opacity="0.4"/>
+<text x="16" y="657" font-size="12.5" font-weight="700" fill="#111111">Damaged</text>
+<text x="16" y="670" font-size="10.5" fill="#3D3A33">or fake files</text>
+<rect x="100" y="642" width="57" height="22" rx="11" fill="#111111" stroke="#111111" stroke-width="1"/>
+<path d="M111 649.5 l3 1.6 v2.2 c0 2.2 -1.4 3.5 -3 4.2 c-1.6 -.7 -3 -2 -3 -4.2 v-2.2 z" fill="none" stroke="#FFFBF2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="119" y="657.0" font-size="11.5" fill="#FFFBF2">JPEG</text>
+<rect x="162" y="642" width="57" height="22" rx="11" fill="#111111" stroke="#111111" stroke-width="1"/>
+<path d="M173 649.5 l3 1.6 v2.2 c0 2.2 -1.4 3.5 -3 4.2 c-1.6 -.7 -3 -2 -3 -4.2 v-2.2 z" fill="none" stroke="#FFFBF2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="181" y="657.0" font-size="11.5" fill="#FFFBF2">HEIC</text>
+<rect x="224" y="642" width="50" height="22" rx="11" fill="#111111" stroke="#111111" stroke-width="1"/>
+<path d="M235 649.5 l3 1.6 v2.2 c0 2.2 -1.4 3.5 -3 4.2 c-1.6 -.7 -3 -2 -3 -4.2 v-2.2 z" fill="none" stroke="#FFFBF2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="243" y="657.0" font-size="11.5" fill="#FFFBF2">PNG</text>
+<rect x="279" y="642" width="50" height="22" rx="11" fill="#111111" stroke="#111111" stroke-width="1"/>
+<path d="M290 649.5 l3 1.6 v2.2 c0 2.2 -1.4 3.5 -3 4.2 c-1.6 -.7 -3 -2 -3 -4.2 v-2.2 z" fill="none" stroke="#FFFBF2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="298" y="657.0" font-size="11.5" fill="#FFFBF2">MP4</text>
+<rect x="334" y="642" width="50" height="22" rx="11" fill="#111111" stroke="#111111" stroke-width="1"/>
+<path d="M345 649.5 l3 1.6 v2.2 c0 2.2 -1.4 3.5 -3 4.2 c-1.6 -.7 -3 -2 -3 -4.2 v-2.2 z" fill="none" stroke="#FFFBF2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="353" y="657.0" font-size="11.5" fill="#FFFBF2">3GP</text>
+<rect x="389" y="642" width="50" height="22" rx="11" fill="#111111" stroke="#111111" stroke-width="1"/>
+<path d="M400 649.5 l3 1.6 v2.2 c0 2.2 -1.4 3.5 -3 4.2 c-1.6 -.7 -3 -2 -3 -4.2 v-2.2 z" fill="none" stroke="#FFFBF2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="408" y="657.0" font-size="11.5" fill="#FFFBF2">MP3</text>
+<rect x="100" y="669" width="50" height="22" rx="11" fill="#111111" stroke="#111111" stroke-width="1"/>
+<path d="M111 676.5 l3 1.6 v2.2 c0 2.2 -1.4 3.5 -3 4.2 c-1.6 -.7 -3 -2 -3 -4.2 v-2.2 z" fill="none" stroke="#FFFBF2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="119" y="684.0" font-size="11.5" fill="#FFFBF2">M4A</text>
+<rect x="155" y="669" width="50" height="22" rx="11" fill="#111111" stroke="#111111" stroke-width="1"/>
+<path d="M166 676.5 l3 1.6 v2.2 c0 2.2 -1.4 3.5 -3 4.2 c-1.6 -.7 -3 -2 -3 -4.2 v-2.2 z" fill="none" stroke="#FFFBF2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="174" y="684.0" font-size="11.5" fill="#FFFBF2">WAV</text>
+<rect x="210" y="669" width="50" height="22" rx="11" fill="#111111" stroke="#111111" stroke-width="1"/>
+<path d="M221 676.5 l3 1.6 v2.2 c0 2.2 -1.4 3.5 -3 4.2 c-1.6 -.7 -3 -2 -3 -4.2 v-2.2 z" fill="none" stroke="#FFFBF2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="229" y="684.0" font-size="11.5" fill="#FFFBF2">AMR</text>
+<rect x="265" y="669" width="57" height="22" rx="11" fill="#111111" stroke="#111111" stroke-width="1"/>
+<path d="M276 676.5 l3 1.6 v2.2 c0 2.2 -1.4 3.5 -3 4.2 c-1.6 -.7 -3 -2 -3 -4.2 v-2.2 z" fill="none" stroke="#FFFBF2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="284" y="684.0" font-size="11.5" fill="#FFFBF2">DOCX</text>
+<rect x="327" y="669" width="50" height="22" rx="11" fill="#111111" stroke="#111111" stroke-width="1"/>
+<path d="M338 676.5 l3 1.6 v2.2 c0 2.2 -1.4 3.5 -3 4.2 c-1.6 -.7 -3 -2 -3 -4.2 v-2.2 z" fill="none" stroke="#FFFBF2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="346" y="684.0" font-size="11.5" fill="#FFFBF2">PDF</text>
+<rect x="382" y="669" width="50" height="22" rx="11" fill="#111111" stroke="#111111" stroke-width="1"/>
+<path d="M393 676.5 l3 1.6 v2.2 c0 2.2 -1.4 3.5 -3 4.2 c-1.6 -.7 -3 -2 -3 -4.2 v-2.2 z" fill="none" stroke="#FFFBF2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="401" y="684.0" font-size="11.5" fill="#FFFBF2">ODT</text>
+<rect x="100" y="696" width="84" height="22" rx="11" fill="#111111" stroke="#111111" stroke-width="1"/>
+<path d="M111 703.5 l3 1.6 v2.2 c0 2.2 -1.4 3.5 -3 4.2 c-1.6 -.7 -3 -2 -3 -4.2 v-2.2 z" fill="none" stroke="#FFFBF2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="119" y="711.0" font-size="11.5" fill="#FFFBF2">fake TXT</text>
+<rect x="189" y="696" width="91" height="22" rx="11" fill="#111111" stroke="#111111" stroke-width="1"/>
+<path d="M200 703.5 l3 1.6 v2.2 c0 2.2 -1.4 3.5 -3 4.2 c-1.6 -.7 -3 -2 -3 -4.2 v-2.2 z" fill="none" stroke="#FFFBF2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="208" y="711.0" font-size="11.5" fill="#FFFBF2">fake JPEG</text>
+<line x1="16" x2="464" y1="727" y2="727" stroke="#8C867A" stroke-width="0.6" opacity="0.4"/>
+<rect x="16" y="732" width="26" height="15" rx="7.5" fill="#FFD400" stroke="#FFD400" stroke-width="1"/>
+<path d="M26 739.5 l2.2 2.4 l4 -5" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="52" y="743" font-size="11.5" fill="#3D3A33"><tspan font-weight="700" fill="#111111">Read by content</tspan>  search finds it by what is in it</text>
+<rect x="16" y="753" width="26" height="15" rx="7.5" fill="#E9DFC6" stroke="#E9DFC6" stroke-width="1"/>
+<path d="M26 758.0 h6.5 M26 761.0 h6.5 M26 764.0 h4" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="52" y="764" font-size="11.5" fill="#3D3A33"><tspan font-weight="700" fill="#111111">Name only</tspan>  found by its name; not opened yet</text>
+<rect x="16" y="774" width="26" height="15" rx="7.5" fill="#F6F0E2" stroke="#3D3A33" stroke-width="1"/>
+<circle cx="29.2" cy="781.5" r="3.2" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M27 783.7 L31.4 779.3" fill="none" stroke="#111111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="52" y="785" font-size="11.5" fill="#3D3A33"><tspan font-weight="700" fill="#111111">Fails safely</tspan>  this phone can't open it: marked failed, name still found</text>
+<rect x="16" y="795" width="26" height="15" rx="7.5" fill="#FFFBF2" stroke="#8C867A" stroke-width="1" stroke-dasharray="3 2.5"/>
+<path d="M26 805.5 L32.5 799.5" fill="none" stroke="#3D3A33" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="52" y="806" font-size="11.5" fill="#3D3A33"><tspan font-weight="700" fill="#111111">Skipped</tspan>  clutter only: cache, thumbnails, trash, temp, empty</text>
+<rect x="16" y="816" width="26" height="15" rx="7.5" fill="#111111" stroke="#111111" stroke-width="1"/>
+<path d="M29 820.0 l3 1.6 v2.2 c0 2.2 -1.4 3.5 -3 4.2 c-1.6 -.7 -3 -2 -3 -4.2 v-2.2 z" fill="none" stroke="#FFFBF2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="52" y="827" font-size="11.5" fill="#3D3A33"><tspan font-weight="700" fill="#111111">Damaged or fake</tspan>  noted, then Trawl moves on</text>
+<text x="16" y="854" font-size="10.5" fill="#3D3A33">* some variants differ by phone or codec, or were fixed after the sweep.</text>
+</g><rect x="1" y="1" width="478" height="872" rx="15" fill="none" stroke="#111111" stroke-width="2"/>
+</svg>

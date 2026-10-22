@@ -1,0 +1,487 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="kind_document">مستند</string>
+  <string name="kind_pdf">PDF</string>
+  <string name="kind_photo">صورة</string>
+  <string name="kind_screenshot">لقطة شاشة</string>
+  <string name="kind_video">فيديو</string>
+  <string name="kind_audio">صوت</string>
+  <string name="kind_other">ملف</string>
+  <string name="filter_all">الكل</string>
+  <string name="filter_photos">صور</string>
+  <string name="filter_screenshots">لقطات شاشة</string>
+  <string name="filter_videos">فيديوهات</string>
+  <string name="filter_documents">مستندات</string>
+  <string name="filter_audio">صوتيات</string>
+  <string name="kind_plural_screenshots">لقطات شاشة</string>
+  <string name="kind_plural_photos">صور</string>
+  <string name="kind_plural_documents">مستندات وملفات PDF</string>
+  <string name="kind_plural_videos">فيديوهات</string>
+  <string name="kind_plural_audio">صوتيات</string>
+  <string name="section_photos_videos">الصور والفيديوهات</string>
+  <string name="section_documents_text">المستندات والنصوص</string>
+  <string name="section_recent_documents">المستندات الأخيرة</string>
+  <string name="section_recent_photos_videos">الصور والفيديوهات الأخيرة</string>
+  <string name="badge_page">ص %1$d</string>
+  <string name="badge_at_time">عند %1$s</string>
+  <plurals name="pages_count">
+        
+    
+    <item quantity="zero">%d صفحة</item>
+    <item quantity="one">صفحة واحدة</item>
+    <item quantity="two">صفحتان</item>
+    <item quantity="few">%d صفحات</item>
+    <item quantity="many">%d صفحة</item>
+    <item quantity="other">%d صفحة</item>
+  </plurals>
+  <string name="action_open">فتح</string>
+  <string name="action_share">مشاركة</string>
+  <string name="action_copy">نسخ</string>
+  <string name="action_show_folder">عرض في المجلد</string>
+  <string name="action_more">مزيد من الإجراءات</string>
+  <string name="snack_copied">تم النسخ</string>
+  <string name="meter_title_not_started">لم تبدأ القراءة بعد</string>
+  <string name="meter_title_scanning">جارٍ فحص هاتفك</string>
+  <string name="meter_title_indexing">التعرّف على ملفاتك</string>
+  <string name="meter_title_up_to_date">كل شيء محدّث</string>
+  <string name="meter_title_error">حدث خطأ ما</string>
+  <string name="meter_sub_not_started">سيبدأ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> بمجرد الوصول إلى ملفاتك.</string>
+  <string name="meter_sub_scanning">تم العثور على %1$s ملف حتى الآن.</string>
+  <string name="meter_sub_names_first">الأسماء والكلمات أولاً لتتمكن من البحث الآن.</string>
+  <string name="meter_sub_progress_eta">تم التعرّف على %1$s من %2$s · متبقٍ %3$s تقريباً</string>
+  <string name="meter_sub_progress_estimating">تم فهم %1$s من %2$s · جارٍ تقدير الوقت</string>
+  <string name="meter_sub_needs_charger">الأسماء والكلمات الآن. ويبدأ فهم المعنى عند الشحن.</string>
+  <string name="meter_sub_reembed">جارٍ تحديث الصور للنموذج الجديد: %1$s من %2$s. البحث لا يزال يعمل.</string>
+  <string name="meter_sub_reembed_eta">جارٍ تحديث الصور للنموذج الجديد: %1$s من %2$s · متبقٍّ %3$s تقريبًا</string>
+  <string name="meter_sub_reembed_battery">جارٍ تحديث الصور للنموذج الجديد: %1$s من %2$s. يستمر الباقي عند الشحن.</string>
+  <string name="meter_sub_light_reading">جارٍ قراءة صورك للبحث السريع. تكتمل الجودة الكاملة عند الشحن.</string>
+  <string name="meter_sub_light_done">يمكن البحث في كل شيء الآن. تكتمل الجودة الكاملة عند الشحن.</string>
+  <string name="meter_sub_paused">تم فهم %1$s من %2$s. البحث لا يزال يعمل.</string>
+  <string name="meter_sub_up_to_date">%1$s من الملفات جاهزة للبحث.</string>
+  <string name="meter_sub_error">انقر للتفاصيل.</string>
+  <string name="meter_a11y">%1$s. %2$s. تم فهم %3$d بالمئة.</string>
+  <string name="meter_open_details">عرض تفاصيل القراءة</string>
+  <string name="pause_not_charging">في انتظار الشاحن</string>
+  <string name="pause_not_charging_detail">قراءة كل شيء بأعلى جودة تستهلك الكثير من البطارية، لذا يقوم <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> بذلك أثناء شحن الهاتف. البحث يعمل في هذه الأثناء.</string>
+  <string name="pause_too_hot">تبريد الهاتف</string>
+  <string name="pause_too_hot_detail">الهاتف ساخن، لذا أخذ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> استراحة لحمايته. سيستأنف العمل تلقائيًا بمجرد أن يبرد الهاتف.</string>
+  <string name="pause_battery_low">البطارية منخفضة</string>
+  <string name="pause_battery_low_detail">نسبة البطارية أقل من 30%%، لذا يقرأ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> الأسماء والكلمات فقط لتوفير الطاقة. سيستأنف العمل تلقائيًا بمجرد شحن الهاتف.</string>
+  <string name="pause_user">أوقفته أنت مؤقتًا</string>
+  <string name="pause_user_detail">القراءة متوقفة مؤقتًا. لا يزال البحث يعمل بما تعرّف عليه <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> حتى الآن.</string>
+  <string name="pause_no_permission">يلزم الوصول إلى ملفاتك</string>
+  <string name="pause_no_permission_detail">لا يمكن لتطبيق <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> رؤية ملفاتك حتى تمنحه إذن الوصول إلى جميع الملفات. هو يقرأها فقط ولا يغيّر أي شيء أبدًا.</string>
+  <string name="pause_storage_low">مساحة تخزين الهاتف ممتلئة تقريبًا</string>
+  <string name="pause_storage_low_detail">يحتاج <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> إلى مساحة صغيرة للاحتفاظ ببيانات الفهرسة. وفّر بعض المساحة وسيستأنف العمل.</string>
+  <string name="action_pause">إيقاف مؤقت</string>
+  <string name="action_resume">استئناف</string>
+  <string name="action_read_on_battery">القراءة أثناء استخدام البطارية على أي حال</string>
+  <string name="action_allow_access">السماح بالوصول</string>
+  <string name="action_free_space">تفريغ مساحة</string>
+  <string name="action_retry">إعادة المحاولة</string>
+  <string name="eta_under_minute">أقل من دقيقة</string>
+  <string name="eta_minutes">%d د</string>
+  <string name="eta_hours_single">%d س</string>
+  <string name="eta_hours_range">%1$d إلى %2$d س</string>
+  <string name="eta_while_charging">%1$s أثناء الشحن</string>
+  <string name="sheet_title">جارٍ قراءة ملفاتك</string>
+  <string name="sheet_detail_up_to_date">كل ملف يمكن لتطبيق <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> رؤيته جاهز. وتتم إضافة الملفات الجديدة فور ظهورها.</string>
+  <string name="sheet_detail_scanning">ينشئ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> قائمة بملفاتك. يستغرق هذا دقيقة أو دقيقتين.</string>
+  <string name="sheet_detail_light_on_battery">تتم قراءة الأسماء والكلمات الآن مع نظرة سريعة على الصور، لذا يعمل البحث بالفعل. وستكتمل الجودة الكاملة، التي تمنح أفضل النتائج، أثناء شحن الهاتف.</string>
+  <string name="sheet_detail_needs_charger">تتم قراءة الأسماء والكلمات الآن، لذا يعمل البحث بالفعل. ويبدأ فهم محتوى الصور والمستندات أثناء شحن الهاتف.</string>
+  <string name="sheet_detail_indexing">تتم فهرسة الأسماء والكلمات أولاً، لذا سيعمل البحث على الفور تقريباً. أما فهم محتوى الصور والمستندات فيستغرق وقتاً أطول، ويُفضَّل تركه أثناء الشحن ليلاً.</string>
+  <string name="sheet_detail_error">توقفت القراءة بشكل غير متوقع. النتائج السابقة بأمان.</string>
+  <string name="sheet_detail_not_started">لم يبدأ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> القراءة بعد.</string>
+  <string name="sheet_by_kind">حسب نوع الملف</string>
+  <string name="sheet_reading_now">جارٍ القراءة الآن</string>
+  <string name="sheet_resumes_by_itself">يستأنف العمل تلقائياً عند حل هذه المشكلة.</string>
+  <string name="level_searchable">قابل للبحث بالاسم والكلمات</string>
+  <string name="level_searchable_hint">سريع. يتيح لك العثور على أي ملف حسب ما هو مكتوب فيه.</string>
+  <string name="level_understood">مفهوم بالمعنى</string>
+  <string name="level_understood_hint">أبطأ. يتيح لك العثور على أي ملف حسب موضوعه ومحتواه.</string>
+  <string name="level_quicklook">نظرة سريعة: صور وفيديو</string>
+  <string name="level_quicklook_hint">سريع. يعثر نموذج أصغر على الصور بناءً على محتواها، لعمليات البحث بالإنجليزية. وتُستبدل بالتفاصيل الكاملة فور فهم كل صورة.</string>
+  <string name="meter_quicklook">نظرة سريعة: %1$s من %3$s صورة · تفاصيل كاملة: %2$s من %3$s</string>
+  <string name="level_a11y">%1$s: %2$s من %3$s</string>
+  <string name="count_of">%1$s من %2$s</string>
+  <string name="stat_time_left">الوقت المتبقي</string>
+  <string name="stat_speed">السرعة</string>
+  <string name="stat_index_size">حجم الفهرس</string>
+  <string name="stat_model_size">حجم النموذج</string>
+  <string name="stat_when_charging">يبدأ أثناء الشحن</string>
+  <string name="stat_estimating">جارٍ التقدير</string>
+  <string name="stat_measuring">جارٍ القياس</string>
+  <string name="stat_done">تم</string>
+  <string name="stat_rate_value">%1$s ملف/ساعة</string>
+  <string name="onb_next">التالي</string>
+  <string name="onb_back">رجوع</string>
+  <string name="onb_start">بدء <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="onb_start_locked">يحتاج <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> إلى إذن الوصول لجميع الملفات قبل أن يبدأ</string>
+  <string name="onb_allow_access">السماح بالوصول إلى الملفات</string>
+  <string name="onb_page_of">الخطوة %1$d من %2$d</string>
+  <string name="welcome_line">يعثر <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> على مستنداتك وصورك ولقطات الشاشة حسب محتواها.</string>
+  <string name="welcome_point_ai_body">يعمل الذكاء الاصطناعي الذي يفهم ملفاتك على هذا الهاتف. لا يُرسل أي شيء إلى أي خادم.</string>
+  <string name="welcome_point_reads_title">يقرأ ملفاتك فقط</string>
+  <string name="welcome_point_reads_body">لا يغيّر أي شيء أو ينقله أو يحذفه أبدًا. ويمكنك حذف ما تعلّمه في أي وقت.</string>
+  <string name="onb_choose_folders">اختر المجلدات</string>
+  <string name="onb1_eyebrow">مصمم لحماية الخصوصية</string>
+  <string name="onb1_title">ملفاتك لا تغادر هذا الهاتف أبداً.</string>
+  <string name="onb1_body">يعثر <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> على المستندات وملفات PDF ولقطات الشاشة والصور ومقاطع الميمز والفيديو حسب ما تتضمنه أو تعرضه. كل شيء يتم هنا، على هذا الهاتف.</string>
+  <string name="onb1_point_internet_title">لا إذن بالاتصال بالإنترنت</string>
+  <string name="onb1_point_internet_body">لا يمكن لتطبيق <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> الاتصال بالإنترنت مطلقاً، فنظام Android يمنعه من إرسال أي بيانات إلى الخارج.</string>
+  <string name="onb1_point_model_title">الذكاء الاصطناعي على هاتفك</string>
+  <string name="onb1_point_model_body">النموذج الذي يفهم ملفاتك، EmbeddingGemma 2 من Google، يعمل على هذا الهاتف. لا يُرسل أي شيء إلى أي خادم لتحليله.</string>
+  <string name="onb1_point_delete_title">أنت صاحب القرار</string>
+  <string name="onb1_point_delete_body">تخطَّ أي مجلد، أو احذف كل ما تعلّمه <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> متى أردت.</string>
+  <string name="onb2_eyebrow">ماذا يحدث بعد ذلك</string>
+  <string name="onb2_title">البحث يعمل خلال دقائق. أما الفهم فيستغرق ليلة.</string>
+  <string name="onb2_step1_title">خلال بضع دقائق</string>
+  <string name="onb2_step1_body">ينشئ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> قائمة بملفاتك ويتعرّف على أسمائها والكلمات بداخلها. يمكنك البحث فوراً.</string>
+  <string name="onb2_step2_title">خلال الساعات التالية</string>
+  <string name="onb2_step2_body">بعد ذلك يتعرّف على محتوى كل صورة ومستند، بحيث يعثر بحث مثل “إيصال الرسوم المدرسية” على المطلوب حتى وإن لم تكن هذه الكلمات فيه. هذه العملية بطيئة بالنسبة للهاتف.</string>
+  <string name="onb2_step3_title">غالباً أثناء الشحن</string>
+  <string name="onb2_step3_body">للحفاظ على بطاريتك، ينفّذ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> الجزء البطيء أثناء الشحن. دعه متصلاً بالشاحن طوال الليل لمرة واحدة. يمكنك متابعة التقدم، أو إيقافه مؤقتاً، أو تغيير ذلك في أي وقت.</string>
+  <string name="onb3_eyebrow">إذنان مطلوبان</string>
+  <string name="onb3_title">اسمح لـ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> بالوصول إلى ملفاتك</string>
+  <string name="onb3_files_title">الوصول إلى كل الملفات</string>
+  <string name="onb3_files_body">مطلوب لرؤية الملفات في كل مجلد، مثل مستندات واتساب. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> يقرأ فقط، ولا يعدّل أو ينقل أو يحذف أي شيء مطلقاً.</string>
+  <string name="onb3_files_action">فتح الإعدادات</string>
+  <string name="onb3_files_granted">تم السماح</string>
+  <string name="onb3_files_hint">في القائمة التي ستفتح، فعّل “السماح بالوصول لإدارة جميع الملفات”، ثم ارجع إلى هنا.</string>
+  <string name="onb3_notif_title">الإشعارات (اختياري)</string>
+  <string name="onb3_notif_body">فقط ليتمكن <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> من إعلامك عند الانتهاء من القراءة، لا أكثر.</string>
+  <string name="onb3_notif_action">سماح</string>
+  <string name="onb3_notif_granted">تم السماح</string>
+  <string name="onb4_eyebrow">إضافات اختيارية</string>
+  <string name="onb4_title">هل تريد إضافة ميزات؟</string>
+  <string name="onb4_body">يعمل <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> بدونها، ولكن كلاً منها يحسّن ميزة معيّنة. كل إضافة عبارة عن ملف تنسخه إلى مجلد التنزيلات، لأن <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> لا يتصل بالإنترنت أبداً.</string>
+  <string name="onb4_add">إضافة</string>
+  <string name="onb4_not_now">ليس الآن</string>
+  <string name="onb4_added">تمت الإضافة</string>
+  <string name="onb4_skipped">تم التخطي. يمكنك إضافتها لاحقاً.</string>
+  <string name="onb4_footer">يمكنك تغيير هذا لاحقاً من الإعدادات ← الإضافات.</string>
+  <string name="search_hint">بحث في ملفاتك</string>
+  <string name="search_hint_a11y">بحث في ملفاتك حسب محتواها أو ما يظهر فيها</string>
+  <string name="search_clear">مسح البحث</string>
+  <string name="search_searching">جارٍ البحث</string>
+  <string name="search_settings">الإعدادات</string>
+  <string name="search_nothing_title">لم يتم العثور على نتائج</string>
+  <string name="search_nothing_body">لا يوجد أي ملف يطابق “%1$s”.</string>
+  <string name="search_nothing_try_all">جرّب كلمات أقل أو مختلفة، أو ابحث في الكل.</string>
+  <string name="search_nothing_incomplete">ما زال <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> في مرحلة التعرّف على ملفاتك، لذا قد يتغير هذا. أعد المحاولة لاحقاً.</string>
+  <string name="search_repairing_note">البحث يُصلح نفسه حاليًا. لا يزال البحث بالأسماء والكلمات يعمل، وسيعود البحث بالمعنى خلال بضع دقائق.</string>
+  <string name="search_incomplete_note">البحث بالأسماء والكلمات يعمل الآن. ما زال البحث بالمعنى قيد التعلّم، لذا قد تظهر نتائج أكثر.</string>
+  <string name="search_incomplete_note_charger">البحث بالأسماء والكلمات يعمل الآن. سيبدأ البحث بالمعنى (مثل “دراجة” للبحث عن صورة دراجة نارية) بمجرد توصيل الهاتف بالشاحن.</string>
+  <string name="search_weak_toggle">نتائج أقل تطابقاً (%1$d)</string>
+  <string name="search_weak_only">لا توجد نتائج مطابقة تماماً. هذه هي الأقرب.</string>
+  <string name="search_weak_expand">إظهار النتائج الأقل تطابقاً</string>
+  <string name="search_weak_collapse">إخفاء التطابقات الأضعف</string>
+  <string name="search_fresh_title">لا يوجد شيء لعرضه بعد</string>
+  <string name="search_fresh_body">بمجرد أن يعثر <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> على ملفاتك، ستظهر أحدثها هنا. اكتب أعلاه للبحث.</string>
+  <string name="search_recent_empty_filter">لا توجد ملفات من هذا النوع بعد.</string>
+  <string name="access_banner_title">لا يستطيع <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> رؤية ملفاتك بعد</string>
+  <string name="access_banner_body">امنحه إذن الوصول إلى جميع الملفات ليتمكن من قراءتها. لن يغيّر أي شيء أبدًا.</string>
+  <string name="snack_no_app">لا يوجد تطبيق على هذا الهاتف يمكنه فتح هذا الملف.</string>
+  <string name="snack_sample">هذا ملف تجريبي، لذا لا يمكن فتحه.</string>
+  <string name="settings_title">الإعدادات</string>
+  <string name="settings_back">رجوع</string>
+  <string name="settings_section_reading">القراءة</string>
+  <string name="learn_speed_title">سرعة التعلّم</string>
+  <string name="learn_gentle">هادئة</string>
+  <string name="learn_gentle_hint">تقرأ فقط أثناء الشحن، بعدد أقل من المسارات. أقل استهلاك للبطارية وأقل حرارة؛ وأي جديد ينتظر الشاحن.</string>
+  <string name="learn_balanced">متوازنة</string>
+  <string name="learn_balanced_hint">الطريقة المعتادة. الشاحن يقرأ كل معرض الصور لديك؛ وعلى البطارية تعمل الملفات الجديدة والنظرة السريعة فقط.</string>
+  <string name="learn_fast">سريعة</string>
+  <string name="learn_fast_hint">تقرأ كل شيء على البطارية أيضًا، وتنتظر فقط عندما تستخدم تطبيقًا آخر. تنتهي أسرع، وتستهلك بطارية أكثر، وتسخن أكثر.</string>
+  <string name="settings_section_kinds">ما يتم قراءته</string>
+  <string name="settings_recordings">الملاحظات الصوتية والتسجيلات</string>
+  <string name="settings_recordings_hint">قراءة ما قيل وما يُسمع، لتتمكن من البحث فيها.</string>
+  <string name="settings_deeper">بحث صوتي أعمق (بطيء): الموسيقى والأصوات الأخرى</string>
+  <string name="settings_deeper_hint">يعثر على الأصوات حسب طبيعتها، وليس بالكلمات فقط. يستغرق نحو 15 ثانية من القراءة لكل دقيقة صوت على هاتف بمواصفات عادية.</string>
+  <string name="settings_section_addons">الإضافات</string>
+  <string name="addons_intro">إضافات اختيارية لتحسين البحث. لا يتصل <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> بالإنترنت أبدًا، لذا فكل منها ملف تنسخه إلى التنزيلات أولاً. كل شيء يبقى على هذا الهاتف.</string>
+  <string name="addons_status_not_added">غير مضاف</string>
+  <string name="addons_status_adding">جارٍ الإضافة</string>
+  <string name="addons_status_added">تمت الإضافة</string>
+  <string name="addons_status_soon">قريبًا</string>
+  <string name="addons_size">الحجم: %1$s</string>
+  <string name="addons_add">إضافة</string>
+  <string name="addons_add_with_size">إضافة (%1$s)</string>
+  <string name="addons_remove">إزالة، يوفّر %1$s</string>
+  <string name="addons_on">مفعّل</string>
+  <string name="addons_off">موقَف</string>
+  <string name="addons_adding_pct">جارٍ التحقق والإضافة… %1$d%%</string>
+  <string name="addons_adding">جارٍ التحقق والإضافة…</string>
+  <string name="addons_try_again">إعادة المحاولة</string>
+  <string name="addons_soon_hint">غير جاهزة بعد. ستظهر هنا عندما تتوفر.</string>
+  <string name="addons_problem_not_found">لم يتمكن <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> من العثور على %1$s في التنزيلات. انسخه إلى هناك ثم حاول ثانيةً.</string>
+  <string name="addons_problem_access">يحتاج <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> إلى إذن الوصول إلى جميع الملفات لقراءة التنزيلات. فعّله ثم حاول ثانيةً.</string>
+  <string name="addons_problem_bad">الملف الموجود في التنزيلات تالف أو غير صحيح، لذا لم يستخدمه <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>. انسخه مجددًا ثم حاول ثانيةً.</string>
+  <string name="addons_problem_unavailable">لا يمكن إضافة هذه الإضافة في هذا الإصدار بعد.</string>
+  <string name="addons_add_title">إضافة %1$s</string>
+  <string name="addons_add_install">تثبيت</string>
+  <string name="addons_remove_title">إزالة %1$s؟</string>
+  <string name="addons_remove_body">سيؤدي هذا إلى توفير مساحة %1$s وإيقاف تشغيلها. الكلمات والمعاني التي تعرّف عليها <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> ستبقى إلى حين قراءة تلك الملفات مجدداً. يمكنك إضافتها في أي وقت.</string>
+  <string name="addons_remove_confirm">إزالة</string>
+  <string name="settings_section_excluded">المجلدات التي تم تخطيها</string>
+  <string name="settings_excluded_hint">لن يقرأ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> أي شيء داخل هذه المجلدات.</string>
+  <string name="settings_excluded_empty">لا توجد. يقرأ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> كل مجلد يمكنه الوصول إليه.</string>
+  <string name="settings_excluded_remove">إلغاء تخطي %1$s</string>
+  <string name="settings_excluded_bad">لا يمكن اختيار هذا المجلد من هنا. اختر مجلداً في وحدة التخزين الرئيسية للهاتف.</string>
+  <string name="onb_scope_eyebrow">خيارك</string>
+  <string name="scope_title">أين يجب أن يبحث <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>؟</string>
+  <string name="scope_intro">أوقف تشغيل أي شيء لا تريد العثور عليه. ستختفي ملفاته من البحث فوراً، وستعود عند تشغيله مجدداً.</string>
+  <string name="scope_counts_unknown">سيظهر عدد الملفات بمجرد أن يتمكن <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> من قراءة ملفاتك.</string>
+  <string name="scope_private">لا تتم أبداً قراءة المجلدات المخفية، أو المجلدات التي تحمل علامة .nomedia، أو المجلدات الخاصة بالتطبيقات الأخرى.</string>
+  <string name="scope_added_title">مجلدات أضفتها</string>
+  <string name="scope_add">إضافة مجلد</string>
+  <string name="scope_added_remove">إيقاف البحث في %1$s</string>
+  <string name="scope_exclude">استبعاد مجلد</string>
+  <plurals name="scope_files">
+        
+    
+    <item quantity="zero">%1$s ملف</item>
+    <item quantity="one">ملف واحد</item>
+    <item quantity="two">ملفان</item>
+    <item quantity="few">%1$s ملفات</item>
+    <item quantity="many">%1$s ملفاً</item>
+    <item quantity="other">%1$s ملف</item>
+  </plurals>
+  <string name="scope_group_camera">الكاميرا</string>
+  <string name="scope_group_screenshots">لقطات الشاشة</string>
+  <string name="scope_group_whatsapp_images">صور WhatsApp</string>
+  <string name="scope_group_whatsapp_video">فيديوهات WhatsApp</string>
+  <string name="scope_group_whatsapp_documents">مستندات WhatsApp</string>
+  <string name="scope_group_whatsapp_voice">رسائل WhatsApp الصوتية</string>
+  <string name="scope_group_whatsapp_status">حالات WhatsApp</string>
+  <string name="scope_group_downloads">التنزيلات</string>
+  <string name="scope_group_documents">المستندات</string>
+  <string name="scope_group_music">الموسيقى والتسجيلات</string>
+  <string name="scope_group_other">مجلدات أخرى</string>
+  <string name="settings_section_storage">المساحة المستخدمة</string>
+  <string name="settings_storage_index">فهرس البحث</string>
+  <string name="settings_storage_model">نموذج الذكاء الاصطناعي</string>
+  <string name="settings_delete">حذف كل ما يعرفه <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="settings_delete_hint">يحذف ما قرأه <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> من ملفاتك وملفاته المؤقتة، دون المساس بملفاتك الأصلية.</string>
+  <string name="settings_delete_title">حذف كل ما يعرفه <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>؟</string>
+  <string name="settings_delete_body">سيحذف <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> فهرس ملفاتك الآن: أسماءها، والكلمات في مستنداتك، والنصوص في الصور ولقطات الشاشة، والكلام المفرّغ من الفيديوهات والرسائل الصوتية، وما لاحظه الذكاء الاصطناعي عن كل ملف. كما ستُحذف ملفاته المؤقتة وتقارير الأخطاء.\n\nلن يتم المساس بملفاتك الشخصية. ستبقى إعداداتك كما هي، بما في ذلك المجلدات التي تخطيتها.\n\nسيتوقف <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> بعد ذلك عن القراءة، ويظل البحث فارغاً حتى تضغط على استئناف.</string>
+  <string name="settings_delete_done">تم حذف %1$s. تم إيقاف <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> مؤقتاً حتى تضغط على استئناف.</string>
+  <string name="settings_storage_model_hint">مطلوب للبحث بالمعنى.</string>
+  <string name="settings_storage_index_hint">قاعدة البيانات وسجلّها.</string>
+  <string name="settings_storage_estimate">عند قراءة كل ملف</string>
+  <string name="settings_storage_estimate_value">حوالي %1$s</string>
+  <string name="settings_storage_memory">الذاكرة أثناء البحث</string>
+  <string name="settings_storage_memory_hint">تُستخدم فقط أثناء فتح <xliff:g id="app_name" example="Trawl">%2$s</xliff:g>. حوالي %1$s عند قراءة كل ملف.</string>
+  <string name="settings_storage_remove">إزالة</string>
+  <string name="settings_storage_no_data">لا يستخدم <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> بيانات الهاتف إطلاقاً: فليس لديه إذن بالوصول إلى الإنترنت.</string>
+  <string name="settings_delete_confirm">حذف</string>
+  <string name="settings_cancel">إلغاء</string>
+  <string name="settings_section_appearance">المظهر</string>
+  <string name="settings_theme_system">النظام</string>
+  <string name="settings_theme_light">فاتح</string>
+  <string name="settings_theme_dark">داكن</string>
+  <string name="report_card_title">توقف <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> بشكل غير متوقع. هل تريد إرسال تقرير للمساعدة في إصلاحه؟</string>
+  <string name="report_card_body">لا يتضمن التقرير أي أسماء ملفات أو عمليات بحث أو نصوص من ملفاتك. يمكنك قراءته أولاً، ولن يُرسل أي شيء حتى تضغط على \"إرسال\" في تطبيق البريد الإلكتروني لديك.</string>
+  <string name="report_send">إرسال</string>
+  <string name="report_not_now">ليس الآن</string>
+  <string name="report_view">عرض التقرير</string>
+  <string name="report_close">إغلاق</string>
+  <string name="report_send_email">إرسال عبر البريد الإلكتروني</string>
+  <string name="report_send_whatsapp">إرسال عبر واتساب</string>
+  <string name="report_send_whatsapp_file">إرسال التقرير كاملاً عبر واتساب</string>
+  <string name="report_no_email">لم يتم العثور على أي تطبيق بريد على هذا الهاتف. استخدم \"عرض التقرير\" لقراءته، أو ثبّت تطبيق بريد.</string>
+  <string name="report_no_whatsapp">تعذر فتح واتساب.</string>
+  <string name="report_building">جارٍ إعداد التقرير…</string>
+  <string name="report_dialog_title">تقرير المشكلة</string>
+  <string name="report_dialog_hint">هذا كل ما سيتم إرساله. ملفاتك ومجلداتك وعمليات بحثك ليست ضمنه.</string>
+  <string name="settings_section_report">الإبلاغ عن مشكلة</string>
+  <string name="settings_report_hint">يفتح تطبيق البريد الإلكتروني مع تقرير جاهز للإرسال. يتضمن نوع الهاتف وإصدار <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>، وأي أخطاء واجهها <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>، بدون أي أسماء ملفات أو عمليات بحث أو نصوص من ملفاتك. يمكنك قراءته أولاً، ولن يُرسل شيء حتى تضغط على \"إرسال\" هناك.</string>
+  <string name="settings_report_note">ما المشكلة التي حدثت؟ (اختياري)</string>
+  <string name="settings_report_kept">يحتفظ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> بـ 10 تقارير كحد أقصى على هذا الهاتف، بحجم 100 ك.ب تقريباً. يؤدي خيار \"حذف كل ما يعرفه <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>\" إلى إزالتها.</string>
+  <string name="settings_section_about">حول التطبيق</string>
+  <string name="settings_about_version">الإصدار %1$s</string>
+  <string name="settings_about_model">يعتمد البحث على EmbeddingGemma 2 من Google (Apache 2.0)، بالكامل على هذا الهاتف.</string>
+  <string name="settings_about_private">لا يملك <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> إذن الوصول إلى الإنترنت. ملفاتك وما يتعلمه التطبيق منها لا تغادر الهاتف أبداً.</string>
+  <string name="settings_about_maker">من تطوير Crane AI Labs.</string>
+  <string name="settings_licences">التراخيص والشكر والتقدير</string>
+  <string name="licences_title">التراخيص والشكر والتقدير</string>
+  <string name="licences_intro">تم بناء <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> استناداً إلى الأعمال أدناه. هذه الإشعارات مطلوبة بموجب التراخيص، وهي أيضاً طريقتنا لتقديم الشكر.</string>
+  <string name="licences_section_required">الإشعارات</string>
+  <string name="licences_section_components">كل شيء آخر في <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="licences_section_texts">نصوص التراخيص الكاملة</string>
+  <string name="licences_show">عرض النص الكامل</string>
+  <string name="licences_hide">إخفاء النص الكامل</string>
+  <string name="settings_close">إغلاق</string>
+  <string name="pack_size_mb">%1$d ميغابايت</string>
+  <string name="pack_speech_name">البحث في الكلام</string>
+  <string name="pack_speech_benefit">يعثر على ما قيل في مقاطع الفيديو والملاحظات الصوتية: الملف الصحيح أولاً بنسبة %1$d%% بدلاً من %2$d%%.</string>
+  <plurals name="pack_speech_cost">
+        
+    
+    <item quantity="zero">يضيف حوالي %1$d ثانية لكل دقيقة فيديو أثناء القراءة. الكلام بالإنجليزية فقط حالياً.</item>
+    <item quantity="one">يضيف حوالي ثانية واحدة (%1$d) لكل دقيقة فيديو أثناء القراءة. الكلام بالإنجليزية فقط حالياً.</item>
+    <item quantity="two">يضيف حوالي ثانيتين (%1$d) لكل دقيقة فيديو أثناء القراءة. الكلام بالإنجليزية فقط حالياً.</item>
+    <item quantity="few">يضيف حوالي %1$d ثوانٍ لكل دقيقة فيديو أثناء القراءة. الكلام بالإنجليزية فقط حالياً.</item>
+    <item quantity="many">يضيف حوالي %1$d ثانية لكل دقيقة فيديو أثناء القراءة. الكلام بالإنجليزية فقط حالياً.</item>
+    <item quantity="other">يضيف حوالي %1$d ثانية لكل دقيقة فيديو أثناء القراءة. الكلام بالإنجليزية فقط حالياً.</item>
+  </plurals>
+  <string name="pack_quicklook_name">نظرة سريعة للصور</string>
+  <plurals name="pack_quicklook_benefit">
+        
+    
+    <item quantity="zero">يتيح البحث بالمعنى في معرضك بأكمله خلال دقائق بدلاً من ساعات: حوالي %1$s صورة في الساعة بدلاً من %2$d على هاتف اقتصادي (عمليات البحث بالإنجليزية). وتكتمل التفاصيل بالكامل لاحقاً.</item>
+    <item quantity="one">يتيح البحث بالمعنى في معرضك بأكمله خلال دقائق بدلاً من ساعات: حوالي صورة واحدة (%1$s) في الساعة بدلاً من %2$d على هاتف اقتصادي (عمليات البحث بالإنجليزية). وتكتمل التفاصيل بالكامل لاحقاً.</item>
+    <item quantity="two">يتيح البحث بالمعنى في معرضك بأكمله خلال دقائق بدلاً من ساعات: حوالي صورتين (%1$s) في الساعة بدلاً من %2$d على هاتف اقتصادي (عمليات البحث بالإنجليزية). وتكتمل التفاصيل بالكامل لاحقاً.</item>
+    <item quantity="few">يتيح البحث بالمعنى في معرضك بأكمله خلال دقائق بدلاً من ساعات: حوالي %1$s صور في الساعة بدلاً من %2$d على هاتف اقتصادي (عمليات البحث بالإنجليزية). وتكتمل التفاصيل بالكامل لاحقاً.</item>
+    <item quantity="many">يتيح البحث بالمعنى في معرضك بأكمله خلال دقائق بدلاً من ساعات: حوالي %1$s صورة في الساعة بدلاً من %2$d على هاتف اقتصادي (عمليات البحث بالإنجليزية). وتكتمل التفاصيل بالكامل لاحقاً.</item>
+    <item quantity="other">يتيح البحث بالمعنى في معرضك بأكمله خلال دقائق بدلاً من ساعات: حوالي %1$s صورة في الساعة بدلاً من %2$d على هاتف اقتصادي (عمليات البحث بالإنجليزية). وتكتمل التفاصيل بالكامل لاحقاً.</item>
+  </plurals>
+  <string name="pack_quicklook_cost">عمليات البحث بالإنجليزية فقط: تنتظر عمليات البحث باللغات الأخرى اكتمال القراءة بالكامل. تكون القراءة الكاملة أبطأ بنحو %1$d%% أثناء عملها، وتستهلك القليل من الذاكرة الإضافية أثناء القراءة.</string>
+  <string name="pack_privacy_name">تعتيم المعاينات التي تبدو خاصة</string>
+  <string name="pack_privacy_benefit">يعتم المعاينة الصغيرة لأي صورة تبدو خاصة (العري، الملابس الداخلية)، حتى لا تظهر بوضوح لمن ينظر إلى شاشتك من الخلف. اضغط على المعاينة لإظهارها. يقتصر الأمر على التعتيم فقط: لا شيء مخفي أو منقول في النتائج.</string>
+  <string name="pack_privacy_cost">قد يخطئ في الحالتين، وقد تُعتّم الصور الصحية (مثل الطفح الجلدي أو الرضاعة الطبيعية). يقرأ الصور في الخلفية أثناء الشحن، ويبطئ القراءة الكاملة بنحو %1$d%% أثناء عمله.</string>
+  <string name="pack_privacy_recommended">موصى به إذا كنت تستخدم لوحة البحث السريع</string>
+  <string name="pack_how_to_add_downloads"><xliff:g id="app_name" example="Trawl">%3$s</xliff:g> لا يتصل بالإنترنت إطلاقاً، لذا لا يمكنه تنزيل هذا بنفسه. احصل على الملف %1$s (%2$s) من Crane AI Labs وانسخه إلى مجلد التنزيلات على هذا الهاتف. ثم اضغط على تثبيت: يتحقق <xliff:g id="app_name" example="Trawl">%3$s</xliff:g> من الملف ويضيفه. يمكنك حذف ملف .zip بعد ذلك.</string>
+  <string name="pack_how_to_add_play">سيوفر Play %1$s (%2$s) عند الضغط على تثبيت. ليس عليك فعل أي شيء آخر.</string>
+  <string name="notif_channel_name">التعرّف على هاتفك</string>
+  <string name="notif_title">يتعرّف <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> على هاتفك</string>
+  <string name="notif_getting_ready">جارٍ التحضير…</string>
+  <string name="notif_reading_photo">قراءة صورة</string>
+  <string name="notif_reading_screenshot">قراءة لقطة شاشة</string>
+  <string name="notif_reading_video">قراءة فيديو</string>
+  <string name="notif_reading_document">قراءة مستند</string>
+  <string name="notif_reading_recording">قراءة تسجيل</string>
+  <string name="notif_reading_file">قراءة ملف</string>
+  <string name="notif_waiting_polite">في الانتظار أثناء استخدامك للهاتف</string>
+  <string name="chip_label_action">%1$s  ·  %2$s</string>
+  <string name="a11y_description_note">%1$s. %2$s</string>
+  <string name="meter_a11y_extra">%1$s %2$s.</string>
+  <string name="message_then_sentence">%1$s %2$s</string>
+  <string name="lock_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> مقفل</string>
+  <string name="lock_body">ألغِ القفل باستخدام بصمة الإصبع أو الوجه أو رمز PIN أو النمط لهاتفك.</string>
+  <string name="lock_button">إلغاء القفل</string>
+  <string name="quick_device_locked">ألغِ قفل هاتفك لإجراء بحث.</string>
+  <string name="lock_prompt_title">إلغاء قفل <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="lock_prompt_subtitle">استخدم قفل شاشة هاتفك</string>
+  <string name="settings_section_privacy">الخصوصية</string>
+  <string name="privacy_lock_title">قفل <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="privacy_lock_hint">طلب بصمة الإصبع أو الوجه أو رمز PIN أو النمط قبل عرض أي شيء.</string>
+  <string name="privacy_lock_needs_screen_lock">عليك أولاً تعيين قفل شاشة لهاتفك (الإعدادات، الأمان). يستخدم <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> طريقة إلغاء القفل نفسها.</string>
+  <string name="privacy_lock_on_prompt">تفعيل قفل <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="privacy_lock_off_prompt">إيقاف قفل <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="privacy_lock_after_title">إعادة القفل بعد</string>
+  <string name="privacy_lock_after_now">كل مرة</string>
+  <string name="privacy_lock_after_minutes">%1$d دقيقة</string>
+  <string name="privacy_lock_after_hint">المدة التي يمكن لتطبيق <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> البقاء فيها في الخلفية قبل طلب إلغاء القفل مجدداً. يُقفل أيضاً عند إيقاف تشغيل الشاشة.</string>
+  <string name="privacy_recents_title">إخفاء <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> من التطبيقات الأخيرة</string>
+  <string name="privacy_recents_hint">تظهر بطاقة <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> فارغة في قائمة التطبيقات الأخيرة. يُحظر أيضاً التقاط لقطات شاشة لتطبيق <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>.</string>
+  <string name="privacy_show_title">عرض النتائج الحساسة</string>
+  <string name="privacy_show_hint">عند الإيقاف: لا تظهر الملفات الحساسة وملفات المجلدات الخاصة في النتائج واللوحة السريعة حتى تفتح قفلها.</string>
+  <string name="privacy_show_prompt">عرض النتائج الحساسة</string>
+  <string name="privacy_pin_note">يمكن لأي شخص يعرف رمز PIN لهاتفك إظهار النتائج الحساسة؛ لا يملك <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> رمز PIN خاصاً به.</string>
+  <string name="privacy_no_screen_lock_note">لا يحتوي هاتفك على قفل شاشة، لذا يمكن لأي شخص يحمله فتح <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ورؤية كل شيء. عيّن قفل شاشة لحمايته.</string>
+  <string name="privacy_folders_title">المجلدات الخاصة</string>
+  <string name="privacy_folders_hint">تُعامل كل الملفات في المجلد الخاص كملفات حساسة. خلافاً للمجلدات المستبعدة، تتم قراءتها لتتمكن من البحث فيها بعد إلغاء القفل.</string>
+  <string name="privacy_folders_empty">لا توجد مجلدات خاصة.</string>
+  <string name="privacy_folders_add">إضافة مجلد خاص</string>
+  <string name="privacy_folders_bad">لا يمكن تصنيف هذا المجلد كخاص. اختر مجلداً من وحدة التخزين الرئيسية للهاتف.</string>
+  <string name="privacy_folders_remove">إلغاء تصنيف %1$s كخاص</string>
+  <string name="privacy_folders_remove_prompt">إلغاء جعل المجلد خاصاً</string>
+  <string name="onb_lock_title">قفل <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> (اختياري)</string>
+  <string name="onb_lock_body">يمكن لتطبيق <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> طلب بصمة الإصبع أو الوجه أو رمز PIN أو النمط لهاتفك قبل إظهار أي شيء، حتى لا يبحث فيه من يحمل هاتفك. يمكنك تغيير هذا في الإعدادات.</string>
+  <string name="onb_lock_action">تفعيل القفل</string>
+  <string name="onb_lock_on">القفل مفعّل</string>
+  <string name="onb_lock_no_screen_lock">لا يحتوي هاتفك على قفل شاشة بعد. عيّن قفلاً في إعدادات الهاتف لاستخدام هذا الخيار.</string>
+  <string name="privacy_hidden_chip">%1$d مخفي</string>
+  <string name="privacy_hidden_action">عرض</string>
+  <plurals name="privacy_hidden_chip_description">
+        
+    
+    <item quantity="zero">لا توجد نتائج حساسة مخفية.</item>
+    <item quantity="one">نتيجة حساسة واحدة مخفية. انقر مرتين لإلغاء القفل وعرضها.</item>
+    <item quantity="two">نتيجتان حسّاستان مخفيتان. انقر مرتين لإلغاء القفل وعرضهما.</item>
+    <item quantity="few">%1$d نتائج حساسة مخفية. انقر مرتين لإلغاء القفل وعرضها.</item>
+    <item quantity="many">%1$d نتيجة حساسة مخفية. انقر مرتين لإلغاء القفل وعرضها.</item>
+    <item quantity="other">%1$d نتيجة حساسة مخفية. انقر مرتين لإلغاء القفل وعرضها.</item>
+  </plurals>
+  <string name="privacy_shown_chip">النتائج الحساسة معروضة</string>
+  <string name="privacy_shown_action">إخفاء</string>
+  <string name="privacy_reveal_title">عرض النتائج الحساسة</string>
+  <string name="privacy_reveal_subtitle">استخدم قفل شاشة هاتفك</string>
+  <string name="action_mark_sensitive">تحديد كحساس</string>
+  <string name="action_unmark_sensitive">ليس حساساً</string>
+  <string name="snack_marked_sensitive">تم تحديده كحساس. أصبح مخفياً من النتائج الآن.</string>
+  <string name="snack_unmarked_sensitive">لم يعد حساساً.</string>
+  <string name="sensitive_share_title">هل تريد مشاركة عنصر حساس؟</string>
+  <string name="sensitive_share_body">لقد حددت هذا العنصر كحساس. سيتمكن أي شخص يصله من الاحتفاظ به وإعادة إرساله.</string>
+  <string name="sensitive_share_confirm">مشاركة</string>
+  <string name="sensitive_copy_title">هل تريد نسخ عنصر حساس؟</string>
+  <string name="sensitive_copy_body">لقد حددت هذا العنصر كحساس. أي مكان تلصقه فيه سيتلقى الملف نفسه.</string>
+  <string name="sensitive_copy_confirm">نسخ</string>
+  <string name="sensitive_cancel">إلغاء</string>
+  <string name="settings_section_previews">المعاينات</string>
+  <string name="settings_blur_title">تمويه المعاينات التي تبدو خاصة</string>
+  <string name="settings_blur_hint">يعمل تلقائياً، لذا قد يخطئ. يتم تمويه الصورة المصغرة فقط؛ وسيظل الملف يظهر في النتائج. انقر على رمز العين لعرضها.</string>
+  <string name="settings_blur_panel_title">التمويه في البحث السريع</string>
+  <string name="settings_blur_panel_hint">يعمل تلقائياً، لذا قد يخطئ. مفعّل هنا افتراضياً لأن اللوحة تفتح فوق تطبيقات أخرى. يلزم إلغاء قفل هاتفك لعرض الصورة.</string>
+  <string name="settings_blur_needs_pack">يتطلب إضافة \"تمويه المعاينات التي تبدو خاصة\" أدناه. لن يتم تمويه أي شيء حتى تتم إضافتها.</string>
+  <string name="action_show_picture">عرض الصورة</string>
+  <string name="preview_hidden">المعاينة مخفية، قد تكون خاصة</string>
+  <string name="quick_unlock_to_show">ألغِ قفل هاتفك لعرض هذه الصورة.</string>
+  <string name="quick_name">بحث سريع</string>
+  <string name="quick_shortcut_long">بحث سريع في ملفاتك</string>
+  <string name="quick_widget_hint">ابحث في ملفاتك</string>
+  <string name="quick_widget_description">شريط بحث يفتح البحث السريع لتطبيق <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> فوق التطبيق المفتوح حالياً.</string>
+  <string name="quick_hint">ابحث في ملفاتك</string>
+  <string name="quick_close">إغلاق البحث السريع</string>
+  <string name="quick_clear">مسح</string>
+  <string name="quick_nothing">لم يتم العثور على أي نتائج لـ “%1$s”.</string>
+  <string name="quick_nothing_incomplete">لا يزال <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> في مرحلة التعرّف على ملفاتك، لذا قد يتغير هذا.</string>
+  <string name="quick_not_set_up">لم يقرأ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ملفاتك بعد. افتح <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> للبدء.</string>
+  <string name="quick_open_findr">فتح <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="quick_still_meaning">جارٍ البحث عن المعنى…</string>
+  <string name="quick_copied">تم النسخ. الصقه في المحادثة.</string>
+  <string name="quick_copy_failed">تعذر نسخ هذا الملف.</string>
+  <string name="quick_no_app">لا يوجد تطبيق يمكنه فتح هذا الملف.</string>
+  <string name="quick_add_tile_title">إضافة «البحث السريع» إلى الإعدادات السريعة؟</string>
+  <string name="quick_add_tile_body">لتتمكن من البحث في ملفاتك من أي تطبيق بتمريرتين سريعتين.</string>
+  <string name="quick_add_tile_yes">إضافة المربّع</string>
+  <string name="quick_add_tile_no">ليس الآن</string>
+  <string name="settings_storage_remove_named">إزالة <xliff:g id="item" example="Speech pack">%1$s</xliff:g></string>
+  <string name="licences_show_named">عرض النص الكامل لترخيص <xliff:g id="licence" example="Apache License 2.0">%1$s</xliff:g></string>
+  <string name="licences_hide_named">إخفاء النص الكامل لترخيص <xliff:g id="licence" example="Apache License 2.0">%1$s</xliff:g></string>
+  <string name="sheet_error_word">مشكلة</string>
+  <string name="switch_on">تشغيل</string>
+  <string name="switch_off">إيقاف</string>
+  <string name="language_title">اختر لغتك</string>
+  <string name="language_intro">ستظهر شاشات <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> بهذه اللغة. يمكنك تغييرها لاحقًا من الإعدادات.</string>
+  <string name="language_system">لغة الهاتف</string>
+  <string name="language_system_hint">يتبع إعدادات هاتفك</string>
+  <string name="language_preview">معاينة</string>
+  <string name="settings_language">اللغة</string>
+  <plurals name="search_status_so_far">
+        
+    
+    <item quantity="zero">%1$d نتيجة حتى الآن · المعنى بعد قليل</item>
+    <item quantity="one">نتيجة واحدة (%1$d) حتى الآن · المعنى بعد قليل</item>
+    <item quantity="two">نتيجتان (%1$d) حتى الآن · المعنى بعد قليل</item>
+    <item quantity="few">%1$d نتائج حتى الآن · المعنى بعد قليل</item>
+    <item quantity="many">%1$d نتيجة حتى الآن · المعنى بعد قليل</item>
+    <item quantity="other">%1$d نتيجة حتى الآن · المعنى بعد قليل</item>
+  </plurals>
+  <string name="search_status_words">الكلمات الآن · المعنى بعد قليل</string>
+  <plurals name="search_status_found">
+        
+    
+    <item quantity="zero">عُثر على %1$d نتيجة</item>
+    <item quantity="one">عُثر على نتيجة واحدة (%1$d)</item>
+    <item quantity="two">عُثر على نتيجتين (%1$d)</item>
+    <item quantity="few">عُثر على %1$d نتائج</item>
+    <item quantity="many">عُثر على %1$d نتيجة</item>
+    <item quantity="other">عُثر على %1$d نتيجة</item>
+  </plurals>
+  <string name="action_share_file">مشاركة %1$s</string>
+  <string name="action_copy_file">نسخ %1$s</string>
+  <string name="preview_hidden_words">يبدو خاصاً · اضغط للعرض</string>
+  <string name="filter_group">تحديد الملفات المعروضة</string>
+</resources>

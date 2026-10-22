@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="welcome_line"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> nongo Waraga, Cal ki cal me wang cim megi ki nying-gi ki lok ma tye iye.</string>
+  <string name="onb1_point_model_title">Kiyubo pi cim matino</string>
+  <string name="welcome_point_ai_body">Okwano Fayil megi kany, pe tye gin mo ma myero igam. Pe kicwalo gin mo bot seva.</string>
+  <string name="meter_sub_progress_eta">%1$s i kin %2$s kikwano · odong cokki %3$s</string>
+  <string name="meter_sub_progress_estimating">%1$s i kin %2$s kikwano · tye ka poro kare ma odong</string>
+  <string name="meter_sub_paused">%1$s i kin %2$s kikwano. Yenyo pud tiyo.</string>
+  <string name="meter_a11y">%1$s. %2$s. Pacent %3$d kikwano.</string>
+  <string name="sheet_detail_indexing">Nying gikwano mukwongo, wek Yenyo oti oyotoyot. Kwano lok ma tye i Waraga, PDF ki Cal megi tero kare malac.</string>
+  <string name="level_searchable">Twero yenyo ki nying</string>
+  <string name="level_searchable_hint">Oyot. Weko inongo Fayil ki nyinge.</string>
+  <string name="level_understood">Lok kikwano</string>
+  <string name="level_understood_hint">Mot. Weko inongo Fayil ki lok ma kicoyo iye, medo ki coc ma tye i Cal.</string>
+  <string name="search_hint_a11y">Yenyo Fayil megi ki nying-gi ki lok ma tye iye</string>
+  <string name="search_incomplete_note">Nying tiyo kombeddi, ento lok pud tye ka kwano, pi meno gin marwate mukene romo nen.</string>
+  <string name="settings_about_model">Yenyo nongo Fayil ki nying-gi ki lok ma tye iye, i cim man keken.</string>
+  <string name="settings_delete_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kwanyo woko Kwano me Fayil megi kombeddi: nying-gi, lok ma tye i Waraga megi, ki coc ma okwano i Cal ki cal me wang cim. Fayil me tutuno ki ripot me peko bene gibiceto.\n\nFayil megi kikome pe gigudo. Yub megi bibedo tye, kwoce ki Folda ma ikalo woko.\n\n<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ci biweko kwano. Yenyo bibedo nono nio ka idiyo Medo anyim.</string>
+  <string name="pause_battery_low_detail">Batiri tye i te 30%%, pi meno <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kuro pi gwoko batiri ma odong. Bimede kene ka cim ocaye.</string>
+</resources>

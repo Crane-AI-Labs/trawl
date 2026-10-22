@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Sunlight tokens for what Compose does not draw: the window behind the first frame, the splash, the launcher icon and the widget. -->
+<resources>
+  <color name="brand_marker">#FFD400</color>
+  <color name="sun_paper">#FFFBF2</color>
+  <color name="sun_paper2">#F6F0E2</color>
+  <color name="sun_ink">#111111</color>
+  <color name="sun_ink2">#3D3A33</color>
+  <color name="sun_line">#111111</color>
+</resources>

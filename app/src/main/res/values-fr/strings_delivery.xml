@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="models_eyebrow">Un seul téléchargement</string>
+  <string name="models_title">Obtenir les modèles de recherche</string>
+  <string name="models_body">Si possible, utilisez le Wi-Fi : un fichier de %1$d MB à télécharger une seule fois. La recherche par noms et mots fonctionne tout de suite. La recherche par sens s\'améliore à mesure que <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> analyse vos fichiers, avec de meilleurs résultats après une nuit en charge.</string>
+  <string name="models_get">Télécharger les modèles (%1$d MB)</string>
+  <string name="models_choose">Choisir le fichier</string>
+  <string name="models_hint_choose">Vous avez déjà le fichier ? Choisissez-le sur votre téléphone.</string>
+  <string name="models_hint_access"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ajoute automatiquement le fichier à la fin du téléchargement, une fois que vous autorisez l\'accès à vos fichiers. Sinon, utilisez Choisir le fichier.</string>
+  <string name="models_hint_wait"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ajoute automatiquement le fichier à la fin du téléchargement. Vous pouvez commencer tout de suite.</string>
+  <string name="models_no_browser">Aucun navigateur n\'a été trouvé sur ce téléphone. Copiez le fichier dessus autrement, puis choisissez-le ici.</string>
+  <string name="models_downloading">Téléchargement… %1$s pour le moment</string>
+  <string name="models_installing_pct">Vérification et ajout des modèles… %1$d%%</string>
+  <string name="models_installing">Vérification et ajout des modèles…</string>
+  <string name="models_cancel">Annuler</string>
+  <string name="models_done">Les modèles sont installés. La recherche est prête.</string>
+  <string name="models_done_already">Les modèles sont déjà installés.</string>
+  <string name="models_ok">OK</string>
+  <string name="models_free_question">Supprimer le fichier téléchargé pour libérer %1$s ?</string>
+  <string name="models_free_yes">Oui, supprimer</string>
+  <string name="models_free_no">Non, conserver</string>
+  <string name="models_try_again">Réessayer</string>
+  <string name="models_refused_wrong_class">Ce fichier est prévu pour un autre type de téléphone. Utilisez Télécharger les modèles pour obtenir celui qui convient à ce téléphone.</string>
+  <string name="models_refused_damaged">Le fichier est endommagé ou incomplet. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ne l\'a donc pas utilisé. Téléchargez-le de nouveau, puis réessayez.</string>
+  <string name="models_refused_not_signed"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> n\'a pas pu confirmer que ce fichier est authentique. Il n\'a donc pas été utilisé. Utilisez Télécharger les modèles pour le télécharger de nouveau.</string>
+  <string name="models_refused_older">Ce fichier est plus ancien que les modèles déjà présents sur ce téléphone. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> a donc conservé les plus récents.</string>
+  <string name="models_refused_no_space">Il n\'y a pas assez d\'espace libre sur ce téléphone. Libérez environ %1$d MB, puis réessayez.</string>
+  <string name="models_refused_cancelled">Opération arrêtée. Rien n\'a été modifié.</string>
+  <string name="models_update_title">Un meilleur modèle est disponible</string>
+  <string name="models_update_body_reread">Si vous l\'ajoutez, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> devra relire vos fichiers. Cela se fera pendant la recharge du téléphone. La recherche continuera de fonctionner entre-temps.</string>
+  <string name="models_update_body_light">Si vous l\'ajoutez, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ne devra pas relire vos fichiers.</string>
+  <string name="models_update_get">Télécharger la mise à jour (%1$d MB)</string>
+  <string name="models_update_not_now">Pas maintenant</string>
+</resources>

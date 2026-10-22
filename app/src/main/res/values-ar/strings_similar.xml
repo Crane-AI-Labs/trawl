@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="action_find_similar">العثور على المشابه</string>
+  <string name="action_find_similar_help">يعرض العثور على المشابه صورًا تشبه هذه الصورة.</string>
+  <string name="similar_chip">مشابه لـ %1$s</string>
+  <string name="similar_remove">إيقاف العثور على المشابه</string>
+  <string name="similar_nothing_body">لا يوجد في ملفاتك ما يشبه %1$s حتى الآن.</string>
+</resources>

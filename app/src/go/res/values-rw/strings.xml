@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="welcome_line"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ibona inyandiko, amafoto n\'amafoto ya ecran ikurikije amazina yabyo n\'amagambo abirimo.</string>
+  <string name="onb1_point_model_title">Yagenewe telefone nto</string>
+  <string name="welcome_point_ai_body">Isoma amafayiro yawe hano, nta cyo gukuramo. Nta kintu cyoherezwa kuri seriveri.</string>
+  <string name="meter_sub_progress_eta">%1$s kuri %2$s byasomwe · hasigaye hafi %3$s</string>
+  <string name="meter_sub_progress_estimating">%1$s kuri %2$s byasomwe · iri kubara igihe bisigaye</string>
+  <string name="meter_sub_paused">%1$s kuri %2$s byasomwe. Shakisha iracyakora.</string>
+  <string name="meter_a11y">%1$s. %2$s. %3$d ku ijana byasomwe.</string>
+  <string name="sheet_detail_indexing">Amazina abanza gusomwa, bityo Shakisha igahita ikora. Gusoma amagambo ari mu nyandiko zawe, muri PDF no mu mafoto bitwara igihe kirekire.</string>
+  <string name="level_searchable">Gushakisha ku izina</string>
+  <string name="level_searchable_hint">Byihuse. Bigufasha kubona fayiro ukurikije izina ryayo.</string>
+  <string name="level_understood">Amagambo yasomwe</string>
+  <string name="level_understood_hint">Bitinda. Bigufasha kubona fayiro ukurikije amagambo ayanditsemo, harimo n\'amagambo ari mu mafoto.</string>
+  <string name="search_hint_a11y">Shakisha mu mafayiro yawe ukurikije amazina yayo n\'amagambo ayarimo</string>
+  <string name="search_incomplete_note">Amazina arakora ubu, ariko amagambo aracyasomwa, bityo ibindi bihuye bishobora kuboneka.</string>
+  <string name="settings_about_model">Shakisha ibona amafayiro ikurikije amazina yayo n\'amagambo ayarimo, byose bikabera kuri iyi telefone.</string>
+  <string name="settings_delete_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ubu isiba ibyo yasesenguye ku mafayiro yawe: amazina yayo, amagambo ari mu nyandiko zawe, n\'inyandiko yasomye mu mafoto n\'amafoto ya ecran. Amafayiro yayo y\'agateganyo na raporo z\'ibibazo na byo birasibwa.\n\nAmafayiro yawe ntakorwaho. Igenamiterere ryawe rigumaho, harimo n\'ububiko wasimbutse.\n\n<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ihita ihagarika gusoma. Shakisha izaguma irimo ubusa kugeza ukanze Komeza.</string>
+  <string name="pause_battery_low_detail">Bateri iri munsi ya 30%%, bityo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> irategereza kugira ngo ibungabunge umuriro usigaye. Irakomeza ubwayo telefone nimara gucomekwa.</string>
+</resources>

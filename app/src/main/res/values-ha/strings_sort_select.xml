@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="sort_best">Mafi dacewa</string>
+  <string name="sort_newest">Mafi sabo</string>
+  <string name="sort_oldest">Mafi tsoho</string>
+  <string name="sort_largest">Mafi girma</string>
+  <string name="sort_name">Suna daga A zuwa Z</string>
+  <string name="sort_group">Jera bisa</string>
+  <string name="date_any_time">Kowane lokaci</string>
+  <string name="date_group">Kwanan wata</string>
+  <string name="date_today">Yau</string>
+  <string name="date_yesterday">Jiya</string>
+  <string name="date_this_week">Wannan makon</string>
+  <string name="date_last_week">Makon da ya gabata</string>
+  <string name="date_this_month">Wannan watan</string>
+  <string name="date_last_month">Watan da ya gabata</string>
+  <string name="date_this_year">Wannan shekarar</string>
+  <string name="date_last_year">Shekarar da ta gabata</string>
+  <string name="date_weekend">Ƙarshen makon da ya gabata</string>
+  <string name="date_last_night">Jiya da dare</string>
+  <string name="date_this_morning">Safiyar yau</string>
+  <string name="date_this_afternoon">Yau da rana</string>
+  <string name="date_this_evening">Yau da yamma</string>
+  <string name="date_yesterday_morning">Safiyar jiya</string>
+  <string name="date_yesterday_afternoon">Jiya da rana</string>
+  <string name="date_yesterday_evening">Jiya da yamma</string>
+  <string name="date_pick_range">Zaɓi ranaku…</string>
+  <string name="date_range">%1$s – %2$s</string>
+  <string name="date_remove">Cire tacewar kwanan wata</string>
+  <string name="date_from_words">%1$s, daga kalmomin bincikenku</string>
+  <string name="date_picker_title">Zaɓi ranar farko da ta ƙarshe</string>
+  <string name="date_picker_ok">Aiwatar</string>
+  <plurals name="date_past_days">
+    
+    <item quantity="one">Rana %d ta baya-bayan nan</item>
+    <item quantity="other">Kwanaki %d na baya-bayan nan</item>
+  </plurals>
+  <plurals name="date_past_weeks">
+    
+    <item quantity="one">Mako %d na baya-bayan nan</item>
+    <item quantity="other">Makonni %d na baya-bayan nan</item>
+  </plurals>
+  <plurals name="date_past_months">
+    
+    <item quantity="one">Wata %d na baya-bayan nan</item>
+    <item quantity="other">Watanni %d na baya-bayan nan</item>
+  </plurals>
+  <plurals name="date_past_years">
+    
+    <item quantity="one">Shekara %d ta baya-bayan nan</item>
+    <item quantity="other">Shekaru %d na baya-bayan nan</item>
+  </plurals>
+  <plurals name="date_ago_days">
+    
+    <item quantity="one">Kwana %d da ya wuce</item>
+    <item quantity="other">Kwanaki %d da suka wuce</item>
+  </plurals>
+  <plurals name="date_ago_weeks">
+    
+    <item quantity="one">Mako %d da ya wuce</item>
+    <item quantity="other">Makonni %d da suka wuce</item>
+  </plurals>
+  <plurals name="date_ago_months">
+    
+    <item quantity="one">Wata %d da ya wuce</item>
+    <item quantity="other">Watanni %d da suka wuce</item>
+  </plurals>
+  <plurals name="date_ago_years">
+    
+    <item quantity="one">Shekara %d da ta wuce</item>
+    <item quantity="other">Shekaru %d da suka wuce</item>
+  </plurals>
+  <string name="action_select">Zaɓa</string>
+  <plurals name="select_count">
+    
+    <item quantity="one">An zaɓi %d</item>
+    <item quantity="other">An zaɓi %d</item>
+  </plurals>
+  <string name="select_all">Zaɓi duka</string>
+  <string name="select_none">Cire zaɓin duka</string>
+  <string name="select_exit">Daina zaɓa</string>
+  <string name="select_share_limit">Za ku iya raba fayiloli har %d a lokaci guda.</string>
+  <string name="sensitive_share_body_many">An yi wa wasu daga cikinsu alamar sirri. Duk wanda ya karɓe su zai iya ajiye su kuma ya tura su ga wasu.</string>
+  <string name="sensitive_copy_body_many">An yi wa wasu daga cikinsu alamar sirri. Duk abin da kuka liƙa su a ciki zai karɓi ainihin fayilolin.</string>
+  <string name="snack_marked_sensitive_many">An yi musu alamar sirri. Yanzu an ɓoye su daga sakamako.</string>
+  <string name="snack_unmarked_sensitive_many">An cire alamar. Za su iya sake bayyana a sakamako.</string>
+  <string name="nothing_in_dates">Ba a sami komai a %1$s ba. Gwada wani kwanan wata.</string>
+</resources>

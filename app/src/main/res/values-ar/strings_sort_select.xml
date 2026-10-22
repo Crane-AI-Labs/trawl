@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="sort_best">أفضل تطابق</string>
+  <string name="sort_newest">الأحدث</string>
+  <string name="sort_oldest">الأقدم</string>
+  <string name="sort_largest">الأكبر</string>
+  <string name="sort_name">الاسم أبجديًا</string>
+  <string name="sort_group">الترتيب حسب</string>
+  <string name="date_any_time">أي وقت</string>
+  <string name="date_group">التاريخ</string>
+  <string name="date_today">اليوم</string>
+  <string name="date_yesterday">أمس</string>
+  <string name="date_this_week">هذا الأسبوع</string>
+  <string name="date_last_week">الأسبوع الماضي</string>
+  <string name="date_this_month">هذا الشهر</string>
+  <string name="date_last_month">الشهر الماضي</string>
+  <string name="date_this_year">هذا العام</string>
+  <string name="date_last_year">العام الماضي</string>
+  <string name="date_weekend">عطلة نهاية الأسبوع الماضية</string>
+  <string name="date_last_night">الليلة الماضية</string>
+  <string name="date_this_morning">هذا الصباح</string>
+  <string name="date_this_afternoon">بعد ظهر اليوم</string>
+  <string name="date_this_evening">هذا المساء</string>
+  <string name="date_yesterday_morning">صباح أمس</string>
+  <string name="date_yesterday_afternoon">بعد ظهر أمس</string>
+  <string name="date_yesterday_evening">مساء أمس</string>
+  <string name="date_pick_range">اختيار التواريخ…</string>
+  <string name="date_range">%1$s – %2$s</string>
+  <string name="date_remove">إزالة فلتر التاريخ</string>
+  <string name="date_from_words">%1$s، من كلمات بحثك</string>
+  <string name="date_picker_title">اختر اليوم الأول والأخير</string>
+  <string name="date_picker_ok">تطبيق</string>
+  <plurals name="date_past_days">
+    
+    <item quantity="zero">آخر %d يوم</item>
+    <item quantity="one">اليوم الماضي</item>
+    <item quantity="two">اليومان الماضيان</item>
+    <item quantity="few">آخر %d أيام</item>
+    <item quantity="many">آخر %d يومًا</item>
+    <item quantity="other">آخر %d يوم</item>
+  </plurals>
+  <plurals name="date_past_weeks">
+    
+    <item quantity="zero">آخر %d أسبوع</item>
+    <item quantity="one">الأسبوع الماضي</item>
+    <item quantity="two">الأسبوعان الماضيان</item>
+    <item quantity="few">آخر %d أسابيع</item>
+    <item quantity="many">آخر %d أسبوعًا</item>
+    <item quantity="other">آخر %d أسبوع</item>
+  </plurals>
+  <plurals name="date_past_months">
+    
+    <item quantity="zero">آخر %d شهر</item>
+    <item quantity="one">الشهر الماضي</item>
+    <item quantity="two">الشهران الماضيان</item>
+    <item quantity="few">آخر %d أشهر</item>
+    <item quantity="many">آخر %d شهرًا</item>
+    <item quantity="other">آخر %d شهر</item>
+  </plurals>
+  <plurals name="date_past_years">
+    
+    <item quantity="zero">آخر %d عام</item>
+    <item quantity="one">العام الماضي</item>
+    <item quantity="two">العامان الماضيان</item>
+    <item quantity="few">آخر %d أعوام</item>
+    <item quantity="many">آخر %d عامًا</item>
+    <item quantity="other">آخر %d عام</item>
+  </plurals>
+  <plurals name="date_ago_days">
+    
+    <item quantity="zero">قبل %d يوم</item>
+    <item quantity="one">قبل يوم واحد</item>
+    <item quantity="two">قبل يومين</item>
+    <item quantity="few">قبل %d أيام</item>
+    <item quantity="many">قبل %d يومًا</item>
+    <item quantity="other">قبل %d يوم</item>
+  </plurals>
+  <plurals name="date_ago_weeks">
+    
+    <item quantity="zero">قبل %d أسبوع</item>
+    <item quantity="one">قبل أسبوع واحد</item>
+    <item quantity="two">قبل أسبوعين</item>
+    <item quantity="few">قبل %d أسابيع</item>
+    <item quantity="many">قبل %d أسبوعًا</item>
+    <item quantity="other">قبل %d أسبوع</item>
+  </plurals>
+  <plurals name="date_ago_months">
+    
+    <item quantity="zero">قبل %d شهر</item>
+    <item quantity="one">قبل شهر واحد</item>
+    <item quantity="two">قبل شهرين</item>
+    <item quantity="few">قبل %d أشهر</item>
+    <item quantity="many">قبل %d شهرًا</item>
+    <item quantity="other">قبل %d شهر</item>
+  </plurals>
+  <plurals name="date_ago_years">
+    
+    <item quantity="zero">قبل %d عام</item>
+    <item quantity="one">قبل عام واحد</item>
+    <item quantity="two">قبل عامين</item>
+    <item quantity="few">قبل %d أعوام</item>
+    <item quantity="many">قبل %d عامًا</item>
+    <item quantity="other">قبل %d عام</item>
+  </plurals>
+  <string name="action_select">تحديد</string>
+  <plurals name="select_count">
+    
+    <item quantity="zero">تم تحديد %d ملف</item>
+    <item quantity="one">تم تحديد ملف واحد</item>
+    <item quantity="two">تم تحديد ملفين</item>
+    <item quantity="few">تم تحديد %d ملفات</item>
+    <item quantity="many">تم تحديد %d ملفًا</item>
+    <item quantity="other">تم تحديد %d ملف</item>
+  </plurals>
+  <string name="select_all">تحديد الكل</string>
+  <string name="select_none">إلغاء تحديد الكل</string>
+  <string name="select_exit">إنهاء التحديد</string>
+  <string name="select_share_limit">يمكنك مشاركة ما يصل إلى %d ملفات في المرة الواحدة.</string>
+  <string name="sensitive_share_body_many">بعض هذه الملفات معلّم على أنه حساس. يمكن لمن يستلمها الاحتفاظ بها وإرسالها إلى آخرين.</string>
+  <string name="sensitive_copy_body_many">بعض هذه الملفات معلّم على أنه حساس. عند لصقها في أي تطبيق، يتلقى التطبيق الملفات نفسها.</string>
+  <string name="snack_marked_sensitive_many">تم تعليمها كحساسة. وهي مخفية الآن من النتائج.</string>
+  <string name="snack_unmarked_sensitive_many">أزيلت علامة الحساسية. يمكن أن تظهر في النتائج مجددًا.</string>
+  <string name="nothing_in_dates">لم يتم العثور على شيء في %1$s. جرّب تاريخًا آخر.</string>
+</resources>

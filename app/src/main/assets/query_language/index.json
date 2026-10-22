@@ -1,0 +1,15 @@
+{
+  "about": "D19c query-language centroids, keyed by the text model's file name (Embedder.textFingerprint). A model with no entry here (a fine-tuned bundle) keeps the D19 word-list gate until its own centroids are built.",
+  "models": {
+    "embeddinggemma-2-740m.litertlm": "stock-eg2-text",
+    "embeddinggemma-2-text-vision-440m.litertlm": "stock-eg2-text",
+    "embeddinggemma-2-text-270m.litertlm": "stock-eg2-text"
+  },
+  "sets": {
+    "stock-eg2-text": {
+      "provenance": "scripts/bench/ww_gate3.py (arm C, margin 0): renormalised per-language mean of 21,698 LLM-generated training queries embedded with the stock 740m teacher (QP query prompt)",
+      "why one set serves three bundles": "the stock 740m, 440m and 270m bundles give identical text vectors (probe cosine 1.0, engine_probes.json)",
+      "file": "centroids_fp16.bin is 16 x 768 little-endian fp16 unit vectors in the order of langs.json"
+    }
+  }
+}

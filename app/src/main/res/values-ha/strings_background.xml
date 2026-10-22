@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="bg_title">Wannan wayar tana dakatar da manhajoji</string>
+  <string name="bg_body">Wasu wayoyi, har da wannan, suna dakatar da manhajoji idan allon ya kashe. Saboda haka, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yana nazarin fayilolinka ne kawai yayin da manhajar take a buɗe. Idan hotunanka suna da yawa, yi amfani da Ci gaba da nazari yayin da wayar take kan caji cikin dare.</string>
+  <string name="bg_open">Buɗe saitunan waya</string>
+  <string name="bg_settings_section">A wannan wayar</string>
+  <string name="bg_settings_hint">Wasu wayoyi, har da wannan, suna dakatar da manhajoji idan allon ya kashe. Saboda haka, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yana nazarin fayilolinka ne kawai yayin da manhajar take a buɗe. Idan hotunanka suna da yawa, yi amfani da Ci gaba da nazari yayin da wayar take kan caji. Saitin wayar da ke ƙasa yana ba manhajar damar sake farawa ne kawai bayan an sake kunna wayar.</string>
+  <string name="bgs_title">Samsung na iya dakatar da wannan manhaja da dare</string>
+  <string name="bgs_body">Wayoyin Samsung na iya kwantar da manhajoji ko rufe su da dare, don haka <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ya daina koyon fayilolinka. A cikin Battery, zaɓi «Unrestricted» don <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>.</string>
+  <string name="bgs_open">Buɗe saitunan batir</string>
+</resources>

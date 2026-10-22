@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="bg_title">Simu hii husitisha programu</string>
+  <string name="bg_body">Baadhi ya simu, pamoja na hii, husitisha programu skrini ikiwa imezimwa. Kwa hivyo, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> husoma faili zako ikiwa imefunguliwa tu. Ili isome matunzio makubwa, tumia Endelea kusoma sasa huku simu ikiwa kwenye chaja usiku kucha.</string>
+  <string name="bg_open">Fungua mipangilio ya simu</string>
+  <string name="bg_settings_section">Kwenye simu hii</string>
+  <string name="bg_settings_hint">Baadhi ya simu, pamoja na hii, husitisha programu skrini ikiwa imezimwa. Kwa hivyo, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> husoma faili zako ikiwa imefunguliwa tu. Kwa matunzio makubwa, tumia Endelea kusoma sasa huku simu ikiwa kwenye chaja. Mpangilio wa simu ulio hapa chini huiruhusu programu ianze tena tu baada ya simu kuwashwa upya; hauzuii kusitishwa.</string>
+  <string name="bgs_title">Samsung inaweza kusimamisha programu hii usiku</string>
+  <string name="bgs_body">Simu za Samsung zinaweza kulaza programu au kuzifunga usiku, hivyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> huacha kujifunza faili zako. Katika Betri, chagua «Bila vikwazo» kwa <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>.</string>
+  <string name="bgs_open">Fungua mipangilio ya betri</string>
+</resources>

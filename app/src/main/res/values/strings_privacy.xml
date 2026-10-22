@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <!-- Lock screen -->
+  <string name="lock_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> is locked</string>
+  <string name="lock_body">Unlock with your phone\'s fingerprint, face, PIN or pattern.</string>
+  <string name="lock_button">Unlock</string>
+  <string name="quick_device_locked">Unlock your phone to search.</string>
+  <string name="lock_prompt_title">Unlock <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="lock_prompt_subtitle">Use your phone\'s screen lock</string>
+
+  <!-- Settings: privacy section -->
+  <string name="settings_section_privacy">Privacy</string>
+  <string name="privacy_lock_title">Lock <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="privacy_lock_hint">Ask for your fingerprint, face, PIN or pattern before showing anything.</string>
+  <string name="privacy_lock_needs_screen_lock">Set a screen lock on your phone first (Settings, Security). <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> uses the same unlock.</string>
+  <string name="privacy_lock_on_prompt">Turn on <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> lock</string>
+  <string name="privacy_lock_off_prompt">Turn off <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> lock</string>
+  <string name="privacy_lock_after_title">Lock again after</string>
+  <string name="privacy_lock_after_now">Every time</string>
+  <string name="privacy_lock_after_minutes">%1$d min</string>
+  <string name="privacy_lock_after_hint">How long <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> can stay in the background before it asks again. It also locks when the screen turns off.</string>
+  <string name="privacy_recents_title">Hide <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> in recent apps</string>
+  <string name="privacy_recents_hint"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g>\'s card goes blank in the recent-apps list. Trade-off: screenshots of <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> are blocked too.</string>
+  <string name="privacy_show_title">Show sensitive results</string>
+  <string name="privacy_show_hint">Off: files you mark sensitive, and files in private folders, stay out of results and the quick panel until you unlock them.</string>
+  <string name="privacy_show_prompt">Show sensitive results</string>
+  <string name="privacy_pin_note">Anyone who knows your phone\'s PIN can reveal sensitive results. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> has no PIN of its own.</string>
+  <string name="privacy_no_screen_lock_note">Your phone has no screen lock, so anyone holding it can open <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> and see everything. Set a screen lock to protect it.</string>
+  <string name="privacy_folders_title">Private folders</string>
+  <string name="privacy_folders_hint">Everything in a private folder is treated as sensitive. Unlike excluded folders, it is still read, so you can search it after unlocking.</string>
+  <string name="privacy_folders_empty">No private folders.</string>
+  <string name="privacy_folders_add">Add private folder</string>
+  <string name="privacy_folders_bad">That folder can\'t be marked private. Pick a folder on the phone\'s main storage.</string>
+  <string name="privacy_folders_remove">Stop treating %1$s as private</string>
+  <string name="privacy_folders_remove_prompt">Make folder not private</string>
+
+  <!-- Onboarding card -->
+  <string name="onb_lock_title">Lock <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> (optional)</string>
+  <string name="onb_lock_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> can ask for your phone\'s fingerprint, face, PIN or pattern before it shows anything, so someone holding your phone can\'t search it. You can change this in Settings.</string>
+  <string name="onb_lock_action">Turn on lock</string>
+  <string name="onb_lock_on">Lock is on</string>
+  <string name="onb_lock_no_screen_lock">Your phone has no screen lock yet. Set one in the phone\'s Settings to use this.</string>
+
+  <!-- Results: hidden chip and reveal -->
+  <string name="privacy_hidden_chip">%1$d hidden</string>
+  <string name="privacy_hidden_action">Show</string>
+  <plurals name="privacy_hidden_chip_description">
+    <item quantity="one">%1$d sensitive result is hidden. Double tap to unlock and show it.</item>
+    <item quantity="other">%1$d sensitive results are hidden. Double tap to unlock and show them.</item>
+  </plurals>
+  <string name="privacy_shown_chip">Sensitive results shown</string>
+  <string name="privacy_shown_action">Hide</string>
+  <string name="privacy_reveal_title">Show sensitive results</string>
+  <string name="privacy_reveal_subtitle">Use your phone\'s screen lock</string>
+
+  <!-- File actions -->
+  <string name="action_mark_sensitive">Mark sensitive</string>
+  <string name="action_unmark_sensitive">Not sensitive</string>
+  <string name="snack_marked_sensitive">Marked sensitive. It is hidden from results now.</string>
+  <string name="snack_unmarked_sensitive">No longer sensitive.</string>
+  <string name="sensitive_share_title">Share a sensitive item?</string>
+  <string name="sensitive_share_body">You marked this as sensitive. Whoever receives it can keep it and pass it on.</string>
+  <string name="sensitive_share_confirm">Share</string>
+  <string name="sensitive_copy_title">Copy a sensitive item?</string>
+  <string name="sensitive_copy_body">You marked this as sensitive. Anything you paste it into receives the file itself.</string>
+  <string name="sensitive_copy_confirm">Copy</string>
+  <string name="sensitive_cancel">Cancel</string>
+</resources>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="keep_action">አሁን ማጥናቱን ቀጥል</string>
+  <string name="keep_action_hint">ስልክህን በማትጠቀምበት ጊዜ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ማጥናት እንዲችል ማያ ገጹ ደብዘዝ ብሎ እንደበራ ይቆያል። ቻርጀር ላይ ቢሆን ይመረጣል። እየሰራ እያለ ስልኩ ሳይቆለፍ ስለሚቆይ በምታምነው ቦታ ብቻ አድርገው።</string>
+  <string name="keep_heading"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ፋይሎችህን በማጥናት ላይ ነው</string>
+  <string name="keep_counts">ከ%2$s ፋይሎች %1$s ተረድተዋል</string>
+  <string name="keep_time_left">የቀረው ጊዜ፦ %1$s</string>
+  <string name="keep_time_unknown">የሚወስደውን ጊዜ በማስላት ላይ</string>
+  <string name="keep_charging">ቻርጅ እየሞላ ነው</string>
+  <string name="keep_on_battery">ቻርጅ እየሞላ አይደለም። ቻርጀር ላይ ሲሆን ፈጣን ነው።</string>
+  <string name="keep_unlocked"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> በሚያጠናበት ጊዜ ማያ ገጹ በርቶ እና ስልኩ ሳይቆለፍ ይቆያል። በምታምነው ቦታ ብቻ ተወው።</string>
+  <string name="keep_tap_to_stop">ለማቆም የትም ቦታ ንካ</string>
+  <string name="keep_stop_done_title">ሁሉም ተጠናቋል</string>
+  <string name="keep_stop_done"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ሁሉንም ፋይሎችህን አጥንቷል። ፍለጋው አሁን ያውቃቸዋል።</string>
+  <string name="keep_stop_battery_title">ቆሟል፦ ባትሪው ዝቅተኛ ነው</string>
+  <string name="keep_stop_battery">ባትሪው ከ20 በመቶ በታች ነው። ቻርጀሩን ሰካ፣ ከዚያ ከሂደት ማሳያው እንደገና ጀምር።</string>
+  <string name="keep_stop_hot_title">ቆሟል፦ ስልኩ ሞቋል</string>
+  <string name="keep_stop_hot">ስልኩ በጣም ስለሞቀ እንዲቀዘቅዝ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ቆሟል። ቆየት ብለህ እንደገና መጀመር ትችላለህ።</string>
+  <string name="keep_stop_unplugged_title">ቆሟል፦ ቻርጀሩ ተነቅሏል</string>
+  <string name="keep_stop_unplugged">ቻርጀሩን መልሰህ ሰካ፣ ከዚያ ከሂደት ማሳያው እንደገና ጀምር።</string>
+  <string name="keep_stop_charger_title">ቻርጀር በመጠበቅ ላይ</string>
+  <string name="keep_stop_charger">በባትሪ ሲሆን <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ቀላል ስራዎችን ብቻ ይሰራል፣ ይህም ተጠናቋል። ቻርጀሩን ሰካ፣ ከዚያ እንደገና ጀምር።</string>
+  <string name="keep_stop_paused_title">ቆሟል፦ ማጥናት ቆም ብሏል</string>
+  <string name="keep_stop_paused">ምክንያቱን ለማየት እና ለመቀጠል በ<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ውስጥ የሂደት ማሳያውን ክፈት።</string>
+  <string name="keep_screen_will_sleep">አሁን ማያ ገጹ እንደተለመደው በራሱ ይጠፋል።</string>
+  <string name="keep_close">ዝጋ</string>
+</resources>

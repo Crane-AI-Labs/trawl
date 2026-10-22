@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="models_eyebrow">Okuhanura kumwe</string>
+  <string name="models_title">Tunga modeli z\'okusherura</string>
+  <string name="models_body">Koresa Wi-Fi waaba noobaasa: fayiro emwe ya %1$d MB neeshumurwa omurundi gumwe gwonka. Amaziina n\'ebigambo nibikora ahonaaho. Okusherura kurugiirira aha makuru nikweyongyera kuba kurungi <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> yaaba neeshoma fayiro zaawe, kandi nikukirayo bwanyima y\'okumara ekiro eri aha kyoma ky\'okugiijisa.</string>
+  <string name="models_get">Tunga modeli (%1$d MB)</string>
+  <string name="models_choose">Toorana fayiro</string>
+  <string name="models_hint_choose">Waaherize kutunga fayiro? Gitoorane aha simu yaawe.</string>
+  <string name="models_hint_access"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> neeyongyeraho fayiro yo yonka yaaheza kuhanurwa, waagiha obushoboorozi bw\'okuhika aha fayiro zaawe. Nari koresa Toorana fayiro.</string>
+  <string name="models_hint_wait">Okushumura kwaheza, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> neeyongyeraho fayiro yo yonka. Noobaasa kutandika hati.</string>
+  <string name="models_no_browser">Tehaine buraawuza eshangirwe aha simu egi. Gita fayiro aha simu omu muringo ogundi, reero ogitoorane aha.</string>
+  <string name="models_downloading">Neehanurwa… %1$s kuhika hati</string>
+  <string name="models_installing_pct">Neekebera kandi neeyongyeraho modeli… %1$d%%</string>
+  <string name="models_installing">Neekebera kandi neeyongyeraho modeli…</string>
+  <string name="models_cancel">Rekaho</string>
+  <string name="models_done">Modeli zaateekwaho. Okusherura kweteekateekire.</string>
+  <string name="models_done_already">Modeli zaaherize kuteekwaho.</string>
+  <string name="models_ok">Kale</string>
+  <string name="models_free_question">Shangura fayiro eyaahanuurwe, obone omwanya gwa %1$s?</string>
+  <string name="models_free_yes">Yee, gishangure</string>
+  <string name="models_free_no">Ngaaha, girekyeho</string>
+  <string name="models_try_again">Garukamu</string>
+  <string name="models_refused_wrong_class">Fayiro egi n\'eya simu y\'omuringo ogundi. Koresa Tunga modeli kuhanura eya simu egi.</string>
+  <string name="models_refused_damaged">Fayiro egi ehendekire nari tehanuurwe yoona, n\'ahabw\'ekyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> teragikoresize. Garuka ogihanuure, reero ogarukemu.</string>
+  <string name="models_refused_not_signed"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> teyaabaasize kuhamya ngu fayiro egi n\'ey\'amazima, nikyo etaragikoresize. Koresa Tunga modeli kugaruka kugihanura.</string>
+  <string name="models_refused_older">Fayiro egi n\'eya ira okukira modeli eziri aha simu egi, n\'ahabw\'ekyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ekagumizamu n\'ezihyaka.</string>
+  <string name="models_refused_no_space">Tihariho mwanya gurikumara aha simu egi. Hanga omwanya nka %1$d MB, reero ogarukemu.</string>
+  <string name="models_refused_cancelled">Kyemereziibwe. Tihariho kyahindwirwe.</string>
+  <string name="models_update_title">Modeli nungi okukiraho eriho</string>
+  <string name="models_update_body_reread">Okugyongyeraho nikireetera <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kugaruka kushoma fayiro zaawe. Eki nikibaho simu yaaba neetebwa aha muriro, kandi noobaasa kugumizamu nosherura.</string>
+  <string name="models_update_body_light">Okugyongyeraho tikirireetera <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kugaruka kushoma fayiro zaawe.</string>
+  <string name="models_update_get">Tunga obuhyaka (%1$d MB)</string>
+  <string name="models_update_not_now">Ti hati</string>
+</resources>

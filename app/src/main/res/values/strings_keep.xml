@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Keep learning: a dark screen that stays on, dimmed, while the app learns the phone's files (ui/keeplearning). Offered on
+  TECNO, Infinix and itel phones, which pause apps when the screen is off, and on any phone with a large backlog. A file of its
+  own so it never conflicts with strings.xml. The app's name is the placeholder marked app_name (never translate it).
+-->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <!-- Progress sheet: the button that starts the keep-learning screen -->
+  <string name="keep_action">Keep learning now</string>
+  <!-- Progress sheet: under the button. Honest: the screen stays on and the phone stays unlocked. -->
+  <string name="keep_action_hint">Keeps the screen on, dimmed, so <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> can learn while you are not using the phone. Best on the charger. The phone stays unlocked while it runs, so only do this somewhere you trust.</string>
+
+  <!-- The keep-learning screen: the title -->
+  <string name="keep_heading"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> is learning your files</string>
+  <!-- The keep-learning screen: progress. %1$s and %2$s are counts, for example "1,240 of 3,000 files understood". -->
+  <string name="keep_counts">%1$s of %2$s files understood</string>
+  <!-- The keep-learning screen: time left. %1$s is a duration such as "about 2 hours". -->
+  <string name="keep_time_left">Time left: %1$s</string>
+  <!-- The keep-learning screen: before the speed is known -->
+  <string name="keep_time_unknown">Working out how long this takes</string>
+  <!-- The keep-learning screen: the phone is on the charger -->
+  <string name="keep_charging">Charging</string>
+  <!-- The keep-learning screen: the phone is not on the charger -->
+  <string name="keep_on_battery">Not charging. It goes faster on the charger.</string>
+  <!-- The keep-learning screen: the honest warning -->
+  <string name="keep_unlocked">The screen stays on and the phone stays unlocked while <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> learns. Only leave it somewhere you trust.</string>
+  <!-- The keep-learning screen: how to stop it -->
+  <string name="keep_tap_to_stop">Tap anywhere to stop</string>
+
+  <!-- Stopped by itself: everything is learned -->
+  <string name="keep_stop_done_title">All done</string>
+  <string name="keep_stop_done"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> has learned all your files. Search knows them now.</string>
+  <!-- Stopped by itself: battery under 20 percent and not charging -->
+  <string name="keep_stop_battery_title">Stopped: the battery is low</string>
+  <string name="keep_stop_battery">The battery is under 20 percent. Plug in the charger, then start again from the progress screen.</string>
+  <!-- Stopped by itself: the phone got too warm -->
+  <string name="keep_stop_hot_title">Stopped: the phone is warm</string>
+  <string name="keep_stop_hot">The phone got too warm, so <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> stopped to let it cool down. You can start again later.</string>
+  <!-- Stopped by itself: the charger was unplugged after it started on the charger -->
+  <string name="keep_stop_unplugged_title">Stopped: the charger was unplugged</string>
+  <string name="keep_stop_unplugged">Plug the charger back in, then start again from the progress screen.</string>
+  <!-- Stopped by itself: on battery, the rest waits for the charger -->
+  <string name="keep_stop_charger_title">Waiting for the charger</string>
+  <string name="keep_stop_charger">On battery, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> does only the light work, and that is done. Plug in the charger, then start again.</string>
+  <!-- Stopped by itself: learning is paused (by the person, no access, or no space) -->
+  <string name="keep_stop_paused_title">Stopped: learning is paused</string>
+  <string name="keep_stop_paused">Open the progress screen in <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> to see why and carry on.</string>
+  <!-- Under the reason: the phone's normal screen timeout is back -->
+  <string name="keep_screen_will_sleep">The screen will now turn off by itself as usual.</string>
+  <!-- The button that closes the stopped screen -->
+  <string name="keep_close">Close</string>
+</resources>

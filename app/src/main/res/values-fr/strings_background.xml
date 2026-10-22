@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="bg_title">Ce téléphone met les applis en pause</string>
+  <string name="bg_body">Certains téléphones, dont celui-ci, mettent les applis en pause quand l\'écran est éteint. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> analyse donc vos fichiers uniquement quand l\'appli est ouverte. Pour une grande galerie, utilisez Continuer l\'analyse pendant la nuit, avec le téléphone en charge.</string>
+  <string name="bg_open">Ouvrir les paramètres du téléphone</string>
+  <string name="bg_settings_section">Sur ce téléphone</string>
+  <string name="bg_settings_hint">Certains téléphones, dont celui-ci, mettent les applis en pause quand l\'écran est éteint. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> analyse donc vos fichiers uniquement quand l\'appli est ouverte. Pour une grande galerie, utilisez Continuer l\'analyse avec le téléphone en charge. Le paramètre ci-dessous permet seulement à l\'appli de se relancer après le redémarrage du téléphone.</string>
+  <string name="bgs_title">Samsung peut arrêter cette appli la nuit</string>
+  <string name="bgs_body">Les téléphones Samsung peuvent mettre des applis en veille ou les fermer pendant la nuit, et <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> cesse alors d\'apprendre vos fichiers. Dans Batterie, choisissez « Sans restriction » pour <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>.</string>
+  <string name="bgs_open">Ouvrir les réglages de la batterie</string>
+</resources>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The languages the app's screens ship in, for Android 13+'s per-app language setting (Settings, Apps, Language) and our own
+  picker (ui/language/AppLanguages.shipped). Each has a full res/values-<qualifier>/strings.xml. LanguagesTest keeps the three in step.
+  Ateso (teo) and Lugbara (lgg) are translated but held back until a native rewrite (AppLanguages.NOT_READY).
+-->
+<locale-config xmlns:android="http://schemas.android.com/apk/res/android">
+  <locale android:name="en" />
+  <locale android:name="fr" />
+  <locale android:name="pt" />
+  <locale android:name="ar" />
+  <locale android:name="sw" />
+  <locale android:name="lg" />
+  <locale android:name="rw" />
+  <locale android:name="nyn" />
+  <locale android:name="ach" />
+  <locale android:name="am" />
+  <locale android:name="ha" />
+  <locale android:name="yo" />
+  <locale android:name="so" />
+  <locale android:name="zu" />
+</locale-config>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="models_eyebrow">Upakuaji mmoja</string>
+  <string name="models_title">Pata modeli za utafutaji</string>
+  <string name="models_body">Tumia Wi-Fi ukiweza: faili moja la %1$d MB, linalopakuliwa mara moja. Kutafuta majina na maneno hufanya kazi mara moja. Kutafuta kwa maana kunaboreka kadiri <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> inavyojifunza, na huwa bora zaidi baada ya usiku mmoja kwenye chaja.</string>
+  <string name="models_get">Pata modeli (%1$d MB)</string>
+  <string name="models_choose">Chagua faili</string>
+  <string name="models_hint_choose">Tayari una faili? Lichague kwenye simu yako.</string>
+  <string name="models_hint_access"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> huongeza faili kiotomatiki linapomaliza kupakuliwa, ukiruhusu ifikie mafaili yako. Au tumia Chagua faili.</string>
+  <string name="models_hint_wait"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> huongeza faili kiotomatiki upakuaji ukikamilika. Unaweza kuanza sasa.</string>
+  <string name="models_no_browser">Hakuna kivinjari kilichopatikana kwenye simu hii. Hamishia faili kwenye simu kwa njia nyingine, kisha lichague hapa.</string>
+  <string name="models_downloading">Inapakuliwa… %1$s kufikia sasa</string>
+  <string name="models_installing_pct">Inakagua na kuongeza modeli… %1$d%%</string>
+  <string name="models_installing">Inakagua na kuongeza modeli…</string>
+  <string name="models_cancel">Ghairi</string>
+  <string name="models_done">Modeli zimesakinishwa. Sasa unaweza kutafuta.</string>
+  <string name="models_done_already">Modeli tayari zimesakinishwa.</string>
+  <string name="models_ok">Sawa</string>
+  <string name="models_free_question">Ufute faili lililopakuliwa ili kupata nafasi ya %1$s?</string>
+  <string name="models_free_yes">Ndiyo, lifute</string>
+  <string name="models_free_no">Hapana, lihifadhi</string>
+  <string name="models_try_again">Jaribu tena</string>
+  <string name="models_refused_wrong_class">Faili hili ni la aina nyingine ya simu. Tumia Pata modeli ili kupakua faili la simu hii.</string>
+  <string name="models_refused_damaged">Faili limeharibika au halijakamilika, kwa hivyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> haikulitumia. Lipakue tena, kisha ujaribu tena.</string>
+  <string name="models_refused_not_signed"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> haikuweza kuthibitisha kuwa faili hili ni halisi, kwa hivyo haikulitumia. Tumia Pata modeli ili kulipakua tena.</string>
+  <string name="models_refused_older">Faili hili ni la zamani kuliko modeli ambazo tayari ziko kwenye simu hii, kwa hivyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ilibakiza zilizo mpya zaidi.</string>
+  <string name="models_refused_no_space">Hakuna nafasi ya kutosha kwenye simu hii. Pata takriban nafasi ya %1$d MB, kisha ujaribu tena.</string>
+  <string name="models_refused_cancelled">Imesimamishwa. Hakuna kilichobadilishwa.</string>
+  <string name="models_update_title">Modeli bora zaidi inapatikana</string>
+  <string name="models_update_body_reread">Ukiiongeza, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> itasoma mafaili yako tena. Hilo hufanyika simu inapochajiwa, na bado unaweza kutafuta wakati huo.</string>
+  <string name="models_update_body_light">Ukiiongeza, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> haitasoma mafaili yako tena.</string>
+  <string name="models_update_get">Pata sasisho (%1$d MB)</string>
+  <string name="models_update_not_now">Si sasa</string>
+</resources>

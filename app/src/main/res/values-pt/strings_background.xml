@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="bg_title">Este celular pausa os aplicativos</string>
+  <string name="bg_body">Alguns celulares, incluindo este, pausam os aplicativos quando a tela está desligada. Por isso, o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> só analisa seus arquivos enquanto está aberto. Para analisar uma galeria grande, use Continuar analisando agora durante a noite, com o celular no carregador.</string>
+  <string name="bg_open">Abrir configurações do celular</string>
+  <string name="bg_settings_section">Neste celular</string>
+  <string name="bg_settings_hint">Alguns celulares, incluindo este, pausam os aplicativos quando a tela está desligada. Por isso, o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> só analisa seus arquivos enquanto está aberto. Para analisar uma galeria grande, use Continuar analisando agora com o celular no carregador. A configuração abaixo só permite que o aplicativo seja iniciado novamente depois que o celular reiniciar.</string>
+  <string name="bgs_title">A Samsung pode parar esta app à noite</string>
+  <string name="bgs_body">Os telemóveis Samsung podem pôr as apps em suspensão ou fechá-las durante a noite, e <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> deixa de aprender os seus ficheiros. Em Bateria, escolha «Sem restrições» para <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>.</string>
+  <string name="bgs_open">Abrir definições da bateria</string>
+</resources>

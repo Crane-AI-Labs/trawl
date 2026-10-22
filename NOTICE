@@ -1,0 +1,67 @@
+Trawl
+Copyright 2026 Crane AI Labs
+
+This product includes software developed by Crane AI Labs (https://www.craneailabs.com/).
+Trawl is licensed under the Apache License, Version 2.0 (see the LICENSE file).
+
+Trawl is built on the work of others. Each component's version, licence and required notice is in THIRD_PARTY_NOTICES.md, and in
+the app under Settings, "Licences and credits". The notices that the licences ask us to carry along are below.
+
+--------------------------------------------------------------------------------
+EmbeddingGemma 2, by Google (Apache License 2.0)
+https://huggingface.co/google/embeddinggemma-2
+
+Trawl understands files with EmbeddingGemma 2, licensed under the Apache License 2.0. The model files are the LiteRT-LM packages
+published at https://huggingface.co/litert-community. Changes: the models are used as published, apart from any file Crane AI Labs
+fine-tuned or converted, which is marked as such. Deployments must adhere to the Gemma Prohibited Use Policy
+(https://ai.google.dev/gemma/prohibited_use_policy).
+
+--------------------------------------------------------------------------------
+Apache PDFBox and PdfBox-Android (Apache License 2.0)
+https://pdfbox.apache.org/  https://github.com/TomRoush/PdfBox-Android
+
+Apache PDFBox
+Copyright 2014 The Apache Software Foundation
+
+This product includes software developed at The Apache Software Foundation (http://www.apache.org/).
+
+Based on source code originally developed in the PDFBox and FontBox projects.
+Copyright (c) 2002-2007, www.pdfbox.org
+
+Based on source code originally developed in the PaDaF project.
+Copyright (c) 2010 Atos Worldline SAS
+
+Includes the Adobe Glyph List
+Copyright 1997, 1998, 2002, 2007, 2010 Adobe Systems Incorporated.
+
+Includes the Zapf Dingbats Glyph List
+Copyright 2002, 2010 Adobe Systems Incorporated.
+
+Includes the Script Property (Scripts-10.0.0.txt)
+Copyright 2017 Unicode, Inc.
+
+--------------------------------------------------------------------------------
+Apache Commons Logging (Apache License 2.0), brought in by PDFBox on the desktop
+https://commons.apache.org/proper/commons-logging/
+
+Apache Commons Logging
+Copyright The Apache Software Foundation
+
+This product includes software developed at The Apache Software Foundation (https://www.apache.org/).
+
+--------------------------------------------------------------------------------
+Other Apache-2.0 components (no NOTICE text of their own is required beyond their licence)
+LiteRT-LM, sherpa-onnx, AndroidX and Jetpack Compose, Kotlin and kotlinx, Coil, Compose Multiplatform, JNA (used under Apache-2.0),
+CED-mini model weights, nsfw-image-detection-384 model weights. The Apache License 2.0 text is in the LICENSE file.
+
+--------------------------------------------------------------------------------
+Components under other licences (attribution, full list and licence texts: THIRD_PARTY_NOTICES.md)
+- Parakeet-TDT-CTC-110M, by NVIDIA, CC BY 4.0 (https://creativecommons.org/licenses/by/4.0). Converted to ONNX and quantised to 8-bit
+  integers for sherpa-onnx. NVIDIA does not endorse Trawl.
+- ONNX Runtime and TinyCLIP, by Microsoft Corporation, MIT. Silero VAD, by the Silero Team, MIT. Moonshine tiny, by Useful Sensors, MIT.
+  CLIP tokenizer vocabulary, by OpenAI, MIT. Bouncy Castle, by the Legion of the Bouncy Castle Inc., MIT.
+- Atkinson Hyperlegible, by the Braille Institute of America, Inc., SIL Open Font License 1.1.
+- Google ML Kit Text Recognition and the Google Play services client libraries it builds on (Android app only): proprietary Google
+  libraries under Google's terms, linked at build time and not covered by the Apache License. See THIRD_PARTY_NOTICES.md.
+- The welcome-demo stills and the photographs on the website come from Mixkit under the Mixkit Stock Video Free License; they are not
+  part of the Apache-2.0 grant (see site/CREDITS.md).

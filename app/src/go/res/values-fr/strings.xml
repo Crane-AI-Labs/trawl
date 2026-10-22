@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="welcome_line"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> trouve vos documents, photos et captures d\'écran grâce à leur nom et aux mots qu\'ils contiennent.</string>
+  <string name="onb1_point_model_title">Conçu pour les petits téléphones</string>
+  <string name="welcome_point_ai_body">Il lit vos fichiers ici, sans rien à télécharger. Rien n\'est envoyé à un serveur.</string>
+  <string name="meter_sub_progress_eta">%1$s sur %2$s lus · encore environ %3$s</string>
+  <string name="meter_sub_progress_estimating">%1$s sur %2$s lus · calcul du temps restant</string>
+  <string name="meter_sub_paused">%1$s sur %2$s lus. La recherche fonctionne toujours.</string>
+  <string name="meter_a11y">%1$s. %2$s. %3$d pour cent lus.</string>
+  <string name="sheet_detail_indexing">Les noms passent en premier, donc la recherche fonctionne presque aussitôt. Lire les mots dans vos documents, fichiers PDF et photos prend plus de temps.</string>
+  <string name="level_searchable">Recherche par nom</string>
+  <string name="level_searchable_hint">Rapide. Permet de trouver un fichier d\'après son nom.</string>
+  <string name="level_understood">Mots lus</string>
+  <string name="level_understood_hint">Plus lent. Permet de trouver un fichier d\'après les mots qui y sont écrits, y compris le texte des photos.</string>
+  <string name="search_hint_a11y">Rechercher vos fichiers par leur nom et les mots qu\'ils contiennent</string>
+  <string name="search_incomplete_note">Les noms fonctionnent déjà et les mots sont encore en cours de lecture. D\'autres résultats peuvent apparaître.</string>
+  <string name="settings_about_model">La recherche trouve les fichiers par leur nom et les mots qu\'ils contiennent, entièrement sur ce téléphone.</string>
+  <string name="settings_delete_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> supprime maintenant son index de vos fichiers : leur nom, les mots de vos documents et le texte lu dans les photos et captures d\'écran. Ses fichiers temporaires et les rapports d\'erreur sont aussi effacés.\n\nVos propres fichiers ne sont pas touchés. Vos paramètres restent, y compris les dossiers ignorés.\n\n<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> arrête alors la lecture. La recherche reste vide jusqu\'à ce que vous appuyiez sur Reprendre.</string>
+  <string name="pause_battery_low_detail">La batterie est sous les 30%%, donc <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> attend pour économiser ce qu\'il reste. La lecture reprend automatiquement dès que le téléphone est en charge.</string>
+</resources>

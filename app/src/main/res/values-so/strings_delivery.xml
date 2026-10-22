@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="models_eyebrow">Hal soo dejin</string>
+  <string name="models_title">Hel moodooyinka raadinta</string>
+  <string name="models_body">Isticmaal Wi-Fi haddii aad awooddo: hal fayl oo %1$d MB ah, hal mar ayaa la soo dejinayaa. Magacyada iyo ereyadu isla markiiba way shaqeeyaan. Raadinta macnuhu way sii fiicnaataa marka <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> wax baranayo, waxayna ugu fiican tahay ka dib habeen taleefanku ku xirnaa dallacaha.</string>
+  <string name="models_get">Soo deji moodooyinka (%1$d MB)</string>
+  <string name="models_choose">Dooro faylka</string>
+  <string name="models_hint_choose">Faylka hore ma u haysaa? Ka dooro taleefankaaga.</string>
+  <string name="models_hint_access"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ayaa faylka iskii ugu dara marka soo dejintu dhammaato, ka dib markaad u oggolaato inuu galo faylashaada. Ama isticmaal Dooro faylka.</string>
+  <string name="models_hint_wait">Marka soo dejintu dhammaato, faylka si toos ah ayuu <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ugu daraa. Hadda ayaad bilaabi kartaa.</string>
+  <string name="models_no_browser">Wax biraawsar ah lagama helin taleefankan. Faylka si kale ugu soo guuri, dabadeed halkan ka dooro.</string>
+  <string name="models_downloading">Waa la soo dejinayaa… %1$s ilaa hadda</string>
+  <string name="models_installing_pct">Moodooyinka waa la hubinayaa oo lagu darayaa… %1$d%%</string>
+  <string name="models_installing">Moodooyinka waa la hubinayaa oo lagu darayaa…</string>
+  <string name="models_cancel">Jooji</string>
+  <string name="models_done">Moodooyinka waa la rakibay. Raadintu waa diyaar.</string>
+  <string name="models_done_already">Moodooyinka mar hore ayaa la rakibay.</string>
+  <string name="models_ok">Hagaag</string>
+  <string name="models_free_question">Ma tirtirtaa faylka la soo dejiyey si aad u bannayso %1$s?</string>
+  <string name="models_free_yes">Haa, tirtir</string>
+  <string name="models_free_no">Maya, hay</string>
+  <string name="models_try_again">Mar kale isku day</string>
+  <string name="models_refused_wrong_class">Faylkan waxaa loogu talagalay nooc kale oo taleefan ah. Isticmaal Soo deji moodooyinka si aad u hesho kan taleefankan.</string>
+  <string name="models_refused_damaged">Faylku wuu dhaawacmay ama ma dhammaystirna, sidaas darteed <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ma uusan isticmaalin. Mar kale soo deji, dabadeed mar kale isku day.</string>
+  <string name="models_refused_not_signed"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ma xaqiijin karin in faylkani yahay mid sax ah, sidaas darteed ma uusan isticmaalin. Isticmaal Soo deji moodooyinka si aad mar kale u soo dejiso.</string>
+  <string name="models_refused_older">Faylkani wuu ka duuggan yahay moodooyinka taleefankan ku jira, sidaas darteed <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> wuxuu haystay kuwa cusub.</string>
+  <string name="models_refused_no_space">Taleefankan kuma filna meel bannaan. Bannayso qiyaastii %1$d MB, dabadeed mar kale isku day.</string>
+  <string name="models_refused_cancelled">Waa la joojiyey. Waxba lama beddelin.</string>
+  <string name="models_update_title">Moodal ka fiican ayaa la heli karaa</string>
+  <string name="models_update_body_reread">Ku daristiisu waxay <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ku qasbaysaa inuu mar kale akhriyo faylashaada. Tani waxay dhacdaa inta taleefanku dallacayo, raadintuna way sii shaqaynaysaa.</string>
+  <string name="models_update_body_light">Ku daristiisu kuma qasbayso <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> inuu mar kale akhriyo faylashaada.</string>
+  <string name="models_update_get">Soo deji cusboonaysiinta (%1$d MB)</string>
+  <string name="models_update_not_now">Hadda ma aha</string>
+</resources>

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="blur_first_hint"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> hutia ukungu maonyesho ambayo huenda ni ya faragha. Gusa ili uone. Unaweza kuzima hii katika Mipangilio.</string>
+</resources>

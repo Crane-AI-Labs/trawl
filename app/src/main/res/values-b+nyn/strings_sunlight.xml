@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="typing_learning">Kikiri kushoma: %1$s ahari %2$s · ebyazoorwa ebindi nibibaasa kureebeka</string>
+  <string name="typing_learning_charger">Kikiri kwega: %1$s ahari %2$s · ebindi waataho chaaji</string>
+  <string name="typing_learning_paused">Byegirwe %1$s ahari %2$s kuhitsya hati · ebyazoorwa ebindi nibibaasa kureebeka</string>
+  <string name="settings_colours">Amabara</string>
+  <string name="colours_sunlight">Omushana</string>
+  <string name="colours_sunlight_hint">Enyima y\'erangi y\'orupapura rw\'obushuushu n\'erangi emwe y\'omuhondo, nikyorobi kushoma omu mushana gw\'amaani.</string>
+  <string name="colours_wallpaper">Amabara g\'ekishushani ky\'enyima</string>
+  <string name="colours_wallpaper_hint">Etwara amabara gaayo omu kishushani kyawe ky\'enyima, kandi gahinduka nakyo kyahinduka.</string>
+  <string name="settings_brightness">Ekyerikire nari ekwatire</string>
+</resources>

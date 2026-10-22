@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <!-- Add-ons (optional model packs). Their numbers come from PackCatalog.Facts and are filled in by the app; see ui/addons/PackText.kt. -->
+
+  <!-- A pack's size, "142 MB": %1$d is a whole number of megabytes. MB is the unit symbol; write it the way your language does. -->
+  <string name="pack_size_mb">%1$d MB</string>
+
+  <!-- Add-on title: reads speech in videos and voice notes so spoken words can be searched. -->
+  <string name="pack_speech_name">Speech search</string>
+  <!-- %1$d and %2$d are percentages: how often the right file is first with the add-on, and without it. -->
+  <string name="pack_speech_benefit">Finds what was said in videos and voice notes: the right file first %1$d%% of the time instead of %2$d%%.</string>
+  <!-- %1$d is a number of seconds (also drives the plural form). -->
+  <plurals name="pack_speech_cost">
+    <item quantity="one">Adds about %1$d second per minute of video while reading. English speech only for now.</item>
+    <item quantity="other">Adds about %1$d seconds per minute of video while reading. English speech only for now.</item>
+  </plurals>
+
+  <!-- Add-on title: a small model that reads photos quickly so the whole gallery becomes searchable sooner. -->
+  <string name="pack_quicklook_name">Quick look for photos</string>
+  <!-- %1$s is a number of photos per hour with the add-on (already formatted, "7,800"; it also drives the plural form); %2$d is the number without it. -->
+  <plurals name="pack_quicklook_benefit">
+    <item quantity="one">Makes your whole gallery searchable by meaning within minutes instead of hours: about %1$s photo an hour instead of %2$d on a budget phone (English searches). Full detail still fills in behind it.</item>
+    <item quantity="other">Makes your whole gallery searchable by meaning within minutes instead of hours: about %1$s photos an hour instead of %2$d on a budget phone (English searches). Full detail still fills in behind it.</item>
+  </plurals>
+  <!-- %1$d is a percentage. -->
+  <string name="pack_quicklook_cost">English searches only: searches in other languages wait for the full reading. Full reading runs about %1$d%% slower while it works, and it uses a little extra memory while reading.</string>
+
+  <!-- Add-on title: blurs small previews of photos that look private. -->
+  <string name="pack_privacy_name">Blur private-looking previews</string>
+  <string name="pack_privacy_benefit">Blurs the small preview of a photo that looks private (nudity, underwear), so a screen glanced at over your shoulder shows less. Tap a preview to reveal it. It only blurs: nothing is hidden or moved in the results.</string>
+  <!-- %1$d is a percentage. -->
+  <string name="pack_privacy_cost">It can be wrong both ways, and health photos (a rash, a breastfeeding mother) may be blurred. Reads photos in the background while charging, and slows full reading by about %1$d%% while it works.</string>
+  <!-- Shown above the add-on's description. "the quick-search panel" is the Quick search feature. -->
+  <string name="pack_privacy_recommended">Recommended if you use the quick-search panel</string>
+
+  <!-- Before the person taps Install. %1$s is a file name (keep it as is, for example findr-speech-models.zip), %2$s is its size ("142 MB"). -->
+  <string name="pack_how_to_add_downloads"><xliff:g id="app_name" example="Trawl">%3$s</xliff:g> never goes online, so it cannot download this itself. Get the file %1$s (%2$s) from Crane AI Labs and copy it into this phone\'s Downloads folder. Then tap Install: <xliff:g id="app_name" example="Trawl">%3$s</xliff:g> checks the file and adds it. You can delete the .zip afterwards.</string>
+  <!-- %1$s is the add-on's title, %2$s its size ("142 MB"). -->
+  <string name="pack_how_to_add_play">Play will deliver %1$s (%2$s) when you tap Install. Nothing else to do.</string>
+
+  <!-- The ongoing notification while the app reads files in the background. It must never name a file. -->
+  <!-- Notification channel name, shown in the phone's notification settings. -->
+  <string name="notif_channel_name">Learning your phone</string>
+  <string name="notif_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> is learning your phone</string>
+  <string name="notif_getting_ready">Getting ready…</string>
+  <string name="notif_reading_photo">Reading a photo</string>
+  <string name="notif_reading_screenshot">Reading a screenshot</string>
+  <string name="notif_reading_video">Reading a video</string>
+  <string name="notif_reading_document">Reading a document</string>
+  <string name="notif_reading_recording">Reading a recording</string>
+  <string name="notif_reading_file">Reading a file</string>
+  <string name="notif_waiting_polite">Waiting while you use your phone</string>
+
+  <!-- Joins two spoken or visible parts. Keep the separators; adapt them to your language's punctuation. -->
+  <!-- Small chip: a label, a dot, then the action. %1$s is the label, %2$s the action word (Show or Hide). -->
+  <string name="chip_label_action">%1$s  ·  %2$s</string>
+  <!-- Screen-reader description of a result, then a note after it. %1$s is the description, %2$s the note. -->
+  <string name="a11y_description_note">%1$s. %2$s</string>
+  <!-- Screen-reader description of the progress card, then one more sentence. %1$s is the first part, %2$s the extra sentence. -->
+  <string name="meter_a11y_extra">%1$s %2$s.</string>
+  <!-- A message, then an extra sentence after it. %1$s is the message, %2$s the sentence. -->
+  <string name="message_then_sentence">%1$s %2$s</string>
+</resources>

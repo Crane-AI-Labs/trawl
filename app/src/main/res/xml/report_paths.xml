@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Only for "Report a problem": the one report being sent, copied to cache/shared-reports so the person's email app can
+  attach it. The provider is not exported; each send carries a one-file grant. Nothing else in the cache is reachable.
+-->
+<paths>
+  <cache-path name="shared_reports" path="shared-reports/" />
+</paths>

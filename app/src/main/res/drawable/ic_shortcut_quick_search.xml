@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The same lens in the brand colour for the launcher shortcut: launchers draw shortcut icons as given, on a light badge,
+     so the white glyph the tile and widget use would not show. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+  android:width="24dp"
+  android:height="24dp"
+  android:viewportWidth="24"
+  android:viewportHeight="24">
+  <path
+    android:fillColor="#00000000"
+    android:strokeColor="@color/sun_ink"
+    android:strokeWidth="2"
+    android:pathData="M10.5,10.5m-6,0a6,6 0,1 1,12 0a6,6 0,1 1,-12 0" />
+  <path
+    android:fillColor="#00000000"
+    android:strokeColor="@color/sun_ink"
+    android:strokeWidth="2.2"
+    android:strokeLineCap="round"
+    android:pathData="M15,15L20,20" />
+</vector>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="models_eyebrow">Ìgbàsílẹ̀ kan</string>
+  <string name="models_title">Gba àwọn módẹ́lì ìwárí</string>
+  <string name="models_body">Lo Wi-Fi tí o bá lè ṣe bẹ́ẹ̀: fáìlì kan tó jẹ́ %1$d MB, tí a ó gbà sílẹ̀ lẹ́ẹ̀kan ṣoṣo. Àwọn orúkọ àti ọ̀rọ̀ máa ń ṣiṣẹ́ lẹ́sẹ̀kẹsẹ̀. Wíwá nípa ìtumọ̀ máa ń dára sí i bí <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> ṣe ń kẹ́kọ̀ọ́ àwọn fáìlì rẹ, ó sì dára jù lẹ́yìn òru kan lórí ṣájà.</string>
+  <string name="models_get">Gba àwọn módẹ́lì (%1$d MB)</string>
+  <string name="models_choose">Yan fáìlì náà</string>
+  <string name="models_hint_choose">Ṣé fáìlì náà ti wà lọ́wọ́ rẹ? Yan án lórí fóònù rẹ.</string>
+  <string name="models_hint_access"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> máa ṣàfikún fáìlì náà fúnra rẹ̀ nígbà tí ìgbàsílẹ̀ bá parí, lẹ́yìn tí o bá fún un láyè láti wọ àwọn fáìlì rẹ. Tàbí lo Yan fáìlì náà.</string>
+  <string name="models_hint_wait"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> máa fi fáìlì náà kún un fúnra rẹ̀ nígbà tí ìgbàsílẹ̀ bá parí. O lè bẹ̀rẹ̀ báyìí.</string>
+  <string name="models_no_browser">A kò rí aṣàwákiri kankan lórí fóònù yìí. Gbé fáìlì náà sí fóònù yìí ní ọ̀nà míì, lẹ́yìn náà yan án níbí.</string>
+  <string name="models_downloading">Ń gba sílẹ̀… %1$s títí di báyìí</string>
+  <string name="models_installing_pct">Ń ṣàyẹ̀wò, tí a sì ń ṣàfikún àwọn módẹ́lì… %1$d%%</string>
+  <string name="models_installing">Ń ṣàyẹ̀wò, tí a sì ń ṣàfikún àwọn módẹ́lì…</string>
+  <string name="models_cancel">Fagilé</string>
+  <string name="models_done">A ti fi àwọn módẹ́lì náà sílò. Wá ti ṣetán.</string>
+  <string name="models_done_already">A ti fi àwọn módẹ́lì náà sílò tẹ́lẹ̀.</string>
+  <string name="models_ok">Ó DÁRA</string>
+  <string name="models_free_question">Pa fáìlì tí o gbà sílẹ̀ rẹ́ láti tú àyè %1$s sílẹ̀?</string>
+  <string name="models_free_yes">Bẹ́ẹ̀ ni, pa á rẹ́</string>
+  <string name="models_free_no">Rárá, fi í sílẹ̀</string>
+  <string name="models_try_again">Gbìyànjú lẹ́ẹ̀kan sí i</string>
+  <string name="models_refused_wrong_class">Fáìlì yìí jẹ́ ti irú fóònù míì. Lo Gba àwọn módẹ́lì láti gba èyí tó yẹ fún fóònù yìí sílẹ̀.</string>
+  <string name="models_refused_damaged">Fáìlì náà ti bàjẹ́ tàbí kò pé, nítorí náà <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kò lò ó. Gba á sílẹ̀ lẹ́ẹ̀kan sí i, lẹ́yìn náà tún gbìyànjú.</string>
+  <string name="models_refused_not_signed"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kò lè fìdí rẹ̀ múlẹ̀ pé fáìlì yìí jẹ́ ojúlówó, nítorí náà kò lò ó. Lo Gba àwọn módẹ́lì láti gba á sílẹ̀ lẹ́ẹ̀kan sí i.</string>
+  <string name="models_refused_older">Fáìlì yìí ti pẹ́ ju àwọn módẹ́lì tó wà lórí fóònù yìí lọ, nítorí náà <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> fi àwọn tuntun sílẹ̀.</string>
+  <string name="models_refused_no_space">Àyè òfìfo tó wà lórí fóònù yìí kò tó. Tú àyè tó tó %1$d MB sílẹ̀, lẹ́yìn náà tún gbìyànjú.</string>
+  <string name="models_refused_cancelled">A ti dá a dúró. Kò sí ohun tó yí padà.</string>
+  <string name="models_update_title">Módẹ́lì tó dára sí i wà</string>
+  <string name="models_update_body_reread">Ṣíṣàfikún un máa mú kí <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> tún ka àwọn fáìlì rẹ. Èyí máa ṣẹlẹ̀ nígbà tí fóònù bá ń gba agbára, ìwárí sì máa ń ṣiṣẹ́ ní àkókò náà.</string>
+  <string name="models_update_body_light">Ṣíṣàfikún un kò ní mú kí <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> tún ka àwọn fáìlì rẹ.</string>
+  <string name="models_update_get">Gba ìmúdójúìwọ̀n (%1$d MB)</string>
+  <string name="models_update_not_now">Kì í ṣe báyìí</string>
+</resources>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.k2fsa.sherpa.onnx</groupId>
+  <artifactId>sherpa-onnx-native-lib-osx-aarch64</artifactId>
+  <version>1.13.8</version>
+  <name>sherpa-onnx native library (osx-aarch64)</name>
+  <url>https://github.com/k2-fsa/sherpa-onnx</url>
+  <!-- Written by hand: the release asset has no POM. The project is Apache-2.0; the ONNX Runtime library linked inside the jar is MIT. -->
+  <licenses>
+    <license><name>Apache-2.0</name><url>https://github.com/k2-fsa/sherpa-onnx/blob/master/LICENSE</url></license>
+    <license><name>MIT</name><url>https://github.com/microsoft/onnxruntime/blob/main/LICENSE</url></license>
+  </licenses>
+</project>

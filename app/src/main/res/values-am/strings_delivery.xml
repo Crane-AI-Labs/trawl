@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="models_eyebrow">አንድ ጊዜ ማውረድ</string>
+  <string name="models_title">የፍለጋ ሞዴሎቹን ያግኙ</string>
+  <string name="models_body">ከቻልክ Wi-Fi ተጠቀም፦ %1$d MB የሆነ አንድ ፋይል አንድ ጊዜ ብቻ ይወርዳል። በስምና በቃል መፈለግ ወዲያው ይሰራል። <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> እየተማረ ሲሄድ በትርጉም መፈለግ ይሻሻላል፤ ቻርጀር ላይ አንድ ሌሊት ካደረ በኋላ በጣም ጥሩ ይሆናል።</string>
+  <string name="models_get">ሞዴሎቹን ያግኙ (%1$d MB)</string>
+  <string name="models_choose">ፋይሉን ይምረጡ</string>
+  <string name="models_hint_choose">ፋይሉ አለዎት? ከስልክዎ ላይ ይምረጡት።</string>
+  <string name="models_hint_access"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ፋይሎችዎን እንዲደርስባቸው ከፈቀዱ በኋላ፣ ማውረዱ ሲያልቅ ፋይሉን በራሱ ይጨምራል። ወይም ፋይሉን ይምረጡ።</string>
+  <string name="models_hint_wait">ማውረዱ ሲጠናቀቅ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ፋይሉን በራሱ ያክላል። አሁን መጀመር ትችላለህ።</string>
+  <string name="models_no_browser">በዚህ ስልክ ላይ ምንም አሳሽ አልተገኘም። ፋይሉን በሌላ መንገድ ወደ ስልኩ ይቅዱና እዚህ ይምረጡት።</string>
+  <string name="models_downloading">በማውረድ ላይ… እስካሁን %1$s</string>
+  <string name="models_installing_pct">ሞዴሎቹን በማረጋገጥና በመጨመር ላይ… %1$d%%</string>
+  <string name="models_installing">ሞዴሎቹን በማረጋገጥና በመጨመር ላይ…</string>
+  <string name="models_cancel">ሰርዝ</string>
+  <string name="models_done">ሞዴሎቹ ተጭነዋል። ፍለጋ ዝግጁ ነው።</string>
+  <string name="models_done_already">ሞዴሎቹ አስቀድመው ተጭነዋል።</string>
+  <string name="models_ok">እሺ</string>
+  <string name="models_free_question">%1$s ቦታ ለማስለቀቅ የወረደው ፋይል ይጥፋ?</string>
+  <string name="models_free_yes">አዎ፣ አጥፋው</string>
+  <string name="models_free_no">አይ፣ ይቆይ</string>
+  <string name="models_try_again">እንደገና ይሞክሩ</string>
+  <string name="models_refused_wrong_class">ይህ ፋይል ለሌላ ዓይነት ስልክ ነው። ለዚህ ስልክ የሚሆነውን ለማውረድ ሞዴሎቹን ያግኙን ይጠቀሙ።</string>
+  <string name="models_refused_damaged">ፋይሉ ተበላሽቷል ወይም አልተሟላም። ስለዚህ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> አልተጠቀመበትም። እንደገና ያውርዱትና ይሞክሩ።</string>
+  <string name="models_refused_not_signed"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ይህ ፋይል እውነተኛ መሆኑን ማረጋገጥ አልቻለም። ስለዚህ አልተጠቀመበትም። እንደገና ለማውረድ ሞዴሎቹን ያግኙን ይጠቀሙ።</string>
+  <string name="models_refused_older">ይህ ፋይል በዚህ ስልክ ላይ ካሉት ሞዴሎች የቆየ ነው። ስለዚህ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> አዲሶቹን አስቀርቷል።</string>
+  <string name="models_refused_no_space">በዚህ ስልክ ላይ በቂ ነፃ ቦታ የለም። ወደ %1$d MB የሚጠጋ ቦታ ያስለቅቁና እንደገና ይሞክሩ።</string>
+  <string name="models_refused_cancelled">ቆሟል። ምንም አልተቀየረም።</string>
+  <string name="models_update_title">የተሻለ ሞዴል አለ</string>
+  <string name="models_update_body_reread">እሱን መጨመር <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ፋይሎችዎን እንደገና እንዲያነብ ያደርገዋል። ይህ ስልኩ በሚሞላበት ጊዜ ይከናወናል፣ በዚያ ጊዜም ፍለጋ መስራቱን ይቀጥላል።</string>
+  <string name="models_update_body_light">እሱን መጨመር <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ፋይሎችዎን እንደገና እንዲያነብ አያደርገውም።</string>
+  <string name="models_update_get">ዝማኔውን ያግኙ (%1$d MB)</string>
+  <string name="models_update_not_now">አሁን አይደለም</string>
+</resources>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <!-- One-time note (a toast), shown the first time a preview is blurred. Blurring is on by default, so the first blurred picture explains itself. %1$s is the app's name. -->
+  <string name="blur_first_hint"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> blurs previews that may be private. Tap to show. You can turn this off in Settings.</string>
+</resources>

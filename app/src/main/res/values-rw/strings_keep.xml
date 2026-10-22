@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="keep_action">Komeza gusoma ubu</string>
+  <string name="keep_action_hint">Ibi bituma ecran iguma yaka buhoro kugira ngo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ishobore gusoma amafayiro yawe utarimo gukoresha telefone. Ni byiza gushyira ku muriro. Telefone iguma idafunze mu gihe ikora, bityo bikorere ahantu wiringiye gusa.</string>
+  <string name="keep_heading"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> irimo gusoma amafayiro yawe</string>
+  <string name="keep_counts">Amafayiro %1$s kuri %2$s amaze gusomwa</string>
+  <string name="keep_time_left">Igihe gisigaye: %1$s</string>
+  <string name="keep_time_unknown">Irimo kubara igihe biri bufate</string>
+  <string name="keep_charging">Iri ku muriro</string>
+  <string name="keep_on_battery">Ntabwo iri ku muriro. Birihuta cyane iyo iri ku muriro.</string>
+  <string name="keep_unlocked">Ecran iguma yaka kandi telefone iguma idafunze mu gihe <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> irimo isoma. Yisige gusa ahantu wiringiye.</string>
+  <string name="keep_tap_to_stop">Kanda aho ari ho hose kugira ngo uhagarike</string>
+  <string name="keep_stop_done_title">Byose birarangiye</string>
+  <string name="keep_stop_done"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yamaze gusoma amafayiro yawe yose. Shakisha irayazi ubu.</string>
+  <string name="keep_stop_battery_title">Byahagaze: bateri iri hasi</string>
+  <string name="keep_stop_battery">Bateri iri munsi ya 20 ku ijana. Shyira ku muriro, hanyuma wubure kuri ecran y\'aho bigeze.</string>
+  <string name="keep_stop_hot_title">Byahagaze: telefone irashyushye</string>
+  <string name="keep_stop_hot">Telefone yashyushye cyane, bityo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> irahagarara kugira ngo ikonje. Urashobora kongera gutangira nyuma.</string>
+  <string name="keep_stop_unplugged_title">Byahagaze: yakuwe ku muriro</string>
+  <string name="keep_stop_unplugged">Ongera ushyire ku muriro, hanyuma wubure kuri ecran y\'aho bigeze.</string>
+  <string name="keep_stop_charger_title">Hategerejwe umuriro</string>
+  <string name="keep_stop_charger">Kuri bateri, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ikora gusa imirimo yoroshye, kandi irangiye. Shyira ku muriro, hanyuma wubure.</string>
+  <string name="keep_stop_paused_title">Byahagaze: gusoma byahagaritswe by\'agateganyo</string>
+  <string name="keep_stop_paused">Fungura ecran y\'aho bigeze muri <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kugira ngo urebe impamvu maze ukomeze.</string>
+  <string name="keep_screen_will_sleep">Ubu ecran iri bwizime ubwayo nk\'ibisanzwe.</string>
+  <string name="keep_close">Funga</string>
+</resources>

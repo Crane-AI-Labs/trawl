@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="welcome_line"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ezuula ebiwandiiko byo, ebifaananyi n\'ebifaananyi bya ssirini okusinziira ku mannya gaabyo n\'ebigambo ebibirimu.</string>
+  <string name="onb1_point_model_title">Yakolebwa okukolera ku ssimu entono</string>
+  <string name="welcome_point_ai_body">Esoma fayiro zo wano, nga tewali kyetaagisa kuwanula. Tewali kisindikibwa ku seva.</string>
+  <string name="meter_sub_progress_eta">%1$s ku %2$s bisomeddwa · kubulayo nga %3$s</string>
+  <string name="meter_sub_progress_estimating">%1$s ku %2$s bisomeddwa · ekyabalirira ebbanga erisigadde</string>
+  <string name="meter_sub_paused">%1$s ku %2$s bisomeddwa. Okunoonya kukyakola.</string>
+  <string name="meter_a11y">%1$s. %2$s. Ebitundu %3$d ku 100 bisomeddwa.</string>
+  <string name="sheet_detail_indexing">Amannya ge gasooka, Noonya esobole okukola mangu ddala. Okusoma ebigambo ebiri mu biwandiiko byo, PDF n\'ebifaananyi kitwala obudde bungi.</string>
+  <string name="level_searchable">Enoonyezebwa okusinziira ku linnya</string>
+  <string name="level_searchable_hint">Mangu. Ekusobozesa okuzuula fayiro okusinziira ku linnya lyayo.</string>
+  <string name="level_understood">Ebigambo bisomeddwa</string>
+  <string name="level_understood_hint">Mpola. Ekusobozesa okuzuula fayiro okusinziira ku bigambo ebigirimu, nga mw\'otwalidde ebiwandiiko ebiri mu bifaananyi.</string>
+  <string name="search_hint_a11y">Noonya fayiro zo okusinziira ku mannya gaazo n\'ebigambo ebizirimu</string>
+  <string name="search_incomplete_note">Amannya gakola kaakano, naye ebigambo bikyasomebwa, n\'olwekyo ebirala ebikwatagana biyinza okulabika.</string>
+  <string name="settings_about_model">Okunoonya kuzuula fayiro okusinziira ku mannya gaazo n\'ebigambo ebizirimu, era kukolebwa kwokka ku ssimu eno.</string>
+  <string name="settings_delete_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> esangula kwekenneenya kwayo okwa fayiro zo kaakano: amannya gaazo, ebigambo ebiri mu biwandiiko byo, n\'ebiwandiiko bye yasoma mu bifaananyi n\'ebifaananyi bya ssirini. Fayiro zaayo ez\'ekiseera na buli alipoota y\'ebizibu nabyo bigenda.\n\nFayiro zo zennyini tezikkwatibwako. Enteekateeka zo zisigalawo, mw\'otwalidde ne ffolda ze wabuuka.\n\n<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> olwo eyimiriza okusoma. Okunoonya kusigala kwerere okutuusa lw\'onyiga ku Ddamu.</string>
+  <string name="pause_battery_low_detail">Batule eri wansi wa 30%%, n\'olwekyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> erinda okutaasa amaanyi agasigaddewo. Eddamu okusoma yokka ng\'essimu etandise okuchajjibwa.</string>
+</resources>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="welcome_line"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> hupata hati, picha na picha za skrini zako kwa majina yao na maneno yaliyomo.</string>
+  <string name="onb1_point_model_title">Imeundwa kwa simu ndogo</string>
+  <string name="welcome_point_ai_body">Husoma mafaili yako hapa bila kuhitaji kupakua chochote. Hakuna chochote kinachotumwa kwenye seva.</string>
+  <string name="meter_sub_progress_eta">%1$s kati ya %2$s yamesomwa · imebaki takriban %3$s</string>
+  <string name="meter_sub_progress_estimating">%1$s kati ya %2$s yamesomwa · inakadiria muda</string>
+  <string name="meter_sub_paused">%1$s kati ya %2$s yamesomwa. Tafuta bado inafanya kazi.</string>
+  <string name="meter_a11y">%1$s. %2$s. Asilimia %3$d imesomwa.</string>
+  <string name="sheet_detail_indexing">Majina husomwa kwanza, kwa hivyo Tafuta hufanya kazi karibu mara moja. Kusoma maneno yaliyo ndani ya hati, PDF na picha zako huchukua muda zaidi.</string>
+  <string name="level_searchable">Inatafutika kwa jina</string>
+  <string name="level_searchable_hint">Haraka. Inakuwezesha kupata faili kwa jina lake.</string>
+  <string name="level_understood">Maneno yamesomwa</string>
+  <string name="level_understood_hint">Polepole zaidi. Inakuwezesha kupata faili kwa maneno yaliyoandikwa ndani yake, pamoja na maandishi kwenye picha.</string>
+  <string name="search_hint_a11y">Tafuta mafaili yako kwa majina yao na maneno yaliyomo</string>
+  <string name="search_incomplete_note">Majina yanafanya kazi sasa na maneno bado yanasomwa, kwa hivyo matokeo zaidi yanaweza kuonekana.</string>
+  <string name="settings_about_model">Tafuta hupata mafaili kwa majina yao na maneno yaliyomo, yote kwenye simu hii.</string>
+  <string name="settings_delete_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> inafuta kielezo chake cha mafaili yako sasa: majina yao, maneno kwenye hati zako, na maandishi iliyosoma kwenye picha na picha za skrini. Mafaili yake ya muda na ripoti zozote za matatizo zitaondolewa pia.\n\nMafaili yako binafsi hayaguswi. Mipangilio yako inabaki, ikiwa ni pamoja na folda ulizoruka.\n\nKisha <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> itaacha kusoma. Tafuta itabaki tupu hadi uguse Endelea.</string>
+  <string name="pause_battery_low_detail">Betri iko chini ya 30%%, kwa hivyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> inasubiri ili kuokoa chaji iliyobaki. Itaendelea yenyewe simu itakapoanza kuchaji.</string>
+</resources>

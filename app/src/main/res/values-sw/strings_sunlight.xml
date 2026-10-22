@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="typing_learning">Bado inasoma: %1$s kati ya %2$s · matokeo zaidi yanaweza kuonekana</string>
+  <string name="typing_learning_charger">Bado inasoma: %1$s kati ya %2$s · yaliyosalia ukichaji</string>
+  <string name="typing_learning_paused">Imesoma %1$s kati ya %2$s hadi sasa · matokeo zaidi yanaweza kuonekana</string>
+  <string name="settings_colours">Rangi</string>
+  <string name="colours_sunlight">Mwanga wa jua</string>
+  <string name="colours_sunlight_hint">Karatasi ya rangi ya joto na njano moja, rahisi kusoma kwenye jua kali.</string>
+  <string name="colours_wallpaper">Rangi za picha ya mandhari</string>
+  <string name="colours_wallpaper_hint">Huchukua rangi zake kwenye picha yako ya mandhari na hubadilika picha hiyo inapobadilika.</string>
+  <string name="settings_brightness">Mwangaza au giza</string>
+</resources>

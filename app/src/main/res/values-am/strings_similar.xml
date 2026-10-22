@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="action_find_similar">ተመሳሳይ ፈልግ</string>
+  <string name="action_find_similar_help">ተመሳሳይ ፈልግ ይህን የሚመስሉ ፎቶዎችን ያሳያል።</string>
+  <string name="similar_chip">ከ%1$s ጋር ተመሳሳይ</string>
+  <string name="similar_remove">ተመሳሳይ መፈለግ አቁም</string>
+  <string name="similar_nothing_body">በፋይሎችህ ውስጥ እስካሁን %1$sን የሚመስል ነገር የለም።</string>
+</resources>

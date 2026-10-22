@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The phone pauses apps: shown only on TECNO, Infinix and itel phones (ui/background/BackgroundAccess.kt), whose system
+  pauses apps a few seconds after the screen turns off, and no phone setting stops it (measured). The honest advice is the
+  Keep learning screen (strings_keep.xml, keep_action) on the charger. A file of its own so it never conflicts with strings.xml.
+  The app's name is the placeholder marked app_name (never translate it).
+-->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <!-- Home card title (while files are waiting), also the Settings row title. Plain statement of what the phone does. -->
+  <string name="bg_title">This phone pauses apps</string>
+  <!-- Home card: the honest explanation and the advice. "Keep learning" is the name of the Keep learning screen's button (keep_action): use the same words as that translation. -->
+  <string name="bg_body">Some phones, including this one, pause apps when the screen is off, so <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> learns while it is open. To learn a large gallery, use Keep learning on the charger overnight.</string>
+  <!-- The button that opens the phone's setting -->
+  <string name="bg_open">Open phone settings</string>
+  <!-- Settings: section title -->
+  <string name="bg_settings_section">On this phone</string>
+  <!-- Settings: the row's explanation. "Keep learning" is the name of the Keep learning screen's button (keep_action): use the same words as that translation. -->
+  <string name="bg_settings_hint">Some phones, including this one, pause apps when the screen is off, so <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> learns while it is open. For a large gallery, use Keep learning on the charger. The phone setting below only lets the app start again after a restart.</string>
+  <!-- Samsung phones only (ui/background/SamsungSleep.kt): Home card and Settings row. Unrestricted is the word on the Samsung Battery screen: use the phone's own wording for it. -->
+  <string name="bgs_title">Samsung may stop this app at night</string>
+  <!-- Card and Settings row text. One app_name placeholder, used twice. -->
+  <string name="bgs_body">Samsung phones can put apps to sleep or close them overnight, so <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> stops learning your files. In Battery, choose Unrestricted for <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>.</string>
+  <!-- Button: opens the app's battery page in Android Settings -->
+  <string name="bgs_open">Open battery settings</string>
+</resources>

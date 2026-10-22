@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Only for Copy (the main screen's FileActions and the quick search panel's QuickActions): a file on the phone's shared
+  storage, handed to the clipboard as a content URI so another app can paste it as the file itself. The provider is not
+  exported; the clipboard carries the one-file grant.
+-->
+<paths>
+  <external-path name="shared_storage" path="." />
+</paths>

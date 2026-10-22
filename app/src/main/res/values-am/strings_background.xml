@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="bg_title">ይህ ስልክ መተግበሪያዎችን ለጊዜው ያቆማል</string>
+  <string name="bg_body">ይህንን ጨምሮ አንዳንድ ስልኮች ስክሪኑ ሲጠፋ መተግበሪያዎችን ለጊዜው ያቆማሉ። ስለዚህ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ፋይሎችህን የሚያጠናው ክፍት ሆኖ ሳለ ብቻ ነው። ትልቅ ጋለሪ ካለህ፣ ስልኩን ሌሊቱን ሙሉ ቻርጀር ላይ አድርገህ አሁን ማጥናቱን ቀጥል የሚለውን ተጠቀም።</string>
+  <string name="bg_open">የስልክ ቅንብሮችን ክፈት</string>
+  <string name="bg_settings_section">በዚህ ስልክ ላይ</string>
+  <string name="bg_settings_hint">ይህንን ጨምሮ አንዳንድ ስልኮች ስክሪኑ ሲጠፋ መተግበሪያዎችን ለጊዜው ያቆማሉ። ስለዚህ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ፋይሎችህን የሚያጠናው ክፍት ሆኖ ሳለ ብቻ ነው። ትልቅ ጋለሪ ካለህ፣ ስልኩ ቻርጀር ላይ እያለ ማጥናቱን ቀጥል የሚለውን ተጠቀም። ከታች ያለው የስልክ ቅንብር መተግበሪያው ስልኩ ዳግም ከተነሳ በኋላ እንደገና እንዲጀምር ብቻ ያስችለዋል።</string>
+  <string name="bgs_title">ሳምሰንግ ይህን መተግበሪያ ሌሊት ሊያቆመው ይችላል</string>
+  <string name="bgs_body">የሳምሰንግ ስልኮች መተግበሪያዎችን ሌሊት ሊያስተኙ ወይም ሊዘጉ ይችላሉ፣ ስለዚህ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ፋይሎችዎን መማር ያቆማል። በባትሪ ውስጥ ለ<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> «Unrestricted» ን ይምረጡ።</string>
+  <string name="bgs_open">የባትሪ ቅንብሮችን ክፈት</string>
+</resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="bg_title">Fóònù yìí máa ń dá àwọn ápù dúró</string>
+  <string name="bg_body">Àwọn fóònù kan, títí kan èyí, máa ń dá àwọn ápù dúró nígbà tí ojú fóònù kò bá tàn. Nítorí náà, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> máa ń kẹ́kọ̀ọ́ nígbà tí ápù náà bá ṣí sílẹ̀ nìkan. Tí àwòrán rẹ bá pọ̀, lo Máa kẹ́kọ̀ọ́ báyìí nígbà tí fóònù bá wà lórí ṣájà jálẹ̀ òru.</string>
+  <string name="bg_open">Ṣí ètò fóònù</string>
+  <string name="bg_settings_section">Lórí fóònù yìí</string>
+  <string name="bg_settings_hint">Àwọn fóònù kan, títí kan èyí, máa ń dá àwọn ápù dúró nígbà tí ojú fóònù kò bá tàn. Nítorí náà, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> máa ń kẹ́kọ̀ọ́ nígbà tí ápù náà bá ṣí sílẹ̀ nìkan. Tí àwòrán rẹ bá pọ̀, lo Máa kẹ́kọ̀ọ́ báyìí nígbà tí fóònù bá wà lórí ṣájà. Ètò fóònù tó wà nísàlẹ̀ yìí kàn ń jẹ́ kí ápù náà tún bẹ̀rẹ̀ lẹ́yìn tí fóònù bá tún bẹ̀rẹ̀.</string>
+  <string name="bgs_title">Samsung le da app yii duro ni alẹ</string>
+  <string name="bgs_body">Awọn foonu Samsung le fi awọn app sinu oorun tabi ti wọn ni alẹ, nitorina <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yoo dẹkun kikọ awọn faili rẹ. Ninu Battery, yan «Unrestricted» fun <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>.</string>
+  <string name="bgs_open">Ṣii eto batiri</string>
+</resources>

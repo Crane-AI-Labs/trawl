@@ -1,0 +1,459 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="kind_document">Takarda</string>
+  <string name="kind_pdf">PDF</string>
+  <string name="kind_photo">Hoto</string>
+  <string name="kind_screenshot">Hoton allo</string>
+  <string name="kind_video">Bidiyo</string>
+  <string name="kind_audio">Sauti</string>
+  <string name="kind_other">Fayil</string>
+  <string name="filter_all">Duka</string>
+  <string name="filter_photos">Hotuna</string>
+  <string name="filter_screenshots">Hotunan allo</string>
+  <string name="filter_videos">Bidiyoyi</string>
+  <string name="filter_documents">Takardu</string>
+  <string name="filter_audio">Sauti</string>
+  <string name="kind_plural_screenshots">Hotunan allo</string>
+  <string name="kind_plural_photos">Hotuna</string>
+  <string name="kind_plural_documents">Takardu da PDFs</string>
+  <string name="kind_plural_videos">Bidiyoyi</string>
+  <string name="kind_plural_audio">Sauti</string>
+  <string name="section_photos_videos">Hotuna da bidiyoyi</string>
+  <string name="section_documents_text">Takardu da rubutu</string>
+  <string name="section_recent_documents">Sabbin takardu</string>
+  <string name="section_recent_photos_videos">Sabbin hotuna da bidiyoyi</string>
+  <string name="badge_page">sh. %1$d</string>
+  <string name="badge_at_time">a %1$s</string>
+  <plurals name="pages_count">
+        
+    
+    <item quantity="one">shafi %d</item>
+    <item quantity="other">shafuka %d</item>
+  </plurals>
+  <string name="action_open">Buɗe</string>
+  <string name="action_share">Raba</string>
+  <string name="action_copy">Kwafa</string>
+  <string name="action_show_folder">Nuna a folda</string>
+  <string name="action_more">Ƙarin ayyuka</string>
+  <string name="snack_copied">An kwafa</string>
+  <string name="meter_title_not_started">Ba a fara karantawa ba</string>
+  <string name="meter_title_scanning">Ana duba wayarka</string>
+  <string name="meter_title_indexing">Nazarin fayilolinku</string>
+  <string name="meter_title_up_to_date">An gama komai</string>
+  <string name="meter_title_error">Wani abu ya tafi ba daidai ba</string>
+  <string name="meter_sub_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> zai fara da zarar ya iya ganin fayilolinku.</string>
+  <string name="meter_sub_scanning">An samu fayiloli %1$s ya zuwa yanzu.</string>
+  <string name="meter_sub_names_first">Sunaye da kalmomi a farko, don ku iya bincika tun yanzu.</string>
+  <string name="meter_sub_progress_eta">An fahimci %1$s cikin %2$s · saura kusan %3$s</string>
+  <string name="meter_sub_progress_estimating">An fahimci %1$s cikin %2$s · ana kiyasta lokaci</string>
+  <string name="meter_sub_needs_charger">Sunaye da kalmomi a yanzu. Za a fara fahimtar ma\'ana idan an saka caji.</string>
+  <string name="meter_sub_reembed">Ana sabunta hotuna don sabon tsari: %1$s cikin %2$s. Bincika na ci gaba da aiki.</string>
+  <string name="meter_sub_reembed_eta">Ana sabunta hotuna don sabon tsari: %1$s cikin %2$s · ya rage kusan %3$s</string>
+  <string name="meter_sub_reembed_battery">Ana sabunta hotuna don sabon tsari: %1$s cikin %2$s. Za a ci gaba da sauran idan an saka caji.</string>
+  <string name="meter_sub_light_reading">Ana duba hotunanku don bincika mai sauri. Za a kammala cikakken inganci idan an saka caji.</string>
+  <string name="meter_sub_light_done">Ana iya bincika komai yanzu. Za a kammala cikakken inganci idan an saka caji.</string>
+  <string name="meter_sub_paused">An fahimci %1$s cikin %2$s. Bincika na ci gaba da aiki.</string>
+  <string name="meter_sub_up_to_date">Fayiloli %1$s a shirye suke don bincika.</string>
+  <string name="meter_sub_error">Taɓa don ƙarin bayani.</string>
+  <string name="meter_a11y">%1$s. %2$s. Kashi %3$d cikin ɗari an fahimta.</string>
+  <string name="meter_open_details">Nuna bayanan dubawa</string>
+  <string name="pause_not_charging">Ana jiran caji</string>
+  <string name="pause_not_charging_detail">Duba komai a cikakken inganci yana cin batir sosai, shi ya sa <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ke yin wannan ɓangaren idan wayar tana caji. Bincika na aiki a halin yanzu.</string>
+  <string name="pause_too_hot">Ana sanyaya waya</string>
+  <string name="pause_too_hot_detail">Wayar ta yi ɗumi, shi ya sa <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ya ɗan tsaya don kare ta. Zai ci gaba da kansa da zarar wayar ta huce.</string>
+  <string name="pause_battery_low">Batir ya yi ƙasa</string>
+  <string name="pause_battery_low_detail">Batir bai kai 30%% ba, shi ya sa <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ke duba sunaye da kalmomi kawai don adana sauran. Zai ci gaba da kansa da zarar an caje wayar.</string>
+  <string name="pause_user">Kun dakatar da shi</string>
+  <string name="pause_user_detail">An dakatar da dubawa. Bincika na ci gaba da aiki a kan abin da <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ya koya kawo yanzu.</string>
+  <string name="pause_no_permission">Yana buƙatar izinin shiga fayilolinku</string>
+  <string name="pause_no_permission_detail"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ba zai iya ganin fayilolinku ba har sai kun ba da izinin Duk fayiloli. Yana duba su kawai kuma ba zai canza komai ba.</string>
+  <string name="pause_storage_low">Ma\'ajiyar waya ta kusan cika</string>
+  <string name="pause_storage_low_detail"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yana buƙatar ɗan fili don ajiye fihirisa. Share ɗan wuri don ya ci gaba.</string>
+  <string name="action_pause">Dakatar</string>
+  <string name="action_resume">Ci gaba</string>
+  <string name="action_read_on_battery">Duba a batir ko da haka</string>
+  <string name="action_allow_access">Bada izini</string>
+  <string name="action_free_space">Share wuri</string>
+  <string name="action_retry">Sake gwadawa</string>
+  <string name="eta_under_minute">ƙasa da minti ɗaya</string>
+  <string name="eta_minutes">%d min</string>
+  <string name="eta_hours_single">%d h</string>
+  <string name="eta_hours_range">%1$d zuwa %2$d h</string>
+  <string name="eta_while_charging">%1$s a kan caji</string>
+  <string name="sheet_title">Duba fayilolinku</string>
+  <string name="sheet_detail_up_to_date">Kowane fayil da <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> zai iya gani yana a shirye. Ana ƙara sababbi da zarar sun bayyana.</string>
+  <string name="sheet_detail_scanning"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> na haɗa jerin fayilolinku. Wannan zai ɗauki minti ɗaya ko biyu.</string>
+  <string name="sheet_detail_light_on_battery">Ana duba sunaye da kalmomi a yanzu kuma ana saurin duba hotuna, don haka bincika na aiki yanzu. Cikakken inganci, wanda ke ba da sakamako mafi kyau, zai kammala idan wayar na caji.</string>
+  <string name="sheet_detail_needs_charger">Ana duba sunaye da kalmomi a yanzu, don haka bincika na aiki tuni. Fahimtar abin da hotuna da takardu suka ƙunsa zai fara idan wayar tana caji.</string>
+  <string name="sheet_detail_indexing">Ana fara da sunaye da kalmomi, don a bincika kusan nan take. Fahimtar abin da hotuna da takardu ke nufi yana ɗaukar lokaci, kuma ya fi kyau a yi shi da dare ana caji.</string>
+  <string name="sheet_detail_error">Karatun ya tsaya ba zato ba tsammani. Sakamakonku na baya yana nan lafiya.</string>
+  <string name="sheet_detail_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> bai fara karantawa ba tukuna.</string>
+  <string name="sheet_by_kind">Bisa nau\'in fayil</string>
+  <string name="sheet_reading_now">Ana karantawa yanzu</string>
+  <string name="sheet_resumes_by_itself">Zai ci gaba da kansa da zarar an gyara wannan.</string>
+  <string name="level_searchable">Za a iya bincika da suna da kalmomi</string>
+  <string name="level_searchable_hint">Da sauri. Yana ba ka damar nemo fayil ta abin da ke rubuce a ciki.</string>
+  <string name="level_understood">An fahimta ta ma\'ana</string>
+  <string name="level_understood_hint">A hankali. Yana ba ka damar nemo fayil ta abin da yake nufi.</string>
+  <string name="level_quicklook">Duba da sauri: hotuna da bidiyoyi</string>
+  <string name="level_quicklook_hint">Da sauri. Ƙaramin samfuri yana nemo hotuna ta abin da ke cikinsu, don bincike a Turanci. Cikakkun bayanai za su maye gurbinsa yayin da aka fahimci kowane hoto.</string>
+  <string name="meter_quicklook">Duba da sauri: %1$s cikin hotuna %3$s · Cikakkun bayanai: %2$s cikin %3$s</string>
+  <string name="level_a11y">%1$s: %2$s cikin %3$s</string>
+  <string name="count_of">%1$s cikin %2$s</string>
+  <string name="stat_time_left">Lokacin da ya rage</string>
+  <string name="stat_speed">Gudu</string>
+  <string name="stat_index_size">Girman fihirisa</string>
+  <string name="stat_model_size">Girman samfuri</string>
+  <string name="stat_when_charging">Yana farawa yayin caji</string>
+  <string name="stat_estimating">Ana ƙididdigewa</string>
+  <string name="stat_measuring">Ana aunawa</string>
+  <string name="stat_done">An gama</string>
+  <string name="stat_rate_value">%1$s fayiloli/sa\'a</string>
+  <string name="onb_next">Gaba</string>
+  <string name="onb_back">Baya</string>
+  <string name="onb_start">Fara <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="onb_start_locked"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yana buƙatar izinin dukkan fayiloli kafin ya fara</string>
+  <string name="onb_allow_access">Bada izinin fayiloli</string>
+  <string name="onb_page_of">Mataki na %1$d cikin %2$d</string>
+  <string name="welcome_line"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yana nemo takardunku, hotuna da hotunan allo ta abin da suke faɗa da nunawa.</string>
+  <string name="welcome_point_ai_body">Basirar wucin gadi da ke fahimtar fayilolinku tana aiki a wannan wayar. Ba a aika komai zuwa saba.</string>
+  <string name="welcome_point_reads_title">Yana karanta fayilolinku kawai</string>
+  <string name="welcome_point_reads_body">Ba ya canza, matsar ko goge komai. Kuna iya goge abin da ya koya a kowane lokaci.</string>
+  <string name="onb_choose_folders">Zaɓi foldodi</string>
+  <string name="onb1_eyebrow">Tsare sirri tun a asali</string>
+  <string name="onb1_title">Fayilolinku ba sa fita daga wannan wayar.</string>
+  <string name="onb1_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yana nemo takardu, PDFs, hotunan allo, hotuna, memes da bidiyoyi ta abin da suke faɗi da abin da suke nunawa. Dukkan hakan na faruwa ne a nan, a wannan wayar.</string>
+  <string name="onb1_point_internet_title">Babu izinin intanet</string>
+  <string name="onb1_point_internet_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ba zai iya haɗawa da intanet ko kaɗan ba. Android da kanta tana hana shi tura komai waje.</string>
+  <string name="onb1_point_model_title">AI na nan a wayarka</string>
+  <string name="onb1_point_model_body">Samfurin da ke fahimtar fayilolinku, EmbeddingGemma 2 daga Google, yana aiki ne a wannan wayar. Ba a aika komai zuwa wata uwar garke don a fahimta ba.</string>
+  <string name="onb1_point_delete_title">Kana da cikakken iko</string>
+  <string name="onb1_point_delete_body">Tsallake kowace folda, ko goge duk abin da <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ya koya, a duk lokacin da kake so.</string>
+  <string name="onb2_eyebrow">Abin da zai biyo baya</string>
+  <string name="onb2_title">Bincika yana aiki cikin mintuna. Fahimta na ɗaukar dare ɗaya.</string>
+  <string name="onb2_step1_title">Cikin ƴan mintuna</string>
+  <string name="onb2_step1_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yana tsara jerin fayilolinku kuma yana koyon sunayensu da kalmomin da ke cikinsu. Za ku iya bincika nan take.</string>
+  <string name="onb2_step2_title">A cikin sa\'o\'i masu zuwa</string>
+  <string name="onb2_step2_body">Daga nan sai ya fahimci abin da kowane hoto da takarda ke nufi, don haka bincika kamar “rasidin kudin makaranta” zai nemo wanda ya dace koda babu waɗannan kalmomin a ciki. Wannan aiki ne mai ɗaukar lokaci ga waya.</string>
+  <string name="onb2_step3_title">Galibi yayin caji</string>
+  <string name="onb2_step3_body">Don adana batirinku, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yana yin aiki mai ɗaukar lokaci yayin da take kan caji. Bar ta a jikin caji na dare ɗaya. Za ku iya duba ci gaba, dakatarwa, ko canza wannan a kowane lokaci.</string>
+  <string name="onb3_eyebrow">Izini guda biyu</string>
+  <string name="onb3_title">Bari <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ya duba fayilolinku</string>
+  <string name="onb3_files_title">Samun damar duka fayiloli</string>
+  <string name="onb3_files_body">Ana buƙata don ganin fayiloli a kowace folda, kamar takardun WhatsApp. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yana karantawa kawai. Ba ya canzawa, matsawa, ko goge komai.</string>
+  <string name="onb3_files_action">Buɗe saituna</string>
+  <string name="onb3_files_granted">An ba da izini</string>
+  <string name="onb3_files_hint">A cikin jerin da ya buɗe, kunna “Bada izinin sarrafa duk fayiloli”, sannan ka dawo.</string>
+  <string name="onb3_notif_title">Sanarwa (na zaɓi)</string>
+  <string name="onb3_notif_body">Kawai domin <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ya sanar da ku idan ya gama karantawa. Ba don komai ba.</string>
+  <string name="onb3_notif_action">Ba da izini</string>
+  <string name="onb3_notif_granted">An ba da izini</string>
+  <string name="onb4_eyebrow">Ƙari na zaɓi</string>
+  <string name="onb4_title">Ƙara abubuwa?</string>
+  <string name="onb4_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yana aiki ba tare da waɗannan ba. Kowane yana inganta abu ɗaya. Kowane fayil ne da kuke kwafa zuwa Downloads, saboda <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ba ya shiga intanet.</string>
+  <string name="onb4_add">Ƙara</string>
+  <string name="onb4_not_now">Ba yanzu ba</string>
+  <string name="onb4_added">An ƙara</string>
+  <string name="onb4_skipped">An tsallake. Za ku iya ƙarawa daga baya.</string>
+  <string name="onb4_footer">Za ku iya canza wannan daga baya a Saituna → Ƙari.</string>
+  <string name="search_hint">Bincika fayilolinku</string>
+  <string name="search_hint_a11y">Bincika fayilolinku bisa ga abin da suke faɗi ko nunawa</string>
+  <string name="search_clear">Share bincike</string>
+  <string name="search_searching">Ana bincika</string>
+  <string name="search_settings">Saituna</string>
+  <string name="search_nothing_title">Ba a sami komai ba</string>
+  <string name="search_nothing_body">Babu fayil da ya dace da “%1$s”.</string>
+  <string name="search_nothing_try_all">Gwada kalmomi kaɗan ko daban, ko bincika Duka.</string>
+  <string name="search_nothing_incomplete"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yana kan nazarin fayilolinku, don haka wannan na iya canzawa. Sake gwadawa an jima.</string>
+  <string name="search_repairing_note">Bincika yana gyara kansa. Sunaye da kalmomi suna aiki har yanzu; bincika ta ma\'ana zai dawo nan da minti kaɗan.</string>
+  <string name="search_incomplete_note">Sunaye da kalmomi suna aiki yanzu. Har yanzu ana koyon bincika ma\'ana, don haka ƙarin sakamako na iya bayyana.</string>
+  <string name="search_incomplete_note_charger">Sunaye da kalmomi suna aiki yanzu. Bincika ta ma\'ana (kamar “boda” don hoton babur) zai fara da zarar an saka wayar a caji.</string>
+  <string name="search_weak_toggle">Sakamako marasa ƙarfi (%1$d)</string>
+  <string name="search_weak_only">Babu sakamako mai ƙarfi. Waɗannan ne suka fi kusa.</string>
+  <string name="search_weak_expand">Nuna sakamako marasa ƙarfi</string>
+  <string name="search_weak_collapse">Ɓoye sakamako marasa ƙarfi</string>
+  <string name="search_fresh_title">Babu abin nunawa tukuna</string>
+  <string name="search_fresh_body">Da zaran <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ya ga fayilolinku, sabbi za su bayyana a nan. Rubuta a sama don bincika.</string>
+  <string name="search_recent_empty_filter">Babu fayiloli irin wannan tukuna.</string>
+  <string name="access_banner_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ba zai iya ganin fayilolinku ba tukuna</string>
+  <string name="access_banner_body">Ba da izinin duk fayiloli domin ya karanta su. Ba zai taɓa canza komai ba.</string>
+  <string name="snack_no_app">Babu manhaja a wannan wayar da za ta iya buɗe wannan fayil.</string>
+  <string name="snack_sample">Wannan samfurin fayil ne, don haka ba za a iya buɗe shi ba.</string>
+  <string name="settings_title">Saituna</string>
+  <string name="settings_back">Baya</string>
+  <string name="settings_section_reading">Karantawa</string>
+  <string name="learn_speed_title">Saurin koyo</string>
+  <string name="learn_gentle">Sannu a hankali</string>
+  <string name="learn_gentle_hint">Yana karantawa ne kawai yayin caji, da ƙananan zaren aiki. Mafi ƙarancin baturi da zafi; duk sabon abu yana jiran caja.</string>
+  <string name="learn_balanced">Daidaitacce</string>
+  <string name="learn_balanced_hint">Hanyar da aka saba. Caja yana karanta dukan ɗakin hotunanka; a kan baturi sabbin fayiloli da duba da sauri ne kawai ke aiki.</string>
+  <string name="learn_fast">Da sauri</string>
+  <string name="learn_fast_hint">Yana karanta komai a kan baturi ma, kuma yana jira ne kawai lokacin da kake amfani da wata manhaja. Yana gamawa da wuri, yana amfani da baturi fiye, kuma yana yin zafi.</string>
+  <string name="settings_section_kinds">Abin da za a karanta</string>
+  <string name="settings_recordings">Saƙonnin murya da rikodin</string>
+  <string name="settings_recordings_hint">Karantawa don abin da aka faɗa da abin da ake ji, domin ku iya bincika su.</string>
+  <string name="settings_deeper">Bincika sauti mai zurfi (a hankali): kiɗa da sauran sautuka</string>
+  <string name="settings_deeper_hint">Yana nemo sautuka ta yadda suke, ba da kalmomi kawai ba. Yana ɗaukar kimanin daƙiƙa 15 na karantawa a kowane minti na sauti a waya mai sauƙi.</string>
+  <string name="settings_section_addons">Ƙari</string>
+  <string name="addons_intro">Ƙari na zaɓi da ke inganta bincika. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ba ya hawa intanet, don haka kowanne fayil ne da za ku fara kwafa zuwa Downloads. Komai yana zama a wannan wayar.</string>
+  <string name="addons_status_not_added">Ba a ƙara ba</string>
+  <string name="addons_status_adding">Ana ƙarawa</string>
+  <string name="addons_status_added">An ƙara</string>
+  <string name="addons_status_soon">Yana nan tafe</string>
+  <string name="addons_size">Girma: %1$s</string>
+  <string name="addons_add">Ƙara</string>
+  <string name="addons_add_with_size">Ƙara (%1$s)</string>
+  <string name="addons_remove">Cire, yana sakin %1$s</string>
+  <string name="addons_on">Kunne</string>
+  <string name="addons_off">Kashe</string>
+  <string name="addons_adding_pct">Ana dubawa da ƙarawa… %1$d%%</string>
+  <string name="addons_adding">Ana dubawa da ƙarawa…</string>
+  <string name="addons_try_again">Sake gwadawa</string>
+  <string name="addons_soon_hint">Ba a shirye yake ba tukuna. Zai bayyana a nan idan ya shirya.</string>
+  <string name="addons_problem_not_found"><xliff:g id="app_name" example="Trawl">%2$s</xliff:g> ya kasa samun %1$s a Downloads. Kwafa shi a can, sannan sake gwadawa.</string>
+  <string name="addons_problem_access"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yana buƙatar izinin duk fayiloli domin karanta Downloads. Kunna shi, sannan sake gwadawa.</string>
+  <string name="addons_problem_bad">Fayil ɗin da ke cikin Downloads ya lalace ko ba shi ba ne, don haka <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> bai yi amfani da shi ba. Sake kwafa shi, sannan sake gwadawa.</string>
+  <string name="addons_problem_unavailable">Ba za a iya ƙara wannan ƙari a wannan sigar ba tukuna.</string>
+  <string name="addons_add_title">Ƙara %1$s</string>
+  <string name="addons_add_install">Sanya</string>
+  <string name="addons_remove_title">Cire %1$s?</string>
+  <string name="addons_remove_body">Wannan zai \'yantar da %1$s tare da kashe shi. Kalmomi da ma\'anonin da <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> ta riga ta koya za su ci gaba da wanzuwa har sai an sake karanta waɗannan fayiloli. Za ka iya sake ƙara shi a kowane lokaci.</string>
+  <string name="addons_remove_confirm">Cire</string>
+  <string name="settings_section_excluded">Foldodin da aka tsallake</string>
+  <string name="settings_excluded_hint"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ba za ta karanta komai a cikin waɗannan foldodi ba.</string>
+  <string name="settings_excluded_empty">Babu ko ɗaya. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> tana karanta kowace folda da take gani.</string>
+  <string name="settings_excluded_remove">Daina tsallake %1$s</string>
+  <string name="settings_excluded_bad">Ba za a iya zaɓar wannan folda daga nan ba. Zaɓi ɗaya a babban ma\'ajiyar wayar.</string>
+  <string name="onb_scope_eyebrow">Zaɓinka</string>
+  <string name="scope_title">Me kake son <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ta bincika?</string>
+  <string name="scope_intro">Kashe duk abin da ba ka son a samu. Fayilolinsa za su fita daga bincike nan take, kuma za su dawo idan ka sake kunna shi.</string>
+  <string name="scope_counts_unknown">Adadin fayiloli zai bayyana da zarar <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ta iya ganin fayilolinku.</string>
+  <string name="scope_private">Ɓoyayyun foldodi, foldodin da ke da alamar .nomedia da keɓaɓɓun foldodin wasu manhajoji ba a taɓa karanta su.</string>
+  <string name="scope_added_title">Foldodin da ka ƙara</string>
+  <string name="scope_add">Ƙara folda</string>
+  <string name="scope_added_remove">Daina bincika %1$s</string>
+  <string name="scope_exclude">Tsallake folda</string>
+  <plurals name="scope_files">
+        
+    
+    <item quantity="one">Fayil %1$s</item>
+    <item quantity="other">Fayiloli %1$s</item>
+  </plurals>
+  <string name="scope_group_camera">Kyamara</string>
+  <string name="scope_group_screenshots">Hotunan allo</string>
+  <string name="scope_group_whatsapp_images">Hotunan WhatsApp</string>
+  <string name="scope_group_whatsapp_video">Bidiyon WhatsApp</string>
+  <string name="scope_group_whatsapp_documents">Takardun WhatsApp</string>
+  <string name="scope_group_whatsapp_voice">Saƙonnin murya na WhatsApp</string>
+  <string name="scope_group_whatsapp_status">Matsayin WhatsApp</string>
+  <string name="scope_group_downloads">Sauke-sauke</string>
+  <string name="scope_group_documents">Takardu</string>
+  <string name="scope_group_music">Waƙoƙi da naɗe-naɗe</string>
+  <string name="scope_group_other">Sauran foldodi</string>
+  <string name="settings_section_storage">Ma\'ajiyar da aka yi amfani da ita</string>
+  <string name="settings_storage_index">Fihirisar bincike</string>
+  <string name="settings_storage_model">Samfurin AI</string>
+  <string name="settings_delete">Goge duk abin da <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ta sani</string>
+  <string name="settings_delete_hint">Yana goge abin da <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ta karanta daga fayilolinku, da fayilolinta na wucin-gadi. Ba za a taɓa fayilolinku na kanku ba.</string>
+  <string name="settings_delete_title">A goge duk abin da <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ta sani?</string>
+  <string name="settings_delete_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> za ta goge fihirisar fayilolinku a yanzu: sunayensu, kalmomin da ke cikin takardunku, rubutun da ta karanta a hotuna da hotunan allo, maganar da ta rubuta daga bidiyo da saƙonnin murya, da kuma abin da AI nata ya lura da shi game da kowane fayil. Fayilolinta na wucin-gadi da duk rahotannin matsaloli ma za a goge su.\n\nBa za a taɓa fayilolinku na kanku ba. Saitunanku za su tsaya, ciki har da foldodin da kuka tsallake.\n\nDaga nan <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> za ta daina karantawa. Bincike zai ci gaba da kasancewa babu komai har sai kun danna Ci gaba.</string>
+  <string name="settings_delete_done">An goge %1$s. An dakatar da <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> har sai kun danna Ci gaba.</string>
+  <string name="settings_storage_model_hint">Ana buƙata don bincike ta ma\'ana.</string>
+  <string name="settings_storage_index_hint">Rumbun bayanai da rajistarsa.</string>
+  <string name="settings_storage_estimate">Idan an karanta kowane fayil</string>
+  <string name="settings_storage_estimate_value">Kimanin %1$s</string>
+  <string name="settings_storage_memory">Ƙwaƙwalwa yayin bincike</string>
+  <string name="settings_storage_memory_hint">Ana amfani da shi ne kawai yayin da aka buɗe <xliff:g id="app_name" example="Trawl">%2$s</xliff:g>. Kimanin %1$s idan an karanta kowane fayil.</string>
+  <string name="settings_storage_remove">Cire</string>
+  <string name="settings_storage_no_data"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ba ta taɓa amfani da data ba: ba ta da damar shiga intanet.</string>
+  <string name="settings_delete_confirm">Goge</string>
+  <string name="settings_cancel">Soke</string>
+  <string name="settings_section_appearance">Siffa</string>
+  <string name="settings_theme_system">Na waya</string>
+  <string name="settings_theme_light">Haske</string>
+  <string name="settings_theme_dark">Duhu</string>
+  <string name="report_card_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ta tsaya ba zato ba tsammani. A aika rahoto don taimakawa a gyara?</string>
+  <string name="report_card_body">Rahoton ba ya ɗauke da sunayen fayiloli, bincike ko rubutu daga fayilolinku. Za ku fara karanta shi tukuna, kuma ba za a aika komai ba har sai kun danna Aika a manhajar imel ɗinku.</string>
+  <string name="report_send">Aika</string>
+  <string name="report_not_now">Ba yanzu ba</string>
+  <string name="report_view">Duba rahoto</string>
+  <string name="report_close">Rufe</string>
+  <string name="report_send_email">Aika ta imel</string>
+  <string name="report_send_whatsapp">Aika a WhatsApp</string>
+  <string name="report_send_whatsapp_file">Aika cikakken rahoton a WhatsApp</string>
+  <string name="report_no_email">Ba a sami manhajar imel a wannan wayar ba. Yi amfani da Duba rahoto don karanta shi, ko shigar da manhajar imel.</string>
+  <string name="report_no_whatsapp">An kasa buɗe WhatsApp.</string>
+  <string name="report_building">Ana shirya rahoton…</string>
+  <string name="report_dialog_title">Rahoton matsala</string>
+  <string name="report_dialog_hint">Wannan shi ne duk abin da za a aika. Fayilolinku, foldodinku da bincikenku ba sa ciki.</string>
+  <string name="settings_section_report">Ba da rahoton matsala</string>
+  <string name="settings_report_hint">Yana buɗe manhajar imel ɗinku tare da rahoton da aka shirya don aikawa. Yana ɗauke da nau\'in wayar da na <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>, da kura-kuran da <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ta fuskanta, ba tare da sunayen fayiloli, bincike ko rubutu daga fayilolinku ba. Za ku duba shi tukuna, kuma ba za a aika komai ba har sai kun danna Aika a can.</string>
+  <string name="settings_report_note">Me ya faru? (na zaɓi)</string>
+  <string name="settings_report_kept"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> tana adana aƙalla rahotanni 10 a wannan wayar, kimanin KB 100. “Goge duk abin da <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ta sani” yana cire su.</string>
+  <string name="settings_section_about">Game da</string>
+  <string name="settings_about_version">Fasali na %1$s</string>
+  <string name="settings_about_model">Bincike yana aiki ne da EmbeddingGemma 2 daga Google (Apache 2.0), gaba ɗaya a wannan wayar.</string>
+  <string name="settings_about_private"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ba ta da izinin intanet. Fayilolinku da abin da take koya daga gare su ba sa taɓa fita daga wayar.</string>
+  <string name="settings_about_maker">Crane AI Labs ce ta ƙirƙira.</string>
+  <string name="settings_licences">Lasisai da yabo</string>
+  <string name="licences_title">Lasisai da yabo</string>
+  <string name="licences_intro">An gina <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> a kan ayyukan da ke ƙasa. Lasisai ne suka buƙaci waɗannan sanarwoyi, kuma ta haka muke nuna godiyarmu.</string>
+  <string name="licences_section_required">Sanarwoyi</string>
+  <string name="licences_section_components">Duk sauran abubuwa a cikin <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="licences_section_texts">Cikakkun rubutun lasisi</string>
+  <string name="licences_show">Nuna cikakken rubutu</string>
+  <string name="licences_hide">Ɓoye cikakken rubutu</string>
+  <string name="settings_close">Rufe</string>
+  <string name="pack_size_mb">%1$d MB</string>
+  <string name="pack_speech_name">Binciken magana</string>
+  <string name="pack_speech_benefit">Yana gano abin da aka faɗa a bidiyoyi da saƙonnin murya: fayil ɗin da ya dace a farko da kashi %1$d%% maimakon %2$d%%.</string>
+  <plurals name="pack_speech_cost">
+        
+    
+    <item quantity="one">Yana ƙara kusan daƙiƙa %1$d a kowace minti na bidiyo yayin karantawa. Maganar Turanci kaɗai a yanzu.</item>
+    <item quantity="other">Yana ƙara kusan daƙiƙa %1$d a kowace minti na bidiyo yayin karantawa. Maganar Turanci kaɗai a yanzu.</item>
+  </plurals>
+  <string name="pack_quicklook_name">Duba hotuna da sauri</string>
+  <plurals name="pack_quicklook_benefit">
+        
+    
+    <item quantity="one">Yana sa a iya bincika duka ma\'ajiyar hotunanku ta ma\'ana cikin mintuna maimakon awoyi: kusan hoto %1$s a awa guda maimakon %2$d a waya mai sauƙi (binciken Turanci). Cikakken bayani zai cika a hankali.</item>
+    <item quantity="other">Yana sa a iya bincika duka ma\'ajiyar hotunanku ta ma\'ana cikin mintuna maimakon awoyi: kusan hotuna %1$s a awa guda maimakon %2$d a waya mai sauƙi (binciken Turanci). Cikakken bayani zai cika a hankali.</item>
+  </plurals>
+  <string name="pack_quicklook_cost">Binciken Turanci kaɗai: bincike a sauran harsuna zai jira cikakken karantawa. Cikakken karantawa zai yi tafiyar hawainiya da kusan %1$d%% yayin da yake aiki, kuma yana amfani da ɗan ƙarin ƙwaƙwalwa.</string>
+  <string name="pack_privacy_name">Dushe samfotin da ke kama da na sirri</string>
+  <string name="pack_privacy_benefit">Yana dushe ƙaramin samfotin hoto da ke kama da na sirri (tsiraici, kayan ciki), don wani ba zai gani ba idan ya kalli allon wayarka. Taɓa samfoti don bayyana shi. Dushewa kawai yake yi: babu abin da aka ɓoye ko aka matsar a sakamako.</string>
+  <string name="pack_privacy_cost">Zai iya yin kuskure ta kowace hanya, kuma hotunan lafiya (kuraje, mai shayarwa) na iya dushewa. Yana karanta hotuna a ɓoye yayin caji, kuma yana rage saurin cikakken karantawa da kusan %1$d%% yayin da yake aiki.</string>
+  <string name="pack_privacy_recommended">An ba da shawara idan kuna amfani da faifan bincika cikin sauri</string>
+  <string name="pack_how_to_add_downloads"><xliff:g id="app_name" example="Trawl">%3$s</xliff:g> baya shiga intanet, don haka ba zai iya sauke wannan da kansa ba. Nemo fayil ɗin %1$s (%2$s) daga Crane AI Labs kuma kwafe shi zuwa foldar Saukewa (Downloads) ta wannan wayar. Sannan taɓa Sanya: <xliff:g id="app_name" example="Trawl">%3$s</xliff:g> zai bincika fayil ɗin ya ƙara shi. Za ku iya goge .zip ɗin daga baya.</string>
+  <string name="pack_how_to_add_play">Play zai kawo %1$s (%2$s) idan ka taɓa Sanya. Babu wani abu da za a yi.</string>
+  <string name="notif_channel_name">Nazarin wayarku</string>
+  <string name="notif_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yana nazarin wayarku</string>
+  <string name="notif_getting_ready">Ana shiryawa…</string>
+  <string name="notif_reading_photo">Ana karanta hoto</string>
+  <string name="notif_reading_screenshot">Ana karanta hoton allo</string>
+  <string name="notif_reading_video">Ana karanta bidiyo</string>
+  <string name="notif_reading_document">Ana karanta takarda</string>
+  <string name="notif_reading_recording">Ana karanta sautin da aka ɗauka</string>
+  <string name="notif_reading_file">Ana karanta fayil</string>
+  <string name="notif_waiting_polite">Ana jira yayin da kake amfani da waya</string>
+  <string name="chip_label_action">%1$s  ·  %2$s</string>
+  <string name="a11y_description_note">%1$s. %2$s</string>
+  <string name="meter_a11y_extra">%1$s %2$s.</string>
+  <string name="message_then_sentence">%1$s %2$s</string>
+  <string name="lock_title">An kulle <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="lock_body">Buɗe da shaidar yatsa, fuska, PIN ko fasalin wayarka.</string>
+  <string name="lock_button">Buɗe</string>
+  <string name="quick_device_locked">Buɗe wayarka don yin bincike.</string>
+  <string name="lock_prompt_title">Buɗe <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="lock_prompt_subtitle">Yi amfani da makullin allon wayarka</string>
+  <string name="settings_section_privacy">Tsare sirri</string>
+  <string name="privacy_lock_title">Kulle <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="privacy_lock_hint">Nemi shaidar yatsa, fuska, PIN ko fasali kafin a nuna komai.</string>
+  <string name="privacy_lock_needs_screen_lock">Fara saita makullin allo a wayarka tukuna (Saituna, Tsaro). <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yana amfani da wannan makulli.</string>
+  <string name="privacy_lock_on_prompt">Kunna makullin <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="privacy_lock_off_prompt">Kashe makullin <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="privacy_lock_after_title">Sake kullewa bayan</string>
+  <string name="privacy_lock_after_now">A kowane lokaci</string>
+  <string name="privacy_lock_after_minutes">Minti %1$d</string>
+  <string name="privacy_lock_after_hint">Tsawon lokacin da <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> zai iya zama a ƙasa kafin ya sake tambaya. Haka kuma yana kullewa idan allon ya mutu.</string>
+  <string name="privacy_recents_title">Ɓoye <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> a ƙa\'idojin baya-bayan nan</string>
+  <string name="privacy_recents_hint">Allon <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> zai zama fari a lissafin ƙa\'idojin kwanan nan. Ba za a kuma iya ɗaukar hoton allon <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ba.</string>
+  <string name="privacy_show_title">Nuna sakamako na sirri</string>
+  <string name="privacy_show_hint">Kashe: fayilolin da ka yi wa alamar sirri, da fayiloli a foldar sirri, ba za su fito a sakamako ko maɓallin gaggawa ba har sai ka buɗe su.</string>
+  <string name="privacy_show_prompt">Nuna sakamako na sirri</string>
+  <string name="privacy_pin_note">Duk wanda ya san PIN ɗin wayarka zai iya ganin sakamako na sirri. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ba shi da nasa PIN ɗin.</string>
+  <string name="privacy_no_screen_lock_note">Wayarka ba ta da makullin allo, don haka duk wanda ke riƙe da ita zai iya buɗe <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ya ga komai. Saita makullin allo don tsare shi.</string>
+  <string name="privacy_folders_title">Foldoji na sirri</string>
+  <string name="privacy_folders_hint">Ana ɗaukar duk abin da ke cikin folda ta sirri a matsayin mai mahimmanci. Ba kamar foldojin da aka cire ba, ana ci gaba da karanta su, don haka za ka iya bincika bayan ka buɗe.</string>
+  <string name="privacy_folders_empty">Babu foldoji na sirri.</string>
+  <string name="privacy_folders_add">Ƙara folda ta sirri</string>
+  <string name="privacy_folders_bad">Ba za a iya saita wannan foldar a matsayin ta sirri ba. Zaɓi folda a babban ma\'ajiyar wayar.</string>
+  <string name="privacy_folders_remove">Daina ɗaukar %1$s a matsayin ta sirri</string>
+  <string name="privacy_folders_remove_prompt">Mayar da foldar ba ta sirri ba</string>
+  <string name="onb_lock_title">Kulle <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> (na zaɓi)</string>
+  <string name="onb_lock_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> na iya neman shaidar yatsa, fuska, PIN ko fasalin wayarka kafin ya nuna komai, don kada wani da ke riƙe da wayarka ya iya bincika. Za ka iya canza wannan a Saituna.</string>
+  <string name="onb_lock_action">Kunna makulli</string>
+  <string name="onb_lock_on">Makulli a kunne yake</string>
+  <string name="onb_lock_no_screen_lock">Wayarka ba ta da makullin allo tukuna. Saita ɗaya a Saitunan wayar don amfani da wannan.</string>
+  <string name="privacy_hidden_chip">%1$d ɓoyayye</string>
+  <string name="privacy_hidden_action">Nuna</string>
+  <plurals name="privacy_hidden_chip_description">
+        
+    
+    <item quantity="one">An ɓoye sakamako %1$d mai sirri. Taɓa sau biyu don buɗewa da nuna shi.</item>
+    <item quantity="other">An ɓoye sakamako %1$d masu sirri. Taɓa sau biyu don buɗewa da nuna su.</item>
+  </plurals>
+  <string name="privacy_shown_chip">An nuna sakamako masu sirri</string>
+  <string name="privacy_shown_action">Ɓoye</string>
+  <string name="privacy_reveal_title">Nuna sakamako masu sirri</string>
+  <string name="privacy_reveal_subtitle">Yi amfani da makullin allon wayarka</string>
+  <string name="action_mark_sensitive">Sanya a matsayin mai sirri</string>
+  <string name="action_unmark_sensitive">Ba mai sirri ba</string>
+  <string name="snack_marked_sensitive">An sa a matsayin mai sirri. Yanzu yana ɓoye daga sakamako.</string>
+  <string name="snack_unmarked_sensitive">Ba mai sirri ba kuma.</string>
+  <string name="sensitive_share_title">A raba abu mai sirri?</string>
+  <string name="sensitive_share_body">Ka sanya wannan a matsayin mai sirri. Duk wanda ya karɓa zai iya adanawa da tura wa wani.</string>
+  <string name="sensitive_share_confirm">Raba</string>
+  <string name="sensitive_copy_title">Kwafi abu mai sirri?</string>
+  <string name="sensitive_copy_body">Ka sanya wannan a matsayin mai sirri. Duk inda ka liƙa zai karɓi ainihin fayil ɗin.</string>
+  <string name="sensitive_copy_confirm">Kwafi</string>
+  <string name="sensitive_cancel">Soke</string>
+  <string name="settings_section_previews">Samfoti</string>
+  <string name="settings_blur_title">Ɗushe samfotin da ke kama da na sirri</string>
+  <string name="settings_blur_hint">Na atomatik ne, don haka yana iya yin kuskure. Ƙaramin hoton ne kawai aka ɗushe; ana samun fayil ɗin har yanzu. Taɓa idon don nuna shi.</string>
+  <string name="settings_blur_panel_title">Ɗushe a binciken gaggawa</string>
+  <string name="settings_blur_panel_hint">Na atomatik ne, don haka yana iya yin kuskure. A kunne yake a nan, saboda fannin yana buɗewa a kan sauran manhajoji. Nuna hoto na buƙatar a buɗe makullin wayarka.</string>
+  <string name="settings_blur_needs_pack">Yana buƙatar ƙarin \"Ɗushe samfotin da ke kama da na sirri\" da ke ƙasa. Har sai an ƙara shi, babu abin da za a ɗushe.</string>
+  <string name="action_show_picture">Nuna hoto</string>
+  <string name="preview_hidden">an ɓoye samfoti, yana iya zama na sirri</string>
+  <string name="quick_unlock_to_show">Buɗe makullin wayarka don nuna wannan hoto.</string>
+  <string name="quick_name">Binciken gaggawa</string>
+  <string name="quick_shortcut_long">Bincika fayilolinku cikin gaggawa</string>
+  <string name="quick_widget_hint">Bincika fayilolinku</string>
+  <string name="quick_widget_description">Wurin bincika da ke buɗe binciken gaggawa na <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> a kan manhajar da kake ciki.</string>
+  <string name="quick_hint">Bincika fayilolinku</string>
+  <string name="quick_close">Rufe binciken gaggawa</string>
+  <string name="quick_clear">Share</string>
+  <string name="quick_nothing">Ba a sami komai ba game da “%1$s”.</string>
+  <string name="quick_nothing_incomplete"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yana kan nazarin fayilolinku, don haka wannan na iya canzawa.</string>
+  <string name="quick_not_set_up"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> bai karanta fayilolinku ba tukuna. Buɗe <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> don farawa.</string>
+  <string name="quick_open_findr">Buɗe <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="quick_still_meaning">Ana neman ma\'ana…</string>
+  <string name="quick_copied">An kwafa. Liƙa shi a taɗi.</string>
+  <string name="quick_copy_failed">An kasa kwafin wannan fayil.</string>
+  <string name="quick_no_app">Babu manhajar da za ta iya buɗe wannan fayil.</string>
+  <string name="quick_add_tile_title">A ƙara Bincika mai sauri a saituna masu sauri?</string>
+  <string name="quick_add_tile_body">Daga nan za ku iya bincika fayilolinku daga kowace manhaja da shafawa sau biyu.</string>
+  <string name="quick_add_tile_yes">Ƙara madanni</string>
+  <string name="quick_add_tile_no">Ba yanzu ba</string>
+  <string name="settings_storage_remove_named">Cire <xliff:g id="item" example="Speech pack">%1$s</xliff:g></string>
+  <string name="licences_show_named">Nuna cikakken rubutun <xliff:g id="licence" example="Apache License 2.0">%1$s</xliff:g></string>
+  <string name="licences_hide_named">Ɓoye cikakken rubutun <xliff:g id="licence" example="Apache License 2.0">%1$s</xliff:g></string>
+  <string name="sheet_error_word">Matsala</string>
+  <string name="switch_on">Kunne</string>
+  <string name="switch_off">Kashe</string>
+  <string name="language_title">Zaɓi yarenku</string>
+  <string name="language_intro">Fuskokin <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> za su kasance a wannan yaren. Kuna iya canza shi daga baya a Saituna.</string>
+  <string name="language_system">Harshen wayar</string>
+  <string name="language_system_hint">Yana bin saitunan wayarka</string>
+  <string name="language_preview">Gwaji</string>
+  <string name="settings_language">Yare</string>
+  <plurals name="search_status_so_far">
+        
+    
+    <item quantity="one">%1$d ya zuwa yanzu · ma\'ana nan ba da jimawa ba</item>
+    <item quantity="other">%1$d ya zuwa yanzu · ma\'ana nan ba da jimawa ba</item>
+  </plurals>
+  <string name="search_status_words">Kalmomi yanzu · ma\'ana nan ba da jimawa ba</string>
+  <plurals name="search_status_found">
+        
+    
+    <item quantity="one">An sami %1$d</item>
+    <item quantity="other">An sami %1$d</item>
+  </plurals>
+  <string name="action_share_file">Raba %1$s</string>
+  <string name="action_copy_file">Kwafi %1$s</string>
+  <string name="preview_hidden_words">Kamar na sirri ne · taɓa don gani</string>
+  <string name="filter_group">Nuna waɗanne fayiloli</string>
+</resources>

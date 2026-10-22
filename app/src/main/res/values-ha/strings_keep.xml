@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="keep_action">Ci gaba da nazari yanzu</string>
+  <string name="keep_action_hint">Yana barin allon a kunne, cikin duhu, don <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ya yi nazari yayin da ba ka amfani da wayar. Ya fi kyau a kan caji. Wayar tana zama a buɗe yayin da take aiki, don haka yi hakan a wurin da ka aminta da shi kawai.</string>
+  <string name="keep_heading"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yana nazarin fayilolinku</string>
+  <string name="keep_counts">An fahimci fayiloli %1$s cikin %2$s</string>
+  <string name="keep_time_left">Lokacin da ya rage: %1$s</string>
+  <string name="keep_time_unknown">Ana lissafin tsawon lokacin da zai ɗauka</string>
+  <string name="keep_charging">Yana caji</string>
+  <string name="keep_on_battery">Ba ya caji. Yana tafiya da sauri idan yana caji.</string>
+  <string name="keep_unlocked">Allon yana zama a kunne kuma wayar tana kasancewa a buɗe yayin da <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yake nazari. Ka bar ta a wurin da ka aminta da shi kawai.</string>
+  <string name="keep_tap_to_stop">Danna ko\'ina don tsayarwa</string>
+  <string name="keep_stop_done_title">An gama duka</string>
+  <string name="keep_stop_done"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ya gama nazarin dukkan fayilolinku. Bincika ya san su yanzu.</string>
+  <string name="keep_stop_battery_title">An tsaya: batir ya yi ƙasa</string>
+  <string name="keep_stop_battery">Batir yana ƙasa da kashi 20. Sanya caji, sannan ka sake farawa daga allon ci gaba.</string>
+  <string name="keep_stop_hot_title">An tsaya: wayar ta yi zafi</string>
+  <string name="keep_stop_hot">Wayar ta yi zafi sosai, don haka <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ya tsaya don ta huce. Za ka iya sake farawa daga baya.</string>
+  <string name="keep_stop_unplugged_title">An tsaya: an cire caji</string>
+  <string name="keep_stop_unplugged">Sake sanya caji, sannan ka sake farawa daga allon ci gaba.</string>
+  <string name="keep_stop_charger_title">Ana jiran caji</string>
+  <string name="keep_stop_charger">Idan a batir ne, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yana yin aiki maras nauyi kawai, kuma an gama shi. Sanya caji, sannan ka sake farawa.</string>
+  <string name="keep_stop_paused_title">An tsaya: an dakatar da nazari</string>
+  <string name="keep_stop_paused">Buɗe allon ci gaba a <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> don ganin dalili da ci gaba.</string>
+  <string name="keep_screen_will_sleep">Allon zai mutu da kansa a yanzu kamar yadda aka saba.</string>
+  <string name="keep_close">Rufe</string>
+</resources>

@@ -1,0 +1,73 @@
+# Trawl .gitignore. The rule: nothing private, heavy, or internal ever enters the repo.
+# (Internal material, such as issue write-ups, lives in internal/. A private issues PDF once got published by mistake.)
+
+# Build output
+build/
+.gradle/
+.kotlin/
+.cxx/
+.externalNativeBuild/
+captures/
+*.apk
+*.aab
+*.ap_
+*.dex
+
+# Local machine config
+.venv/
+__pycache__/
+local.properties
+.idea/
+*.iml
+.DS_Store
+
+# Secrets and signing keys
+*.jks
+*.keystore
+keystore.properties
+*.pem
+*.p12
+.env
+.env.*
+google-services.json
+
+# Model weights (hundreds of MB, fetched by scripts/fetch-models.sh)
+models/
+*.litertlm
+*.tflite
+*.gguf
+*.task
+*.safetensors
+
+# Test corpora, on-device indexes, and pulled device data (may contain personal files)
+bench-data/
+corpus/
+testbed/
+*.sqlite
+*.db
+*.db-wal
+*.db-shm
+
+# Internal only: issue write-ups, raw benchmark dumps, partner notes, reports, PDFs
+internal/
+*.pdf
+
+# Local tooling and coordination
+.mailbox/
+.claude/
+
+# Your own phones and machines (copy scripts/phones.local.example); serial numbers and host names never enter the repo
+scripts/phones.local
+phones.local
+
+# Research output folders
+experiments/asr-african/
+
+# sherpa-onnx native library (fetched by scripts/fetch-asr.sh; 39 MB)
+app/libs/
+dist/
+*.whl
+
+# sherpa-onnx native jars for the desktop: fetched at build time from the pinned release tag (desktop/settings.gradle.kts, checked against desktop/libs/SHA256SUMS)
+desktop/libs/repo/**/sherpa-onnx-native-lib-*.jar
+desktop/libs/repo/**/*.part

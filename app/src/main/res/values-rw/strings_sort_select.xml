@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="sort_best">Ibihuye kurusha ibindi</string>
+  <string name="sort_newest">Ibishya cyane</string>
+  <string name="sort_oldest">Ibya kera cyane</string>
+  <string name="sort_largest">Ibinini cyane</string>
+  <string name="sort_name">Izina kuva kuri A kugeza kuri Z</string>
+  <string name="sort_group">Tondeka ukurikije</string>
+  <string name="date_any_time">Igihe icyo ari cyo cyose</string>
+  <string name="date_group">Itariki</string>
+  <string name="date_today">Uyu munsi</string>
+  <string name="date_yesterday">Ejo hashize</string>
+  <string name="date_this_week">Muri iki cyumweru</string>
+  <string name="date_last_week">Mu cyumweru gishize</string>
+  <string name="date_this_month">Muri uku kwezi</string>
+  <string name="date_last_month">Mu kwezi gushize</string>
+  <string name="date_this_year">Muri uyu mwaka</string>
+  <string name="date_last_year">Mu mwaka ushize</string>
+  <string name="date_weekend">Mu mpera z\'icyumweru gishize</string>
+  <string name="date_last_night">Mu ijoro ryakeye</string>
+  <string name="date_this_morning">Muri iki gitondo</string>
+  <string name="date_this_afternoon">Kuri iki gicamunsi</string>
+  <string name="date_this_evening">Kuri uyu mugoroba</string>
+  <string name="date_yesterday_morning">Ejo hashize mu gitondo</string>
+  <string name="date_yesterday_afternoon">Ejo hashize ku gicamunsi</string>
+  <string name="date_yesterday_evening">Ejo hashize ku mugoroba</string>
+  <string name="date_pick_range">Hitamo amatariki…</string>
+  <string name="date_range">%1$s – %2$s</string>
+  <string name="date_remove">Kuraho akayunguruzo k\'itariki</string>
+  <string name="date_from_words">%1$s, bivuye mu magambo washakishije</string>
+  <string name="date_picker_title">Hitamo umunsi wa mbere n\'uwa nyuma</string>
+  <string name="date_picker_ok">Koresha</string>
+  <plurals name="date_past_days">
+    
+    <item quantity="one">Mu munsi %d ushize</item>
+    <item quantity="other">Mu minsi %d ishize</item>
+  </plurals>
+  <plurals name="date_past_weeks">
+    
+    <item quantity="one">Mu cyumweru %d gishize</item>
+    <item quantity="other">Mu byumweru %d bishize</item>
+  </plurals>
+  <plurals name="date_past_months">
+    
+    <item quantity="one">Mu kwezi %d gushize</item>
+    <item quantity="other">Mu mezi %d ashize</item>
+  </plurals>
+  <plurals name="date_past_years">
+    
+    <item quantity="one">Mu mwaka %d ushize</item>
+    <item quantity="other">Mu myaka %d ishize</item>
+  </plurals>
+  <plurals name="date_ago_days">
+    
+    <item quantity="one">Hashize umunsi %d</item>
+    <item quantity="other">Hashize iminsi %d</item>
+  </plurals>
+  <plurals name="date_ago_weeks">
+    
+    <item quantity="one">Hashize icyumweru %d</item>
+    <item quantity="other">Hashize ibyumweru %d</item>
+  </plurals>
+  <plurals name="date_ago_months">
+    
+    <item quantity="one">Hashize ukwezi %d</item>
+    <item quantity="other">Hashize amezi %d</item>
+  </plurals>
+  <plurals name="date_ago_years">
+    
+    <item quantity="one">Hashize umwaka %d</item>
+    <item quantity="other">Hashize imyaka %d</item>
+  </plurals>
+  <string name="action_select">Hitamo</string>
+  <plurals name="select_count">
+    
+    <item quantity="one">Hahiswemo %d</item>
+    <item quantity="other">Hahiswemo %d</item>
+  </plurals>
+  <string name="select_all">Hitamo byose</string>
+  <string name="select_none">Ntuhitemo na kimwe</string>
+  <string name="select_exit">Hagarika guhitamo</string>
+  <string name="select_share_limit">Ushobora gusangiza amafayiro atarenze %d icyarimwe.</string>
+  <string name="sensitive_share_body_many">Bimwe muri ibi byashyizweho ko ari ibanga. Uwabibonye ashobora kubigumana no kubiha abandi.</string>
+  <string name="sensitive_copy_body_many">Bimwe muri ibi byashyizweho ko ari ibanga. Icyo ubishyiramo cyose cyakira ayo mafayiro nyirizina.</string>
+  <string name="snack_marked_sensitive_many">Byashyizweho ikimenyetso cy\'ibanga. Ubu byihishe mu bisubizo.</string>
+  <string name="snack_unmarked_sensitive_many">Ikimenyetso cyakuweho. Bishobora kongera kugaragara mu bisubizo.</string>
+  <string name="nothing_in_dates">Nta cyabonetse muri iki gihe: %1$s. Gerageza indi tariki.</string>
+</resources>

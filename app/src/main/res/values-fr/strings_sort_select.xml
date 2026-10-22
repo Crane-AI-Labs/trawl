@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="sort_best">Meilleure correspondance</string>
+  <string name="sort_newest">Plus récents</string>
+  <string name="sort_oldest">Plus anciens</string>
+  <string name="sort_largest">Plus volumineux</string>
+  <string name="sort_name">Nom de A à Z</string>
+  <string name="sort_group">Trier par</string>
+  <string name="date_any_time">Toutes les dates</string>
+  <string name="date_group">Date</string>
+  <string name="date_today">Aujourd\'hui</string>
+  <string name="date_yesterday">Hier</string>
+  <string name="date_this_week">Cette semaine</string>
+  <string name="date_last_week">La semaine dernière</string>
+  <string name="date_this_month">Ce mois-ci</string>
+  <string name="date_last_month">Le mois dernier</string>
+  <string name="date_this_year">Cette année</string>
+  <string name="date_last_year">L\'année dernière</string>
+  <string name="date_weekend">Le week-end dernier</string>
+  <string name="date_last_night">La nuit dernière</string>
+  <string name="date_this_morning">Ce matin</string>
+  <string name="date_this_afternoon">Cet après-midi</string>
+  <string name="date_this_evening">Ce soir</string>
+  <string name="date_yesterday_morning">Hier matin</string>
+  <string name="date_yesterday_afternoon">Hier après-midi</string>
+  <string name="date_yesterday_evening">Hier soir</string>
+  <string name="date_pick_range">Choisir des dates…</string>
+  <string name="date_range">%1$s – %2$s</string>
+  <string name="date_remove">Supprimer le filtre de date</string>
+  <string name="date_from_words">%1$s, tiré des mots recherchés</string>
+  <string name="date_picker_title">Choisir le premier et le dernier jour</string>
+  <string name="date_picker_ok">Appliquer</string>
+  <plurals name="date_past_days">
+    
+    <item quantity="one">Dernier jour</item>
+    <item quantity="many">Les %d derniers jours</item>
+    <item quantity="other">Les %d derniers jours</item>
+  </plurals>
+  <plurals name="date_past_weeks">
+    
+    <item quantity="one">Dernière semaine</item>
+    <item quantity="many">Les %d dernières semaines</item>
+    <item quantity="other">Les %d dernières semaines</item>
+  </plurals>
+  <plurals name="date_past_months">
+    
+    <item quantity="one">Dernier mois</item>
+    <item quantity="many">Les %d derniers mois</item>
+    <item quantity="other">Les %d derniers mois</item>
+  </plurals>
+  <plurals name="date_past_years">
+    
+    <item quantity="one">Dernière année</item>
+    <item quantity="many">Les %d dernières années</item>
+    <item quantity="other">Les %d dernières années</item>
+  </plurals>
+  <plurals name="date_ago_days">
+    
+    <item quantity="one">Il y a %d jour</item>
+    <item quantity="many">Il y a %d jours</item>
+    <item quantity="other">Il y a %d jours</item>
+  </plurals>
+  <plurals name="date_ago_weeks">
+    
+    <item quantity="one">Il y a %d semaine</item>
+    <item quantity="many">Il y a %d semaines</item>
+    <item quantity="other">Il y a %d semaines</item>
+  </plurals>
+  <plurals name="date_ago_months">
+    
+    <item quantity="one">Il y a %d mois</item>
+    <item quantity="many">Il y a %d mois</item>
+    <item quantity="other">Il y a %d mois</item>
+  </plurals>
+  <plurals name="date_ago_years">
+    
+    <item quantity="one">Il y a %d an</item>
+    <item quantity="many">Il y a %d ans</item>
+    <item quantity="other">Il y a %d ans</item>
+  </plurals>
+  <string name="action_select">Sélectionner</string>
+  <plurals name="select_count">
+    
+    <item quantity="one">%d sélectionné</item>
+    <item quantity="many">%d sélectionnés</item>
+    <item quantity="other">%d sélectionnés</item>
+  </plurals>
+  <string name="select_all">Tout sélectionner</string>
+  <string name="select_none">Tout désélectionner</string>
+  <string name="select_exit">Quitter la sélection</string>
+  <string name="select_share_limit">Vous pouvez partager jusqu\'à %d fichiers à la fois.</string>
+  <string name="sensitive_share_body_many">Certains de ces fichiers sont marqués comme sensibles. Les personnes qui les reçoivent peuvent les garder et les transmettre.</string>
+  <string name="sensitive_copy_body_many">Certains de ces fichiers sont marqués comme sensibles. Si vous les collez dans une autre application, celle-ci reçoit les fichiers eux-mêmes.</string>
+  <string name="snack_marked_sensitive_many">Marqués comme sensibles. Ils sont maintenant masqués dans les résultats.</string>
+  <string name="snack_unmarked_sensitive_many">Ils ne sont plus marqués comme sensibles. Ils peuvent de nouveau apparaître dans les résultats.</string>
+  <string name="nothing_in_dates">Aucun résultat pour cette période : %1$s. Essayez une autre date.</string>
+</resources>

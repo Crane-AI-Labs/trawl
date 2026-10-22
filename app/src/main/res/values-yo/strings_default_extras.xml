@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="blur_first_hint"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> máa ń ṣe àwọn àwòtẹ́lẹ̀ tó lè jẹ́ ti àṣírí ní bàìbàì. Tẹ̀ ẹ́ láti fi hàn. O lè pa èyí nínú Ètò.</string>
+</resources>

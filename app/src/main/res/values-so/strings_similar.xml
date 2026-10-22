@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="action_find_similar">Hel kuwa la mid ah</string>
+  <string name="action_find_similar_help">Hel kuwa la mid ah waxay ku tusaysaa sawirro u eg kan.</string>
+  <string name="similar_chip">La mid ah %1$s</string>
+  <string name="similar_remove">Jooji helidda kuwa la mid ah</string>
+  <string name="similar_nothing_body">Weli faylashada kuma jiro wax u eg %1$s.</string>
+</resources>

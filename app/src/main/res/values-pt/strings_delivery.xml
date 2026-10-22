@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="models_eyebrow">Um único download</string>
+  <string name="models_title">Baixe os modelos de busca</string>
+  <string name="models_body">Use o Wi-Fi se puder: um arquivo de %1$d MB, baixado uma só vez. A busca por nomes e palavras funciona na hora. A busca por significado melhora conforme <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> analisa seus arquivos e fica melhor depois de uma noite no carregador.</string>
+  <string name="models_get">Baixar os modelos (%1$d MB)</string>
+  <string name="models_choose">Escolher o arquivo</string>
+  <string name="models_hint_choose">Já tem o arquivo? Escolha-o no seu celular.</string>
+  <string name="models_hint_access"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> adiciona o arquivo automaticamente quando o download termina, depois que você permite o acesso aos seus arquivos. Ou use Escolher o arquivo.</string>
+  <string name="models_hint_wait">Quando o download terminar, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> adicionará o arquivo automaticamente. Você já pode começar.</string>
+  <string name="models_no_browser">Nenhum navegador foi encontrado neste celular. Coloque o arquivo nele de outra forma e escolha-o aqui.</string>
+  <string name="models_downloading">Baixando… %1$s até agora</string>
+  <string name="models_installing_pct">Verificando e adicionando os modelos… %1$d%%</string>
+  <string name="models_installing">Verificando e adicionando os modelos…</string>
+  <string name="models_cancel">Cancelar</string>
+  <string name="models_done">Os modelos foram instalados. A busca está pronta.</string>
+  <string name="models_done_already">Os modelos já estão instalados.</string>
+  <string name="models_ok">OK</string>
+  <string name="models_free_question">Apagar o arquivo baixado para liberar %1$s?</string>
+  <string name="models_free_yes">Sim, apagar</string>
+  <string name="models_free_no">Não, manter</string>
+  <string name="models_try_again">Tentar de novo</string>
+  <string name="models_refused_wrong_class">Este arquivo é para outro tipo de celular. Use Baixar os modelos para baixar o arquivo certo para este celular.</string>
+  <string name="models_refused_damaged">O arquivo está danificado ou incompleto. Por isso, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> não o usou. Baixe-o novamente e tente de novo.</string>
+  <string name="models_refused_not_signed"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> não conseguiu confirmar que este arquivo é autêntico. Por isso, não o usou. Use Baixar os modelos para baixá-lo novamente.</string>
+  <string name="models_refused_older">Este arquivo é mais antigo que os modelos que já estão neste celular. Por isso, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> manteve os mais novos.</string>
+  <string name="models_refused_no_space">Não há espaço livre suficiente neste celular. Libere cerca de %1$d MB e tente de novo.</string>
+  <string name="models_refused_cancelled">Interrompido. Nada foi alterado.</string>
+  <string name="models_update_title">Há um modelo melhor disponível</string>
+  <string name="models_update_body_reread">Ao adicioná-lo, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> precisa ler seus arquivos novamente. Isso acontece enquanto o celular carrega, e a busca continua funcionando.</string>
+  <string name="models_update_body_light">Ao adicioná-lo, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> não precisa ler seus arquivos novamente.</string>
+  <string name="models_update_get">Baixar a atualização (%1$d MB)</string>
+  <string name="models_update_not_now">Agora não</string>
+</resources>

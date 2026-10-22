@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="action_find_similar">Wá àwọn tó jọra</string>
+  <string name="action_find_similar_help">Wá àwọn tó jọra máa ń fi àwọn fọ́tò tó rí bí èyí hàn.</string>
+  <string name="similar_chip">Tó jọ %1$s</string>
+  <string name="similar_remove">Dá wíwá àwọn tó jọra dúró</string>
+  <string name="similar_nothing_body">Kò sí nǹkan nínú àwọn fáìlì rẹ tó rí bí %1$s síbẹ̀.</string>
+</resources>

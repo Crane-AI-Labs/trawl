@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="open_problem_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> terikubaasa kwigura orukarara rwa fayiro ezi yaatebeekaniise hati</string>
+  <string name="open_problem_busy">Omurimo ogundi nigukikoresa. Neija kuteeraho obundi omu bwire bukye.</string>
+  <string name="open_problem_storage_full">Obuhunikiro bwa simu bwijwire. Neija kuteeraho obundi omu bwire bukye.</string>
+  <string name="open_problem_io">Simu tiyaabaasize kukishoma. Neija kuteeraho obundi omu bwire bukye.</string>
+  <string name="open_problem_memory">Simu eine obwijukiro bukye. Neija kuteeraho obundi omu bwire bukye.</string>
+  <string name="open_problem_other">Neija kuteeraho obundi omu bwire bukye.</string>
+  <string name="open_problem_detail">Ebyazoorwa byaawe eby\'enyima birinzirwe, kandi tihaine kyasangwirwe. Neija kuteeraho obundi yo yonka, nari onyige Teeraho obundi.</string>
+</resources>

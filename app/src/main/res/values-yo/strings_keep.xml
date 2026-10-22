@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="keep_action">Máa kẹ́kọ̀ọ́ báyìí</string>
+  <string name="keep_action_hint">Yóò jẹ́ kí ojú ìbòjú wà ní títàn pẹ̀lú ìmọ́lẹ̀ kíkéré, kí <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> lè kẹ́kọ̀ọ́ nígbà tí o kò lo fóònù náà. Ó dára jù lórí chájì. Fóònù náà kò ní ti ara rẹ̀ nígbà tí èyí bá ń lọ, nítorí náà ṣe èyí níbi tí o fọkàn tán nìkan.</string>
+  <string name="keep_heading"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ń kẹ́kọ̀ọ́ àwọn fáìlì rẹ</string>
+  <string name="keep_counts">A ti lóye %1$s nínú àwọn fáìlì %2$s</string>
+  <string name="keep_time_left">Àkókò tí ó kù: %1$s</string>
+  <string name="keep_time_unknown">Ń ṣírò àkókò tí yóò gbà</string>
+  <string name="keep_charging">Ń gba chájì</string>
+  <string name="keep_on_battery">Kò gba chájì. Ó ń yára jù lórí chájì.</string>
+  <string name="keep_unlocked">Ojú ìbòjú yóò wà ní títàn, fóònù kò sì ní ti ara rẹ̀ nígbà tí <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> bá ń kẹ́kọ̀ọ́. Fi síbi tí o fọkàn tán nìkan.</string>
+  <string name="keep_tap_to_stop">Fọwọ́ tọ ibikíbi láti dá a dúró</string>
+  <string name="keep_stop_done_title">Gbogbo rẹ̀ ti parí</string>
+  <string name="keep_stop_done"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ti kẹ́kọ̀ọ́ gbogbo àwọn fáìlì rẹ. Wá mọ̀ wọ́n báyìí.</string>
+  <string name="keep_stop_battery_title">Ó dúró: bátìrì ti kéré</string>
+  <string name="keep_stop_battery">Bátìrì kéré ju ìpín 20 nínú ọgọ́rùn-ún lọ. So chájì pọ̀, lẹ́yìn náà bẹ̀rẹ̀ lẹ́ẹ̀kan síi láti ojú ìbòjú ìlọsíwájú.</string>
+  <string name="keep_stop_hot_title">Ó dúró: fóònù ti gbóná</string>
+  <string name="keep_stop_hot">Fóònù náà gbóná jù, nítorí náà <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> dúró kí ó lè tura. O lè tún bẹ̀rẹ̀ lẹ́yìn náà.</string>
+  <string name="keep_stop_unplugged_title">Ó dúró: a yọ chájì kúrò</string>
+  <string name="keep_stop_unplugged">Tún chájì bọ̀ ọ́, lẹ́yìn náà bẹ̀rẹ̀ lẹ́ẹ̀kan síi láti ojú ìbòjú ìlọsíwájú.</string>
+  <string name="keep_stop_charger_title">Ń dúró de chájì</string>
+  <string name="keep_stop_charger">Lórí bátìrì, iṣẹ́ kékeré nìkan ni <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ń ṣe, èyí náà sì ti parí. So chájì pọ̀, lẹ́yìn náà tún bẹ̀rẹ̀.</string>
+  <string name="keep_stop_paused_title">Ó dúró: ìkẹ́kọ̀ọ́ ti dánudúró</string>
+  <string name="keep_stop_paused">Ṣí ojú ìbòjú ìlọsíwájú nínú <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> láti mọ ìdí rẹ̀ kí o sì tẹ̀síwájú.</string>
+  <string name="keep_screen_will_sleep">Ojú ìbòjú yóò pa fúnra rẹ̀ báyìí gẹ́gẹ́ bí i tẹ́lẹ̀.</string>
+  <string name="keep_close">Pa dé</string>
+</resources>

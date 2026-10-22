@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools">
+
+  <!--
+    Findr's promise: everything stays on the phone. There is deliberately NO android.permission.INTERNET here, and
+    onboarding says so. Do not add it.
+    Libraries merge it in anyway (ML Kit's com.google.android.datatransport:transport-backend-cct, which uploads usage logs),
+    so it is removed explicitly; scripts/check-no-internet.sh checks a built APK.
+  -->
+  <uses-permission android:name="android.permission.INTERNET" tools:node="remove" />
+  <!-- Sideloaded build: "All files access" lets Findr read documents anywhere. A Play build swaps this for MediaStore + a folder picker. -->
+  <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" tools:ignore="ScopedStorage" />
+  <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+  <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+  <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+  <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
+  <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+  <!-- App lock and the reveal gate use Android's own prompt (fingerprint, face, or the phone's PIN or pattern). Nothing else is asked of the phone. -->
+  <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+  <!-- minSdk is 30, so the library's legacy fingerprint permission is never used. -->
+  <uses-permission android:name="android.permission.USE_FINGERPRINT" tools:node="remove" />
+  <!-- The overnight indexing run shows an ongoing notification (WorkManager long-running worker, data-sync type). -->
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+
+  <!-- Lets "Report a problem" see whether WhatsApp is installed (it offers the report there too). It is not an internet permission. -->
+  <queries>
+    <package android:name="com.whatsapp" />
+  </queries>
+
+  <!-- The index holds the text of the user's files: never let it ride along in a cloud backup. -->
+  <application
+    android:name=".FindrApp"
+    android:allowBackup="false"
+    android:dataExtractionRules="@xml/data_extraction_rules"
+    android:icon="@mipmap/ic_launcher"
+    android:label="@string/launcher_label"
+    android:localeConfig="@xml/locales_config"
+    android:supportsRtl="true"
+    android:theme="@style/Theme.Findr">
+
+    <activity
+      android:name=".MainActivity"
+      android:exported="true"
+      android:launchMode="singleTask"
+      android:theme="@style/Theme.Findr.Splash"
+      android:windowSoftInputMode="adjustResize">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+      <!-- Long-press on the icon: "Quick search". -->
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
+    </activity>
+
+    <!--
+      Quick search panel. Its own task (affinity ".quick") and no Recents entry, so opening it never brings the main app's task
+      forward and the app behind it is where the person lands again. Not exported: the tile, widget and shortcut all start it
+      with intents they own.
+    -->
+    <!-- Keep learning (ui/keeplearning): a dark screen kept on while the app indexes. Its own task, so leaving it ends it. -->
+    <activity
+      android:name=".ui.keeplearning.KeepLearningActivity"
+      android:excludeFromRecents="true"
+      android:exported="false"
+      android:launchMode="singleTask"
+      android:taskAffinity="${applicationId}.keep"
+      android:theme="@style/Theme.Findr.Keep" />
+
+    <activity
+      android:name=".quick.QuickSearchActivity"
+      android:excludeFromRecents="true"
+      android:exported="false"
+      android:launchMode="singleTask"
+      android:taskAffinity="${applicationId}.quick"
+      android:theme="@style/Theme.Findr.Quick"
+      android:windowSoftInputMode="stateAlwaysVisible|adjustResize" />
+
+    <service
+      android:name=".quick.QuickSettingsTile"
+      android:exported="true"
+      android:icon="@drawable/ic_quick_search"
+      android:label="@string/quick_name"
+      android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+      <intent-filter>
+        <action android:name="android.service.quicksettings.action.QS_TILE" />
+      </intent-filter>
+    </service>
+
+    <receiver
+      android:name=".quick.QuickSearchWidget"
+      android:exported="true"
+      android:label="@string/quick_name">
+      <intent-filter>
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+      </intent-filter>
+      <meta-data android:name="android.appwidget.provider" android:resource="@xml/quick_search_widget_info" />
+    </receiver>
+
+    <!-- Copy (the main screen's and the quick panel's) hands a file to the clipboard through this; never exported. -->
+    <provider
+      android:name="androidx.core.content.FileProvider"
+      android:authorities="${applicationId}.quick.files"
+      android:exported="false"
+      android:grantUriPermissions="true">
+      <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths" />
+    </provider>
+
+    <!--
+      "Report a problem" hands the report file to the person's own email app through this. Its own provider (not the one above)
+      and one folder only: the cache's shared-reports, which holds the single report being sent. Never exported.
+    -->
+    <provider
+      android:name=".diag.ReportFileProvider"
+      android:authorities="${applicationId}.reports"
+      android:exported="false"
+      android:grantUriPermissions="true">
+      <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/report_paths" />
+    </provider>
+
+    <!-- WorkManager's foreground service must declare its type on Android 14+ (IndexWorker uses data sync). -->
+    <service
+      android:name="androidx.work.impl.foreground.SystemForegroundService"
+      android:foregroundServiceType="dataSync"
+      tools:node="merge" />
+
+    <!--
+      ML Kit (text recognition) queues usage events through Google's datatransport (TransportRuntime), tagged FIREBASE_ML_SDK, and
+      schedules JobScheduler uploads to firebaselogging.googleapis.com. With no INTERNET permission nothing can be sent, but each
+      event still woke the phone. Datatransport finds its upload backend through this service's metadata; with that entry gone the
+      runtime reports "backend not registered" and drops the event before it is stored or scheduled. OCR itself is untouched.
+    -->
+    <service
+      android:name="com.google.android.datatransport.runtime.backends.TransportBackendDiscovery"
+      tools:node="merge">
+      <meta-data
+        android:name="backend:com.google.android.datatransport.cct.CctBackendFactory"
+        tools:node="remove" />
+    </service>
+
+    <!-- GPU backend: vendor OpenCL, when the phone has it. -->
+    <uses-native-library android:name="libOpenCL.so" android:required="false" />
+    <uses-native-library android:name="libvndksupport.so" android:required="false" />
+  </application>
+</manifest>

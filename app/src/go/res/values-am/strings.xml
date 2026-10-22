@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="welcome_line"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ሰነዶችህን፣ ፎቶዎችህን እና ስክሪንሾቶችህን በስሞቻቸው እና በውስጣቸው ባሉ ቃላት ያገኛል።</string>
+  <string name="onb1_point_model_title">ለአነስተኛ ስልኮች የተሰራ</string>
+  <string name="welcome_point_ai_body">ፋይሎችህን በዚህ ስልክ ላይ ያነባል። ምንም ማውረድ አያስፈልግም። ምንም ነገር ወደ ሰርቨር አይላክም።</string>
+  <string name="meter_sub_progress_eta">ከ%2$s ውስጥ %1$s ተነብቧል · ወደ %3$s ገደማ ይቀራል</string>
+  <string name="meter_sub_progress_estimating">ከ%2$s ውስጥ %1$s ተነብቧል · የሚወስደውን ጊዜ በማስላት ላይ</string>
+  <string name="meter_sub_paused">ከ%2$s ውስጥ %1$s ተነብቧል። ፈልግ አሁንም ይሠራል።</string>
+  <string name="meter_a11y">%1$s። %2$s። %3$d በመቶ ተነብቧል።</string>
+  <string name="sheet_detail_indexing">ስሞች መጀመሪያ ይነበባሉ፣ ስለዚህ ፈልግ ወዲያውኑ ይሠራል። በሰነዶችህ፣ በፒዲኤፍ ፋይሎች እና በፎቶዎች ውስጥ ያሉ ቃላትን ማንበብ ረዘም ያለ ጊዜ ይወስዳል።</string>
+  <string name="level_searchable">በስም የሚፈለግ</string>
+  <string name="level_searchable_hint">ፈጣን። ፋይልን በስሙ እንድታገኝ ያስችላል።</string>
+  <string name="level_understood">የተነበቡ ቃላት</string>
+  <string name="level_understood_hint">ቀስ ያለ። ፋይልን በውስጡ በተጻፉ ቃላት እንድታገኝ ያስችላል። ይህም በፎቶዎች ውስጥ ያለውን ጽሑፍ ያካትታል።</string>
+  <string name="search_hint_a11y">ፋይሎችህን በስሞቻቸው እና በውስጣቸው ባሉ ቃላት ፈልግ</string>
+  <string name="search_incomplete_note">በስሞች መፈለግ አሁን ይሠራል። ቃላት አሁንም በመነበብ ላይ ናቸው፣ ስለዚህ ተጨማሪ ተዛማጆች ሊታዩ ይችላሉ።</string>
+  <string name="settings_about_model">ፈልግ ፋይሎችን በስሞቻቸው እና በውስጣቸው ባሉ ቃላት ያገኛል። ሁሉም ነገር በዚህ ስልክ ላይ ይሠራል።</string>
+  <string name="settings_delete_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> የፋይሎችህን መዝግብ አሁን ያጠፋል፦ ስሞቻቸውን፣ በሰነዶችህ ውስጥ ያሉትን ቃላት፣ እና በፎቶዎችና በስክሪንሾቶች ውስጥ ያነበበውን ጽሑፍ። ጊዜያዊ ፋይሎቹ እና ማናቸውም የችግር ሪፖርቶችም ይጠፋሉ።\n\nየራስህ ፋይሎች አይነኩም። የዘለልካቸውን ፎልደሮች ጨምሮ ቅንብሮችህ እንደነበሩ ይቆያሉ።\n\nከዚያ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ማንበቡን ያቆማል። «ቀጥል»ን እስክትነካ ድረስ ፈልግ ባዶ ሆኖ ይቆያል።</string>
+  <string name="pause_battery_low_detail">ባትሪው ከ30%% በታች ነው፣ ስለዚህ የቀረውን ኃይል ለመቆጠብ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ይጠብቃል። ስልኩ ቻርጅ ሲደረግ በራሱ ይቀጥላል።</string>
+</resources>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Index open: what the progress card and sheet say when the app cannot open its index right now (ui/index). The app keeps trying by
+  itself, so the words are calm: nothing is lost and nothing is asked of the person. A file of its own so it never conflicts with
+  strings.xml. The app's name is the placeholder marked app_name (never translate it).
+-->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <!-- Progress card title (a calm icon beside it, no red) -->
+  <string name="open_problem_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> couldn\'t open its index right now</string>
+  <!-- Progress card second line: the reason, then that it tries again. One sentence pair per reason; no file names. -->
+  <string name="open_problem_busy">Another task is using it. It\'ll try again shortly.</string>
+  <string name="open_problem_storage_full">The phone\'s storage is full. It\'ll try again shortly.</string>
+  <string name="open_problem_io">The phone could not read it. It\'ll try again shortly.</string>
+  <string name="open_problem_memory">The phone is short of memory. It\'ll try again shortly.</string>
+  <string name="open_problem_other">It\'ll try again shortly.</string>
+  <!-- Progress sheet: the line under the title. "Try again" is the button below it. -->
+  <string name="open_problem_detail">Your earlier results are safe and nothing was deleted. It tries again on its own, or tap Try again.</string>
+</resources>

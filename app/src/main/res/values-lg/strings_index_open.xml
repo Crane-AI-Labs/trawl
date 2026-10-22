@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="open_problem_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> tesobodde kuggulawo Kwekenneenya kwayo kati</string>
+  <string name="open_problem_busy">Omulimu omulala gukozesa Kwekenneenya. Ejja kuddamu okugezaako mu kaseera katono.</string>
+  <string name="open_problem_storage_full">Eterekero ly\'essimu lijjudde. Ejja kuddamu okugezaako mu kaseera katono.</string>
+  <string name="open_problem_io">Essimu tesobodde kusoma Kwekenneenya. Ejja kuddamu okugezaako mu kaseera katono.</string>
+  <string name="open_problem_memory">Essimu terina jjukira limala. Ejja kuddamu okugezaako mu kaseera katono.</string>
+  <string name="open_problem_other">Ejja kuddamu okugezaako mu kaseera katono.</string>
+  <string name="open_problem_detail">Ebizuuliddwa byo ebyasooka bikuumiddwa bulungi, era tewali kyasanguddwa. Eddamu okugezaako ku bwayo, oba onyige Ddamu ogezeeko.</string>
+</resources>

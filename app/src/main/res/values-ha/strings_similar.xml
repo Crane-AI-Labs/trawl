@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="action_find_similar">Nemo makamantansu</string>
+  <string name="action_find_similar_help">Nemo makamantansu na nuna hotuna masu kama da wannan.</string>
+  <string name="similar_chip">Masu kama da %1$s</string>
+  <string name="similar_remove">Daina nemo makamantansu</string>
+  <string name="similar_nothing_body">Babu wani fayil ɗinku da ya yi kama da %1$s tukuna.</string>
+</resources>

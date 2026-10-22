@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="open_problem_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> hadda ma furi karin Diiwaangeli</string>
+  <string name="open_problem_busy">Hawl kale ayaa isticmaalaysa. Wax yar kadib ayuu isku dayi doonaa mar kale.</string>
+  <string name="open_problem_storage_full">Kaydka taleefanka ayaa buuxa. Wax yar kadib ayuu isku dayi doonaa mar kale.</string>
+  <string name="open_problem_io">Taleefanku ma akhrin karin. Wax yar kadib ayuu isku dayi doonaa mar kale.</string>
+  <string name="open_problem_memory">Xusuusta taleefanka ayaa yar. Wax yar kadib ayuu isku dayi doonaa mar kale.</string>
+  <string name="open_problem_other">Wax yar kadib ayuu isku dayi doonaa mar kale.</string>
+  <string name="open_problem_detail">Natiijooyinkaagii hore waa badbaadsan yihiin, waxbana lama Tirtirin. Iskiis ayuu mar kale isku dayaa, ama taabo Isku day mar kale.</string>
+</resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="bg_title">هذا الهاتف يوقف التطبيقات مؤقتاً</string>
+  <string name="bg_body">توقف بعض الهواتف، ومنها هذا الهاتف، التطبيقات مؤقتاً عند إطفاء الشاشة. لذلك لا يتعرّف <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> على ملفاتك إلا عندما يكون مفتوحاً. إذا كان معرض الصور كبيراً، استخدم متابعة التعرّف والهاتف على الشاحن طوال الليل.</string>
+  <string name="bg_open">فتح إعدادات الهاتف</string>
+  <string name="bg_settings_section">على هذا الهاتف</string>
+  <string name="bg_settings_hint">توقف بعض الهواتف، ومنها هذا الهاتف، التطبيقات مؤقتاً عند إطفاء الشاشة. لذلك لا يتعرّف <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> على ملفاتك إلا عندما يكون مفتوحاً. إذا كان معرض الصور كبيراً، استخدم متابعة التعرّف والهاتف على الشاحن. الإعداد أدناه يسمح للتطبيق فقط بالبدء من جديد بعد إعادة تشغيل الهاتف.</string>
+  <string name="bgs_title">قد توقف سامسونج هذا التطبيق ليلاً</string>
+  <string name="bgs_body">يمكن لهواتف سامسونج أن تضع التطبيقات في وضع السكون أو تغلقها أثناء الليل، فيتوقف <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> عن تعلّم ملفاتك. في البطارية، اختر «غير مقيّد» لتطبيق <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>.</string>
+  <string name="bgs_open">فتح إعدادات البطارية</string>
+</resources>

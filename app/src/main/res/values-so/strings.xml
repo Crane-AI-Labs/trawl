@@ -1,0 +1,459 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="kind_document">Dukumenti</string>
+  <string name="kind_pdf">PDF</string>
+  <string name="kind_photo">Sawir</string>
+  <string name="kind_screenshot">Shaashad-qaadis</string>
+  <string name="kind_video">Muuqaal</string>
+  <string name="kind_audio">Maqal</string>
+  <string name="kind_other">Fayl</string>
+  <string name="filter_all">Dhammaan</string>
+  <string name="filter_photos">Sawirro</string>
+  <string name="filter_screenshots">Shaashad-qaadisyo</string>
+  <string name="filter_videos">Muuqaallo</string>
+  <string name="filter_documents">Dukumentiyo</string>
+  <string name="filter_audio">Maqal</string>
+  <string name="kind_plural_screenshots">Shaashad-qaadisyo</string>
+  <string name="kind_plural_photos">Sawirro</string>
+  <string name="kind_plural_documents">Dukumentiyo iyo PDF-yo</string>
+  <string name="kind_plural_videos">Muuqaallo</string>
+  <string name="kind_plural_audio">Maqal</string>
+  <string name="section_photos_videos">Sawirro iyo muuqaallo</string>
+  <string name="section_documents_text">Dukumentiyo iyo qoraal</string>
+  <string name="section_recent_documents">Dukumentiyadii dhowaa</string>
+  <string name="section_recent_photos_videos">Sawirradii iyo muuqaalladii dhowaa</string>
+  <string name="badge_page">b. %1$d</string>
+  <string name="badge_at_time">markay tahay %1$s</string>
+  <plurals name="pages_count">
+        
+    
+    <item quantity="one">%d bog</item>
+    <item quantity="other">%d bogag</item>
+  </plurals>
+  <string name="action_open">Fur</string>
+  <string name="action_share">La wadaag</string>
+  <string name="action_copy">Koobiyeey</string>
+  <string name="action_show_folder">Ku dhex muuji galka</string>
+  <string name="action_more">Hawlo kale</string>
+  <string name="snack_copied">Waa la koobiyeeyay</string>
+  <string name="meter_title_not_started">Wali waxba ma akhrinayo</string>
+  <string name="meter_title_scanning">Baarista taleefankaaga</string>
+  <string name="meter_title_indexing">Barashada faylashada</string>
+  <string name="meter_title_up_to_date">Wax walba waa diyaar</string>
+  <string name="meter_title_error">Wax baa qaldamay</string>
+  <string name="meter_sub_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> wuxuu bilaaban doonaa marka uu arko faylashaada.</string>
+  <string name="meter_sub_scanning">Wuxuu helay %1$s fayl ilaa hadda.</string>
+  <string name="meter_sub_names_first">Magacyada iyo ereyada ayaa horreeya, si aad haddaba u raadin karto.</string>
+  <string name="meter_sub_progress_eta">%1$s oo ka mid ah %2$s ayaa la fahmay · qiyaastii %3$s ayaa hartay</string>
+  <string name="meter_sub_progress_estimating">%1$s ka mid ah %2$s la fahmay · xisaabinta wakhtiga</string>
+  <string name="meter_sub_needs_charger">Magacyada iyo erayada hadda. Macnaha wuxuu bilaabmayaa markaad dallacdo.</string>
+  <string name="meter_sub_reembed">Cusboonaysiinta sawirrada moodeelka cusub: %1$s ka mid ah %2$s. Raadintu way shaqaynaysaa.</string>
+  <string name="meter_sub_reembed_eta">Cusboonaysiinta sawirrada moodeelka cusub: %1$s ka mid ah %2$s · ku dhawaad %3$s ayaa hadhay</string>
+  <string name="meter_sub_reembed_battery">Cusboonaysiinta sawirrada moodeelka cusub: %1$s ka mid ah %2$s. Inta kale waxay sii soconaysaa markaad dallacdo.</string>
+  <string name="meter_sub_light_reading">Akhrinta sawirradaada si degdeg ah oo loo raadiyo. Tayada buuxda waxay dhammaystirmaysaa markaad dallacdo.</string>
+  <string name="meter_sub_light_done">Wax walba hadda waa la raadin karaa. Tayada buuxda waxay dhammaystirmaysaa markaad dallacdo.</string>
+  <string name="meter_sub_paused">%1$s ka mid ah %2$s ayaa la fahmay. Raadintu weli way shaqaynaysaa.</string>
+  <string name="meter_sub_up_to_date">%1$s faylal ah ayaa diyaar u ah in la raadiyo.</string>
+  <string name="meter_sub_error">Taabo faahfaahinta.</string>
+  <string name="meter_a11y">%1$s. %2$s. Boqolkiiba %3$d ayaa la fahmay.</string>
+  <string name="meter_open_details">Muuji faahfaahinta akhrinta</string>
+  <string name="pause_not_charging">Sugaya dalladeeyaha</string>
+  <string name="pause_not_charging_detail">Akhrinta wax walba oo tayo buuxda ah waxay isticmaashaa baytari badan, sidaa darteed <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> waxay qaybtaas samaysaa marka taleefanku dallacayo. Raadintu intaa way shaqaynaysaa.</string>
+  <string name="pause_too_hot">Qaboobid</string>
+  <string name="pause_too_hot_detail">Taleefanku waa diirran yahay, markaa <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> waxay qaadanaysaa nasasho si ay u ilaaliso. Waxay iskeed u sii socon doontaa marka taleefanku qaboobo.</string>
+  <string name="pause_battery_low">Baytarigu wuu hooseeyaa</string>
+  <string name="pause_battery_low_detail">Baytarigu wuxuu ka yar yahay 30%%, sidaa darteed <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> waxay akhridaa oo keliya magacyada iyo erayada si loo badbaadiyo inta hadhay. Waxay iskeed u sii soconaysaa marka taleefanku dallaco.</string>
+  <string name="pause_user">Adigaa hakiyay</string>
+  <string name="pause_user_detail">Akhrintu waa hakad. Raadintu weli waxay ku shaqaynaysaa waxa <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> baratay ilaa hadda.</string>
+  <string name="pause_no_permission">Waxay u baahan tahay gelitaanka faylashaada</string>
+  <string name="pause_no_permission_detail"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ma arki karto faylashaada ilaa aad u oggolaato gelitaanka Dhammaan faylasha. Kaliya way akhridaa mana beddesho waxba.</string>
+  <string name="pause_storage_low">Kaydka taleefanka ku dhowaad wuu buuxaa</string>
+  <string name="pause_storage_low_detail"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> waxay u baahan tahay meel yar si ay u hayso diiwaankeeda. Banee meel bannaan wayna sii soconaysaa.</string>
+  <string name="action_pause">Haki</string>
+  <string name="action_resume">Sii wad</string>
+  <string name="action_read_on_battery">Ku akhri baytari si kasta</string>
+  <string name="action_allow_access">Oggolow gelitaanka</string>
+  <string name="action_free_space">Banee meel</string>
+  <string name="action_retry">Isku day mar kale</string>
+  <string name="eta_under_minute">wax ka yar daqiiqad</string>
+  <string name="eta_minutes">%d daq</string>
+  <string name="eta_hours_single">%d saac</string>
+  <string name="eta_hours_range">%1$d ilaa %2$d saac</string>
+  <string name="eta_while_charging">%1$s dalladeeyaha ku jira</string>
+  <string name="sheet_title">Akhrinta faylashaada</string>
+  <string name="sheet_detail_up_to_date">Fayl kasta oo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> arki karto waa diyaar. Kuwa cusub ayaa lagu darayaa marka ay soo baxaan.</string>
+  <string name="sheet_detail_scanning"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> waxay samaynaysaa liiska faylashaada. Tani waxay qaadanaysaa daqiiqad ama labo.</string>
+  <string name="sheet_detail_light_on_battery">Magacyada iyo erayada hadda ayaa la akhriyaa sawirradana si degdeg ah ayaa loo eegaa, markaa raadintu haddaba way shaqaynaysaa. Tayada buuxda, oo bixisa waxyaabaha ugu fiican ee is-waafaqaya, waxay dhammaystirmaysaa marka taleefanku dallacayo.</string>
+  <string name="sheet_detail_needs_charger">Magacyada iyo erayada hadda ayaa la akhrinayaa, markaa raadintu haddaba way shaqaynaysaa. Fahamka waxa sawirrada iyo dukumentiyadu ku saabsan yihiin wuxuu bilaabmayaa marka taleefanku dallacayo.</string>
+  <string name="sheet_detail_indexing">Magacyada iyo ereyada ayaa soo hor maraya, sidaas darteed raadintu markiiba way shaqaynaysaa. Fahamka waxa ay sawirradu iyo dukumentiyadu ku saabsan yihiin waxay qaadataa waqti dheeraad ah, waxaana fiican in la sameeyo habeenkii inta uu taleefanku ku jiro dallacaadda.</string>
+  <string name="sheet_detail_error">Akhrintu si lama filaan ah ayay u joogsatay. Natiijooyinkii hore way badbaadsan yihiin.</string>
+  <string name="sheet_detail_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> weli ma bilaabin akhrinta.</string>
+  <string name="sheet_by_kind">Sida nooca faylka</string>
+  <string name="sheet_reading_now">Hadda la akhrinayaa</string>
+  <string name="sheet_resumes_by_itself">Iskeed ayay u sii soconaysaa marka tan la xalliyo.</string>
+  <string name="level_searchable">Lagu raadin karo magac iyo ereyo</string>
+  <string name="level_searchable_hint">Degdeg. Waxay kuu ogolaanaysaa inaad fayl ku hesho waxa ku qoran.</string>
+  <string name="level_understood">Lagu fahmay macnaha</string>
+  <string name="level_understood_hint">Wuu gaabiyaa. Waxay kuu ogolaanaysaa inaad fayl ku hesho waxa uu ku saabsan yahay.</string>
+  <string name="level_quicklook">Jaleeco degdeg ah: sawirro iyo muuqaallo</string>
+  <string name="level_quicklook_hint">Degdeg. Qaab yar ayaa sawirrada ku hela waxa ku jira, raadinta Af-Ingiriisiga. Faahfaahin buuxda ayaa beddeli doonta marka sawir kasta la fahmo.</string>
+  <string name="meter_quicklook">Jaleeco degdeg ah: %1$s ka mid ah %3$s sawirro · Faahfaahin buuxda: %2$s ka mid ah %3$s</string>
+  <string name="level_a11y">%1$s: %2$s ka mid ah %3$s</string>
+  <string name="count_of">%1$s ka mid ah %2$s</string>
+  <string name="stat_time_left">Waqtiga haray</string>
+  <string name="stat_speed">Xawaaraha</string>
+  <string name="stat_index_size">Cabbirka diiwaangelinta</string>
+  <string name="stat_model_size">Cabbirka qaabka</string>
+  <string name="stat_when_charging">Bilaabmaya marka uu dallacayo</string>
+  <string name="stat_estimating">Xisaabinaya</string>
+  <string name="stat_measuring">Qiyaasaya</string>
+  <string name="stat_done">Dhammaystiran</string>
+  <string name="stat_rate_value">%1$s faylal/saac</string>
+  <string name="onb_next">Xiga</string>
+  <string name="onb_back">Dib</string>
+  <string name="onb_start">Bilow <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="onb_start_locked"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> wuxuu u baahan yahay oggolaanshaha dhammaan faylasha ka hor inta uusan bilaaban</string>
+  <string name="onb_allow_access">Oggolow marin-u-helka faylasha</string>
+  <string name="onb_page_of">Tallaabada %1$d ka mid ah %2$d</string>
+  <string name="welcome_line"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> wuxuu dukumentiyadaada, sawirradaada iyo sawirrada shaashadda ku helaa waxa ay sheegayaan iyo waxa ka muuqda.</string>
+  <string name="welcome_point_ai_body">AI-ga fahmaya faylashaada wuxuu ku shaqeeyaa taleefankan. Waxba looma diro seerfar.</string>
+  <string name="welcome_point_reads_title">Faylashaada oo keliya ayuu akhriyaa</string>
+  <string name="welcome_point_reads_body">Waxba ma beddelo, ma raro, mana tirtiro. Waxaad tirtiri kartaa wixii uu bartay wakhti kasta.</string>
+  <string name="onb_choose_folders">Dooro galalka</string>
+  <string name="onb1_eyebrow">U qaabaysan asturnaan</string>
+  <string name="onb1_title">Faylashadu waligood kama baxayaan taleefankan.</string>
+  <string name="onb1_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> wuxuu dukumentiyo, PDF-yo, sawirrada shaashadda, sawirro, meme-yo iyo muuqaallo ku helaa waxa ay leeyihiin iyo waxa ay muujinayaan. Waxaas oo dhan waxay ka dhacayaan taleefankan ku jira.</string>
+  <string name="onb1_point_internet_title">Ma jiro oggolaansho intarneet</string>
+  <string name="onb1_point_internet_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ma ku xirmi karo intarneetka gabi ahaanba. Android lafteeda ayaa ka horjoogsanaysa inuu wax dibadda u diro.</string>
+  <string name="onb1_point_model_title">AI-gu wuxuu ku jiraa taleefankaaga</string>
+  <string name="onb1_point_model_body">Qaabka fahmaya faylashada, EmbeddingGemma 2 ee Google, wuxuu ku shaqeeyaa taleefankan ku jira. Waxba looma diro adeegto si loo fahmo.</string>
+  <string name="onb1_point_delete_title">Adigaa maamulaya</string>
+  <string name="onb1_point_delete_body">Ka bood gal kasta, ama tirtir wax kasta oo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> uu bartay, goorta aad doonto.</string>
+  <string name="onb2_eyebrow">Waxa xiga ee dhacaya</string>
+  <string name="onb2_title">Raadintu waxay ku shaqaysaa daqiiqado. Fahamku wuxuu qaataa habeen.</string>
+  <string name="onb2_step1_title">Daqiiqado yar gudahood</string>
+  <string name="onb2_step1_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> wuxuu liis ka samaynayaa faylashada wuxuuna baranayaa magacyadooda iyo ereyada ku jira. Isla markiiba waad raadin kartaa.</string>
+  <string name="onb2_step2_title">Saacadaha soo socda gudahood</string>
+  <string name="onb2_step2_body">Kaddib wuxuu baranayaa waxa uu sawir iyo dukumenti kasta ku saabsan yahay, si raadinta sida “rasiidka lacagta dugsiga” ay u hesho midka saxda ah xitaa haddii ereyadaasi ku jirin. Tani waa shaqo u gaabis ah taleefanka.</string>
+  <string name="onb2_step3_title">Inta badan inta uu dallacayo</string>
+  <string name="onb2_step3_body">Si loo badbaadiyo batterigaaga, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> wuxuu qaybta gaabiska ah qabtaa markuu dallacayo. Hal habeen ku xir korontada. Waad la socon kartaa horumarka, hakin kartaa, ama beddeli kartaa wakhti kasta.</string>
+  <string name="onb3_eyebrow">Laba oggolaansho</string>
+  <string name="onb3_title">U oggolow <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> inuu arko faylashada</string>
+  <string name="onb3_files_title">Helitaanka dhammaan faylasha</string>
+  <string name="onb3_files_body">Waxaa loo baahan yahay in la arko faylasha gal kasta ku jira, sida dukumentiyada WhatsApp. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> wax buu akhriyaa oo keliya. Waligiis waxba ma beddelo, ma raro, mana tirtiro.</string>
+  <string name="onb3_files_action">Fur habaynta</string>
+  <string name="onb3_files_granted">Waa la oggolaaday</string>
+  <string name="onb3_files_hint">Liiska furma, shid “U oggolow maaraynta dhammaan faylasha”, kaddibna dib u soo noqo.</string>
+  <string name="onb3_notif_title">Ogeysiisyada (ikhtiyaari)</string>
+  <string name="onb3_notif_body">Keliya si <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> uu kuugu sheego markuu dhammeeyo akhrinta. Wax kale ma aha.</string>
+  <string name="onb3_notif_action">Oggolow</string>
+  <string name="onb3_notif_granted">Waa la oggolaaday</string>
+  <string name="onb4_eyebrow">Dheeraadyo ikhtiyaari ah</string>
+  <string name="onb4_title">Ma ku daraysaa dheeraadyo?</string>
+  <string name="onb4_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> wuu shaqeeyaa la\'aantood. Mid kastaa hal shay ayuu wanaajiyaa. Mid kastaa waa fayl aad ku koobiyayso Soo-dejinta, sababtoo ah <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> waligiis internetka ma galo.</string>
+  <string name="onb4_add">Ku dar</string>
+  <string name="onb4_not_now">Hadda maya</string>
+  <string name="onb4_added">Waa lagu daray</string>
+  <string name="onb4_skipped">Waa laga booday. Dib ayaad kaga dari kartaa.</string>
+  <string name="onb4_footer">Tani dib ayaad uga beddeli kartaa Habaynta → Kordhinnada.</string>
+  <string name="search_hint">Raadi faylashada</string>
+  <string name="search_hint_a11y">Ku raadi faylashada waxa ay leeyihiin ama muujinayaan</string>
+  <string name="search_clear">Nadiifi raadinta</string>
+  <string name="search_searching">Raadinaya</string>
+  <string name="search_settings">Habaynta</string>
+  <string name="search_nothing_title">Waxba lama helin</string>
+  <string name="search_nothing_body">Ma jiro fayl u dhigma “%1$s”.</string>
+  <string name="search_nothing_try_all">Isku day ereyo ka yar ama ka duwan, ama raadi Dhammaan.</string>
+  <string name="search_nothing_incomplete"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> weli wuxuu ku jiraa barashada faylashada, markaa tani way isbeddeli kartaa. Isku day waxyar kaddib.</string>
+  <string name="search_repairing_note">Raadinta ayaa is hagaajinaysa. Magacyada iyo ereyadu weli way shaqaynayaan; raadinta macnaha waxay dib u soo noqonaysaa daqiiqado yar gudahood.</string>
+  <string name="search_incomplete_note">Magacyada iyo ereyadu hadda way shaqaynayaan. Raadinta macnaha weli waa la baranayaa, markaa wax u dhigma oo dheeraad ah ayaa soo bixi kara.</string>
+  <string name="search_incomplete_note_charger">Magacyada iyo ereyadu hadda way shaqaynayaan. Raadinta macnaha (sida “boda” oo loo raadiyo sawir mooto) waxay bilaabmaysaa marka taleefanku dallaco.</string>
+  <string name="search_weak_toggle">Kuwa yar u dhigma (%1$d)</string>
+  <string name="search_weak_only">Ma jiraan kuwo si buuxda u dhigma. Kuwani waa kuwa ugu dhow.</string>
+  <string name="search_weak_expand">Muuji kuwa yar u dhigma</string>
+  <string name="search_weak_collapse">Qari kuwa daciifka ah</string>
+  <string name="search_fresh_title">Wali wax la muujiyo ma jiraan</string>
+  <string name="search_fresh_body">Isla markii <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> uu arko faylashaada, kuwa ugu cusub ayaa halkan ka soo muuqan doona. Xagga sare wax ku qor si aad u raadiso.</string>
+  <string name="search_recent_empty_filter">Wali ma jiraan faylal noocan ah.</string>
+  <string name="access_banner_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> wali ma arki karo faylashaada</string>
+  <string name="access_banner_body">Oggolow gelitaanka Dhammaan faylasha si uu u akhriyo. Waligiis waxba ma beddelo.</string>
+  <string name="snack_no_app">Ma jiro abka taleefankan ku jira oo furi kara faylkan.</string>
+  <string name="snack_sample">Kani waa fayl tusaale ah, sidaa darteed lama furi karo.</string>
+  <string name="settings_title">Habaynta</string>
+  <string name="settings_back">Dib</string>
+  <string name="settings_section_reading">Akhrinta</string>
+  <string name="learn_speed_title">Xawaaraha barashada</string>
+  <string name="learn_gentle">Qabow</string>
+  <string name="learn_gentle_hint">Waxay akhrisaa kaliya marka uu dabka ku jiro, iyadoo isticmaalaysa dun yar. Batari iyo kuleyl yar; wax kasta oo cusub waxay sugaan jaajarka.</string>
+  <string name="learn_balanced">Dhexdhexaad</string>
+  <string name="learn_balanced_hint">Habka caadiga ah. Jaajarku wuxuu akhriyaa dhammaan sawirradaada; marka batariga lagu jiro waxaa shaqeeya oo kaliya faylasha cusub iyo jaleecada degdegga ah.</string>
+  <string name="learn_fast">Degdeg</string>
+  <string name="learn_fast_hint">Wax walba waxay akhrisaa xitaa marka batariga lagu jiro, waxayna sugtaa kaliya marka aad isticmaalayso app kale. Waa dhammaadaa dhaqso, waxay isticmaashaa batari badan, waxayna kululaataa.</string>
+  <string name="settings_section_kinds">Waxa la akhrinayo</string>
+  <string name="settings_recordings">Codadka la duubay iyo qoraallada codka</string>
+  <string name="settings_recordings_hint">Akhri waxa la yidhi iyo waxa la maqlay, si aad u raadiso.</string>
+  <string name="settings_deeper">Raadin cod oo qoto dheer (gaabis): muusig iyo codad kale</string>
+  <string name="settings_deeper_hint">Waxay heshaa codadka sida ay u eg yihiin, ma aha ereyo kaliya. Waxay qaadataa ilaa 15 ilbiriqsi oo akhris ah daqiiqad kasta oo cod ah taleefan caadi ah dushiisa.</string>
+  <string name="settings_section_addons">Kordhinnada</string>
+  <string name="addons_intro">Waxyaabo dheeraad ah oo raadinta ka dhiga mid wanaagsan. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> waligiis internetka ma galo, marka mid kasta waa fayl aad marka hore ku koobiyeysaneyso Downloads. Wax kasta waxay ku hadhayaan taleefankan ku jira.</string>
+  <string name="addons_status_not_added">Lama darin</string>
+  <string name="addons_status_adding">Waa la darayaa</string>
+  <string name="addons_status_added">Waa lagu daray</string>
+  <string name="addons_status_soon">Dhakhso u soo socda</string>
+  <string name="addons_size">Xajmiga: %1$s</string>
+  <string name="addons_add">Ku dar</string>
+  <string name="addons_add_with_size">Ku dar (%1$s)</string>
+  <string name="addons_remove">Ka saar, wuxuu banneynayaa %1$s</string>
+  <string name="addons_on">Shidan</string>
+  <string name="addons_off">Dansan</string>
+  <string name="addons_adding_pct">Hubinta iyo ku darista… %1$d%%</string>
+  <string name="addons_adding">Hubinta iyo ku darista…</string>
+  <string name="addons_try_again">Isku day mar kale</string>
+  <string name="addons_soon_hint">Wali diyaar ma aha. Halkan ayuu ka soo muuqan doonaa marka uu diyaar noqdo.</string>
+  <string name="addons_problem_not_found"><xliff:g id="app_name" example="Trawl">%2$s</xliff:g> kama helin %1$s galka Downloads. Halkaas ku koobiyeey, ka dibna isku day mar kale.</string>
+  <string name="addons_problem_access"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> wuxuu u baahan yahay gelitaanka Dhammaan faylasha si uu u akhriyo Downloads. Shid, ka dibna isku day mar kale.</string>
+  <string name="addons_problem_bad">Faylka ku jira Downloads wuu xumaaday ama waa mid khaldan, marka <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ma isticmaalin. Mar kale koobiyeey, ka dibna isku day mar kale.</string>
+  <string name="addons_problem_unavailable">Kordhintan laguma dari karo noocan wali.</string>
+  <string name="addons_add_title">Ku dar %1$s</string>
+  <string name="addons_add_install">Ku shub</string>
+  <string name="addons_remove_title">Ma laga saaraa %1$s?</string>
+  <string name="addons_remove_body">Tani waxay banaynaysaa %1$s oo daminaysaa. Erayada iyo macnayaasha <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> hore u baratay way sii joogayaan ilaa faylashadaas mar kale la akhriyo. Dib ayaad ugu dari kartaa wakhti kasta.</string>
+  <string name="addons_remove_confirm">Ka saar</string>
+  <string name="settings_section_excluded">Galalka laga booday</string>
+  <string name="settings_excluded_hint"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ma akhrin doonto waxba ku dhex jira galalkan.</string>
+  <string name="settings_excluded_empty">Waxba. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> waxay akhrisaa gal kasta oo ay arki karto.</string>
+  <string name="settings_excluded_remove">Jooji ka boodista %1$s</string>
+  <string name="settings_excluded_bad">Galkaas lagama dooran karo halkan. Ka dooro kaydka weyn ee taleefanka.</string>
+  <string name="onb_scope_eyebrow">Dookhaaga</string>
+  <string name="scope_title">Maxay tahay inay <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> raadiso?</string>
+  <string name="scope_intro">Dami wax kasta oo aadan doonayn in la helo. Faylashoodu isla markiiba way ka baxayaan raadinta, dibna way ugu soo noqonayaan haddii aad dib u shido.</string>
+  <string name="scope_counts_unknown">Tirada faylalku waxay soo baxaysaa marka ay <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> arki karto faylashada.</string>
+  <string name="scope_private">Galalka qarsoon, galalka lagu calaamadeeyay .nomedia iyo galalka gaarka ah ee abiyada kale weligood lama akhriyo.</string>
+  <string name="scope_added_title">Galalka aad ku dartay</string>
+  <string name="scope_add">Ku dar gal</string>
+  <string name="scope_added_remove">Jooji raadinta %1$s</string>
+  <string name="scope_exclude">Ka reeb gal</string>
+  <plurals name="scope_files">
+        
+    
+    <item quantity="one">%1$s fayl</item>
+    <item quantity="other">%1$s faylal</item>
+  </plurals>
+  <string name="scope_group_camera">Kaamero</string>
+  <string name="scope_group_screenshots">Sawirrada shaashadda</string>
+  <string name="scope_group_whatsapp_images">Sawirrada WhatsApp</string>
+  <string name="scope_group_whatsapp_video">Muuqaallada WhatsApp</string>
+  <string name="scope_group_whatsapp_documents">Dukumentiyada WhatsApp</string>
+  <string name="scope_group_whatsapp_voice">Farriimaha codka ee WhatsApp</string>
+  <string name="scope_group_whatsapp_status">Heerka WhatsApp</string>
+  <string name="scope_group_downloads">Soo-dejimo</string>
+  <string name="scope_group_documents">Dukumentiyo</string>
+  <string name="scope_group_music">Muusig iyo duubitaanno</string>
+  <string name="scope_group_other">Galal kale</string>
+  <string name="settings_section_storage">Kaydka la isticmaalay</string>
+  <string name="settings_storage_index">Diiwaanka raadinta</string>
+  <string name="settings_storage_model">Moodalka AI</string>
+  <string name="settings_delete">Tirtir wax kasta oo ay <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> og tahay</string>
+  <string name="settings_delete_hint">Waxay tirtiraysaa waxa ay <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ka akhrisay faylashada, iyo faylasheeda ku-meel-gaadhka ah. Faylashadaada ma taabanayo.</string>
+  <string name="settings_delete_title">Ma la tirtiraa wax kasta oo ay <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> og tahay?</string>
+  <string name="settings_delete_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> waxay hadda tirtiraysaa diiwaankeeda faylashada: magacyadooda, erayada dukumentiyadaada ku jira, qoraalka ay ka akhrisay sawirrada iyo sawirrada shaashadda, hadalka ay ka qortay muuqaallada iyo farriimaha codka, iyo waxa uu AI-geedu ka xusay fayl kasta. Faylasheeda ku-meel-gaadhka ah iyo warbixin kasta oo ciladeed iyaguna way baxayaan.\n\nFaylashadaada ma taabanayo. Habayntaadu way baaqi noqonaysaa, oo ay ku jiraan galalka aad ka boodday.\n\n<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> dabadeed waxay joojinaysaa akhrinta. Raadintu waxay ahaanaysaa madhan ilaa aad taabato Dib u bilow.</string>
+  <string name="settings_delete_done">Waa la tirtiray %1$s. <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> waa la hakiyay ilaa aad taabato Dib u bilow.</string>
+  <string name="settings_storage_model_hint">Waxaa loo baahan yahay raadinta macnaha.</string>
+  <string name="settings_storage_index_hint">Keydka xogta iyo diiwaankiisa.</string>
+  <string name="settings_storage_estimate">Marka fayl kasta la akhriyo</string>
+  <string name="settings_storage_estimate_value">Qiyaastii %1$s</string>
+  <string name="settings_storage_memory">Xusuusta xilliga raadinta</string>
+  <string name="settings_storage_memory_hint">Waxaa la hayaa kaliya inta <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> uu furan yahay. Qiyaastii %1$s marka fayl kasta la akhriyo.</string>
+  <string name="settings_storage_remove">Ka saar</string>
+  <string name="settings_storage_no_data"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> waligood ma isticmaalo xogta moobilka: ma laha galmo intarneet.</string>
+  <string name="settings_delete_confirm">Tirtir</string>
+  <string name="settings_cancel">Ka noqo</string>
+  <string name="settings_section_appearance">Muuqaalka</string>
+  <string name="settings_theme_system">Habka taleefanka</string>
+  <string name="settings_theme_light">Koolac</string>
+  <string name="settings_theme_dark">Madow</string>
+  <string name="report_card_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> si lama filaan ah ayuu u istaagay. Ma dirtaa warbixin si ay u caawiso hagaajintiisa?</string>
+  <string name="report_card_body">Warbixintu kuma jiraan magacyada faylasha, raadinta ama qoraallada faylashada ku jira. Adiga ayaa marka hore akhrinaya, waxbana lama dirayo ilaa aad ka riixdo Dir abkaaga iimaylka.</string>
+  <string name="report_send">Dir</string>
+  <string name="report_not_now">Hadda maya</string>
+  <string name="report_view">Eeg warbixinta</string>
+  <string name="report_close">Xidh</string>
+  <string name="report_send_email">Ku dir iimayl</string>
+  <string name="report_send_whatsapp">Ku dir WhatsApp</string>
+  <string name="report_send_whatsapp_file">Ku dir warbixinta buuxda WhatsApp</string>
+  <string name="report_no_email">Wax abka iimaylka ah lagama helin taleefankan ku jira. Isticmaal Eeg warbixinta si aad u akhrido, ama soo deji ab iimayl ah.</string>
+  <string name="report_no_whatsapp">WhatsApp waa la furi waayay.</string>
+  <string name="report_building">Diyaarinta warbixinta…</string>
+  <string name="report_dialog_title">Warbixinta dhibaatada</string>
+  <string name="report_dialog_hint">Kani waa wax kasta oo la diri lahaa. Faylashada, gallada iyo raadinta kuma jiraan.</string>
+  <string name="settings_section_report">Soo sheeg dhibaato</string>
+  <string name="settings_report_hint">Waxay fureysaa abkaaga iimaylka iyadoo warbixintu diyaar u tahay diris. Waxay haysaa nooca taleefanka iyo nooca <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>, iyo cilad kasta oo uu <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> arkay, iyadoo aanay ku jirin magacyada faylasha, raadinta ama qoraallada faylashada ku jira. Adiga ayaa marka hore akhrinaya, waxbana lama dirayo ilaa aad halkaas ka riixdo Dir.</string>
+  <string name="settings_report_note">Maxaa khaldamay? (ikhtiyaari)</string>
+  <string name="settings_report_kept"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> wuxuu taleefankan ku jira ku hayaa ugu badnaan 10 warbixinood, qiyaastii 100 KB. “Tirtir wax kasta oo uu <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ogyahay” ayaa tirtiraysa iyaga.</string>
+  <string name="settings_section_about">Ku saabsan</string>
+  <string name="settings_about_version">Nooca %1$s</string>
+  <string name="settings_about_model">Raadintu waxay ku shaqaysaa EmbeddingGemma 2 oo ay leedahay Google (Apache 2.0), gabi ahaanba taleefankan ku jira.</string>
+  <string name="settings_about_private"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ma laha fasax internet. Faylashada iyo waxa uu ka barto marnaba kama baxaan taleefanka.</string>
+  <string name="settings_about_maker">Waxaa sameeyay Crane AI Labs.</string>
+  <string name="settings_licences">Shatiyada iyo mahadcelinta</string>
+  <string name="licences_title">Shatiyada iyo mahadcelinta</string>
+  <string name="licences_intro"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> waxaa lagu dhisay shaqada hoose. Ogeysiisyadan waxaa waajibinaya shatiyada, waana sidoo kale sida aan u mahadcelino.</string>
+  <string name="licences_section_required">Ogeysiisyada</string>
+  <string name="licences_section_components">Wax kasta oo kale oo ku jira <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="licences_section_texts">Qoraalka buuxa ee shatiga</string>
+  <string name="licences_show">Muuji qoraalka buuxa</string>
+  <string name="licences_hide">Qari qoraalka buuxa</string>
+  <string name="settings_close">Xir</string>
+  <string name="pack_size_mb">%1$d MB</string>
+  <string name="pack_speech_name">Raadinta hadalka</string>
+  <string name="pack_speech_benefit">Waxay heshaa waxa lagu dhex sheegay muuqaallada iyo codadka: faylka saxda ah ayaa ugu horreeya %1$d%% halkii uu ka ahaan lahaa %2$d%%.</string>
+  <plurals name="pack_speech_cost">
+        
+    
+    <item quantity="one">Waxay ku darsataa qiyaastii %1$d ilbiriqsi daqiiqad kasta oo muuqaal ah inta la akhrinayo. Hadalka Ingiriisiga keliya hadda.</item>
+    <item quantity="other">Waxay ku darsataa qiyaastii %1$d ilbiriqsi daqiiqad kasta oo muuqaal ah inta la akhrinayo. Hadalka Ingiriisiga keliya hadda.</item>
+  </plurals>
+  <string name="pack_quicklook_name">Jaleec degdeg ah oo sawirrada ah</string>
+  <plurals name="pack_quicklook_benefit">
+        
+    
+    <item quantity="one">Waxay sawirradaada oo dhan ka dhigtaa kuwo micno ahaan lagu raadin karo daqiiqado gudahood halkii ay saacado ka noqon lahayd: qiyaastii %1$s sawir saacaddiiba halkii ay ka ahaan lahayd %2$d taleefan caadi ah (raadinta Ingiriisiga). Faahfaahinta buuxda ayaa gadaal ka buuxsamaysa.</item>
+    <item quantity="other">Waxay sawirradaada oo dhan ka dhigtaa kuwo micno ahaan lagu raadin karo daqiiqado gudahood halkii ay saacado ka noqon lahayd: qiyaastii %1$s sawir saacaddiiba halkii ay ka ahaan lahayd %2$d taleefan caadi ah (raadinta Ingiriisiga). Faahfaahinta buuxda ayaa gadaal ka buuxsamaysa.</item>
+  </plurals>
+  <string name="pack_quicklook_cost">Raadinta Ingiriisiga keliya: raadinta luuqadaha kale waxay sugtaa akhrinta buuxda. Akhrinta buuxda waxay %1$d%% ka gaabisaa inta ay shaqaynayso, waxayna isticmaashaa xusuus yar oo dheeraad ah marka ay akhrinayso.</string>
+  <string name="pack_privacy_name">Madmadow geli hordhacyada gaarka u muuqda</string>
+  <string name="pack_privacy_benefit">Waxay madmadow gelisaa hordhaca yar ee sawirka u muuqda mid gaar ah (qaawanaan, nigis), si qofka garabkaaga ka soo eegaya uusan wax badan u arkin. Taabo hordhaca si aad u muujiso. Madmadow uun bay gelisaa: waxba lama qarin mana la wareejin natiijooyinka dhexdiisa.</string>
+  <string name="pack_privacy_cost">Way ku khaldami kartaa labada dhinacba, sawirrada caafimaadka (finanka, hooyada naaska nuujinaysa) ayaana la madmadow gelin karaa. Waxay sawirrada ku akhrisaa gadaasha marka uu dallacmayo, waxayna akhrinta buuxda ku gaabisaa qiyaastii %1$d%% inta ay shaqaynayso.</string>
+  <string name="pack_privacy_recommended">Waa lagula talinayaa haddii aad isticmaasho qaybta raadinta degdegga ah</string>
+  <string name="pack_how_to_add_downloads"><xliff:g id="app_name" example="Trawl">%3$s</xliff:g> waligii khadka ma galo, marka isagu ma soo dejisan karo tan. Ka soo qaado faylka %1$s (%2$s) Crane AI Labs oo ku koobiyee galka Soo-dejinta ee taleefankan. Kadibna taabo Ku shub: <xliff:g id="app_name" example="Trawl">%3$s</xliff:g> ayaa hubinaya faylka oo ku daraya. Waad tirtiri kartaa .zip-ka intaa kadib.</string>
+  <string name="pack_how_to_add_play">Play ayaa keeni doonta %1$s (%2$s) marka aad taabato Ku shub. Wax kale oo la samaynayo ma jiraan.</string>
+  <string name="notif_channel_name">Barashada taleefankaaga</string>
+  <string name="notif_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> wuxuu baranayaa taleefankaaga</string>
+  <string name="notif_getting_ready">Diyaarinaya…</string>
+  <string name="notif_reading_photo">Akhrinaya sawir</string>
+  <string name="notif_reading_screenshot">Akhrinaya sawir-shaashadeed</string>
+  <string name="notif_reading_video">Akhrinaya muuqaal</string>
+  <string name="notif_reading_document">Akhrinaya dukumenti</string>
+  <string name="notif_reading_recording">Akhrinaya cod la duubay</string>
+  <string name="notif_reading_file">Akhrinaya fayl</string>
+  <string name="notif_waiting_polite">Waa sugayaa intaad taleefanka isticmaalayso</string>
+  <string name="chip_label_action">%1$s  ·  %2$s</string>
+  <string name="a11y_description_note">%1$s. %2$s</string>
+  <string name="meter_a11y_extra">%1$s %2$s.</string>
+  <string name="message_then_sentence">%1$s %2$s</string>
+  <string name="lock_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> waa qufulan yahay</string>
+  <string name="lock_body">Ku fur faraha, wejiga, PIN-ka ama qaabka taleefankaaga.</string>
+  <string name="lock_button">Fur</string>
+  <string name="quick_device_locked">Fur taleefankaaga si aad u raadiso.</string>
+  <string name="lock_prompt_title">Fur <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="lock_prompt_subtitle">Isticmaal qufulka shaashadda taleefankaaga</string>
+  <string name="settings_section_privacy">Asturnaanta</string>
+  <string name="privacy_lock_title">Qufull <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="privacy_lock_hint">Weydii farahaaga, wejiga, PIN-ka ama qaabka ka hor inta aan waxba la muujin.</string>
+  <string name="privacy_lock_needs_screen_lock">Marka hore ku samee qufulka shaashadda taleefankaaga (Habaynta, Amniga). <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> waxay isticmaashaa furitaankaas.</string>
+  <string name="privacy_lock_on_prompt">Shid qufulka <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="privacy_lock_off_prompt">Dami qufulka <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="privacy_lock_after_title">Mar kale qufull kaddib</string>
+  <string name="privacy_lock_after_now">Mar kasta</string>
+  <string name="privacy_lock_after_minutes">%1$d daq</string>
+  <string name="privacy_lock_after_hint">Muddada ay <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ku jiri karto gadaal ka hor inta aysan mar kale weydiin. Waxa kale oo ay qufulmaysaa marka shaashaddu damto.</string>
+  <string name="privacy_recents_title">Ku qari <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> barnaamijyadii dhowaa</string>
+  <string name="privacy_recents_hint">Kaadhka <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> waxba kama muuqan doonaan liiska barnaamijyadii dhowaa. Waxaa kaloo la xannibayaa sawirrada shaashadda ee <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>.</string>
+  <string name="privacy_show_title">Muuji natiijooyinka xasaasiga ah</string>
+  <string name="privacy_show_hint">Demisan: faylasha aad u calaamadisay kuwa xasaasi ah, iyo faylasha ku jira gallada gaarka ah, kama soo muuqanayaan natiijooyinka iyo muraayadda degdegga ah ilaa aad furto.</string>
+  <string name="privacy_show_prompt">Muuji natiijooyinka xasaasiga ah</string>
+  <string name="privacy_pin_note">Qof kasta oo yaqaanna PIN-ka taleefankaaga wuxuu arki karaa natiijooyinka xasaasiga ah. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ma laha PIN u gaar ah.</string>
+  <string name="privacy_no_screen_lock_note">Taleefankaagu ma laha qufulka shaashadda, sidaa darteed qof kasta oo haya wuxuu furi karaa <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> oo uu arki karaa wax kasta. Samee qufulka shaashadda si aad u ilaaliso.</string>
+  <string name="privacy_folders_title">Gallada gaarka ah</string>
+  <string name="privacy_folders_hint">Wax kasta oo ku jira gal gaar ah waxaa loo tixgeliyaa xasaasi. Si ka duwan gallada laga reebay, weli waa la akhriyaa, si aad u raadiso marka aad furto.</string>
+  <string name="privacy_folders_empty">Ma jiraan gallo gaar ah.</string>
+  <string name="privacy_folders_add">Ku dar gal gaar ah</string>
+  <string name="privacy_folders_bad">Galkaas looma calaamadin karo mid gaar ah. Dooro gal ku jira kaydka weyn ee taleefanka.</string>
+  <string name="privacy_folders_remove">Jooji in %1$s loo tixgeliyo mid gaar ah</string>
+  <string name="privacy_folders_remove_prompt">Galka ka dhig mid aan gaar ahayn</string>
+  <string name="onb_lock_title">Qufull <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> (ikhtiyaari)</string>
+  <string name="onb_lock_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> waxay weydiin kartaa farahaaga, wejiga, PIN-ka ama qaabka taleefankaaga ka hor inta aysan waxba muujin, si uusan qof taleefankaaga haya u raadin karin. Waxaad tan ku beddeli kartaa Habaynta dhexdeeda.</string>
+  <string name="onb_lock_action">Shid qufulka</string>
+  <string name="onb_lock_on">Qufulku wuu shidan yahay</string>
+  <string name="onb_lock_no_screen_lock">Taleefankaagu weli ma laha qufulka shaashadda. Mid ka sameyso Habaynta taleefanka si aad tan u isticmaasho.</string>
+  <string name="privacy_hidden_chip">%1$d qarsoon</string>
+  <string name="privacy_hidden_action">Muuji</string>
+  <plurals name="privacy_hidden_chip_description">
+        
+    
+    <item quantity="one">%1$d natiijo xasaasi ah ayaa qarsoon. Laba jeer taabo si aad u furto oo u muujiso.</item>
+    <item quantity="other">%1$d natiijo oo xasaasi ah ayaa qarsoon. Laba jeer taabo si aad u furto oo u muujiso.</item>
+  </plurals>
+  <string name="privacy_shown_chip">Natiijooyinka xasaasiga ah waa la muujiyay</string>
+  <string name="privacy_shown_action">Qari</string>
+  <string name="privacy_reveal_title">Muuji natiijooyinka xasaasiga ah</string>
+  <string name="privacy_reveal_subtitle">Isticmaal qufulka shaashadda taleefankaaga</string>
+  <string name="action_mark_sensitive">Calaamadee xasaasi</string>
+  <string name="action_unmark_sensitive">Ma aha xasaasi</string>
+  <string name="snack_marked_sensitive">Waxaa loo calaamadeeyay xasaasi. Hadda natiijooyinka waa laga qariyay.</string>
+  <string name="snack_unmarked_sensitive">Hadda ma aha xasaasi.</string>
+  <string name="sensitive_share_title">Ma la wadaagtaa shay xasaasi ah?</string>
+  <string name="sensitive_share_body">Waxaad kan u calaamadeysay xasaasi. Qofkii hela wuu heysan karaa waana sii gudbin karaa.</string>
+  <string name="sensitive_share_confirm">La wadaag</string>
+  <string name="sensitive_copy_title">Ma nuqulisaa shay xasaasi ah?</string>
+  <string name="sensitive_copy_body">Waxaad kan u calaamadeysay xasaasi. Wax kasta oo aad ku dhajiso waxay helayaan faylka laftiisa.</string>
+  <string name="sensitive_copy_confirm">Koobiyeey</string>
+  <string name="sensitive_cancel">Ka noqo</string>
+  <string name="settings_section_previews">Horudhacyada</string>
+  <string name="settings_blur_title">Cawadee horudhacyada u eg kuwo gaar ah</string>
+  <string name="settings_blur_hint">Waa toos, markaa khalad wuu noqon karaa. Sawirka yar oo keliya ayaa la cawadinayaa; faylka weli waa la helayaa. Taabo isha si aad u muujiso.</string>
+  <string name="settings_blur_panel_title">Ku cawadee raadinta degdegga ah</string>
+  <string name="settings_blur_panel_hint">Waa toos, markaa khalad wuu noqon karaa. Halkan si caadi ah ayuu u shaqeynayaa, sababtoo ah qaybtu waxay ku dul furmaysaa ababyada kale. Muujinta sawir waxay u baahan tahay in taleefankaaga la furo.</string>
+  <string name="settings_blur_needs_pack">Waxay u baahan tahay kordhinta \"Cawadee horudhacyada u eg kuwo gaar ah\", ee hoose. Ilaa lagu daro, waxba lama cawadinayo.</string>
+  <string name="action_show_picture">Muuji sawirka</string>
+  <string name="preview_hidden">horudhacu waa qarsoon yahay, waxaa laga yaabaa inuu gaar yahay</string>
+  <string name="quick_unlock_to_show">Fur taleefankaaga si aad u muujiso sawirkan.</string>
+  <string name="quick_name">Raadin degdeg ah</string>
+  <string name="quick_shortcut_long">Si degdeg ah u raadi faylashada</string>
+  <string name="quick_widget_hint">Raadi faylashada</string>
+  <string name="quick_widget_description">Baarka raadinta oo ku dul furaya raadinta degdegga ah ee <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> abka aad ku jirto.</string>
+  <string name="quick_hint">Raadi faylashada</string>
+  <string name="quick_close">Xir raadinta degdegga ah</string>
+  <string name="quick_clear">Nadiifi</string>
+  <string name="quick_nothing">Waxba looma helin “%1$s”.</string>
+  <string name="quick_nothing_incomplete"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> weli waxay ku jirtaa barashada faylashada, markaa tani way isbeddeli kartaa.</string>
+  <string name="quick_not_set_up"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> weli ma akhrin faylashada. Fur <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> si aad u bilowdo.</string>
+  <string name="quick_open_findr">Fur <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="quick_still_meaning">Raadinaya macnaha…</string>
+  <string name="quick_copied">Waa la koobiyeeyay. Ku dhaji wada-sheekeysiga.</string>
+  <string name="quick_copy_failed">Faylkan lama koobiyeyn karin.</string>
+  <string name="quick_no_app">Ma jiro ab furi kara faylkan.</string>
+  <string name="quick_add_tile_title">Ku dar Raadinta degdegga ah habayntaada degdegga ah?</string>
+  <string name="quick_add_tile_body">Waxaad markaas faylashada ka raadin kartaa ab kasta adigoo labo jeer jiidaya.</string>
+  <string name="quick_add_tile_yes">Ku dar taayilka</string>
+  <string name="quick_add_tile_no">Hadda maya</string>
+  <string name="settings_storage_remove_named">Ka saar <xliff:g id="item" example="Speech pack">%1$s</xliff:g></string>
+  <string name="licences_show_named">Muuji qoraalka buuxa ee <xliff:g id="licence" example="Apache License 2.0">%1$s</xliff:g></string>
+  <string name="licences_hide_named">Qari qoraalka buuxa ee <xliff:g id="licence" example="Apache License 2.0">%1$s</xliff:g></string>
+  <string name="sheet_error_word">Dhibaato</string>
+  <string name="switch_on">Daaran</string>
+  <string name="switch_off">Dansan</string>
+  <string name="language_title">Dooro luuqaddaada</string>
+  <string name="language_intro">Shaashadaha <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> waxay ku qornaan doonaan luuqaddan. Waxaad hadhow ka beddeli kartaa Habaynta.</string>
+  <string name="language_system">Luuqadda taleefanka</string>
+  <string name="language_system_hint">Waxay raacaysaa habaynta taleefankaaga</string>
+  <string name="language_preview">Horu-arag</string>
+  <string name="settings_language">Luuqadda</string>
+  <plurals name="search_status_so_far">
+        
+    
+    <item quantity="one">%1$d ilaa hadda · micnaha wax yar kadib</item>
+    <item quantity="other">%1$d ilaa hadda · micnaha wax yar kadib</item>
+  </plurals>
+  <string name="search_status_words">Erayada hadda · micnaha wax yar kadib</string>
+  <plurals name="search_status_found">
+        
+    
+    <item quantity="one">%1$d ayaa la helay</item>
+    <item quantity="other">%1$d ayaa la helay</item>
+  </plurals>
+  <string name="action_share_file">La wadaag %1$s</string>
+  <string name="action_copy_file">Koobiyeey %1$s</string>
+  <string name="preview_hidden_words">Wuxuu u muuqdaa mid gaar ah · taabo si aad u aragto</string>
+  <string name="filter_group">Muuji faylalkee</string>
+</resources>

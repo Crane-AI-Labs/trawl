@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="open_problem_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ayikwazanga ukuvula uhlu lwayo okwamanje</string>
+  <string name="open_problem_busy">Omunye umsebenzi uyalusebenzisa. Izophinda izame maduze.</string>
+  <string name="open_problem_storage_full">Isitoreji sefoni sigcwele. Izophinda izame maduze.</string>
+  <string name="open_problem_io">Ifoni ayikwazanga ukulufunda. Izophinda izame maduze.</string>
+  <string name="open_problem_memory">Ifoni ayinayo imemori eyanele. Izophinda izame maduze.</string>
+  <string name="open_problem_other">Izophinda izame maduze.</string>
+  <string name="open_problem_detail">Imiphumela yakho yangaphambilini iphephile futhi akukho okususiwe. Izama futhi ngokwayo, noma thepha okuthi Zama futhi.</string>
+</resources>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="action_find_similar">Encontrar semelhantes</string>
+  <string name="action_find_similar_help">Encontrar semelhantes mostra fotos parecidas com esta.</string>
+  <string name="similar_chip">Semelhantes a %1$s</string>
+  <string name="similar_remove">Parar de buscar semelhantes</string>
+  <string name="similar_nothing_body">Nenhum dos seus arquivos se parece com %1$s ainda.</string>
+</resources>

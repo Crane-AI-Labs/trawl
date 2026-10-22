@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="open_problem_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> አሁን መዝግቡን መክፈት አልቻለም</string>
+  <string name="open_problem_busy">ሌላ ሥራ እየተጠቀመበት ነው። ትንሽ ቆይቶ እንደገና ይሞክራል።</string>
+  <string name="open_problem_storage_full">የስልኩ ማከማቻ ሞልቷል። ትንሽ ቆይቶ እንደገና ይሞክራል።</string>
+  <string name="open_problem_io">ስልኩ መዝግቡን ማንበብ አልቻለም። ትንሽ ቆይቶ እንደገና ይሞክራል።</string>
+  <string name="open_problem_memory">የስልኩ ማህደረ ትውስታ አንሷል። ትንሽ ቆይቶ እንደገና ይሞክራል።</string>
+  <string name="open_problem_other">ትንሽ ቆይቶ እንደገና ይሞክራል።</string>
+  <string name="open_problem_detail">ቀዳሚ ውጤቶችህ ደህንነታቸው የተጠበቀ ነው፣ ምንም አልጠፋም። በራሱ እንደገና ይሞክራል፤ ወይም እንደገና ሞክር የሚለውን ንካ።</string>
+</resources>

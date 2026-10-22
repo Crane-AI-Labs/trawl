@@ -1,0 +1,459 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="kind_document">Ekiwandiiko</string>
+  <string name="kind_pdf">PDF</string>
+  <string name="kind_photo">Ekifaananyi</string>
+  <string name="kind_screenshot">Sikrinsyoti</string>
+  <string name="kind_video">Vidiyo</string>
+  <string name="kind_audio">Eddoboozi</string>
+  <string name="kind_other">Fayiro</string>
+  <string name="filter_all">Zonna</string>
+  <string name="filter_photos">Ebifaananyi</string>
+  <string name="filter_screenshots">Sikrinsyoti</string>
+  <string name="filter_videos">Vidiyo</string>
+  <string name="filter_documents">Ebiwandiiko</string>
+  <string name="filter_audio">Eddoboozi</string>
+  <string name="kind_plural_screenshots">Sikrinsyoti</string>
+  <string name="kind_plural_photos">Ebifaananyi</string>
+  <string name="kind_plural_documents">Ebiwandiiko ne PDF</string>
+  <string name="kind_plural_videos">Vidiyo</string>
+  <string name="kind_plural_audio">Eddoboozi</string>
+  <string name="section_photos_videos">Ebifaananyi ne vidiyo</string>
+  <string name="section_documents_text">Ebiwandiiko n\'ebigambo</string>
+  <string name="section_recent_documents">Ebiwandiiko ebyakakozesebwa</string>
+  <string name="section_recent_photos_videos">Ebifaananyi ne vidiyo ebyakakozesebwa</string>
+  <string name="badge_page">olup. %1$d</string>
+  <string name="badge_at_time">ku %1$s</string>
+  <plurals name="pages_count">
+        
+    
+    <item quantity="one">olupapula %d</item>
+    <item quantity="other">empapula %d</item>
+  </plurals>
+  <string name="action_open">Ggulawo</string>
+  <string name="action_share">Gabanako</string>
+  <string name="action_copy">Koppa</string>
+  <string name="action_show_folder">Laga mu ffolda</string>
+  <string name="action_more">Ebikolwa ebirala</string>
+  <string name="snack_copied">Kikoppeddwa</string>
+  <string name="meter_title_not_started">Tekinnatandika kusoma</string>
+  <string name="meter_title_scanning">Enoonya mu ssimu yo</string>
+  <string name="meter_title_indexing">Esoma fayiro zo</string>
+  <string name="meter_title_up_to_date">Byonna biwedde</string>
+  <string name="meter_title_error">Waliwo ekikyamu</string>
+  <string name="meter_sub_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ejja kutandika ng\'emaze okulaba fayiro zo.</string>
+  <string name="meter_sub_scanning">Ezudde fayiro %1$s paka kaakano.</string>
+  <string name="meter_sub_names_first">Esoose ku mannya n\'ebigambo, osobole okunoonya kati.</string>
+  <string name="meter_sub_progress_eta">%1$s ku %2$s bitegeereddwa · kubulayo nga %3$s</string>
+  <string name="meter_sub_progress_estimating">%1$s ku %2$s bitegeereddwa · ekyabalirira ebbanga</string>
+  <string name="meter_sub_needs_charger">Amannya n\'ebigambo kati. Amakulu gatandika ng\'ossaako chaaja.</string>
+  <string name="meter_sub_reembed">Ebifaananyi bikyusibwa ku nkola empya: %1$s ku %2$s. Okunoonya kukola.</string>
+  <string name="meter_sub_reembed_eta">Ebifaananyi bikyusibwa ku nkola empya: %1$s ku %2$s · kubulayo nga %3$s</string>
+  <string name="meter_sub_reembed_battery">Ebifaananyi bikyusibwa ku nkola empya: %1$s ku %2$s. Ebisigadde bijja kweyongera ng\'ossaako chaaja.</string>
+  <string name="meter_sub_light_reading">Esoma ebifaananyi byo olw\'okunoonya okw\'amangu. Omutindo ogujjuvu gunaggwa ng\'ossaako chaaja.</string>
+  <string name="meter_sub_light_done">Buli kimu kisobola okunoonyezebwa kati. Omutindo ogujjuvu gunaggwa ng\'ossaako chaaja.</string>
+  <string name="meter_sub_paused">%1$s ku %2$s bitegeereddwa. Okunoonya kuliwo.</string>
+  <string name="meter_sub_up_to_date">Fayiro %1$s zeetegefu okunoonya.</string>
+  <string name="meter_sub_error">Nyiga ofune ebisingawo.</string>
+  <string name="meter_a11y">%1$s. %2$s. Bitundu %3$d ku 100 bitegeereddwa.</string>
+  <string name="meter_open_details">Laga ebikwata ku kusoma</string>
+  <string name="pause_not_charging">Erindiridde chaaja</string>
+  <string name="pause_not_charging_detail">Okusoma buli kimu ku mutindo ogujjuvu kusaasaanya batule nnyingi, n\'olwekyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ekikola ng\'essimu eri ku chaaja. Okunoonya kukola mu kiseera kino.</string>
+  <string name="pause_too_hot">Ekyawolako</string>
+  <string name="pause_too_hot_detail">Essimu eyokya, n\'olwekyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ewummuddemu okugikuuma. Ejjayo kweyongerayo yokka essimu bw\'enewola.</string>
+  <string name="pause_battery_low">Batule eri wansi</string>
+  <string name="pause_battery_low_detail">Batule eri wansi wa 30%%, n\'olwekyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> esoma mannya n\'ebigambo byokka okutaasa ebisigaddewo. Ejjayo kweyongerayo yokka ng\'essimu etandise okuchajjibwa.</string>
+  <string name="pause_user">Oyimirizzaako</string>
+  <string name="pause_user_detail">Okusoma kuyimiriziddwa. Okunoonya kukyagenda mu maaso ku ebyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> by\'esomye okutuusa kati.</string>
+  <string name="pause_no_permission">Yeetaaga olukusa ku fayiro zo</string>
+  <string name="pause_no_permission_detail"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> tesobola kulaba fayiro zo okuggyako ng\'ogikkirizza okulaba fayiro zonna. Ezisoma busomi era tezikyusa kintu kyonna.</string>
+  <string name="pause_storage_low">Etterekero ly\'essimu linaatera okujjula</string>
+  <string name="pause_storage_low_detail"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yeetaaga ekifo kitono okukolamu okwekenneenya kwayo. Ggyamu ebimu eyongereko.</string>
+  <string name="action_pause">Yimirizaako</string>
+  <string name="action_resume">Ddamu</string>
+  <string name="action_read_on_battery">Soma ne ku batule</string>
+  <string name="action_allow_access">Kkiriza olukusa</string>
+  <string name="action_free_space">Funa ekifo</string>
+  <string name="action_retry">Ddamu ogezeeko</string>
+  <string name="eta_under_minute">wansi w\'eddakika</string>
+  <string name="eta_minutes">%d min</string>
+  <string name="eta_hours_single">%d h</string>
+  <string name="eta_hours_range">%1$d paka %2$d h</string>
+  <string name="eta_while_charging">%1$s ku chaaja</string>
+  <string name="sheet_title">Esoma fayiro zo</string>
+  <string name="sheet_detail_up_to_date">Buli fayiro <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> gy\'esobola okulaba yeetegefu. Empya zongerwamu buli lwezijja.</string>
+  <string name="sheet_detail_scanning"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ekola olukalala lwa fayiro zo. Kino kitwala eddakika emu oba bbiri.</string>
+  <string name="sheet_detail_light_on_battery">Amannya n\'ebigambo bisomebwa kati n\'ebifaananyi bikeberebwako mu bwangu, n\'olwekyo okunoonya kukola. Omutindo ogujjuvu gunaggwa ng\'essimu eri ku chaaja.</string>
+  <string name="sheet_detail_needs_charger">Amannya n\'ebigambo bisomebwa kati, n\'olwekyo okunoonya kukola. Okutegeera ebiri mu bifaananyi ne mu biwandiiko kutandika ng\'essimu eri ku chaaja.</string>
+  <string name="sheet_detail_indexing">Amannya n\'ebigambo bye bisooka, Noonya esobole okukola mangu. Okutegeera ebiwandiiko n\'ebifaananyi kye bitegeeza kitwala obudde, era kisinga kukolebwa ekiro ng\'essimu eri ku caaja.</string>
+  <string name="sheet_detail_error">Okusoma kuyimiridde mu ngeri etasuubirwa. Ebizuuliddwa ebyasooka bikuumiddwa bulungi.</string>
+  <string name="sheet_detail_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> tennatandika kusoma.</string>
+  <string name="sheet_by_kind">Mu bika bya fayiro</string>
+  <string name="sheet_reading_now">Esoma kati</string>
+  <string name="sheet_resumes_by_itself">Eneeyongerayo yokka kino bwe kinaatereezebwa.</string>
+  <string name="level_searchable">Enoonyezebwa mu linnya n\'ebigambo</string>
+  <string name="level_searchable_hint">Mangu. Ekuyamba okuzuula fayiro okusinziira ku ebyo ebiwandiikiddwamu.</string>
+  <string name="level_understood">Etegeereddwa mu makulu</string>
+  <string name="level_understood_hint">Empolampola. Ekusobozesa okuzuula fayiro okusinziira ku kye yeetooloolako.</string>
+  <string name="level_quicklook">Okutunuulira amangu: ebifaananyi ne vidiyo</string>
+  <string name="level_quicklook_hint">Mangu. Enkula entonotono ezuula ebifaananyi okusinziira ku biri munda, mu kunoonya kw\'Olungereza. Ebisingawo byonna biddawo ng\'ekifaananyi kimaze okutegeerebwa.</string>
+  <string name="meter_quicklook">Okutunuulira amangu: %1$s ku %3$s ebifaananyi · Ebisingawo: %2$s ku %3$s</string>
+  <string name="level_a11y">%1$s: %2$s ku %3$s</string>
+  <string name="count_of">%1$s ku %2$s</string>
+  <string name="stat_time_left">Obudde obusigaddeyo</string>
+  <string name="stat_speed">Sipiidi</string>
+  <string name="stat_index_size">Obunene bw\'okwekenneenya</string>
+  <string name="stat_model_size">Obunene bwa modero</string>
+  <string name="stat_when_charging">Etandika ku caaja</string>
+  <string name="stat_estimating">Ebalirira</string>
+  <string name="stat_measuring">Epima</string>
+  <string name="stat_done">Kiwedde</string>
+  <string name="stat_rate_value">%1$s fayiro/ss</string>
+  <string name="onb_next">Ekiddako</string>
+  <string name="onb_back">Ddayo</string>
+  <string name="onb_start">Tandika <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="onb_start_locked"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yeetaaga olukusa lwa Fayiro zonna ng\'etonnatandika</string>
+  <string name="onb_allow_access">Kkiriza olukusa lwa fayiro</string>
+  <string name="onb_page_of">Eddaala %1$d ku %2$d</string>
+  <string name="welcome_line"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ezuula ebiwandiiko byo, ebifaananyi n\'ebifaananyi bya ssirini okusinziira ku bye bigamba ne bye biraga.</string>
+  <string name="welcome_point_ai_body">AI etegeera fayiro zo ekolera ku ssimu eno. Tewali kintu kyonna kisindikibwa ku seva.</string>
+  <string name="welcome_point_reads_title">Esoma fayiro zo zokka</string>
+  <string name="welcome_point_reads_body">Tekyusa, tesimbula wadde okusangula kintu kyonna. Osobola okusangula bye yayize essaawa yonna.</string>
+  <string name="onb_choose_folders">Londa ffolda</string>
+  <string name="onb1_eyebrow">Bya kyama okuva ku musingi</string>
+  <string name="onb1_title">Fayiro zo teziva ku ssimu eno n\'akatono.</string>
+  <string name="onb1_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ezuula ebiwandiiko, PDF, ebikwate ku sikuliini, ebifaananyi, memes ne vidiyo okusinziira ku kye bigamba ne kye biraga. Byonna bikolerwa wano, ku ssimu eno.</string>
+  <string name="onb1_point_internet_title">Tewali lukusa lwa yintaneeti</string>
+  <string name="onb1_point_internet_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> tesobola kwegatta ku yintaneeti n\'akatono. Android yennyini egiziyiza okusindika ekintu kyonna bweru.</string>
+  <string name="onb1_point_model_title">AI eri ku ssimu yo</string>
+  <string name="onb1_point_model_body">Modero etegeera fayiro zo, EmbeddingGemma 2 eya Google, ekolera ku ssimu eno. Tewali kisindikibwa ku sseeva okusobola okutegeerwa.</string>
+  <string name="onb1_point_delete_title">Gwe afuga</string>
+  <string name="onb1_point_delete_body">Buuka ffolda yonna, oba sangula byonna <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> bye yayize, essaawa yonna gy\'oyagalira.</string>
+  <string name="onb2_eyebrow">Ekiddako kati</string>
+  <string name="onb2_title">Okunoonya kutandika mu ddakiika ntono. Okutegeera kutwala ekiro kiramba.</string>
+  <string name="onb2_step1_title">Mu ddakiika ntono</string>
+  <string name="onb2_step1_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ekola olukalala lwa fayiro zo n\'eyiga amannya gaazo n\'ebigambo ebizirimu. Osobola okunoonya mbagirawo.</string>
+  <string name="onb2_step2_title">Mu ssaawa eziddako</string>
+  <string name="onb2_step2_body">Oluvannyuma eyiga buli kifaananyi n\'ekiwandiiko kye bitegeeza, bwe kityo bwe noonya nga “risiiti y\'ebisale by\'essomero” ekizuula newakubadde ebigambo ebyo tebirimu. Gunno mulimu gukolwa kasoobo ku ssimu.</string>
+  <string name="onb2_step3_title">Nga ssimu eri ku masannyalaze</string>
+  <string name="onb2_step3_body">Okukuuma bbaatule yo, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ekola ekitundu ekikalu ng\'eri ku caaja. Giteeke ku caaja ekiro kimu. Osobola okulaba we kituuse, okukiyimiriza, oba okukikyusa essaawa yonna.</string>
+  <string name="onb3_eyebrow">Olukusa lwa mirundi ebiri</string>
+  <string name="onb3_title">Leka <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> erabe fayiro zo</string>
+  <string name="onb3_files_title">Olukusa lwa fayiro zonna</string>
+  <string name="onb3_files_body">Lwetaagisa okulaba fayiro mu buli ffolda, nga z\'omu WhatsApp. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> esoma busomi. Teterina ky\'ekyusa, ky\'esimbula oba ky\'esangula.</string>
+  <string name="onb3_files_action">Ggulawo enteekateeka</string>
+  <string name="onb3_files_granted">Kikkiriziddwa</string>
+  <string name="onb3_files_hint">Ku lukalala olunaagguka, kkiriza “Allow access to manage all files”, oluvannyuma okomewo wano.</string>
+  <string name="onb3_notif_title">Obubaka obutegeeza (sii tteeka)</string>
+  <string name="onb3_notif_body">Bwa <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kukutegeeza bokka ng\'emaze okusoma fayiro. Tewali kirala kyonna.</string>
+  <string name="onb3_notif_action">Kkiriza</string>
+  <string name="onb3_notif_granted">Kikkiriziddwa</string>
+  <string name="onb4_eyebrow">Ebyongerwako eby\'okweroboza</string>
+  <string name="onb4_title">Okwongerako ebintu?</string>
+  <string name="onb4_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ekola ne bwe biba nga tebiriiko. Buli kimu kyongezaako obulungi. Buli kimu eba fayiro gy\'okoppa mu Downloads, kubanga <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> tekozesa mutimbagano.</string>
+  <string name="onb4_add">Yongerako</string>
+  <string name="onb4_not_now">Sii kaakano</string>
+  <string name="onb4_added">Kyongeddwako</string>
+  <string name="onb4_skipped">Kibuusiddwa. Osobola okukyongerako edda.</string>
+  <string name="onb4_footer">Osobola okukyusa kino oluvannyuma mu Nteekateeka → Ebyongerwako.</string>
+  <string name="search_hint">Noonya fayiro zo</string>
+  <string name="search_hint_a11y">Noonya fayiro zo ng\'osinziira ku kye zigamba oba kye ziraga</string>
+  <string name="search_clear">Sangula okunoonya</string>
+  <string name="search_searching">Enoonya</string>
+  <string name="search_settings">Enteekateeka</string>
+  <string name="search_nothing_title">Tewali kizuuliddwa</string>
+  <string name="search_nothing_body">Tewali fayiro ekwatagana na “%1$s”.</string>
+  <string name="search_nothing_try_all">Gezako ebigambo bitono oba birala, oba noonya mu Zonna.</string>
+  <string name="search_nothing_incomplete"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ekyali mu kusoma fayiro zo, bwe kityo kino kiyinza okukyuka. Ddamu ogezeeko mukaseera katono.</string>
+  <string name="search_repairing_note">Okunoonya kwetereeza. Amannya n\'ebigambo bikyakola; okunoonya ku makulu kuddamu mu ddakiika ntono.</string>
+  <string name="search_incomplete_note">Amannya n\'ebigambo bikola kaakano. Okunoonya amakulu kukyasomebwa, bwe kityo ebirala biyinz\'okuzuulibwa.</string>
+  <string name="search_incomplete_note_charger">Amannya n\'ebigambo bikola kaakano. Okunoonya amakulu (nga “boda” ku kifaananyi kya ppikipiki) kutandika ng\'essimu eri ku caaja.</string>
+  <string name="search_weak_toggle">Ebikwataganako katono (%1$d)</string>
+  <string name="search_weak_only">Tewali bikwatagana nnyo. Bino bye bisinga okusemberera.</string>
+  <string name="search_weak_expand">Laga ebikwataganako katono</string>
+  <string name="search_weak_collapse">Kisa ebitakwatagana nnyo</string>
+  <string name="search_fresh_title">Tewali kirabika kaakano</string>
+  <string name="search_fresh_body">Amangu ddala nga <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> eronze fayiro zo, empya zijja kulabikira wano. Wandiika waggulu okukola Noonya.</string>
+  <string name="search_recent_empty_filter">Tewali fayiro za kika kino kaakano.</string>
+  <string name="access_banner_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> tennasobola kulaba fayiro zo</string>
+  <string name="access_banner_body">Kkiriza okutuuka ku Fayiro zonna esobole okuzisoma. Tekyusako kintu na kimu.</string>
+  <string name="snack_no_app">Tewali pulogulaamu ku ssimu eno eyinza okuggulawo fayiro eno.</string>
+  <string name="snack_sample">Eno fayiro ya kyakulabirako, tesobola kuggulwawo.</string>
+  <string name="settings_title">Enteekateeka</string>
+  <string name="settings_back">Mabega</string>
+  <string name="settings_section_reading">Okusoma</string>
+  <string name="learn_speed_title">Sipiidi y\'okuyiga</string>
+  <string name="learn_gentle">Mpola</string>
+  <string name="learn_gentle_hint">Esoma ng\'eyongerwamu amasannyalaze yokka, n\'enkola entono. Bbaatule ntono n\'ebbugumu ttono; ekipya kyonna kirindirira ekyongeramu amasannyalaze.</string>
+  <string name="learn_balanced">Wakati</string>
+  <string name="learn_balanced_hint">Engeri eya bulijjo. Ekyongeramu amasannyalaze kisoma ebifaananyi byo byonna; ku bbaatule bikola fayiro empya n\'okutunuulira amangu bokka.</string>
+  <string name="learn_fast">Mangu</string>
+  <string name="learn_fast_hint">Esoma buli kimu ne ku bbaatule, era erindirira kyokka ng\'okozesa app endala. Eggwa mangu, eyonoona bbaatule nnyingi era ebuguma nnyo.</string>
+  <string name="settings_section_kinds">Ebinaasomebwa</string>
+  <string name="settings_recordings">Amaloboozi n\'ebikwatiddwa</string>
+  <string name="settings_recordings_hint">Soma ebyayogeddwa n\'ebiwulirwa, osobole okubinoonya.</string>
+  <string name="settings_deeper">Noonya ennyo amaloboozi (kikola mpola): ennyimba n\'amaloboozi amalala</string>
+  <string name="settings_deeper_hint">Ezuula amaloboozi okusinziira ku bwe gali, so si mu bigambo byokka. Kitwala obutikitiki nga 15 obw\'okusoma ku buli ddakiika y\'eddoboozi ku ssimu eya bulijjo.</string>
+  <string name="settings_section_addons">Ebyongerwako</string>
+  <string name="addons_intro">Ebyongerwako eby\'okwerondera ebiyamba Noonya okukola obulungi. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> tekozesa mutimbagano, n\'olwekyo buli kimu kiba fayiro gy\'osooka okuteeka mu Downloads. Buli kintu kisigala ku ssimu eno.</string>
+  <string name="addons_status_not_added">Tekyagatebwako</string>
+  <string name="addons_status_adding">Kigatebwako</string>
+  <string name="addons_status_added">Kyagatebwako</string>
+  <string name="addons_status_soon">Kijja mangu</string>
+  <string name="addons_size">Obunene: %1$s</string>
+  <string name="addons_add">Gattako</string>
+  <string name="addons_add_with_size">Gattako (%1$s)</string>
+  <string name="addons_remove">Ggyawo, ewonya %1$s</string>
+  <string name="addons_on">Kyakiddwa</string>
+  <string name="addons_off">Kizikiziddwa</string>
+  <string name="addons_adding_pct">Kikebera era kigattako… %1$d%%</string>
+  <string name="addons_adding">Kikebera era kigattako…</string>
+  <string name="addons_try_again">Gezaako nate</string>
+  <string name="addons_soon_hint">Tekinnaba kutegekebwa. Kijja kulabikira wano nga kiwedde.</string>
+  <string name="addons_problem_not_found"><xliff:g id="app_name" example="Trawl">%2$s</xliff:g> tesobodde kuzuula %1$s mu Downloads. Gikopeeyo, olyoke ogezeeko nate.</string>
+  <string name="addons_problem_access"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yeetaaga olukusa ku Fayiro zonna okusoma Downloads. Ggulawo olukusa, olyoke ogezeeko nate.</string>
+  <string name="addons_problem_bad">Fayiro eri mu Downloads eyonoonese oba si y\'entuufu, n\'olwekyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> tegikozesezza. Gikopeeyo nate, olyoke ogezeeko nate.</string>
+  <string name="addons_problem_unavailable">Ekyongerwako kino tekinnasobola kugattibwako mu lusinga luno.</string>
+  <string name="addons_add_title">Yongerako %1$s</string>
+  <string name="addons_add_install">Teekamu</string>
+  <string name="addons_remove_title">Ggyamu %1$s?</string>
+  <string name="addons_remove_body">Kino kitta %1$s era ne kigiggyako. Ebigambo n\'amakulu <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> bye yamaze okuyiga bisigalawo okutuusa nga fayiro ezo zizzeemu okusomebwa. Osobola okukizzaamu essaawa yonna.</string>
+  <string name="addons_remove_confirm">Ggyamu</string>
+  <string name="settings_section_excluded">Ffolda ezibuusiddwa</string>
+  <string name="settings_excluded_hint"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> tejja kusoma kintu kyonna kiri munda mu ffolda zino.</string>
+  <string name="settings_excluded_empty">Wazira. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> esoma buli ffolda gy\'esobola okulaba.</string>
+  <string name="settings_excluded_remove">Lekera awo okubuuka %1$s</string>
+  <string name="settings_excluded_bad">Ffolda eyo tesobola kulondebwa wano. Londa eri ku tterekero ly\'essimu erikulu.</string>
+  <string name="onb_scope_eyebrow">Okulonda kwo</string>
+  <string name="scope_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> enoonye ki?</string>
+  <string name="scope_intro">Gyako kyonna ky\'otoyagala kizuulibwe. Fayiro zaakyo ziva mu kunoonya amangwago, era zikomawo bw\'ozizaako.</string>
+  <string name="scope_counts_unknown">Omuwendo gwa fayiro gujja kulabika nga <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> esobola okulaba fayiro zo.</string>
+  <string name="scope_private">Ffolda ezikisiddwa, ffolda eziriko .nomedia ne ffolda ez\'eby\'ekyama ez\'ebirala tezisomebwa n\'akatono.</string>
+  <string name="scope_added_title">Ffolda ze weyongeddeko</string>
+  <string name="scope_add">Yongerako ffolda</string>
+  <string name="scope_added_remove">Lekera awo okunoonya %1$s</string>
+  <string name="scope_exclude">Buukako ffolda</string>
+  <plurals name="scope_files">
+        
+    
+    <item quantity="one">Fayiro %1$s</item>
+    <item quantity="other">Fayiro %1$s</item>
+  </plurals>
+  <string name="scope_group_camera">Kamera</string>
+  <string name="scope_group_screenshots">Ebifaananyi bya sikuliini</string>
+  <string name="scope_group_whatsapp_images">Ebifaananyi bya WhatsApp</string>
+  <string name="scope_group_whatsapp_video">Vidiyo za WhatsApp</string>
+  <string name="scope_group_whatsapp_documents">Ebiwandiiko bya WhatsApp</string>
+  <string name="scope_group_whatsapp_voice">Amaloboozi ga WhatsApp</string>
+  <string name="scope_group_whatsapp_status">Status ya WhatsApp</string>
+  <string name="scope_group_downloads">Ebiwanuddwa</string>
+  <string name="scope_group_documents">Ebiwandiiko</string>
+  <string name="scope_group_music">Ennyimba n\'amaloboozi</string>
+  <string name="scope_group_other">Ffolda endala</string>
+  <string name="settings_section_storage">Etterekero erikozeseddwa</string>
+  <string name="settings_storage_index">Kwekenneenya okw\'okunoonya</string>
+  <string name="settings_storage_model">Model ya AI</string>
+  <string name="settings_delete">Sangula byonna <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> by\'emanyi</string>
+  <string name="settings_delete_hint">Kisangula ebyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> bye yasoma mu fayiro zo, ne fayiro zaayo ez\'ekiseera. Fayiro zo zennyini tezikkwatibwako.</string>
+  <string name="settings_delete_title">Osangule byonna <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> by\'emanyi?</string>
+  <string name="settings_delete_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> esangula kwekenneenya kwayo okwa fayiro zo kaakano: amannya gaazo, ebigambo ebiri mu biwandiiko byo, ebiwandiiko bye yasoma mu bifaananyi ne ku sikuliini, amaloboozi ge yawandiika okuva mu vidiyo ne mu ddoboozi, n\'ebyo AI yaayo bye yeetegereza ku buli fayiro. Fayiro zaayo ez\'ekiseera na buli alipoota y\'ebizibu nabyo bigenda.\n\nFayiro zo zennyini tezikkwatibwako. Enteekateeka zo zisigalawo, mw\'otwalidde ne ffolda ze wabuuka.\n\nOluvannyuma <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> eyimiriza okusoma. Okunoonya kusigala kwerere okutuusa lw\'onyiga ku Ddamu.</string>
+  <string name="settings_delete_done">Bisanguddwa %1$s. <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> eyimiriziddwamu okutuusa lw\'onyiga ku Ddamu.</string>
+  <string name="settings_storage_model_hint">Yetaagisa mu kunoonya okusinziira ku makulu.</string>
+  <string name="settings_storage_index_hint">Database n\'ebiwandiiko byayo.</string>
+  <string name="settings_storage_estimate">Buli fayiro bw\'emala okusomebwa</string>
+  <string name="settings_storage_estimate_value">Kumpi %1$s</string>
+  <string name="settings_storage_memory">Memory ng\'onoonya</string>
+  <string name="settings_storage_memory_hint">Ekozesebwa lwokka nga <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> egguddwawo. Kumpi %1$s buli fayiro bw\'emala okusomebwa.</string>
+  <string name="settings_storage_remove">Ggyawo</string>
+  <string name="settings_storage_no_data"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> tekozesa data wa ssimu n\'akatono: teyungibwa ku yintaneeti.</string>
+  <string name="settings_delete_confirm">Sangula</string>
+  <string name="settings_cancel">Sazaamu</string>
+  <string name="settings_section_appearance">Endabika</string>
+  <string name="settings_theme_system">Eya ssimu</string>
+  <string name="settings_theme_light">Ekitangaavu</string>
+  <string name="settings_theme_dark">Ezikirivu</string>
+  <string name="report_card_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> eyimiridde mu ngeri etasuubirwa. Weerezaayo alipoota eyambe okugitereeza?</string>
+  <string name="report_card_body">Alipoota terina mannya ga fayiro, ebinonyezebwa oba ebiwandiiko byo. Osooka kugisoma, era tewali kitwalibwa okuggyako ng\'onnyise Weereza mu pulogulaamu yo ey\'email.</string>
+  <string name="report_send">Weereza</string>
+  <string name="report_not_now">Si kaakano</string>
+  <string name="report_view">Laba alipoota</string>
+  <string name="report_close">Ggalawo</string>
+  <string name="report_send_email">Weereza ku email</string>
+  <string name="report_send_whatsapp">Weereza ku WhatsApp</string>
+  <string name="report_send_whatsapp_file">Weereza alipoota yonna mu WhatsApp</string>
+  <string name="report_no_email">Tewali pulogulaamu ya email ezuliddwa ku ssimu eno. Kozesa Laba alipoota okugisoma, oba teekamu pulogulaamu ya email.</string>
+  <string name="report_no_whatsapp">WhatsApp tesobodde kuggulwawo.</string>
+  <string name="report_building">Eteekateeka alipoota…</string>
+  <string name="report_dialog_title">Alipoota y\'ekizibu</string>
+  <string name="report_dialog_hint">Bino bye byonna ebinaaweerezebwa. Fayiro zo, ffolda, n\'ebinonyezebwa tebiriimu.</string>
+  <string name="settings_section_report">Lopya ekizibu</string>
+  <string name="settings_report_hint">Eggulawo pulogulaamu yo ey\'email ng\'alipoota yeetegekedde okuweerezebwa. Erina ebikwata ku ssimu n\'enkola ya <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>, wamu n\'ensobi zonna <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ze yafunye, nga tewali mannya ga fayiro, ebinonyezebwa oba ebiwandiiko byo. Osooka kugisoma, era tewali kitwalibwa okutuusa lw\'onnyiga Weereza eyo.</string>
+  <string name="settings_report_note">Kiki ekitagenze bulungi? (kyeyagalire)</string>
+  <string name="settings_report_kept"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> etereka alipoota ezitasukka 10 ku ssimu eno, nga zikunukkiriza KB 100. “Sangula byonna <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> by\'emanyi” zibiggyawo.</string>
+  <string name="settings_section_about">Ebikwata ku pulogulaamu</string>
+  <string name="settings_about_version">Veesoni %1$s</string>
+  <string name="settings_about_model">Okunoonya kukolebwa EmbeddingGemma 2 eya Google (Apache 2.0), era kukolebwa kwokka ku ssimu eno.</string>
+  <string name="settings_about_private"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> terina lukusa lwa yintaneeti. Fayiro zo n\'ebyo by\'eyiga okuva mu zo tebiva ku ssimu eno n\'akatono.</string>
+  <string name="settings_about_maker">Yakolebwa Crane AI Labs.</string>
+  <string name="settings_licences">Layisinsi n\'abasiimiddwa</string>
+  <string name="licences_title">Layisinsi n\'abasiimiddwa</string>
+  <string name="licences_intro"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ezimbiddwa ku mirimu egiri wammanga. Ebirango bino byetagisa okusinziira ku layisinsi, era y\'engeri gye twebazaamu.</string>
+  <string name="licences_section_required">Ebirango</string>
+  <string name="licences_section_components">Ebintu ebirala byonna mu <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="licences_section_texts">Ebiwandiiko bya layisinsi ebijjuvu</string>
+  <string name="licences_show">Laga ebiwandiiko ebijjuvu</string>
+  <string name="licences_hide">Kisa ebiwandiiko ebijjuvu</string>
+  <string name="settings_close">Ggalawo</string>
+  <string name="pack_size_mb">%1$d MB</string>
+  <string name="pack_speech_name">Noonya ebyogerebwa</string>
+  <string name="pack_speech_benefit">Ezuula ebyayogereddwa mu vidiyo n\'amaloboozi: fayiro entuufu eba esooka ku bitundu %1$d%% mu kifo kya %2$d%%.</string>
+  <plurals name="pack_speech_cost">
+        
+    
+    <item quantity="one">Yongerako akatikitiki nga %1$d ku buli ddakiika ya vidiyo ng\'esoma. Ebyogerebwa mu Lungereza byokka kati.</item>
+    <item quantity="other">Yongerako obutikitiki nga %1$d ku buli ddakiika ya vidiyo ng\'esoma. Ebyogerebwa mu Lungereza byokka kati.</item>
+  </plurals>
+  <string name="pack_quicklook_name">Laba ebifaananyi mangu</string>
+  <plurals name="pack_quicklook_benefit">
+        
+    
+    <item quantity="one">Kifuula galale yo yonna esobola okunoonyezebwamu amakulu mu ddakiika mu kifo ky\'essaawa: ekifaananyi nga %1$s buli ssaawa mu kifo kya %2$d ku ssimu eya layisi (okunoonya mu Lungereza). Ebijjuvu bikyagenda mu maaso oluvannyuma.</item>
+    <item quantity="other">Kifuula galale yo yonna esobola okunoonyezebwamu amakulu mu ddakiika mu kifo ky\'essaawa: ebifaananyi nga %1$s buli ssaawa mu kifo kya %2$d ku ssimu eya layisi (okunoonya mu Lungereza). Ebijjuvu bikyagenda mu maaso oluvannyuma.</item>
+  </plurals>
+  <string name="pack_quicklook_cost">Okunoonya mu Lungereza kwokka: okunoonya mu nnimi endala kulinda okusoma okujjuvu. Okusoma okujjuvu kukendeeza sipiidi ku bitundu nga %1$d%% ng\'ekola, era ekozesaako memole ntono ng\'esoma.</string>
+  <string name="pack_privacy_name">Bikkirako eby\'ekyama ebirabika</string>
+  <string name="pack_privacy_benefit">Ebikkirako akatundu akatono ak\'ekifaananyi ekirabika ng\'eky\'ekyama (obwereere, engoye ez\'omunda), omuntu akutunuulira aleme okulaba bulungi. Koona ku katundu okukiraga. Ebikkirako bubikkizi: tewali kintu ekikisiddwa oba ekyusiddwa mu bizuuliddwa.</string>
+  <string name="pack_privacy_cost">Eyinza okusalawo bubi mu byombi, n\'ebifaananyi eby\'ebyobulamu (amabavu, maama ayonsa) biyinza okubikkirwako. Esoma ebifaananyi mu kabanga ng\'essimu eri ku masannyalaze, era ekendeeza embiro z\'okusoma okujjuvu ku bitundu nga %1$d%% ng\'ekola.</string>
+  <string name="pack_privacy_recommended">Kisembebwa singa okozesa akatundu k\'okunoonya amangu</string>
+  <string name="pack_how_to_add_downloads"><xliff:g id="app_name" example="Trawl">%3$s</xliff:g> tegenda ku yintaneeti, n\'olwekyo tesobola kwetikkulira kino yokka. Funa fayiro %1$s (%2$s) okuva mu Crane AI Labs era ogikoppe mu ffolda ya Downloads ku ssimu eno. Oluvannyuma nyiga ku Teekamu: <xliff:g id="app_name" example="Trawl">%3$s</xliff:g> ekebera fayiro n\'eyongerako. Osobola okusangula fayiro ya .zip oluvannyuma.</string>
+  <string name="pack_how_to_add_play">Play ejja kuleeta %1$s (%2$s) ng\'onyize Teekamu. Tewali kirala ky\'olina kukola.</string>
+  <string name="notif_channel_name">Esoma essimu yo</string>
+  <string name="notif_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> esoma essimu yo</string>
+  <string name="notif_getting_ready">Eteekateeka…</string>
+  <string name="notif_reading_photo">Esoma ekifaananyi</string>
+  <string name="notif_reading_screenshot">Esoma ekifaananyi ky\'olutimbe</string>
+  <string name="notif_reading_video">Esoma vidiyo</string>
+  <string name="notif_reading_document">Esoma ekiwandiiko</string>
+  <string name="notif_reading_recording">Esoma eddoboozi erikwatiddwa</string>
+  <string name="notif_reading_file">Esoma fayiro</string>
+  <string name="notif_waiting_polite">Alindirira ng\'okozesa essimu</string>
+  <string name="chip_label_action">%1$s  ·  %2$s</string>
+  <string name="a11y_description_note">%1$s. %2$s</string>
+  <string name="meter_a11y_extra">%1$s %2$s.</string>
+  <string name="message_then_sentence">%1$s %2$s</string>
+  <string name="lock_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> esibiddwa</string>
+  <string name="lock_body">Sumulula n\'ekinkumu, ffeesi, PIN oba patani ey\'essimu yo.</string>
+  <string name="lock_button">Sumulula</string>
+  <string name="quick_device_locked">Sumulula essimu yo okuNoonya.</string>
+  <string name="lock_prompt_title">Sumulula <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="lock_prompt_subtitle">Kozesa kkufulu ya sskuriini ey\'essimu yo</string>
+  <string name="settings_section_privacy">Eby\'ekyama</string>
+  <string name="privacy_lock_title">Siba <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="privacy_lock_hint">Saba ekinkumu, ffeesi, PIN oba patani yo nga tonnalaga kintu kyonna.</string>
+  <string name="privacy_lock_needs_screen_lock">Sooka oteeke kkufulu ya sskuriini ku ssimu yo (Enteekateeka, Ebyokwerinda). <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ekozesa okusumulula kwekumu.</string>
+  <string name="privacy_lock_on_prompt">Teekako kkufulu ya <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="privacy_lock_off_prompt">Ggyako kkufulu ya <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="privacy_lock_after_title">Ddamu osibe oluvannyuma lwa</string>
+  <string name="privacy_lock_after_now">Buli kiseera</string>
+  <string name="privacy_lock_after_minutes">%1$d min</string>
+  <string name="privacy_lock_after_hint">Ebbanga <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ly\'esobola okumala mu mabega nga tennaddamu kusaba. Era esiba sskuriini bw\'ezikira.</string>
+  <string name="privacy_recents_title">Kisa <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> mu pulogulaamu ezakakozesebwa</string>
+  <string name="privacy_recents_hint">Kaada ya <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> eba njerere mu lukalala lw\'ezakakozesebwa. Naye: ebifaananyi bya sskuriini ebya <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> nabyo biziyizibwa.</string>
+  <string name="privacy_show_title">Laga ebizuuliddwa eby\'ekyama</string>
+  <string name="privacy_show_hint">Bw\'eba ezikiddwa: fayiro z\'olambise ng\'eby\'ekyama, ne fayiro eziri mu ffolda ez\'ekyama, tezirabika mu bizuuliddwa ne mu kabaawo ak\'amangu okutuusa ng\'ozisumuludde.</string>
+  <string name="privacy_show_prompt">Laga ebizuuliddwa eby\'ekyama</string>
+  <string name="privacy_pin_note">Buli amanyi PIN y\'essimu yo asobola okulaga ebizuuliddwa eby\'ekyama. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> terina PIN yaayo yennyini.</string>
+  <string name="privacy_no_screen_lock_note">Essimu yo terina kkufulu ya sskuriini, kale buli agikute asobola okuggulawo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> n\'alaba byonna. Teekako kkufulu ya sskuriini okugikuuma.</string>
+  <string name="privacy_folders_title">Ffolda ez\'ekyama</string>
+  <string name="privacy_folders_hint">Buli ekiri mu ffolda ey\'ekyama kitwalibwa ng\'eky\'ekyama. Obutafaananako ffolda eziggiddwamu, ekyasomebwa, n\'olwekyo osobola okukinoonya oluvannyuma lw\'okusumulula.</string>
+  <string name="privacy_folders_empty">Tewali ffolda za kyama.</string>
+  <string name="privacy_folders_add">Yongerako ffolda y\'ekyama</string>
+  <string name="privacy_folders_bad">Ffolda eyo tesobola kuteekebwa ng\'ey\'ekyama. Londa ffolda eri mu tterekero ly\'essimu erikulu.</string>
+  <string name="privacy_folders_remove">Lekera awo okutwala %1$s ng\'ey\'ekyama</string>
+  <string name="privacy_folders_remove_prompt">Ggya ffolda mu z\'ekyama</string>
+  <string name="onb_lock_title">Siba <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> (si kya tteeka)</string>
+  <string name="onb_lock_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> esobola okusaba ekinkumu, ffeesi, PIN oba patani ey\'essimu yo nga tennalaga kintu kyonna, omuntu akutte essimu yo alemwe okuNoonya. Osobola okukyusa kino mu Nteekateeka.</string>
+  <string name="onb_lock_action">Teekako kkufulu</string>
+  <string name="onb_lock_on">Kkufulu eteekeddwako</string>
+  <string name="onb_lock_no_screen_lock">Essimu yo tennabaako kkufulu ya sskuriini. Teekako emu mu Nteekateeka z\'essimu okukozesa kino.</string>
+  <string name="privacy_hidden_chip">%1$d ezikisiddwa</string>
+  <string name="privacy_hidden_action">Laga</string>
+  <plurals name="privacy_hidden_chip_description">
+        
+    
+    <item quantity="one">Ekizuuliddwa %1$d eky\'ekyama kikisiddwa. Nyiga emirundi ebiri okukisumulula n\'okukiraga.</item>
+    <item quantity="other">Ebizuuliddwa %1$d eby\'ekyama bikisiddwa. Nyiga emirundi ebiri okubisumulula n\'okubiraga.</item>
+  </plurals>
+  <string name="privacy_shown_chip">Ebizuuliddwa eby\'ekyama biragiddwa</string>
+  <string name="privacy_shown_action">Kisa</string>
+  <string name="privacy_reveal_title">Laga ebizuuliddwa eby\'ekyama</string>
+  <string name="privacy_reveal_subtitle">Kozesa kkufulu y\'essimu yo</string>
+  <string name="action_mark_sensitive">Kifuule eky\'ekyama</string>
+  <string name="action_unmark_sensitive">Si ky\'ekyama</string>
+  <string name="snack_marked_sensitive">Kiteereddwako eky\'ekyama. Kati kikisiddwa mu bizuuliddwa.</string>
+  <string name="snack_unmarked_sensitive">Tekikyali ky\'ekyama.</string>
+  <string name="sensitive_share_title">Gabanako ekintu eky\'ekyama?</string>
+  <string name="sensitive_share_body">Kino wakitaddeko nti kya kyama. Buli anaakifuna asobola okukiterekera awo n\'okukiweereza abalala.</string>
+  <string name="sensitive_share_confirm">Gabanako</string>
+  <string name="sensitive_copy_title">Koppa ekintu eky\'ekyama?</string>
+  <string name="sensitive_copy_body">Kino wakitaddeko nti kya kyama. Wonna w\'onookiteeka wanaafuna fayiro yennyini.</string>
+  <string name="sensitive_copy_confirm">Koppa</string>
+  <string name="sensitive_cancel">Sazaamu</string>
+  <string name="settings_section_previews">Okulambula</string>
+  <string name="settings_blur_title">Zibiriza ebirabika ng\'eby\'ekyama</string>
+  <string name="settings_blur_hint">Kikolebwa kyokka, kiyinza okubaamu ensobi. Ekifaananyi ekitono kyokka kye kizibirizibwa; fayiro ekyazuulibwa. Nyiga ku liiso okukiraga.</string>
+  <string name="settings_blur_panel_title">Zibiriza mu kunoonya amangu</string>
+  <string name="settings_blur_panel_hint">Kikolebwa kyokka, kiyinza okubaamu ensobi. Kyakolebwa okukola wano, kubanga olubaawo luno luggukira ku pulogulaamu endala. Okulaga ekifaananyi kyetaagisa ssimu yo okuba nga nsumulule.</string>
+  <string name="settings_blur_needs_pack">Kyetaagisa ekyongerwako ekya \"Zibiriza ebirabika ng\'eby\'ekyama\", wansi. Okutuusa lwe kyongerwako, tewali kizibirizibwa.</string>
+  <string name="action_show_picture">Laga ekifaananyi</string>
+  <string name="preview_hidden">okulambula kukisiddwa, kiyinza okuba eky\'ekyama</string>
+  <string name="quick_unlock_to_show">Sumulula essimu yo okulaga ekifaananyi kino.</string>
+  <string name="quick_name">Noonya mangu</string>
+  <string name="quick_shortcut_long">Noonya mangu fayiro zo</string>
+  <string name="quick_widget_hint">Noonya fayiro zo</string>
+  <string name="quick_widget_description">Akabaawo k\'okunoonya akaggulawo okunoonya amangu okwa <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kungulu kwa pulogulaamu gy\'olimu.</string>
+  <string name="quick_hint">Noonya fayiro zo</string>
+  <string name="quick_close">Ggalawo okunoonya amangu</string>
+  <string name="quick_clear">Ggyawo</string>
+  <string name="quick_nothing">Tewali kizuuliddwa ku “%1$s”.</string>
+  <string name="quick_nothing_incomplete"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ekyali esoma fayiro zo, kino kiyinza okukyuka.</string>
+  <string name="quick_not_set_up"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> tennasoma fayiro zo. Ggulawo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> okutandika.</string>
+  <string name="quick_open_findr">Ggulawo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="quick_still_meaning">Enoonya amakulu…</string>
+  <string name="quick_copied">Bikoppeddwa. Biteeke mu mboozi.</string>
+  <string name="quick_copy_failed">Tekisobodise kukkopa fayiro eno.</string>
+  <string name="quick_no_app">Tewali app esobola kuggulawo fayiro eno.</string>
+  <string name="quick_add_tile_title">Yongera Noonya amangu mu nteekateeka ez\'amangu?</string>
+  <string name="quick_add_tile_body">Awo ojja kusobola okunoonya fayiro zo mu app yonna ng\'osiimuula emirundi ebiri gyokka.</string>
+  <string name="quick_add_tile_yes">Yongera tayiro</string>
+  <string name="quick_add_tile_no">Si kaakano</string>
+  <string name="settings_storage_remove_named">Ggyamu <xliff:g id="item" example="Speech pack">%1$s</xliff:g></string>
+  <string name="licences_show_named">Laga ebiwandiiko ebijjuvu ebya <xliff:g id="licence" example="Apache License 2.0">%1$s</xliff:g></string>
+  <string name="licences_hide_named">Kisa ebiwandiiko ebijjuvu ebya <xliff:g id="licence" example="Apache License 2.0">%1$s</xliff:g></string>
+  <string name="sheet_error_word">Obuzibu</string>
+  <string name="switch_on">Koleeza</string>
+  <string name="switch_off">Zikiza</string>
+  <string name="language_title">Londa olulimi lwo</string>
+  <string name="language_intro">Sikuriini za <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> zijja kuba mu lulimi luno. Osobola okulukyusa luvannyuma mu Nteekateeka.</string>
+  <string name="language_system">Olulimi lw\'essimu</string>
+  <string name="language_system_hint">Kigoberera enteekateeka z\'essimu yo</string>
+  <string name="language_preview">Kebera</string>
+  <string name="settings_language">Olulimi</string>
+  <plurals name="search_status_so_far">
+        
+    
+    <item quantity="one">%1$d kati · amakulu mu kaseera katono</item>
+    <item quantity="other">%1$d kati · amakulu mu kaseera katono</item>
+  </plurals>
+  <string name="search_status_words">Ebigambo kati · amakulu mu kaseera katono</string>
+  <plurals name="search_status_found">
+        
+    
+    <item quantity="one">%1$d kizuuliddwa</item>
+    <item quantity="other">%1$d bizuuliddwa</item>
+  </plurals>
+  <string name="action_share_file">Gabanako %1$s</string>
+  <string name="action_copy_file">Koppa %1$s</string>
+  <string name="preview_hidden_words">Kirabika eky\'ekyama · koona olabe</string>
+  <string name="filter_group">Laga fayiro ki</string>
+</resources>

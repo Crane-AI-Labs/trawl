@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="keep_action">Qhubeka ufunde manje</string>
+  <string name="keep_action_hint">Kugcina isikrini sivuliwe, sifiphele, ukuze i-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ifunde ngenkathi ungayisebenzisi ifoni. Kuhle kakhulu uma ishajwa. Ifoni ihlala ingakhiyiwe ngenkathi kusebenza lokhu, ngakho yenza lokhu kuphela endaweni oyethembayo.</string>
+  <string name="keep_heading">I-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ifunda amafayela akho</string>
+  <string name="keep_counts">%1$s kwangu-%2$s amafayela aqondiwe</string>
+  <string name="keep_time_left">Isikhathi esisele: %1$s</string>
+  <string name="keep_time_unknown">Kubalwa ukuthi lokhu kuzothatha isikhathi esingakanani</string>
+  <string name="keep_charging">Iyashaja</string>
+  <string name="keep_on_battery">Ayishaji. Ishesha kakhulu uma ishajwa.</string>
+  <string name="keep_unlocked">Isikrini sihlala sivuliwe nefoni ihlala ingakhiyiwe ngenkathi i-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ifunda. Yishiye kuphela endaweni oyethembayo.</string>
+  <string name="keep_tap_to_stop">Thepha noma yikuphi ukuze umise</string>
+  <string name="keep_stop_done_title">Kuqediwe konke</string>
+  <string name="keep_stop_done"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> isifunde wonke amafayela akho. Ukusesha sekuwazi manje.</string>
+  <string name="keep_stop_battery_title">Kumisiwe: ibhethri liphansi</string>
+  <string name="keep_stop_battery">Ibhethri lingaphansi kwamaphesenti angu-20. Xhuma ishaja, bese uqala futhi kusikrini senqubekelaphambili.</string>
+  <string name="keep_stop_hot_title">Kumisiwe: ifoni iyashisa</string>
+  <string name="keep_stop_hot">Ifoni ishise kakhulu, ngakho i-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> imile ukuze iphole. Ungaqala futhi ngokuhamba kwesikhathi.</string>
+  <string name="keep_stop_unplugged_title">Kumisiwe: ishaja inqanyuliwe</string>
+  <string name="keep_stop_unplugged">Xhuma ishaja futhi, bese uqala kabusha kusikrini senqubekelaphambili.</string>
+  <string name="keep_stop_charger_title">Kulindwe ishaja</string>
+  <string name="keep_stop_charger">Ebhethrini, i-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yenza kuphela umsebenzi olula, futhi usuqediwe. Xhuma ishaja, bese uqala futhi.</string>
+  <string name="keep_stop_paused_title">Kumisiwe: ukufunda kumisiwe okwesikhashana</string>
+  <string name="keep_stop_paused">Vula isikrini senqubekelaphambili ku-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ukuze ubone isizathu bese uqhubeka.</string>
+  <string name="keep_screen_will_sleep">Isikrini manje sesizozicima ngokwaso njengenjwayelo.</string>
+  <string name="keep_close">Vala</string>
+</resources>

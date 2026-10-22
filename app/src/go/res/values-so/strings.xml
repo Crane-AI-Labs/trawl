@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="welcome_line"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> wuxuu dukumentiyadaada, sawirradaada iyo sawirrada shaashadda ku helaa magacyadooda iyo ereyada ku jira.</string>
+  <string name="onb1_point_model_title">Loogu talagalay taleefannada yaryar</string>
+  <string name="welcome_point_ai_body">Waxay faylashaada ku akhridaa halkan, adigoon waxba soo dejin. Waxba looma diro seerfar.</string>
+  <string name="meter_sub_progress_eta">%1$s oo ka mid ah %2$s ayaa la akhriyey · qiyaastii %3$s ayaa hartay</string>
+  <string name="meter_sub_progress_estimating">%1$s oo ka mid ah %2$s ayaa la akhriyey · xisaabinta wakhtiga</string>
+  <string name="meter_sub_paused">%1$s oo ka mid ah %2$s ayaa la akhriyey. Raadintu weli way shaqaynaysaa.</string>
+  <string name="meter_a11y">%1$s. %2$s. Boqolkiiba %3$d ayaa la akhriyey.</string>
+  <string name="sheet_detail_indexing">Magacyadu way soo horreeyaan, sidaas darteed raadintu ku dhowaad markiiba way shaqaysaa. Akhrinta ereyada ku jira dukumentiyadaada, PDF-yada iyo sawirrada waxay qaadataa waqti dheer.</string>
+  <string name="level_searchable">Magac ayaa lagu raadin karaa</string>
+  <string name="level_searchable_hint">Degdeg. Waxay kuu ogolaanaysaa inaad fayl ku hesho magaciisa.</string>
+  <string name="level_understood">Ereyada la akhriyey</string>
+  <string name="level_understood_hint">Wuu gaabiyaa. Waxay kuu ogolaanaysaa inaad fayl ku hesho ereyada ku qoran, oo ay ku jiraan qoraalka sawirrada.</string>
+  <string name="search_hint_a11y">Ku raadi faylashada magacyadooda iyo ereyada ku jira</string>
+  <string name="search_incomplete_note">Magacyadu hadda way shaqaynayaan, ereyadana weli waa la akhriyaa, markaa wax u dhigma oo dheeraad ah ayaa soo bixi kara.</string>
+  <string name="settings_about_model">Raadintu waxay faylasha ku heshaa magacyadooda iyo ereyada ku jira, gabi ahaanba taleefankan ku jira.</string>
+  <string name="settings_delete_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> waxay hadda tirtiraysaa diiwaankeeda faylashada: magacyadooda, ereyada dukumentiyadaada ku jira, iyo qoraalka ay ka akhriday sawirrada iyo sawirrada shaashadda. Faylasheeda ku-meel-gaadhka ah iyo warbixin kasta oo ciladeed iyaguna way baxayaan.\n\nFaylashadaada lama taabanayo. Habayntaadu way baaqi noqonaysaa, oo ay ku jiraan galalka aad ka boodday.\n\n<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> dabadeed waxay joojinaysaa akhrinta. Raadintu waxay ahaanaysaa madhan ilaa aad taabato Dib u bilow.</string>
+  <string name="pause_battery_low_detail">Baytarigu wuxuu ka yar yahay 30%%, sidaa darteed <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> way sugaysaa si loo badbaadiyo inta hadhay. Waxay iskeed u sii soconaysaa marka taleefanku dallaco.</string>
+</resources>

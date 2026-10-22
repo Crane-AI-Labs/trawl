@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="models_eyebrow">Sauke sau ɗaya</string>
+  <string name="models_title">Samo samfuran bincike</string>
+  <string name="models_body">Yi amfani da Wi-Fi idan za ku iya: fayil ɗaya na %1$d MB, ana sauke shi sau ɗaya. Binciken sunaye da kalmomi yana aiki nan take. Binciken ma\'ana yana inganta yayin da <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> ke koyo, kuma ya fi kyau bayan dare ɗaya a kan caja.</string>
+  <string name="models_get">Sauke samfuran (%1$d MB)</string>
+  <string name="models_choose">Zaɓi fayil</string>
+  <string name="models_hint_choose">Kun riga kun sami fayil ɗin? Zaɓe shi daga wayarku.</string>
+  <string name="models_hint_access">Manhajar <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> za ta ƙara fayil ɗin da kanta idan an gama sauke shi, bayan kun ba ta damar shiga fayilolinku. Ko ku yi amfani da Zaɓi fayil.</string>
+  <string name="models_hint_wait"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> zai ƙara fayil ɗin da kansa idan an gama saukewa. Kuna iya farawa yanzu.</string>
+  <string name="models_no_browser">Ba a sami burauza a wannan wayar ba. Kwafi fayil ɗin zuwa wayar ta wata hanya, sannan ku zaɓe shi a nan.</string>
+  <string name="models_downloading">Ana saukewa… %1$s zuwa yanzu</string>
+  <string name="models_installing_pct">Ana dubawa da ƙara samfuran… %1$d%%</string>
+  <string name="models_installing">Ana dubawa da ƙara samfuran…</string>
+  <string name="models_cancel">Soke</string>
+  <string name="models_done">An shigar da samfuran. Yanzu za ku iya bincika.</string>
+  <string name="models_done_already">An riga an shigar da samfuran.</string>
+  <string name="models_ok">To</string>
+  <string name="models_free_question">A goge fayil ɗin da aka sauke domin samun sararin %1$s?</string>
+  <string name="models_free_yes">Eh, a goge shi</string>
+  <string name="models_free_no">A\'a, a bar shi</string>
+  <string name="models_try_again">Sake gwadawa</string>
+  <string name="models_refused_wrong_class">Wannan fayil ɗin na wani nau\'in waya ne. Yi amfani da Sauke samfuran domin sauke wanda ya dace da wannan wayar.</string>
+  <string name="models_refused_damaged">Fayil ɗin ya lalace ko bai cika ba, don haka manhajar <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ba ta yi amfani da shi ba. Sake sauke shi, sannan ku sake gwadawa.</string>
+  <string name="models_refused_not_signed">Manhajar <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ba ta iya tabbatar da cewa wannan fayil ɗin na asali ne ba, don haka ba ta yi amfani da shi ba. Yi amfani da Sauke samfuran domin sake sauke shi.</string>
+  <string name="models_refused_older">Wannan fayil ɗin ya girmi samfuran da ke wannan wayar, don haka manhajar <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ta bar sababbin samfuran.</string>
+  <string name="models_refused_no_space">Babu isasshen sarari a wannan wayar. Ku samar da kusan %1$d MB na sarari, sannan ku sake gwadawa.</string>
+  <string name="models_refused_cancelled">An dakatar. Ba a canza komai ba.</string>
+  <string name="models_update_title">Akwai samfuri mafi inganci</string>
+  <string name="models_update_body_reread">Ƙara shi zai sa manhajar <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ta sake karanta fayilolinku. Hakan yana faruwa yayin da ake cajin wayar, kuma bincike zai ci gaba da aiki.</string>
+  <string name="models_update_body_light">Ƙara shi ba zai sa manhajar <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ta sake karanta fayilolinku ba.</string>
+  <string name="models_update_get">Sauke sabuntawar (%1$d MB)</string>
+  <string name="models_update_not_now">Ba yanzu ba</string>
+</resources>

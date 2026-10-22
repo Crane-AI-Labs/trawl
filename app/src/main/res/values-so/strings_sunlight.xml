@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="typing_learning">Weli baranaya: %1$s ka mid ah %2$s · natiijooyin dheeraad ah ayaa soo bixi kara</string>
+  <string name="typing_learning_charger">Weli baranaya: %1$s ka mid ah %2$s · inta kale markaad dabaysato</string>
+  <string name="typing_learning_paused">La bartay %1$s ka mid ah %2$s ilaa hadda · natiijooyin dheeraad ah ayaa soo bixi kara</string>
+  <string name="settings_colours">Midabada</string>
+  <string name="colours_sunlight">Iftiinka qorraxda</string>
+  <string name="colours_sunlight_hint">Midab warqadeed diirran iyo hal jaalle, si fudud looga akhriyo qorraxda.</string>
+  <string name="colours_wallpaper">Midabada sawirka gidaarka</string>
+  <string name="colours_wallpaper_hint">Waxay midabadeeda ka qaadataa sawirka gidaarka, wayna is beddeshaa marka sawirku is beddelo.</string>
+  <string name="settings_brightness">Koolac ama madow</string>
+</resources>

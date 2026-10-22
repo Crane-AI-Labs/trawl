@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="typing_learning">Har yanzu ana nazari: %1$s cikin %2$s · ƙarin sakamako na iya bayyana</string>
+  <string name="typing_learning_charger">Har yanzu ana nazari: %1$s cikin %2$s · sauran idan an saka a caji</string>
+  <string name="typing_learning_paused">An yi nazarin %1$s cikin %2$s zuwa yanzu · ƙarin sakamako na iya bayyana</string>
+  <string name="settings_colours">Launuka</string>
+  <string name="colours_sunlight">Hasken rana</string>
+  <string name="colours_sunlight_hint">Launin takarda mai ɗumi da rawaya ɗaya, masu sauƙin karantawa a hasken rana mai ƙarfi.</string>
+  <string name="colours_wallpaper">Launukan fuskar bangon waya</string>
+  <string name="colours_wallpaper_hint">Yana ɗauko launukansa daga fuskar bangon wayarka, kuma yana canzawa idan ta canza.</string>
+  <string name="settings_brightness">Haske ko duhu</string>
+</resources>

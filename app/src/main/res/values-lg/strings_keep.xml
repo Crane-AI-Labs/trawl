@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="keep_action">Weeyongere okusoma kati</string>
+  <string name="keep_action_hint">Ekuuma sikirini ng\'eyaka naye ng\'ekitangaala kikendeddwa, kisobozese <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> okusoma nga tokozesa ssimu. Kisinga bulungi ng\'eri ku caaja. Essimu esigala nga tesibiddwa ng\'ekola, n\'olwekyo kino kikole mu kifo kye weesiga kyokka.</string>
+  <string name="keep_heading"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> esoma fayiro zo</string>
+  <string name="keep_counts">Fayiro %1$s ku %2$s zitegeereddwa</string>
+  <string name="keep_time_left">Ebiseera ebisigaddeyo: %1$s</string>
+  <string name="keep_time_unknown">Kikyalowoozebwako obudde bwe kinaatwala</string>
+  <string name="keep_charging">Eri ku caaja</string>
+  <string name="keep_on_battery">Teri ku caaja. Eyanguwa ng\'eri ku caaja.</string>
+  <string name="keep_unlocked">Sikirini esigala ng\'eyaka n\'essimu n\'esigala nga tesibiddwa nga <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> bw\'esoma. Gireke mu kifo kye weesiga kyokka.</string>
+  <string name="keep_tap_to_stop">Koona wano wonna okuyimiriza</string>
+  <string name="keep_stop_done_title">Byonna biwedde</string>
+  <string name="keep_stop_done"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> emaze okusoma fayiro zo zonna. Ekitundu kya Noonya kati kizimanyi.</string>
+  <string name="keep_stop_battery_title">Kiyimiridde: bbetiri eri wansi</string>
+  <string name="keep_stop_battery">Bbetiri eri wansi wa bitundu 20 ku 100. Tteekako caaja, olyoke otandike buto okuva ku sikuli y\'entambula y\'omulimu.</string>
+  <string name="keep_stop_hot_title">Kiyimiridde: essimu eyokya</string>
+  <string name="keep_stop_hot">Essimu eyokezza nnyo, kale <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> eyimiridde esobole okuwola. Osobola okutandika buto oluvannyuma.</string>
+  <string name="keep_stop_unplugged_title">Kiyimiridde: caaja egiddwako</string>
+  <string name="keep_stop_unplugged">Ddamu otteeko caaja, olyoke otandike buto okuva ku sikuli y\'entambula y\'omulimu.</string>
+  <string name="keep_stop_charger_title">Erindiridde caaja</string>
+  <string name="keep_stop_charger">Ku bbetiri, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ekola emirimu emyangu gyokka, era egyo giwedde. Tteekako caaja, olyoke otandike buto.</string>
+  <string name="keep_stop_paused_title">Kiyimiridde: okusoma kuyimiriziddwamu</string>
+  <string name="keep_stop_paused">Ggulawo sikuli y\'entambula y\'omulimu mu <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> okulaba ensonga n\'okweyongerayo.</string>
+  <string name="keep_screen_will_sleep">Kati sikuli ejja kwezisaako yokka nga bulijjo.</string>
+  <string name="keep_close">Ggalawo</string>
+</resources>

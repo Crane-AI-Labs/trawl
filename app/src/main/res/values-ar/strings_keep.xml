@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="keep_action">متابعة التعرّف الآن</string>
+  <string name="keep_action_hint">يُبقي الشاشة مضاءة وخافتة، حتى يتمكن <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> من التعرّف على الملفات أثناء عدم استخدامك للهاتف. يُفضّل وضعه على الشاحن. يظل الهاتف غير مقفل أثناء العمل، لذا افعل ذلك في مكان تثق به فقط.</string>
+  <string name="keep_heading"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> يتعرّف على ملفاتك</string>
+  <string name="keep_counts">تم استيعاب %1$s من أصل %2$s من الملفات</string>
+  <string name="keep_time_left">الوقت المتبقي: %1$s</string>
+  <string name="keep_time_unknown">جارٍ حساب الوقت اللازم</string>
+  <string name="keep_charging">قيد الشحن</string>
+  <string name="keep_on_battery">لا يشحن. تزيد السرعة عند توصيل الشاحن.</string>
+  <string name="keep_unlocked">تظل الشاشة مضاءة والهاتف غير مقفل أثناء تعرّف <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> على الملفات. اتركه في مكان تثق به فقط.</string>
+  <string name="keep_tap_to_stop">المس في أي مكان للإيقاف</string>
+  <string name="keep_stop_done_title">اكتمل كل شيء</string>
+  <string name="keep_stop_done">تعرّف <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> على جميع ملفاتك. تظهر الآن في البحث.</string>
+  <string name="keep_stop_battery_title">توقف: البطارية منخفضة</string>
+  <string name="keep_stop_battery">نسبة البطارية أقل من 20%. صِل الشاحن، ثم ابدأ مجددًا من شاشة مستوى التقدم.</string>
+  <string name="keep_stop_hot_title">توقف: الهاتف ساخن</string>
+  <string name="keep_stop_hot">ارتفعت حرارة الهاتف، لذا توقف <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ليبرد. يمكنك البدء مجددًا لاحقًا.</string>
+  <string name="keep_stop_unplugged_title">توقف: تم فصل الشاحن</string>
+  <string name="keep_stop_unplugged">أعد توصيل الشاحن، ثم ابدأ مجددًا من شاشة مستوى التقدم.</string>
+  <string name="keep_stop_charger_title">في انتظار الشاحن</string>
+  <string name="keep_stop_charger">عند استخدام البطارية، ينجز <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> المهام الخفيفة فقط، وقد اكتملت الآن. صِل الشاحن، ثم ابدأ مجددًا.</string>
+  <string name="keep_stop_paused_title">توقف: التعرّف متوقف مؤقتًا</string>
+  <string name="keep_stop_paused">افتح شاشة مستوى التقدم في <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> لمعرفة السبب والمتابعة.</string>
+  <string name="keep_screen_will_sleep">ستنطفئ الشاشة الآن تلقائيًا كالمعتاد.</string>
+  <string name="keep_close">إغلاق</string>
+</resources>

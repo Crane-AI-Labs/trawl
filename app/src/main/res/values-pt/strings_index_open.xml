@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="open_problem_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> não conseguiu abrir a indexação agora</string>
+  <string name="open_problem_busy">Outra tarefa está usando a indexação. O app tentará novamente em breve.</string>
+  <string name="open_problem_storage_full">O armazenamento do celular está cheio. O app tentará novamente em breve.</string>
+  <string name="open_problem_io">O celular não conseguiu ler a indexação. O app tentará novamente em breve.</string>
+  <string name="open_problem_memory">O celular está com pouca memória. O app tentará novamente em breve.</string>
+  <string name="open_problem_other">O app tentará novamente em breve.</string>
+  <string name="open_problem_detail">Seus resultados anteriores estão seguros, e nada foi apagado. O app tenta novamente sozinho. Você também pode tocar em Tentar novamente.</string>
+</resources>

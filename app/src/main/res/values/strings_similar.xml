@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <!-- Find similar: an action in a file's sheet that lists the files that look like it. -->
+  <string name="action_find_similar">Find similar</string>
+
+  <!-- Read out with the action by a screen reader: says what Find similar does. It is about how the pictures look, nothing more. -->
+  <string name="action_find_similar_help">Find similar shows photos that look like this one.</string>
+
+  <!-- The highlighted chip above the results while Find similar is on. %1$s is the file's name. -->
+  <string name="similar_chip">Similar to %1$s</string>
+
+  <!-- Accessibility label of the chip's cross. -->
+  <string name="similar_remove">Stop finding similar</string>
+
+  <!-- Shown when Find similar finds nothing. %1$s is the file's name. -->
+  <string name="similar_nothing_body">Nothing in your files looks like %1$s yet.</string>
+</resources>

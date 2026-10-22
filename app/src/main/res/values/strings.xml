@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <!-- The app's name: the one place it is written. Copy that says it uses the app_name placeholder (ui/common/AppName.kt). -->
+  <string name="app_name" translatable="false">Trawl</string>
+  <!-- What the launcher shows under the icon. Side-by-side test builds override this one only ("Trawl (name)"). -->
+  <string name="launcher_label" translatable="false">@string/app_name</string>
+
+  <!-- File kinds (singular, for one file) -->
+  <string name="kind_document">Document</string>
+  <string name="kind_pdf">PDF</string>
+  <string name="kind_photo">Photo</string>
+  <string name="kind_screenshot">Screenshot</string>
+  <string name="kind_video">Video</string>
+  <string name="kind_audio">Audio</string>
+  <string name="kind_other">File</string>
+
+  <!-- Chips under the search box -->
+  <string name="filter_all">All</string>
+  <string name="filter_photos">Photos</string>
+  <string name="filter_screenshots">Screenshots</string>
+  <string name="filter_videos">Videos</string>
+  <string name="filter_documents">Documents</string>
+  <string name="filter_audio">Audio</string>
+
+  <!-- Kind names (plural, for counts and switches) -->
+  <string name="kind_plural_screenshots">Screenshots</string>
+  <string name="kind_plural_photos">Photos</string>
+  <string name="kind_plural_documents">Documents and PDFs</string>
+  <string name="kind_plural_videos">Videos</string>
+  <string name="kind_plural_audio">Audio</string>
+
+  <!-- Result sections -->
+  <string name="section_photos_videos">Photos and videos</string>
+  <string name="section_documents_text">Documents and text</string>
+  <string name="section_recent_documents">Recent documents</string>
+  <string name="section_recent_photos_videos">Recent photos and videos</string>
+
+  <!-- Badges and actions on a result -->
+  <string name="badge_page">p. %1$d</string>
+  <string name="badge_at_time">at %1$s</string>
+  <plurals name="pages_count">
+    <item quantity="one">%d page</item>
+    <item quantity="other">%d pages</item>
+  </plurals>
+  <string name="action_open">Open</string>
+  <string name="action_share">Share</string>
+  <string name="action_copy">Copy</string>
+  <string name="action_show_folder">Show in folder</string>
+  <string name="action_more">More actions</string>
+  <string name="snack_copied">Copied</string>
+
+  <!-- Indexing meter card -->
+  <string name="meter_title_not_started">Not reading yet</string>
+  <string name="meter_title_scanning">Looking through your phone</string>
+  <string name="meter_title_indexing">Learning your files</string>
+  <string name="meter_title_up_to_date">All caught up</string>
+  <string name="meter_title_error">Something went wrong</string>
+  <string name="meter_sub_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> will start once it can see your files.</string>
+  <string name="meter_sub_scanning">Found %1$s files so far.</string>
+  <string name="meter_sub_names_first">Names and words first, so you can already search.</string>
+  <string name="meter_sub_progress_eta">%1$s of %2$s understood · about %3$s left</string>
+  <string name="meter_sub_progress_estimating">%1$s of %2$s understood · working out how long</string>
+  <string name="meter_sub_needs_charger">Names and words now. Meaning starts when you charge.</string>
+  <string name="meter_sub_reembed">Updating photos for the new model: %1$s of %2$s. Search keeps working.</string>
+  <string name="meter_sub_reembed_eta">Updating photos for the new model: %1$s of %2$s · about %3$s left</string>
+  <string name="meter_sub_reembed_battery">Updating photos for the new model: %1$s of %2$s. The rest continues when you charge.</string>
+  <string name="meter_sub_light_reading">Reading your photos for a quick search. Full quality finishes when you charge.</string>
+  <string name="meter_sub_light_done">Everything is searchable now. Full quality finishes when you charge.</string>
+  <string name="meter_sub_paused">%1$s of %2$s understood. Search still works.</string>
+  <string name="meter_sub_up_to_date">%1$s files are ready to search.</string>
+  <plurals name="meter_sub_up_to_date_unreadable">
+    <item quantity="one">%1$s files are ready to search. %2$d couldn\'t be read, but you can still find it by name.</item>
+    <item quantity="other">%1$s files are ready to search. %2$d couldn\'t be read, but you can still find them by name.</item>
+  </plurals>
+  <string name="meter_sub_error">Tap for details.</string>
+  <string name="meter_a11y">%1$s. %2$s. %3$d percent understood.</string>
+  <string name="meter_open_details">Show reading details</string>
+
+  <!-- Why reading is waiting -->
+  <string name="pause_not_charging">Waiting for the charger</string>
+  <string name="pause_not_charging_detail">Reading everything in full quality uses a lot of battery, so <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> does that part when the phone is charging. Search works meanwhile.</string>
+  <string name="pause_too_hot">Cooling down</string>
+  <string name="pause_too_hot_detail">The phone is warm, so <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> is taking a break to protect it. It carries on by itself once the phone cools.</string>
+  <string name="pause_battery_low">Battery is low</string>
+  <string name="pause_battery_low_detail">The battery is under 30%%, so <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> reads only names and words to save what is left. It carries on by itself once the phone charges.</string>
+  <string name="pause_user">Paused by you</string>
+  <string name="pause_user_detail">Reading is paused. Search still works on what <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> has learned so far.</string>
+  <string name="pause_no_permission">Needs access to your files</string>
+  <string name="pause_no_permission_detail"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> cannot see your files until you allow All files access. It only reads them and never changes anything.</string>
+  <string name="pause_storage_low">Phone storage is almost full</string>
+  <string name="pause_storage_low_detail"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> needs a little room to keep its index. Free some space and it carries on.</string>
+
+  <string name="action_pause">Pause</string>
+  <string name="action_resume">Resume</string>
+  <string name="action_read_on_battery">Read on battery anyway</string>
+  <string name="action_allow_access">Allow access</string>
+  <string name="action_free_space">Free up space</string>
+  <string name="action_retry">Try again</string>
+
+  <!-- Time left -->
+  <string name="eta_under_minute">under a minute</string>
+  <string name="eta_minutes">%d min</string>
+  <string name="eta_hours_single">%d h</string>
+  <string name="eta_hours_range">%1$d to %2$d h</string>
+  <string name="eta_while_charging">%1$s on the charger</string>
+
+  <!-- Detail sheet -->
+  <string name="sheet_title">Reading your files</string>
+  <string name="sheet_detail_up_to_date">Every file <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> can see is ready. New ones are picked up as they appear.</string>
+  <string name="sheet_detail_scanning"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> is making a list of your files. This takes a minute or two.</string>
+  <string name="sheet_detail_light_on_battery">Names and words are read now and photos get a quick look, so search already works. Full quality, which gives the best matches, finishes when the phone is charging.</string>
+  <string name="sheet_detail_needs_charger">Names and words are being read now, so search already works. Understanding what photos and documents are about starts when the phone is charging.</string>
+  <string name="sheet_detail_indexing">Names and words come first, so search works almost at once. Understanding what photos and documents are about takes longer, and is best done overnight on the charger.</string>
+  <string name="sheet_detail_error">Reading stopped unexpectedly. Your earlier results are safe.</string>
+  <string name="sheet_detail_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> has not started reading yet.</string>
+  <string name="sheet_by_kind">By kind of file</string>
+  <string name="sheet_reading_now">Reading now</string>
+  <string name="sheet_resumes_by_itself">Carries on by itself when this is fixed.</string>
+
+  <string name="level_searchable">Searchable by name and words</string>
+  <string name="level_searchable_hint">Quick. Lets you find a file by what is written in it.</string>
+  <string name="level_understood">Understood by meaning</string>
+  <string name="level_understood_hint">Slower. Lets you find a file by what it is about.</string>
+  <string name="level_quicklook">Quick look: photos and videos</string>
+  <string name="level_quicklook_hint">Fast. A smaller model finds photos by what is in them, for searches in English. Full detail replaces it as each photo is understood.</string>
+  <string name="meter_quicklook">Quick look: %1$s of %3$s photos · Full detail: %2$s of %3$s</string>
+  <string name="level_a11y">%1$s: %2$s of %3$s</string>
+  <string name="count_of">%1$s of %2$s</string>
+  <string name="stat_time_left">Time left</string>
+  <string name="stat_speed">Speed</string>
+  <string name="stat_index_size">Index size</string>
+  <string name="stat_model_size">Model size</string>
+  <string name="stat_when_charging">Starts on the charger</string>
+  <string name="stat_estimating">Working it out</string>
+  <string name="stat_measuring">Measuring</string>
+  <string name="stat_done">Done</string>
+  <string name="stat_rate_value">%1$s files/h</string>
+
+  <!-- Onboarding -->
+  <string name="onb_next">Next</string>
+  <string name="onb_back">Back</string>
+  <string name="onb_start">Start <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="onb_start_locked"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> needs All files access before it can start</string>
+  <string name="onb_allow_access">Allow files access</string>
+  <string name="onb_page_of">Step %1$d of %2$d</string>
+
+  <!-- Onboarding v2: the single welcome page (replaces the old privacy and timeline pages). -->
+  <string name="welcome_line"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> finds your documents, photos and screenshots by what they say and show.</string>
+  <string name="welcome_point_ai_body">The AI that understands your files runs on this phone. Nothing is sent to a server.</string>
+  <string name="welcome_point_reads_title">Only reads your files</string>
+  <string name="welcome_point_reads_body">It never changes, moves or deletes anything. You can delete what it has learned at any time.</string>
+  <string name="onb_choose_folders">Choose folders</string>
+  <string name="onb1_eyebrow">Private by design</string>
+  <string name="onb1_title">Your files never leave this phone.</string>
+  <string name="onb1_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> finds documents, PDFs, screenshots, photos, memes and videos by what they say and what they show. All of it happens here, on this phone.</string>
+  <string name="onb1_point_internet_title">No internet permission</string>
+  <string name="onb1_point_internet_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> cannot connect to the internet at all. Android itself stops it from sending anything out.</string>
+  <string name="onb1_point_model_title">The AI lives on your phone</string>
+  <string name="onb1_point_model_body">The model that understands your files, EmbeddingGemma 2 by Google, runs on this phone. Nothing is sent to a server to be understood.</string>
+  <string name="onb1_point_delete_title">You are in charge</string>
+  <string name="onb1_point_delete_body">Skip any folder, or delete everything <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> has learned, whenever you like.</string>
+
+  <string name="onb2_eyebrow">What happens next</string>
+  <string name="onb2_title">Search works in minutes. Understanding takes a night.</string>
+  <string name="onb2_step1_title">In a few minutes</string>
+  <string name="onb2_step1_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> makes a list of your files and learns their names and the words inside them. You can search right away.</string>
+  <string name="onb2_step2_title">Over the next hours</string>
+  <string name="onb2_step2_body">Then it learns what each photo and document is about, so a search like “school fees receipt” finds the right one even when those words are not in it. This is slow work for a phone.</string>
+  <string name="onb2_step3_title">Mostly while charging</string>
+  <string name="onb2_step3_body">To save your battery, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> does the slow part on the charger. Leave it plugged in overnight once. You can watch progress, pause, or change this any time.</string>
+
+  <string name="onb3_eyebrow">Two permissions</string>
+  <string name="onb3_title">Let <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> see your files</string>
+  <string name="onb3_files_title">All files access</string>
+  <string name="onb3_files_body">Needed to see files in every folder, like WhatsApp documents. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> only reads. It never changes, moves or deletes anything.</string>
+  <string name="onb3_files_action">Open settings</string>
+  <string name="onb3_files_granted">Allowed</string>
+  <string name="onb3_files_hint">In the list that opens, switch on “Allow access to manage all files”, then come back.</string>
+  <string name="onb3_notif_title">Notifications (optional)</string>
+  <string name="onb3_notif_body">Only so <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> can tell you when it has finished reading. Nothing else.</string>
+  <string name="onb3_notif_action">Allow</string>
+  <string name="onb3_notif_granted">Allowed</string>
+  <string name="onb4_eyebrow">Optional extras</string>
+  <string name="onb4_title">Add extras?</string>
+  <string name="onb4_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> works without these. Each makes one thing better. Each is a file you copy into Downloads, because <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> never goes online.</string>
+  <string name="onb4_add">Add</string>
+  <string name="onb4_not_now">Not now</string>
+  <string name="onb4_added">Added</string>
+  <string name="onb4_skipped">Skipped. You can add it later.</string>
+  <string name="onb4_footer">You can change this later in Settings → Add-ons.</string>
+
+  <!-- Search -->
+  <string name="search_hint">Search your files</string>
+  <string name="search_hint_a11y">Search your files by what they say or show</string>
+  <string name="search_clear">Clear search</string>
+  <string name="search_searching">Searching</string>
+  <string name="search_settings">Settings</string>
+  <string name="search_nothing_title">Nothing found</string>
+  <string name="search_nothing_body">No file matches “%1$s”.</string>
+  <string name="search_nothing_try_all">Try fewer or different words, or search All.</string>
+  <string name="search_nothing_incomplete"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> is still learning your files, so this may change. Try again a little later.</string>
+  <string name="search_repairing_note">Search is repairing itself. Names and words still work; search by meaning comes back in a few minutes.</string>
+  <string name="search_incomplete_note">Names and words work now. Meaning search is still being learned, so more matches may appear.</string>
+  <string name="search_incomplete_note_charger">Names and words work now. Search by meaning (like “boda” for a motorbike photo) starts once the phone is charging.</string>
+  <string name="search_weak_toggle">Weaker matches (%1$d)</string>
+  <string name="search_weak_only">No strong matches. These are the closest.</string>
+  <string name="search_weak_expand">Show weaker matches</string>
+  <string name="search_weak_collapse">Hide weaker matches</string>
+  <string name="search_fresh_title">Nothing to show yet</string>
+  <string name="search_fresh_body">As soon as <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> sees your files, the newest ones appear here. Type above to search.</string>
+  <string name="search_recent_empty_filter">No files of this kind yet.</string>
+  <string name="access_banner_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> cannot see your files yet</string>
+  <string name="access_banner_body">Allow All files access so it can read them. It never changes anything.</string>
+  <string name="snack_no_app">No app on this phone can open this file.</string>
+  <string name="snack_sample">This is a sample file, so it cannot be opened.</string>
+
+  <!-- Settings -->
+  <string name="settings_title">Settings</string>
+  <string name="settings_back">Back</string>
+  <string name="settings_section_reading">Reading</string>
+  <string name="learn_speed_title">Learning speed</string>
+  <string name="learn_gentle">Gentle</string>
+  <string name="learn_gentle_hint">Reads only while charging, with fewer threads. Least battery and warmth; anything new waits for the charger.</string>
+  <string name="learn_balanced">Balanced</string>
+  <string name="learn_balanced_hint">The usual way. The charger reads your whole gallery; on battery only new files and quick look run.</string>
+  <string name="learn_fast">Fast</string>
+  <string name="learn_fast_hint">Reads everything on battery too and waits only while you use another app. Finishes sooner, uses more battery and runs warmer.</string>
+  <string name="settings_section_kinds">What to read</string>
+  <string name="settings_recordings">Voice notes and recordings</string>
+  <string name="settings_recordings_hint">Read for what was said and what is heard, so you can search them.</string>
+  <string name="settings_deeper">Deeper sound search (slow): music and other sounds</string>
+  <string name="settings_deeper_hint">Finds sounds by what they are like, not only by words. Costs about 15 seconds of reading for each minute of sound on a basic phone.</string>
+  <string name="settings_section_addons">Add-ons</string>
+  <string name="addons_intro">Optional extras that make search better. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> never goes online, so each one is a file you copy into Downloads first. Everything stays on this phone.</string>
+  <string name="addons_status_not_added">Not added</string>
+  <string name="addons_status_adding">Adding</string>
+  <string name="addons_status_added">Added</string>
+  <string name="addons_status_soon">Coming soon</string>
+  <string name="addons_size">Size: %1$s</string>
+  <string name="addons_add">Add</string>
+  <string name="addons_add_with_size">Add (%1$s)</string>
+  <string name="addons_remove">Remove, frees %1$s</string>
+  <string name="addons_on">On</string>
+  <string name="addons_off">Off</string>
+  <string name="addons_adding_pct">Checking and adding… %1$d%%</string>
+  <string name="addons_adding">Checking and adding…</string>
+  <string name="addons_try_again">Try again</string>
+  <string name="addons_soon_hint">Not ready yet. It will appear here when it is.</string>
+  <string name="addons_problem_not_found"><xliff:g id="app_name" example="Trawl">%2$s</xliff:g> could not find %1$s in Downloads. Copy it there, then try again.</string>
+  <string name="addons_problem_access"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> needs All files access to read Downloads. Turn it on, then try again.</string>
+  <string name="addons_problem_bad">The file in Downloads is damaged or is the wrong one, so <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> did not use it. Copy it again, then try again.</string>
+  <string name="addons_problem_unavailable">This add-on cannot be added in this version yet.</string>
+  <string name="addons_add_title">Add %1$s</string>
+  <string name="addons_add_install">Install</string>
+  <string name="addons_remove_title">Remove %1$s?</string>
+  <string name="addons_remove_body">This frees %1$s and switches it off. Words and meanings <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> already learned stay until those files are read again. You can add it back any time.</string>
+  <string name="addons_remove_confirm">Remove</string>
+  <string name="settings_section_excluded">Skipped folders</string>
+  <string name="settings_excluded_hint"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> will not read anything inside these folders.</string>
+  <string name="settings_excluded_empty">None. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> reads every folder it can see.</string>
+  <string name="settings_excluded_remove">Stop skipping %1$s</string>
+  <string name="settings_excluded_bad">That folder cannot be chosen from here. Pick one on the phone’s main storage.</string>
+  <string name="onb_scope_eyebrow">Your choice</string>
+  <string name="scope_title">What should <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> search?</string>
+  <string name="scope_intro">Switch off anything you do not want found. Its files leave search straight away, and come back if you switch it on again.</string>
+  <string name="scope_counts_unknown">File counts appear once <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> can see your files.</string>
+  <string name="scope_private">Hidden folders, folders marked .nomedia and other apps’ private folders are never read.</string>
+  <string name="scope_added_title">Folders you added</string>
+  <string name="scope_add">Add a folder</string>
+  <string name="scope_added_remove">Stop searching %1$s</string>
+  <string name="scope_exclude">Exclude a folder</string>
+  <plurals name="sheet_too_large">
+    <item quantity="one">%1$d file was too large for this phone\'s memory, so it was left out. Everything else is searchable.</item>
+    <item quantity="other">%1$d files were too large for this phone\'s memory, so they were left out. Everything else is searchable.</item>
+  </plurals>
+  <plurals name="sheet_unreadable">
+    <item quantity="one">%1$d file couldn\'t be read (damaged, or a format this phone can\'t open). You can still find it by name.</item>
+    <item quantity="other">%1$d files couldn\'t be read (damaged, or a format this phone can\'t open). You can still find them by name.</item>
+  </plurals>
+  <plurals name="scope_files">
+    <item quantity="one">%1$s file</item>
+    <item quantity="other">%1$s files</item>
+  </plurals>
+  <string name="scope_group_camera">Camera</string>
+  <string name="scope_group_screenshots">Screenshots</string>
+  <string name="scope_group_whatsapp_images">WhatsApp images</string>
+  <string name="scope_group_whatsapp_video">WhatsApp videos</string>
+  <string name="scope_group_whatsapp_documents">WhatsApp documents</string>
+  <string name="scope_group_whatsapp_voice">WhatsApp voice notes</string>
+  <string name="scope_group_whatsapp_status">WhatsApp Status</string>
+  <string name="scope_group_downloads">Downloads</string>
+  <string name="scope_group_documents">Documents</string>
+  <string name="scope_group_music">Music and recordings</string>
+  <string name="scope_group_other">Other folders</string>
+  <string name="settings_section_storage">Storage used</string>
+  <string name="settings_storage_index">Search index</string>
+  <string name="settings_storage_model">AI model</string>
+  <string name="settings_delete">Delete everything <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> knows</string>
+  <string name="settings_delete_hint">Deletes what <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> has read from your files, and its temporary files. Your own files are not touched.</string>
+  <string name="settings_delete_title">Delete everything <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> knows?</string>
+  <string name="settings_delete_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> deletes its index of your files now: their names, the words in your documents, the text it read in photos and screenshots, the speech it wrote down from videos and voice notes, and what its AI noted about each file. Its temporary files and any problem reports go too.\n\nYour own files are not touched. Your settings stay, including the folders you skipped.\n\n<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> then stops reading. Search stays empty until you tap Resume.</string>
+  <string name="settings_delete_done">Deleted %1$s. <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> is paused until you tap Resume.</string>
+  <string name="settings_storage_model_hint">Needed for search by meaning.</string>
+  <string name="settings_storage_index_hint">The database and its log.</string>
+  <string name="settings_storage_estimate">When every file is read</string>
+  <string name="settings_storage_estimate_value">About %1$s</string>
+  <string name="settings_storage_memory">Memory while searching</string>
+  <string name="settings_storage_memory_hint">Held only while <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> is open. About %1$s when every file is read.</string>
+  <string name="settings_storage_remove">Remove</string>
+  <string name="settings_storage_no_data"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> never uses mobile data: it has no internet access.</string>
+  <string name="settings_delete_confirm">Delete</string>
+  <string name="settings_cancel">Cancel</string>
+  <string name="settings_section_appearance">Appearance</string>
+  <string name="settings_theme_system">System</string>
+  <string name="settings_theme_light">Light</string>
+  <string name="settings_theme_dark">Dark</string>
+  <string name="report_card_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> stopped unexpectedly. Send a report to help fix it?</string>
+  <string name="report_card_body">The report has no file names, searches or text from your files. You read it first, and nothing is sent until you press Send in your own email app.</string>
+  <string name="report_send">Send</string>
+  <string name="report_not_now">Not now</string>
+  <string name="report_view">View report</string>
+  <string name="report_close">Close</string>
+  <string name="report_send_email">Send by email</string>
+  <string name="report_send_whatsapp">Send on WhatsApp</string>
+  <string name="report_send_whatsapp_file">Send the full report in WhatsApp</string>
+  <string name="report_no_email">No email app was found on this phone. Use View report to read it, or install an email app.</string>
+  <string name="report_no_whatsapp">WhatsApp could not be opened.</string>
+  <string name="report_building">Preparing the report…</string>
+  <string name="report_dialog_title">Problem report</string>
+  <string name="report_dialog_hint">This is everything that would be sent. Your files, folders and searches are not in it.</string>
+  <string name="settings_section_report">Report a problem</string>
+  <string name="settings_report_hint">Opens your email app with a report ready to send. It holds the phone and <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> version, and any errors <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> has seen, with no file names, searches or text from your files. You read it first, and nothing is sent until you press Send there.</string>
+  <string name="settings_report_note">What went wrong? (optional)</string>
+  <string name="settings_report_kept"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> keeps at most 10 reports on this phone, about 100 KB. “Delete everything <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> knows” removes them.</string>
+  <string name="settings_section_about">About</string>
+  <string name="settings_about_version">Version %1$s</string>
+  <string name="settings_about_model">Search runs on EmbeddingGemma 2 by Google (Apache 2.0), entirely on this phone.</string>
+  <string name="settings_about_private"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> has no internet permission. Your files and what it learns from them never leave the phone.</string>
+  <string name="settings_about_maker">Made by Crane AI Labs.</string>
+  <string name="settings_licences">Licences and credits</string>
+  <string name="licences_title">Licences and credits</string>
+  <string name="licences_intro"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> is built on the work below. These notices are required by the licences, and they are also how we say thank you.</string>
+  <string name="licences_section_required">Notices</string>
+  <string name="licences_section_components">Everything else in <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
+  <string name="licences_section_texts">Full licence texts</string>
+  <string name="licences_show">Show full text</string>
+  <string name="licences_hide">Hide full text</string>
+  <string name="settings_close">Close</string>
+</resources>

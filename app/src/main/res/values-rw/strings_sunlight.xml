@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="typing_learning">Haracyasomwa: %1$s kuri %2$s · ibindi bisubizo bishobora kugaragara</string>
+  <string name="typing_learning_charger">Haracyasomwa: %1$s kuri %2$s · ibindi niwashyira ku muriro</string>
+  <string name="typing_learning_paused">%1$s kuri %2$s byasobanutse kugeza ubu · hashobora kuboneka ibindi bisubizo</string>
+  <string name="settings_colours">Amabara</string>
+  <string name="colours_sunlight">Urumuri rw\'izuba</string>
+  <string name="colours_sunlight_hint">Ibara rishyushye ry\'impapuro n\'umuhondo umwe, byoroshye gusoma mu zuba rikaze.</string>
+  <string name="colours_wallpaper">Amabara y\'ishusho y\'inyuma</string>
+  <string name="colours_wallpaper_hint">Ikoresha amabara y\'ishusho yawe y\'inyuma, kandi igahinduka na yo.</string>
+  <string name="settings_brightness">Urumuri cyangwa umwijima</string>
+</resources>

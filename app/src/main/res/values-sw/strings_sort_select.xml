@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="sort_best">Inayolingana zaidi</string>
+  <string name="sort_newest">Mpya zaidi</string>
+  <string name="sort_oldest">Ya zamani zaidi</string>
+  <string name="sort_largest">Kubwa zaidi</string>
+  <string name="sort_name">Jina A hadi Z</string>
+  <string name="sort_group">Panga kwa</string>
+  <string name="date_any_time">Wakati wowote</string>
+  <string name="date_group">Tarehe</string>
+  <string name="date_today">Leo</string>
+  <string name="date_yesterday">Jana</string>
+  <string name="date_this_week">Wiki hii</string>
+  <string name="date_last_week">Wiki iliyopita</string>
+  <string name="date_this_month">Mwezi huu</string>
+  <string name="date_last_month">Mwezi uliopita</string>
+  <string name="date_this_year">Mwaka huu</string>
+  <string name="date_last_year">Mwaka uliopita</string>
+  <string name="date_weekend">Wikendi iliyopita</string>
+  <string name="date_last_night">Usiku uliopita</string>
+  <string name="date_this_morning">Asubuhi hii</string>
+  <string name="date_this_afternoon">Alasiri hii</string>
+  <string name="date_this_evening">Jioni hii</string>
+  <string name="date_yesterday_morning">Jana asubuhi</string>
+  <string name="date_yesterday_afternoon">Jana alasiri</string>
+  <string name="date_yesterday_evening">Jana jioni</string>
+  <string name="date_pick_range">Chagua tarehe…</string>
+  <string name="date_range">%1$s – %2$s</string>
+  <string name="date_remove">Ondoa kichujio cha tarehe</string>
+  <string name="date_from_words">%1$s, kutokana na maneno yako ya utafutaji</string>
+  <string name="date_picker_title">Chagua siku ya kwanza na ya mwisho</string>
+  <string name="date_picker_ok">Tumia</string>
+  <plurals name="date_past_days">
+    
+    <item quantity="one">Ndani ya siku %d iliyopita</item>
+    <item quantity="other">Ndani ya siku %d zilizopita</item>
+  </plurals>
+  <plurals name="date_past_weeks">
+    
+    <item quantity="one">Ndani ya wiki %d iliyopita</item>
+    <item quantity="other">Ndani ya wiki %d zilizopita</item>
+  </plurals>
+  <plurals name="date_past_months">
+    
+    <item quantity="one">Ndani ya mwezi %d uliopita</item>
+    <item quantity="other">Ndani ya miezi %d iliyopita</item>
+  </plurals>
+  <plurals name="date_past_years">
+    
+    <item quantity="one">Ndani ya mwaka %d uliopita</item>
+    <item quantity="other">Ndani ya miaka %d iliyopita</item>
+  </plurals>
+  <plurals name="date_ago_days">
+    
+    <item quantity="one">Siku %d iliyopita</item>
+    <item quantity="other">Siku %d zilizopita</item>
+  </plurals>
+  <plurals name="date_ago_weeks">
+    
+    <item quantity="one">Wiki %d iliyopita</item>
+    <item quantity="other">Wiki %d zilizopita</item>
+  </plurals>
+  <plurals name="date_ago_months">
+    
+    <item quantity="one">Mwezi %d uliopita</item>
+    <item quantity="other">Miezi %d iliyopita</item>
+  </plurals>
+  <plurals name="date_ago_years">
+    
+    <item quantity="one">Mwaka %d uliopita</item>
+    <item quantity="other">Miaka %d iliyopita</item>
+  </plurals>
+  <string name="action_select">Chagua</string>
+  <plurals name="select_count">
+    
+    <item quantity="one">%d limechaguliwa</item>
+    <item quantity="other">%d yamechaguliwa</item>
+  </plurals>
+  <string name="select_all">Chagua yote</string>
+  <string name="select_none">Ondoa chaguo zote</string>
+  <string name="select_exit">Acha kuchagua</string>
+  <string name="select_share_limit">Unaweza kushiriki hadi mafaili %d kwa wakati mmoja.</string>
+  <string name="sensitive_share_body_many">Baadhi ya haya yamewekewa alama kuwa nyeti. Yeyote anayeyapokea anaweza kuyahifadhi na kuyasambaza.</string>
+  <string name="sensitive_copy_body_many">Baadhi ya haya yamewekewa alama kuwa nyeti. Chochote unachoyabandikia hupokea mafaili yenyewe.</string>
+  <string name="snack_marked_sensitive_many">Yamewekewa alama kuwa nyeti. Sasa yamefichwa kwenye matokeo.</string>
+  <string name="snack_unmarked_sensitive_many">Alama zimeondolewa. Yanaweza kuonekana tena kwenye matokeo.</string>
+  <string name="nothing_in_dates">Hakuna kilichopatikana katika kipindi cha %1$s. Jaribu tarehe nyingine.</string>
+</resources>

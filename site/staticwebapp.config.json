@@ -1,0 +1,63 @@
+{
+  "globalHeaders": {
+    "Content-Security-Policy": "default-src 'none'; img-src 'self' data:; media-src 'self'; font-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests",
+    "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "Referrer-Policy": "no-referrer",
+    "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()",
+    "Cross-Origin-Opener-Policy": "same-origin"
+  },
+  "routes": [
+    {
+      "route": "/media/*",
+      "headers": {
+        "Cache-Control": "public, max-age=2592000, immutable"
+      }
+    },
+    {
+      "route": "/fonts/*",
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    { "route": "/robots.txt", "headers": { "Cache-Control": "public, max-age=3600" } },
+    { "route": "/sitemap.xml", "headers": { "Cache-Control": "public, max-age=3600" } },
+    { "route": "/llms.txt", "headers": { "Cache-Control": "public, max-age=3600" } },
+    { "route": "/llms-full.txt", "headers": { "Cache-Control": "public, max-age=3600" } },
+    { "route": "/site.webmanifest", "headers": { "Cache-Control": "public, max-age=86400" } },
+    { "route": "/apple-touch-icon.png", "headers": { "Cache-Control": "public, max-age=86400" } },
+    { "route": "/favicon.ico", "headers": { "Cache-Control": "public, max-age=86400" } },
+    { "route": "/favicon.svg", "headers": { "Cache-Control": "public, max-age=86400" } },
+    { "route": "/favicon-48.png", "headers": { "Cache-Control": "public, max-age=86400" } },
+    { "route": "/icon-192.png", "headers": { "Cache-Control": "public, max-age=86400" } },
+    { "route": "/icon-512.png", "headers": { "Cache-Control": "public, max-age=86400" } },
+    { "route": "/icon-maskable-512.png", "headers": { "Cache-Control": "public, max-age=86400" } },
+    { "route": "/press/*", "headers": { "Cache-Control": "public, max-age=86400" } },
+    {
+      "route": "/staticwebapp.config.json",
+      "statusCode": 404
+    }
+  ],
+  "responseOverrides": {
+    "404": {
+      "rewrite": "/404.html",
+      "statusCode": 404
+    }
+  },
+  "mimeTypes": {
+    ".md": "text/plain; charset=utf-8",
+    ".txt": "text/plain; charset=utf-8",
+    ".xml": "application/xml; charset=utf-8",
+    ".webmanifest": "application/manifest+json",
+    ".ico": "image/x-icon",
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    ".woff2": "font/woff2",
+    ".avif": "image/avif",
+    ".webm": "video/webm",
+    ".mp4": "video/mp4",
+    ".webp": "image/webp",
+    ".svg": "image/svg+xml"
+  }
+}

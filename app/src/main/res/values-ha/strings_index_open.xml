@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="open_problem_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> bai iya buɗe Fihirisa yanzu ba</string>
+  <string name="open_problem_busy">Wani aiki yana amfani da shi. Zai sake gwadawa nan ba da jimawa ba.</string>
+  <string name="open_problem_storage_full">Wurin ajiya na wayar ya cika. Zai sake gwadawa nan ba da jimawa ba.</string>
+  <string name="open_problem_io">Wayar ba ta iya karanta shi ba. Zai sake gwadawa nan ba da jimawa ba.</string>
+  <string name="open_problem_memory">Wayar ba ta da isasshen ƙwaƙwalwa. Zai sake gwadawa nan ba da jimawa ba.</string>
+  <string name="open_problem_other">Zai sake gwadawa nan ba da jimawa ba.</string>
+  <string name="open_problem_detail">Sakamakonku na baya yana nan lafiya, kuma ba a goge komai ba. Zai sake gwadawa da kansa, ko ku taɓa Sake gwadawa.</string>
+</resources>
