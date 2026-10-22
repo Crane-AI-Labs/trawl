@@ -10,7 +10,7 @@ Status on 2026-10-22: version 1.0.0 is released and free to download. The Androi
 
 - [Trawl by Crane AI Labs](https://trawl.craneailabs.com/): what Trawl finds, how it protects privacy, the numbers, the downloads and the questions people ask.
 - [How we measured](https://trawl.craneailabs.com/how-we-measured.html): the phone, the method and the meaning of every number on the home page.
-- [Check Trawl's privacy yourself](https://trawl.craneailabs.com/privacy.html): what Trawl claims about privacy, every permission the app declares and why, and how anyone can check that the app has no internet permission.
+- [Check Trawl's privacy yourself](https://github.com/Crane-AI-Labs/trawl/blob/main/PRIVACY.md): what Trawl claims about privacy, every permission the app declares and why, and how anyone can check that the app has no internet permission.
 - [Press kit](https://trawl.craneailabs.com/press.html): fact sheet, the measured numbers, 25, 50 and 100-word descriptions, logo files and share images.
 - [Other ways to search your own files](https://trawl.craneailabs.com/other-ways-to-search.html): other apps and services that search files and photos you own, each linked to its maker's page with the date it was checked. A list, not a ranking.
 

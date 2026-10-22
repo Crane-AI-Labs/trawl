@@ -75,7 +75,7 @@ It will come to the Play Store later. Until then, install it from the Trawl page
 
 ## More pages
 
-- Privacy facts: https://trawl.craneailabs.com/privacy.html lists every permission the app declares, why, and how to check that it has no internet permission.
+- Privacy facts: https://github.com/Crane-AI-Labs/trawl/blob/main/PRIVACY.md lists every permission the app declares, why, and how to check that it has no internet permission.
 - Press kit: https://trawl.craneailabs.com/press.html has the fact sheet, the measured numbers and descriptions of 25, 50 and 100 words.
 - Other ways to search your own files: https://trawl.craneailabs.com/other-ways-to-search.html links to other apps and services, each with the date we checked it.
 

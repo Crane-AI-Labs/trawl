@@ -2,7 +2,7 @@
 
 **Trawl by Crane AI Labs** is an Android app that finds the photos, screenshots, documents, videos and voice notes on your phone when you describe what is in them. It runs entirely on the phone: the app has no internet permission, needs no account and shows no ads.
 
-[Website](https://trawl.craneailabs.com/) | [How to check the privacy claims](https://trawl.craneailabs.com/privacy.html) | [How we measured](https://trawl.craneailabs.com/how-we-measured.html) | [Releases](https://github.com/Crane-AI-Labs/trawl/releases)
+[Website](https://trawl.craneailabs.com/) | [Check the privacy claims yourself](PRIVACY.md) | [How we measured](https://trawl.craneailabs.com/how-we-measured.html) | [Releases](https://github.com/Crane-AI-Labs/trawl/releases)
 
 Type "receipt from the hardware shop", "the dog at the lake" or "meeting about the budget" and Trawl brings up the file.
 It works fully offline: it reads the files already on your phone, builds a search index on the phone, and never sends anything anywhere.
