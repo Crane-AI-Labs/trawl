@@ -29,6 +29,7 @@ class DeliveryViewModel(engine: SearchEngine) : ViewModel() {
       .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), engine.status.value.modelBytes == 0L)
 
   fun downloadUrl(): String = delivery.downloadUrl()
+  fun setChoice(choice: com.craneai.findr.core.ModelChoice) = delivery.setChoice(choice)
   fun watch(on: Boolean) = delivery.watch(on)
   fun installFrom(uri: String) = delivery.installFrom(uri)
   fun cancel() = delivery.cancel()

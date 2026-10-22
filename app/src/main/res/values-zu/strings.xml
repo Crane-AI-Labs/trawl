@@ -456,4 +456,16 @@
   <string name="action_copy_file">Kopisha i-%1$s</string>
   <string name="preview_hidden_words">Kubukeka kuyimfihlo · thinta ukuze ubone</string>
   <string name="filter_group">Bonisa ukuthi imaphi amafayela</string>
+  <plurals name="meter_sub_up_to_date_unreadable">
+    <item quantity="one">Amafayela angu-%1$s alungele ukusesha. Elingu-%2$d alifundekanga, kodwa ungalitholabe ngegama.</item>
+    <item quantity="other">Amafayela angu-%1$s alungele ukusesha. Angu-%2$d awafundekanga, kodwa ungawatholabe ngegama.</item>
+  </plurals>
+  <plurals name="sheet_too_large">
+    <item quantity="one">Ifayela elingu-%1$d lalikhulu kakhulu kumemori yale foni, ngakho lashiywa. Konke okunye kuyasesheka.</item>
+    <item quantity="other">Amafayela angu-%1$d ayekhulu kakhulu kumemori yale foni, ngakho ashiywa. Konke okunye kuyasesheka.</item>
+  </plurals>
+  <plurals name="sheet_unreadable">
+    <item quantity="one">Ifayela elingu-%1$d alifundekanga (lonakele, noma liyifomethi le-foni engeke ilivule). Ungalitholabe ngegama.</item>
+    <item quantity="other">Amafayela angu-%1$d awafundekanga (onakele, noma ayifomethi le-foni engeke iwavule). Ungawatholabe ngegama.</item>
+  </plurals>
 </resources>

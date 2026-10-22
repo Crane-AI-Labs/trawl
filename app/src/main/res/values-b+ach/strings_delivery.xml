@@ -31,4 +31,17 @@
   <string name="models_update_body_light">Medo model man pe miyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kwano fayil megi odoco.</string>
   <string name="models_update_get">Gam mayen (%1$d MB)</string>
   <string name="models_update_not_now">Pe kombedi</string>
+  <string name="models_choice_title">Yer kwan ma igamo</string>
+  <string name="models_choice_standard">Standard: %1$d MB (kimi tam)</string>
+  <string name="models_choice_standard_hint">Yenyo maber loyo i leb ducu, ki lok ma tye i vidiyo ki kwena me dwon.</string>
+  <string name="models_choice_save">Gwok data: %1$d MB</string>
+  <string name="models_choice_save_hint">Yenyo i leb Munu bedo maber calo nining; yenyo cal i Luganda ki Swahili nok; pe tye ki lok ma tye i vidiyo onyo kwena me dwon. Itwero medo ka dong i ngeye.</string>
+  <string name="models_choice_switch_standard">Tii ki Standard (%1$d MB)</string>
+  <string name="models_choice_switch_save">Tii ki Gwok data (%1$d MB)</string>
+  <string name="models_pack_title">Pack me model megi</string>
+  <string name="models_pack_save_body">Itye ki pack me Gwok data. Yenyo i leb Munu bedo maber calo nining; yenyo cal i Luganda ki Swahili nok, dok vidiyo ki kwena me dwon pe kikwano pi lok.</string>
+  <string name="models_pack_standard_body">Itye ki pack me Standard: yenyo maber loyo i leb ducu, ki lok ma tye i vidiyo ki kwena me dwon.</string>
+  <string name="models_pack_upgrade_note">Medo pack me Standard bimiyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kwano fayil megi odoco ki model ma ber loyo. Kwan me fayil megi pe bal: yenyo ki nying fayil ki nongo cal ki neno me oyotoyot bimede ki tic kare meno. Lok ma tye i waraga ki cal me wang cim, ki yenyo ki tamme, bidok ka kikwano fayil acel acel, ber loyo ka cim tye ka caji.</string>
+  <string name="models_pack_get_standard">Gam pack me Standard (%1$d MB)</string>
+  <string name="models_pack_upgraded">Pack me Standard dong kiketo. Lor <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ci yab odoco wek cako tic kwede. Ci bikwano fayil megi odoco ki model ma ber loyo. Nying fayil ki yenyo cal oyot bimede ki tic kare meno; lok ma tye i waraga ki cal me wang cim bidok ka kikwano fayil.</string>
 </resources>

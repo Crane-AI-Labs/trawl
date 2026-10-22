@@ -456,4 +456,16 @@
   <string name="action_copy_file">Koppa %1$s</string>
   <string name="preview_hidden_words">Kirabika eky\'ekyama · koona olabe</string>
   <string name="filter_group">Laga fayiro ki</string>
+  <plurals name="meter_sub_up_to_date_unreadable">
+    <item quantity="one">Fayiro %1$s zeetegefu okunoonyezebwa. %2$d teyasobodde kusomebwa, naye osobola okugizuula mu linnya.</item>
+    <item quantity="other">Fayiro %1$s zeetegefu okunoonyezebwa. %2$d tezisobodde kusomebwa, naye osobola okuzizuula mu linnya.</item>
+  </plurals>
+  <plurals name="sheet_too_large">
+    <item quantity="one">Fayiro %1$d yali nnene nnyo ku memole y\'essimu eno, kwe kugireka. Ebirala byonna bisobola okunoonyezebwa.</item>
+    <item quantity="other">Fayiro %1$d zaali nnene nnyo ku memole y\'essimu eno, kwe kuzireka. Ebirala byonna bisobola okunoonyezebwa.</item>
+  </plurals>
+  <plurals name="sheet_unreadable">
+    <item quantity="one">Fayiro %1$d teyasobodde kusomebwa (yonooneddwa, oba ekika ssimu eno ky\'etesobola kuggulawo). Osobola okugizuula mu linnya.</item>
+    <item quantity="other">Fayiro %1$d tezisobodde kusomebwa (zonooneddwa, oba kika ssimu eno ky\'etesobola kuggulawo). Osobola okuzizuula mu linnya.</item>
+  </plurals>
 </resources>

@@ -31,4 +31,17 @@
   <string name="models_update_body_light">لن تؤدي إضافته إلى جعل <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> يقرأ ملفاتك مرة أخرى.</string>
   <string name="models_update_get">تنزيل التحديث (%1$d MB)</string>
   <string name="models_update_not_now">ليس الآن</string>
+  <string name="models_choice_title">اختر حجم التنزيل</string>
+  <string name="models_choice_standard">القياسي: %1$d MB (موصى به)</string>
+  <string name="models_choice_standard_hint">أفضل بحث بكل اللغات، مع الكلام في مقاطع الفيديو والملاحظات الصوتية.</string>
+  <string name="models_choice_save">توفير البيانات: %1$d MB</string>
+  <string name="models_choice_save_hint">البحث بالإنجليزية بنفس الجودة؛ البحث عن الصور بلغتَي اللوغندية والسواحيلية أضعف؛ ولا بحث في الكلام داخل مقاطع الفيديو أو الملاحظات الصوتية. يمكنك إضافة الباقي لاحقًا.</string>
+  <string name="models_choice_switch_standard">استخدام القياسي (%1$d MB)</string>
+  <string name="models_choice_switch_save">استخدام توفير البيانات (%1$d MB)</string>
+  <string name="models_pack_title">حزمة النماذج لديك</string>
+  <string name="models_pack_save_body">لديك حزمة توفير البيانات. البحث بالإنجليزية بنفس الجودة؛ والبحث عن الصور بلغتَي اللوغندية والسواحيلية أضعف، ولا تُقرأ مقاطع الفيديو والملاحظات الصوتية للبحث في الكلام.</string>
+  <string name="models_pack_standard_body">لديك الحزمة القياسية: أفضل بحث بكل اللغات، مع الكلام في مقاطع الفيديو والملاحظات الصوتية.</string>
+  <string name="models_pack_upgrade_note">إضافة الحزمة القياسية تجعل <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> يقرأ ملفاتك مرة أخرى بالنموذج الأفضل. تبقى قائمة ملفاتك: يستمر البحث باسم الملف والعثور على الصور بنظرة سريعة خلال ذلك. أما الكلمات داخل المستندات ولقطات الشاشة والبحث بالمعنى فتعود كلما أُعيدت قراءة كل ملف، وأفضل وقت لذلك أثناء شحن الهاتف.</string>
+  <string name="models_pack_get_standard">الحصول على الحزمة القياسية (%1$d MB)</string>
+  <string name="models_pack_upgraded">تم تثبيت الحزمة القياسية. أغلق <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> وافتحه مرة أخرى لبدء استخدامها. بعدها يقرأ ملفاتك مرة أخرى بالنموذج الأفضل. يستمر البحث باسم الملف والبحث السريع عن الصور خلال ذلك؛ وتعود الكلمات داخل المستندات ولقطات الشاشة كلما قُرئت الملفات.</string>
 </resources>

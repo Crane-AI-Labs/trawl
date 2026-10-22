@@ -31,4 +31,17 @@
   <string name="models_update_body_light">Okugyongyeraho tikirireetera <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kugaruka kushoma fayiro zaawe.</string>
   <string name="models_update_get">Tunga obuhyaka (%1$d MB)</string>
   <string name="models_update_not_now">Ti hati</string>
+  <string name="models_choice_title">Toorana obwingi bw\'okuhanura</string>
+  <string name="models_choice_standard">Standard: %1$d MB (nikyo kirungi)</string>
+  <string name="models_choice_standard_hint">Okusherura okurungi omu ndimi zoona, n\'ebirikugambwa omu vidiyo n\'amajwi agitsirwe.</string>
+  <string name="models_choice_save">Okutaasa data: %1$d MB</string>
+  <string name="models_choice_save_hint">Okusherura kw\'Orungyereza kurungi nka kimwe; okusherura ebishushani omu Oruganda n\'Oruswahiri kwakyendeera; tihaine ebirikugambwa omu vidiyo nari amajwi agitsirwe. Noobaasa kwongyeraho ebindi bwanyima.</string>
+  <string name="models_choice_switch_standard">Koresa Standard (%1$d MB)</string>
+  <string name="models_choice_switch_save">Koresa Okutaasa data (%1$d MB)</string>
+  <string name="models_pack_title">Ekibinja kya modeli zaawe</string>
+  <string name="models_pack_save_body">Ozire ekibinja kya Okutaasa data. Okusherura kw\'Orungyereza kurungi nka kimwe; okusherura ebishushani omu Oruganda n\'Oruswahiri kwakyendeera, kandi vidiyo n\'amajwi agitsirwe tibishomwa ahabw\'ebirikugambwa.</string>
+  <string name="models_pack_standard_body">Ozire ekibinja kya Standard: okusherura okurungi omu ndimi zoona, n\'ebirikugambwa omu vidiyo n\'amajwi agitsirwe.</string>
+  <string name="models_pack_upgrade_note">Okwongyeraho ekibinja kya Standard nikireetera <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kugaruka kushoma fayiro zaawe n\'emodeli erikukira. Olukalala rwa fayiro ruguma: okusherura ahabw\'eiziina rya fayiro n\'okuzoora ebishushani ahonaaho nibigumizamu kukora. Ebigambo omuri ebyandiikwa n\'ebishushani bya sikuriini, n\'okusherura ahabw\'amakuru, nibigaruka fayiro buri imwe yaaba eshomwa obundi, kurungi simu yaaba eri aha chaaji.</string>
+  <string name="models_pack_get_standard">Tunga ekibinja kya Standard (%1$d MB)</string>
+  <string name="models_pack_upgraded">Ekibinja kya Standard kiteekwaho. Kingaho <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> reero ogiguruhe obundi kutandika kukikozesa. Neeshoma fayiro zaawe obundi n\'emodeli erikukira. Amaziina ga fayiro n\'okusherura ebishushani ahonaaho nibigumizamu kukora; ebigambo omuri ebyandiikwa n\'ebishushani bya sikuriini nibigaruka fayiro yaaba eshomwa.</string>
 </resources>

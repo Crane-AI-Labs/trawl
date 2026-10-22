@@ -456,4 +456,16 @@
   <string name="action_copy_file">Koporora %1$s</string>
   <string name="preview_hidden_words">Bisa n\'ubuzima bwite · kanda urebe</string>
   <string name="filter_group">Erekana amafayiro ayahe</string>
+  <plurals name="meter_sub_up_to_date_unreadable">
+    <item quantity="one">Amafayiro %1$s yiteguye gushakishwa. %2$d ntiyashoboye gusomwa, ariko iracyaboneka ku izina.</item>
+    <item quantity="other">Amafayiro %1$s yiteguye gushakishwa. %2$d ntiyashoboye gusomwa, ariko ziracyaboneka ku mazina yazo.</item>
+  </plurals>
+  <plurals name="sheet_too_large">
+    <item quantity="one">Fayiro %1$d yari nini cyane ku bubiko bwa telefone, bityo yasizwe hanze. Ibindi byose birashakishwa.</item>
+    <item quantity="other">Amafayiro %1$d yari manini cyane ku bubiko bwa telefone, bityo yasizwe hanze. Ibindi byose birashakishwa.</item>
+  </plurals>
+  <plurals name="sheet_unreadable">
+    <item quantity="one">Fayiro %1$d ntiyashoboye gusomwa (yangiritse, cyangwa ni ubwoko telefone idashobora gufungura). Iracyaboneka ku izina.</item>
+    <item quantity="other">Amafayiro %1$d ntiyashoboye gusomwa (yangiritse, cyangwa ni ubwoko telefone idashobora gufungura). Aracyaboneka ku mazina yayo.</item>
+  </plurals>
 </resources>

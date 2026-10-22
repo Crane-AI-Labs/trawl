@@ -456,4 +456,17 @@
   <string name="action_copy_file">Kwafi %1$s</string>
   <string name="preview_hidden_words">Kamar na sirri ne · taɓa don gani</string>
   <string name="filter_group">Nuna waɗanne fayiloli</string>
+
+  <plurals name="meter_sub_up_to_date_unreadable">
+    <item quantity="one">Fayiloli %1$s a shirye suke don bincika. Ba a iya karanta %2$d ba, amma har yanzu kuna iya samunsa ta suna.</item>
+    <item quantity="other">Fayiloli %1$s a shirye suke don bincika. Ba a iya karanta %2$d ba, amma har yanzu kuna iya samun su ta suna.</item>
+  </plurals>
+  <plurals name="sheet_too_large">
+    <item quantity="one">Fayil %1$d ya yi girma da ƙwaƙwalwar wannan wayar, don haka an bar shi. Duk sauran ana iya bincikensu.</item>
+    <item quantity="other">Fayiloli %1$d sun yi girma da ƙwaƙwalwar wannan wayar, don haka an bar su. Duk sauran ana iya bincikensu.</item>
+  </plurals>
+  <plurals name="sheet_unreadable">
+    <item quantity="one">Ba a iya karanta fayil %1$d ba (ya lalace, ko nau\'in da wannan wayar ba ta iya buɗewa). Har yanzu kuna iya samunsa ta suna.</item>
+    <item quantity="other">Ba a iya karanta fayiloli %1$d ba (sun lalace, ko nau\'in da wannan wayar ba ta iya buɗewa). Har yanzu kuna iya samun su ta suna.</item>
+  </plurals>
 </resources>

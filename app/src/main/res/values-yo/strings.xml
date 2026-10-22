@@ -449,4 +449,13 @@
   <string name="action_copy_file">Ṣe ẹ̀dà %1$s</string>
   <string name="preview_hidden_words">Ó jọ ti ìpamọ́ · tẹ̀ ẹ́ láti wò ó</string>
   <string name="filter_group">Fi àwọn fáìlì wo hàn</string>
+  <plurals name="meter_sub_up_to_date_unreadable">
+    <item quantity="other">Àwọn fáìlì %1$s ti ṣetán láti wá. %2$d kò ṣeé kà, ṣùgbọ́n o ṣì lè rí wọn nípa orúkọ.</item>
+  </plurals>
+  <plurals name="sheet_too_large">
+    <item quantity="other">Fáìlì %1$d tóbi jù fún ìrántí fóònù yìí, nítorí náà a fi sílẹ̀. Gbogbo ìyókù ṣeé wá.</item>
+  </plurals>
+  <plurals name="sheet_unreadable">
+    <item quantity="other">Fáìlì %1$d kò ṣeé kà (ó ti bàjẹ́, tàbí ó jẹ́ irú tí fóònù yìí kò lè ṣí). O ṣì lè rí wọn nípa orúkọ.</item>
+  </plurals>
 </resources>

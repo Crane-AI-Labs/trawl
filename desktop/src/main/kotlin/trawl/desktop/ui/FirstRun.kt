@@ -31,10 +31,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.selection.selectableGroup
+import com.craneai.findr.core.ModelChoice
 import com.craneai.findr.ui.common.formatBytes
 import com.craneai.findr.ui.theme.LocalSunlight
 import java.io.File
 import trawl.desktop.AppController
+import trawl.desktop.ModelSetup
 import trawl.desktop.ModelUi
 import trawl.desktop.t
 
@@ -178,25 +181,36 @@ private fun Point(icon: ImageVector, title: String, body: String, modifier: Modi
   }
 }
 
-/** The models card, shared by first run and Settings: installed, found in Downloads, installing with progress, or choose a file. */
+/**
+ * The models card, shared by first run and Settings: the pack choice (Standard or Save data, on a computer that can hold either),
+ * installed, found in Downloads, installing with progress, or choose a file. On Save data it also carries the way up to Standard.
+ */
 @Composable
 fun ModelsPanel(c: AppController, model: ModelUi) {
   val tk = LocalSunlight.current
   SunCard(Modifier.fillMaxWidth()) {
     Column(Modifier.padding(Sun.S16), verticalArrangement = Arrangement.spacedBy(Sun.S12)) {
+      // Asked before anything is installed. Either file is checked the same way by the app.
+      if (model.offered && model.installed == null && !model.installing) ChoiceRows(c, model)
       when {
         model.installing -> {
           Text(t("first_models_installing", formatBytes(model.done), formatBytes(model.total)), style = SunType.Body, color = tk.ink)
           SunProgress(if (model.total > 0) (model.done.toFloat() / model.total) else null)
         }
-        model.installed != null -> Notice(t("settings_models_ready", model.installed), bad = false)
+        model.installed != null -> {
+          Notice(t("settings_models_ready", model.installed), bad = false)
+          if (model.offered && model.installedChoice != null) {
+            Text(t(if (model.installedChoice == ModelChoice.SAVE_DATA) "models_installed_save" else "models_installed_standard"), style = SunType.Body, color = tk.ink2)
+          }
+          if (model.offered && model.installedChoice == ModelChoice.SAVE_DATA) UpgradeRows(c, model)
+        }
         else -> {
           val found = model.found
           if (found != null) {
             Text(t("first_models_found", found.name, found.parentFile?.name ?: "", formatBytes(found.length())), style = SunType.Body, color = tk.ink)
             SunButton(onClick = { c.installModels(found) }) { Text(t("action_install"), style = SunType.Label) }
           } else {
-            Text(t("first_models_none"), style = SunType.Body, color = tk.ink)
+            Text(if (model.choice == ModelChoice.SAVE_DATA && model.offered) t("first_models_none_named", model.fileName) else t("first_models_none"), style = SunType.Body, color = tk.ink)
           }
           SunOutlinedButton(onClick = { Pickers.modelsZip(found?.parentFile)?.let(c::installModels) }) {
             Icon(Icons.Folder, contentDescription = null, modifier = Modifier.size(20.dp))
@@ -214,5 +228,35 @@ fun ModelsPanel(c: AppController, model: ModelUi) {
         }
       }
     }
+  }
+}
+
+/** Standard (the default) or Save data, each with what it costs and what it gives up, in the person's words. */
+@Composable
+private fun ChoiceRows(c: AppController, model: ModelUi) {
+  val tk = LocalSunlight.current
+  Column(verticalArrangement = Arrangement.spacedBy(Sun.S8)) {
+    Row(Modifier.selectableGroup(), horizontalArrangement = Arrangement.spacedBy(Sun.S8)) {
+      FilterChip(t("models_choice_standard", ModelSetup.STANDARD_MB), null, model.choice == ModelChoice.STANDARD, { c.setModelChoice(ModelChoice.STANDARD) })
+      FilterChip(t("models_choice_save", ModelSetup.SAVE_DATA_MB), null, model.choice == ModelChoice.SAVE_DATA, { c.setModelChoice(ModelChoice.SAVE_DATA) })
+    }
+    Text(t(if (model.choice == ModelChoice.SAVE_DATA) "models_choice_save_body" else "models_choice_standard_body"), style = SunType.Caption, color = tk.ink2)
+  }
+}
+
+/** Someone on Save data: the way to Standard (the signed bundle installs over the small one; the index stays). */
+@Composable
+private fun UpgradeRows(c: AppController, model: ModelUi) {
+  val tk = LocalSunlight.current
+  Text(t("models_upgrade_note", ModelSetup.STANDARD_MB), style = SunType.Body, color = tk.ink)
+  val found = model.found
+  if (found != null) {
+    Text(t("first_models_found", found.name, found.parentFile?.name ?: "", formatBytes(found.length())), style = SunType.Body, color = tk.ink)
+    SunButton(onClick = { c.installModels(found) }) { Text(t("action_install"), style = SunType.Label) }
+  }
+  SunOutlinedButton(onClick = { Pickers.modelsZip(found?.parentFile)?.let(c::installModels) }) {
+    Icon(Icons.Folder, contentDescription = null, modifier = Modifier.size(20.dp))
+    Spacer(Modifier.width(8.dp))
+    Text(t("action_choose_file"), style = SunType.Label)
   }
 }

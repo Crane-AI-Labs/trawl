@@ -456,4 +456,16 @@
   <string name="action_copy_file">Nakili %1$s</string>
   <string name="preview_hidden_words">Inaonekana ya faragha · gusa ili uone</string>
   <string name="filter_group">Onyesha mafaili yapi</string>
+  <plurals name="meter_sub_up_to_date_unreadable">
+    <item quantity="one">Mafaili %1$s yako tayari kutafutwa. %2$d halikuweza kusomwa, lakini bado unaweza kulipata kwa jina.</item>
+    <item quantity="other">Mafaili %1$s yako tayari kutafutwa. %2$d hayakuweza kusomwa, lakini bado unaweza kuyapata kwa jina.</item>
+  </plurals>
+  <plurals name="sheet_too_large">
+    <item quantity="one">Faili %1$d lilikuwa kubwa mno kwa kumbukumbu ya simu hii, kwa hivyo liliachwa. Vingine vyote vinatafutika.</item>
+    <item quantity="other">Mafaili %1$d yalikuwa makubwa mno kwa kumbukumbu ya simu hii, kwa hivyo yaliachwa. Mengine yote yanatafutika.</item>
+  </plurals>
+  <plurals name="sheet_unreadable">
+    <item quantity="one">Faili %1$d halikuweza kusomwa (limeharibika, au ni umbizo ambalo simu hii haiwezi kufungua). Bado unaweza kulipata kwa jina.</item>
+    <item quantity="other">Mafaili %1$d hayakuweza kusomwa (yameharibika, au ni umbizo ambalo simu hii haiwezi kufungua). Bado unaweza kuyapata kwa jina.</item>
+  </plurals>
 </resources>

@@ -105,6 +105,18 @@ val buildAppleShare = tasks.register<Exec>("buildAppleShare") {
 }
 tasks.named("processResources") { dependsOn(buildAppleShare) }
 
+// The macOS "full preview" for the quick-search panel (native/quicklook-apple.swift, the system's QLPreviewPanel): same arrangement. Compiled on a
+// Mac into the app; Windows and Linux use the in-app preview only, so nothing is built there.
+val buildAppleQuickLook = tasks.register<Exec>("buildAppleQuickLook") {
+  val src = file("native/quicklook-apple.swift")
+  val out = layout.buildDirectory.file("native/quicklook-apple")
+  onlyIf { System.getProperty("os.name").startsWith("Mac") }
+  inputs.file(src); outputs.file(out)
+  doFirst { out.get().asFile.parentFile.mkdirs() }
+  commandLine("swiftc", "-O", "-suppress-warnings", "-target", "arm64-apple-macos13.0", src.absolutePath, "-o", out.get().asFile.absolutePath)
+}
+tasks.named("processResources") { dependsOn(buildAppleQuickLook) }
+
 // The third-party list the Licences screen shows is generated from what the desktop really ships: every jar on the resolved
 // runtimeClasspath (transitive ones too), with the licence read from its own POM (or the parent POM it inherits one from). The
 // NOTICE file inside a jar is copied out too, because Apache-2.0 section 4(d) makes it part of the redistribution. Nothing is
@@ -300,7 +312,12 @@ dependencies {
   testImplementation(compose.uiTest)                           // Apache-2.0: runComposeUiTest, the semantics tree the accessibility tests read (test only)
 }
 
-tasks.test { useJUnitPlatform() }
+tasks.test {
+  useJUnitPlatform()
+  // Gradle starts test JVMs headless. On a Linux box with an X display (Xvfb is enough) the X11 tests need real AWT windows, so give them one;
+  // everywhere else the default stays, and those tests skip themselves.
+  if (org.gradle.internal.os.OperatingSystem.current().isLinux && !System.getenv("DISPLAY").isNullOrBlank()) systemProperty("java.awt.headless", "false")
+}
 
 // ---- The Java runtime inside the installers: pinned, checksummed, downloaded into build/, never whatever the machine has ----------------------
 // The first installers bundled the build machine's Temurin 21+35 (21.0.0). After 92 minutes the app aborted with "Internal Error

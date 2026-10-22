@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -61,6 +62,7 @@ import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.isCtrlPressed
 import androidx.compose.ui.input.key.isMetaPressed
+import androidx.compose.ui.input.key.isShiftPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
@@ -94,21 +96,30 @@ import trawl.desktop.ui.kindLabel
 /**
  * What a key press means in the panel, or null to leave it to the text field. Pure (no window), so it is tested directly.
  * Open on Enter; show in folder on Command+Enter (Mac) or Ctrl+Enter (others); Esc closes; Up and Down move; Ctrl+N and Ctrl+P are not claimed.
+ * Preview: Space while the search box is empty (a space in a query is a space), and Command+Y (Mac) or Ctrl+Y anywhere; with Shift the same
+ * key asks for the system's full preview (macOS Quick Look). [previewOpen] is not needed to decide, only kept so the table reads whole.
  */
-fun quickKeyFor(key: Key, down: Boolean, ctrl: Boolean, meta: Boolean, os: Os): QuickKey? {
+fun quickKeyFor(
+  key: Key, down: Boolean, ctrl: Boolean, meta: Boolean, os: Os,
+  shift: Boolean = false, queryBlank: Boolean = false, @Suppress("UNUSED_PARAMETER") previewOpen: Boolean = false,
+): QuickKey? {
   if (!down) return null
+  val mod = if (os == Os.MAC) meta else ctrl
   return when (key) {
     Key.DirectionDown -> QuickKey.DOWN
     Key.DirectionUp -> QuickKey.UP
     Key.PageDown -> QuickKey.LAST
     Key.PageUp -> QuickKey.FIRST
     Key.Escape -> QuickKey.CLOSE
-    Key.Enter, Key.NumPadEnter -> if (if (os == Os.MAC) meta else ctrl) QuickKey.SHOW_IN_FOLDER else QuickKey.OPEN
+    Key.Enter, Key.NumPadEnter -> if (mod) QuickKey.SHOW_IN_FOLDER else QuickKey.OPEN
+    Key.Spacebar -> if (queryBlank && !mod) QuickKey.TOGGLE_PREVIEW else null
+    Key.Y -> if (mod) (if (shift) QuickKey.FULL_PREVIEW else QuickKey.TOGGLE_PREVIEW) else null
     else -> null
   }
 }
 
-private fun KeyEvent.toQuickKey(os: Os): QuickKey? = quickKeyFor(key, type == KeyEventType.KeyDown, isCtrlPressed, isMetaPressed, os)
+private fun KeyEvent.toQuickKey(os: Os, queryBlank: Boolean, previewOpen: Boolean): QuickKey? =
+  quickKeyFor(key, type == KeyEventType.KeyDown, isCtrlPressed, isMetaPressed, os, isShiftPressed, queryBlank, previewOpen)
 
 /**
  * The quick panel: a search box, a short list, one footer line. Keys are caught before the text field sees them, so Up and Down move the
@@ -121,7 +132,7 @@ private fun KeyEvent.toQuickKey(os: Os): QuickKey? = quickKeyFor(key, type == Ke
  */
 @Composable
 fun QuickPanel(
-  state: QuickPanelState, os: Os, shortcut: String?, focusNonce: Int = 0, modifier: Modifier = Modifier, inset: Dp = SunPanel.ShadowInset,
+  state: QuickPanelState, os: Os, shortcut: String?, focusNonce: Int = 0, modifier: Modifier = Modifier, focusKick: Int = 0, inset: Dp = SunPanel.ShadowInset,
   /** Whether the blur is on (the setting and the Privacy pack). A picture that looks private is then shown blurred, with no name and no excerpt. */
   blurOn: Boolean = false,
   /** A click in the transparent margin around the panel (outside the card) calls this; the window passes "hide". */
@@ -135,10 +146,12 @@ fun QuickPanel(
   val hits by state.hits.collectAsState()
   val selected by state.selected.collectAsState()
   val answered by state.answered.collectAsState()
+  val previewing by state.previewing.collectAsState()
   val focus = remember { FocusRequester() }
   var fieldFocused by remember { mutableStateOf(true) }
   val list = rememberLazyListState()
-  LaunchedEffect(focusNonce) { runCatching { focus.requestFocus() } }
+  // focusKick is bumped by the window each time it actually gains focus: the box takes the cursor then too, not only when the panel is shown
+  LaunchedEffect(focusNonce, focusKick) { runCatching { focus.requestFocus() } }
   LaunchedEffect(selected, hits) { if (hits.isNotEmpty()) list.scrollToItem(selected.coerceIn(0, hits.lastIndex)) }   // no animation: nothing to reduce
 
   val floating = inset > 0.dp
@@ -155,21 +168,21 @@ fun QuickPanel(
         // a click on the card itself (not on a row or the field) is the card's own: it must not reach the margin handler behind it
         .pointerInput(Unit) { detectTapGestures { } }
         .background(MaterialTheme.colorScheme.background).border(if (floating) SunPanel.Edge else Sun.Border, tk.line2, shape)
-        .onPreviewKeyEvent { e -> e.toQuickKey(os)?.let(state::onKey) ?: false },
+        .onPreviewKeyEvent { e -> e.toQuickKey(os, query.isBlank(), previewing)?.let { k -> if (k == QuickKey.FULL_PREVIEW) { state.fullPreview { blur.hides(it) }; true } else state.onKey(k) } ?: false },
     ) {
       val fieldShape = RoundedCornerShape(12.dp)
       Row(
-        Modifier.fillMaxWidth().padding(SunPanel.Pad).heightIn(min = Sun.Field).clip(fieldShape).background(tk.paper)
-          .border(if (fieldFocused) 3.dp else Sun.Border, if (fieldFocused) tk.focus else tk.line, fieldShape).padding(start = 14.dp, end = Sun.S8),
+        Modifier.fillMaxWidth().padding(SunPanel.Pad).heightIn(min = SunPanel.Field).clip(fieldShape).background(tk.paper)
+          .border(if (fieldFocused) 3.dp else Sun.Border, if (fieldFocused) tk.focus else tk.line, fieldShape).padding(start = 16.dp, end = Sun.S8),
         verticalAlignment = Alignment.CenterVertically,
       ) {
-        Icon(Icons.Search, contentDescription = null, tint = tk.ink, modifier = Modifier.size(Sun.Icon))
-        Spacer(Modifier.width(10.dp))
-        Box(Modifier.weight(1f).heightIn(min = Sun.Field - 8.dp), contentAlignment = Alignment.CenterStart) {
-          if (query.isEmpty()) Text(t("quick_hint"), style = SunType.BodyLarge, color = tk.ink2)
+        Icon(Icons.Search, contentDescription = null, tint = tk.ink, modifier = Modifier.size(24.dp))
+        Spacer(Modifier.width(12.dp))
+        Box(Modifier.weight(1f).heightIn(min = SunPanel.Field - 8.dp), contentAlignment = Alignment.CenterStart) {
+          if (query.isEmpty()) Text(t("quick_hint"), style = SunType.Query, color = tk.ink2)
           BasicTextField(
             value = query, onValueChange = state::setQuery, singleLine = true,
-            textStyle = SunType.BodyLarge.copy(color = tk.ink), cursorBrush = SolidColor(tk.ink),
+            textStyle = SunType.Query.copy(color = tk.ink), cursorBrush = SolidColor(tk.ink),
             modifier = Modifier.fillMaxWidth().focusRequester(focus).onFocusChanged { fieldFocused = it.isFocused }.a11yLabel(t("quick_hint")),
           )
         }
@@ -195,15 +208,41 @@ fun QuickPanel(
         if (hiddenN > 0) QuickHiddenPill(hiddenN)
       }
 
-      LazyColumn(Modifier.weight(1f).fillMaxWidth(), state = list, contentPadding = PaddingValues(horizontal = Sun.S8, vertical = Sun.S4)) {
-        // Locked: no rows at all (the search answers nothing, and this makes sure a stale list is never drawn for a frame).
-        if (!locked) itemsIndexed(hits, key = { _, h -> h.file.id }) { i, hit -> QuickRow(hit, i == selected, blur.hides(hit.file), onClick = { state.openAt(i) }) }
+      val shown = hits.getOrNull(selected.coerceIn(0, (hits.size - 1).coerceAtLeast(0)))
+      val split = previewing && !locked && shown != null
+      Row(Modifier.weight(1f).fillMaxWidth()) {
+        LazyColumn(
+          (if (split) Modifier.width(SunPanel.ListBesidePreview).fillMaxHeight() else Modifier.weight(1f).fillMaxHeight()),
+          state = list, contentPadding = PaddingValues(horizontal = Sun.S8, vertical = Sun.S4),
+        ) {
+          // Locked: no rows at all (the search answers nothing, and this makes sure a stale list is never drawn for a frame).
+          if (!locked) itemsIndexed(hits, key = { _, h -> h.file.id }) { i, hit ->
+            QuickRow(
+              hit, i == selected, blur.hides(hit.file), onClick = { state.openAt(i) },
+              onPreview = { if (split && i == selected) state.closePreview() else { state.select(i); if (!state.previewing.value) state.togglePreview() } },
+              previewShown = split && i == selected,
+            )
+          }
+        }
+        if (split && shown != null) {
+          Box(Modifier.width(1.dp).fillMaxHeight().background(tk.line2))
+          QuickPreview(
+            shown, blur.hides(shown.file), query, state.preview, if (os == Os.MAC) "⌘" else "Ctrl",
+            onOpen = state::open, onFolder = state::showInFolder, onFull = { state.fullPreview { blur.hides(it) } }, onClose = state::closePreview,
+            modifier = Modifier.weight(1f).fillMaxHeight(),
+          )
+        }
       }
 
       SunDivider()
       val mod = if (os == Os.MAC) "⌘" else "Ctrl"   // the key caps a Mac shows, as in the main window (MainUi.modName)
       Text(
-        if (shortcut != null) t("quick_footer_key", mod, shortcut) else t("quick_footer", mod), style = SunType.Caption, color = tk.ink2, maxLines = 1, overflow = TextOverflow.Ellipsis,
+        when {
+          split && state.preview.full.available -> t("quick_footer_preview_full", mod)
+          split -> t("quick_footer_preview", mod)
+          shortcut != null -> t("quick_footer_key", mod, shortcut)
+          else -> t("quick_footer", mod)
+        }, style = SunType.PanelDetail, color = tk.ink2, maxLines = 1, overflow = TextOverflow.Ellipsis,
         modifier = Modifier.fillMaxWidth().background(tk.paper2).padding(horizontal = SunPanel.Pad + Sun.S8, vertical = Sun.S8),
       )
     }
@@ -215,9 +254,9 @@ internal fun quickFolder(uri: String, fallback: String): String =
   runCatching { File(java.net.URI(uri)).parent }.getOrNull()?.let { PathText.tilde(it) }?.takeIf { it.isNotBlank() } ?: fallback
 
 @Composable
-private fun QuickRow(hit: QuickHit, selected: Boolean, hidden: Boolean, onClick: () -> Unit) {
+private fun QuickRow(hit: QuickHit, selected: Boolean, hidden: Boolean, onClick: () -> Unit, onPreview: () -> Unit = {}, previewShown: Boolean = false) {
   val tk = LocalSunlight.current
-  val shape = RoundedCornerShape(10.dp)
+  val shape = RoundedCornerShape(12.dp)
   val where = quickFolder(hit.file.uri, hit.file.relativePath.substringBeforeLast('/', ""))
   val source = remember { MutableInteractionSource() }
   val hovered by source.collectIsHoveredAsState()
@@ -229,21 +268,31 @@ private fun QuickRow(hit: QuickHit, selected: Boolean, hidden: Boolean, onClick:
       .then(if (selected) Modifier.border(3.dp, tk.focus, shape) else Modifier)
       .a11yClickable(if (hidden) t("quick_row_hidden", kindLabel(kind), where) else t("quick_row", hit.file.name, kindLabel(kind), where), shape, onClick)
       .semantics { this.selected = selected }
-      .padding(horizontal = Sun.S12, vertical = Sun.S8),
+      .padding(start = Sun.S12, end = Sun.S4, top = Sun.S8, bottom = Sun.S8),
     verticalAlignment = Alignment.CenterVertically,
   ) {
     RowThumb(hit, hidden)
     Spacer(Modifier.width(Sun.S12))
     Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(1.dp)) {
       Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Sun.S8)) {
-        Text(if (hidden) t("hidden_label") else hit.file.name, style = SunType.Label, color = tk.ink, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false))
+        Text(if (hidden) t("hidden_label") else hit.file.name, style = SunType.PanelTitle, color = tk.ink, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false))
         if (kind == FileKind.PDF || kind == FileKind.VIDEO || kind == FileKind.AUDIO) Badge(kindLabel(kind))
       }
       Text(
         listOfNotNull(where.takeIf { it.isNotBlank() }, formatBytes(hit.file.sizeBytes)).joinToString("  ·  "),
-        style = SunType.Caption, color = tk.ink2, maxLines = 1, overflow = TextOverflow.Ellipsis,
+        style = SunType.PanelDetail, color = tk.ink2, maxLines = 1, overflow = TextOverflow.Ellipsis,
       )
-      if (snippet != null) SnippetText(snippet, lines = 1, modifier = Modifier.padding(top = 2.dp), style = SunType.Caption)
+      if (snippet != null) SnippetText(snippet, lines = 1, modifier = Modifier.padding(top = 2.dp), style = SunType.PanelDetail)
+    }
+    // The preview affordance: shows this row large beside the list without opening the file. A second click on the same row's eye closes it.
+    val round = androidx.compose.foundation.shape.CircleShape
+    Box(
+      Modifier.size(Sun.Target).clip(round)
+        .then(if (previewShown) Modifier.background(tk.marker, round) else Modifier)
+        .a11yClickable(if (hidden) t("quick_preview_row_hidden") else t("quick_preview_row", hit.file.name), round, onPreview),
+      contentAlignment = Alignment.Center,
+    ) {
+      Icon(trawl.desktop.ui.privacy.PrivacyIcons.Eye, contentDescription = null, tint = if (previewShown) tk.onMarker else tk.ink2, modifier = Modifier.size(Sun.Icon))
     }
   }
 }
@@ -255,12 +304,12 @@ private fun RowThumb(hit: QuickHit, hidden: Boolean) {
   val isPicture = hit.file.kind == FileKind.IMAGE || hit.file.kind == FileKind.SCREENSHOT
   // A hidden picture goes through PrivateThumbnails, which keeps only the blurred pixels (Thumbnails would cache the sharp ones).
   val bmp by produceState<ImageBitmap?>(null, hit.file.id, hidden) {
-    value = if (isPicture) kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { runCatching { PrivateThumbnails.load(File(java.net.URI(hit.file.uri)), 96, blurred = hidden) }.getOrNull() } else null
+    value = if (isPicture) kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { runCatching { PrivateThumbnails.load(File(java.net.URI(hit.file.uri)), 160, blurred = hidden) }.getOrNull() } else null
   }
   val b = bmp
-  if (b == null) { KindTile(hit.file.kind); return }
-  val shape = RoundedCornerShape(8.dp)
-  Box(Modifier.size(Sun.Thumb).clip(shape).background(tk.paper2).border(Sun.Hairline, tk.line2, shape), contentAlignment = Alignment.Center) {
+  if (b == null) { KindTile(hit.file.kind, SunPanel.Thumb); return }
+  val shape = RoundedCornerShape(SunPanel.ThumbRadius)
+  Box(Modifier.size(SunPanel.Thumb).clip(shape).background(tk.paper2).border(Sun.Hairline, tk.line2, shape), contentAlignment = Alignment.Center) {
     Image(b, contentDescription = null, modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
   }
 }

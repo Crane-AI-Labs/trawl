@@ -1,6 +1,7 @@
 package trawl.desktop
 
 import com.craneai.findr.core.FileKind
+import com.craneai.findr.engine.Chunker
 import com.craneai.findr.index.CrawlRecord
 import com.craneai.findr.index.FileState
 import com.craneai.findr.index.IndexStore
@@ -103,7 +104,7 @@ class Indexer(private val store: IndexStore, private val vectors: VectorIndex, p
         if (isPdf) { stats.pdfs++; stats.pdfChunks += n; stats.pdfNs += System.nanoTime() - t }
         else { stats.docs++; stats.docChunks += n; stats.docNs += System.nanoTime() - t }
       }
-      FileKind.IMAGE, FileKind.SCREENSHOT -> {
+      FileKind.IMAGE, FileKind.SCREENSHOT -> if (embedder.textOnly) textOnlyPicture(f, id, file, wordsDone) else {
         val t = System.nanoTime()
         val tj = System.nanoTime()
         val jpeg = Extract.phoneJpeg(file) ?: run { stats.skipped++; store.setState(id, FileState.FAILED, "unreadable picture"); return }
@@ -124,6 +125,29 @@ class Indexer(private val store: IndexStore, private val vectors: VectorIndex, p
     }
   }
 
+  /**
+   * A picture on the Save data pack (the 270m text model has no eyes): it is read through the words in it. The OCR words go in the
+   * keyword index and, in pieces of about 400 characters, get EmbeddingGemma's text vectors (their own modality, as on a 2 GB phone),
+   * so a screenshot is found by what it says and by its meaning. A photo with no text in it keeps only its name, date and place:
+   * it cannot be found by what it shows. The Standard pack reads the picture itself.
+   */
+  private fun textOnlyPicture(f: Found, id: Long, file: File, wordsDone: Boolean) {
+    val t = System.nanoTime()
+    val words = if (wordsDone) storedWords(id) else ocr?.let { o -> val to = System.nanoTime(); readable(o.read(file)).also { stats.ocrNs += System.nanoTime() - to } }
+    val te = System.nanoTime()
+    val segs = words?.let { w ->
+      Chunker.chunks(w).take(MAX_READ_CHUNKS).mapIndexed { i, c -> Segment(SegmentKind.OCR, Modality.OCR_TEXT, text = w.takeIf { i == 0 }, vector = embedder.document(c)) }
+    }.orEmpty()
+    stats.embedNs += System.nanoTime() - te
+    save(id, f.kind, segs, null)
+    stats.images++; stats.imageNs += System.nanoTime() - t
+  }
+
+  /** The words the words pass stored for a picture, or null when there are none. */
+  private fun storedWords(id: Long): String? = store.read { db ->
+    db.text("SELECT group_concat(f.body, char(10)) FROM segments s JOIN fts f ON f.rowid = s.id WHERE s.file = ? AND s.kind = 'ocr' AND f.body != ''", id)
+  }?.takeIf { it.isNotBlank() }
+
   private fun save(id: Long, kind: FileKind, segs: List<Segment>, pages: Int?, replace: Boolean = true) {
     // Read is read: an empty document or a picture with no text and no vector is done too, or it would be queued forever.
     val ids = store.saveSegments(id, segs, FileState.UNDERSTOOD, replace = replace, pageCount = pages)
@@ -137,6 +161,8 @@ class Indexer(private val store: IndexStore, private val vectors: VectorIndex, p
     fun readable(s: String): String? = s.trim().takeIf { t -> t.count { it.isLetter() } >= 10 }
 
     const val CHUNKS_PER_STEP = 40
+    /** How many ~400-character pieces of a picture's words get a vector on the text-only model (the phone's lite profile reads four). */
+    const val MAX_READ_CHUNKS = 4
     val TEXT_EXT = setOf("txt", "text", "md", "markdown", "csv", "tsv")
     /** A stable 63-bit id per path: the desktop's stand-in for MediaStore's row id. */
     fun fnv64(s: String): Long { var h = -3750763034362895579L; for (b in s.toByteArray()) { h = h xor (b.toLong() and 0xff); h *= 1099511628211L }; return h and Long.MAX_VALUE }

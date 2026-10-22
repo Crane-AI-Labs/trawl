@@ -456,4 +456,16 @@
   <string name="action_copy_file">Koobiyeey %1$s</string>
   <string name="preview_hidden_words">Wuxuu u muuqdaa mid gaar ah · taabo si aad u aragto</string>
   <string name="filter_group">Muuji faylalkee</string>
+  <plurals name="meter_sub_up_to_date_unreadable">
+    <item quantity="one">%1$s faylal ah ayaa diyaar u ah in la raadiyo. %2$d lama akhrin karin, laakiin weli magaciisa ayaad ku heli kartaa.</item>
+    <item quantity="other">%1$s faylal ah ayaa diyaar u ah in la raadiyo. %2$d lama akhrin karin, laakiin weli magacyadooda ayaad ku heli kartaa.</item>
+  </plurals>
+  <plurals name="sheet_too_large">
+    <item quantity="one">%1$d fayl ayaa u weynaa xusuusta taleefankan, sidaa darteed waa laga tegay. Wax kasta oo kale waa la raadin karaa.</item>
+    <item quantity="other">%1$d faylal ayaa u weynaa xusuusta taleefankan, sidaa darteed waa laga tegay. Wax kasta oo kale waa la raadin karaa.</item>
+  </plurals>
+  <plurals name="sheet_unreadable">
+    <item quantity="one">%1$d fayl lama akhrin karin (waa dhaawacan yahay, ama qaab taleefankani furi karin). Weli magaciisa ayaad ku heli kartaa.</item>
+    <item quantity="other">%1$d faylal lama akhrin karin (way dhaawacan yihiin, ama qaab taleefankani furi karin). Weli magacyadooda ayaad ku heli kartaa.</item>
+  </plurals>
 </resources>

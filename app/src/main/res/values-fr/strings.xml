@@ -463,4 +463,19 @@
   <string name="action_copy_file">Copier %1$s</string>
   <string name="preview_hidden_words">Semble privé · toucher pour voir</string>
   <string name="filter_group">Afficher quels fichiers</string>
+  <plurals name="meter_sub_up_to_date_unreadable">
+    <item quantity="one">%1$s fichiers sont prêts pour la recherche. %2$d n\'a pas pu être lu, mais vous pouvez toujours le trouver par son nom.</item>
+    <item quantity="many">%1$s fichiers sont prêts pour la recherche. %2$d n\'ont pas pu être lus, mais vous pouvez toujours les trouver par leur nom.</item>
+    <item quantity="other">%1$s fichiers sont prêts pour la recherche. %2$d n\'ont pas pu être lus, mais vous pouvez toujours les trouver par leur nom.</item>
+  </plurals>
+  <plurals name="sheet_too_large">
+    <item quantity="one">%1$d fichier était trop volumineux pour la mémoire de ce téléphone et a été laissé de côté. Tout le reste est consultable.</item>
+    <item quantity="many">%1$d de fichiers étaient trop volumineux pour la mémoire de ce téléphone et ont été laissés de côté. Tout le reste est consultable.</item>
+    <item quantity="other">%1$d fichiers étaient trop volumineux pour la mémoire de ce téléphone et ont été laissés de côté. Tout le reste est consultable.</item>
+  </plurals>
+  <plurals name="sheet_unreadable">
+    <item quantity="one">%1$d fichier n\'a pas pu être lu (endommagé, ou format que ce téléphone ne peut pas ouvrir). Vous pouvez toujours le trouver par son nom.</item>
+    <item quantity="many">%1$d de fichiers n\'ont pas pu être lus (endommagés, ou format que ce téléphone ne peut pas ouvrir). Vous pouvez toujours les trouver par leur nom.</item>
+    <item quantity="other">%1$d fichiers n\'ont pas pu être lus (endommagés, ou format que ce téléphone ne peut pas ouvrir). Vous pouvez toujours les trouver par leur nom.</item>
+  </plurals>
 </resources>

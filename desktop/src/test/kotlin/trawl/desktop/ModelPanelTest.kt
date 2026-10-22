@@ -35,11 +35,11 @@ class ModelPanelTest {
     ZipOutputStream(f.outputStream()).use { z -> z.putNextEntry(ZipEntry("model.litertlm")); z.write("not a model".toByteArray()); z.closeEntry() }
   }
 
-  @Test fun theSmallPhoneBundleIsRefusedOnAComputerInPlainWordsAndTheStandardOneOnASmallComputer() {
+  @Test fun theStandardBundleIsRefusedOnASmallComputerInPlainWordsAndAComputerIsNeverTurnedAwayFromTheSmallOne() {
     Strings.use(java.util.Locale.ENGLISH)
     val onComputer = Strings.get(ModelSetup.refusalKey(Refusal.WRONG_CLASS, MemoryProfile.STANDARD))
-    assertTrue("small phone bundle" in onComputer && "trawl-models.zip" in onComputer, onComputer)
-    assertFalse("different kind of device" in onComputer, "the old wording is gone")
+    // Any computer takes the small (Save data) bundle now, so this wording is only a fallback and must not call the small bundle wrong.
+    assertFalse("small phone bundle" in onComputer || "different kind of device" in onComputer, onComputer)
     val onSmall = Strings.get(ModelSetup.refusalKey(Refusal.WRONG_CLASS, MemoryProfile.LITE))
     assertNotEquals(onComputer, onSmall, "a small computer is told the opposite")
     // Nothing else changes with the profile, and every refusal still has words.

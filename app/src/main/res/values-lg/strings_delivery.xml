@@ -31,4 +31,17 @@
   <string name="models_update_body_light">Okugigattako tekireetera <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kusoma fayiro zo nate.</string>
   <string name="models_update_get">Funa ekipya (%1$d MB)</string>
   <string name="models_update_not_now">Si kaakano</string>
+  <string name="models_choice_title">Londa bw\'oyagala okuwanula</string>
+  <string name="models_choice_standard">Ya bulijjo: %1$d MB (eyinzizibwa)</string>
+  <string name="models_choice_standard_hint">Okunoonya okusinga mu nnimi zonna, n\'ebyogerebwa mu vidiyo ne mu maloboozi.</string>
+  <string name="models_choice_save">Okukekkereza data: %1$d MB</string>
+  <string name="models_choice_save_hint">Okunoonya mu Lungereza kulungi kyenkana; okunoonya ebifaananyi mu Oluganda n\'Oswahiri kunafuye; tewali byogerebwa mu vidiyo wadde mu maloboozi. Ebisigadde osobola okubyongerako oluvannyuma.</string>
+  <string name="models_choice_switch_standard">Kozesa eya bulijjo (%1$d MB)</string>
+  <string name="models_choice_switch_save">Kozesa Okukekkereza data (%1$d MB)</string>
+  <string name="models_pack_title">Ekibinja kya modeli zo</string>
+  <string name="models_pack_save_body">Olina ekibinja ky\'Okukekkereza data. Okunoonya mu Lungereza kulungi kyenkana; okunoonya ebifaananyi mu Oluganda n\'Oswahiri kunafuye, era ebyogerebwa mu vidiyo n\'amaloboozi tebisomebwa.</string>
+  <string name="models_pack_standard_body">Olina ekibinja eky\'bulijjo: okunoonya okusinga mu nnimi zonna, n\'ebyogerebwa mu vidiyo ne mu maloboozi.</string>
+  <string name="models_pack_upgrade_note">Okongerako ekibinja eky\'bulijjo kireetera <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> okusoma fayiro zo nate ne modeli esinga obulungi. Olukalala lwa fayiro lusigalawo: okunoonya mu linnya lya fayiro n\'okuzuula ebifaananyi mu kutunuulira amangu bikyakola mu kiseera ekyo. Ebigambo ebiri mu biwandiiko ne mu bifaananyi bya sikuliini, n\'okunoonya okusinziira ku makulu, biddawo fayiro bw\'esomebwa nate, naddala ng\'essimu eri ku chaaja.</string>
+  <string name="models_pack_get_standard">Funa ekibinja eky\'bulijjo (%1$d MB)</string>
+  <string name="models_pack_upgraded">Ekibinja eky\'bulijjo kiteekeddwamu. Ggala <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> oddemu ogiggule olyoke otandike okukikozesa. Oluvannyuma esoma fayiro zo nate ne modeli esinga obulungi. Amannya ga fayiro n\'okunoonya ebifaananyi amangu bikyakola mu kiseera ekyo; ebigambo ebiri mu biwandiiko ne mu bifaananyi bya sikuliini biddawo fayiro we zisomebwa.</string>
 </resources>

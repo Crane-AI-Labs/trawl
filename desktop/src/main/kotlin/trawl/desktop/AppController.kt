@@ -5,6 +5,9 @@ import com.craneai.findr.core.IndexedFile
 import com.craneai.findr.core.KindFilter
 import com.craneai.findr.core.LearningSpeed
 import com.craneai.findr.core.Locator
+import com.craneai.findr.core.ModelChoice
+import com.craneai.findr.core.ModelPlan
+import com.craneai.findr.engine.BundleClass
 import com.craneai.findr.core.MatchReason
 import com.craneai.findr.core.SortOrder
 import com.craneai.findr.core.DatePreset
@@ -124,6 +127,14 @@ data class ModelUi(
   val foundStamp: String? = null,
   /** F3: the zip that was just installed, still in the person's folder. Set only after a good install; cleared by "Delete it", "Keep it" or a new install. */
   val zipOffer: File? = null,
+  /** The pack choice is asked on a computer that can hold either pack; a small one is always on Save data and is not asked. */
+  val offered: Boolean = false,
+  /** The pack in force: the person's answer, else what is installed, else Standard. */
+  val choice: ModelChoice = ModelChoice.STANDARD,
+  /** What the models on this computer are (null: none installed). */
+  val installedChoice: ModelChoice? = null,
+  /** The file the person is told to get for [choice]. */
+  val fileName: String = "trawl-models.zip",
 )
 
 /**
@@ -146,6 +157,9 @@ class AppController(
 
   /** The still frame on a video's result row (B9): its own decoder process, so the list never waits behind the index worker. */
   val frames = FrameThumbs({ MediaDecoders.choose(dataDir) })
+
+  /** Plays a stretch of a recording or video from a moment, for the previews (the main window's and the quick panel's share it, so only one thing sounds at a time). */
+  val previewPlayer = PreviewPlayer({ MediaDecoders.choose(dataDir) })
 
   /**
    * Privacy (package B): the app lock, the sensitive marks and the blur. Built before the index so the index can ask it, at every search,
@@ -512,15 +526,35 @@ class AppController(
   // ---- models --------------------------------------------------------------------------------------------------
 
   fun refreshModel() {
-    val found = modelSetup.findBundle(userFolders.downloads.let { listOf(it) })?.takeIf { modelSetup.installedModel() == null }
+    val choice = modelSetup.effectiveChoice(_settings.value.modelChoice)
+    val installedChoice = modelSetup.installedChoice()
+    // A bundle in Downloads is offered while no model is installed, and, on Save data, for the way up (a Standard file only).
+    val found = when {
+      modelSetup.installedModel() == null -> modelSetup.findBundle(listOf(userFolders.downloads), prefer = choice)
+      modelSetup.choiceOffered && installedChoice == ModelChoice.SAVE_DATA -> modelSetup.findBundle(listOf(userFolders.downloads), standardOnly = true)
+      else -> null
+    }
     val label = modelSetup.installedLabel()
     val stamp = found?.let { "${it.path}@${it.lastModified()}" }
     _model.update { cur ->
       // A refusal belongs to the file that was refused. When the models change (a different bundle, none, or one installed), the old
       // line is stale and goes; while an install runs, its own progress is the line.
       val stale = cur.failed && !cur.installing && (stamp != cur.foundStamp || label != cur.installed)
-      cur.copy(installed = label, found = found, foundStamp = stamp, message = if (stale) null else cur.message, failed = cur.failed && !stale)
+      cur.copy(
+        installed = label, found = found, foundStamp = stamp, message = if (stale) null else cur.message, failed = cur.failed && !stale,
+        offered = modelSetup.choiceOffered, choice = choice, installedChoice = installedChoice, fileName = ModelSetup.archiveName(modelSetup.hardware, choice),
+      )
     }
+  }
+
+  /**
+   * The person's pack choice (first run, and Settings before anything is installed). It only decides which file they are told to
+   * get and which one is picked up from Downloads; the models are checked and installed exactly as before. A small computer is not asked.
+   */
+  fun setModelChoice(choice: ModelChoice) {
+    if (!modelSetup.choiceOffered || _model.value.installing) return
+    save(_settings.value.copy(modelChoice = choice))
+    refreshModel()
   }
 
   /** While a screen that shows the models is open, notice a bundle that is added or taken away (Downloads is looked at every two seconds). */
@@ -539,6 +573,7 @@ class AppController(
     _model.update { it.copy(installing = true, done = 0, total = zip.length(), message = null, failed = false, zipOffer = null) }
     scope.launch(Dispatchers.IO) {
       var last = 0L
+      val before = modelSetup.installedClass()
       val result = try {
         modelSetup.install(zip, progress = { d, tot ->
           val now = System.currentTimeMillis()
@@ -550,8 +585,14 @@ class AppController(
       }
       when (result) {
         is BundleResult.Installed -> {
+          // What is installed is what the person has: it becomes their answer, so the file on the computer and the choice agree.
+          modelSetup.installedChoice()?.let { save(_settings.value.copy(modelChoice = it)) }
           markInstalled(zip)
+          // Save data to Standard: the better model reads the files again (the index stays; words inside documents and screenshots
+          // come back as each file is read). Say so.
+          if (ModelPlan.upgradesStack(before, modelSetup.installedClass() ?: BundleClass.LITE)) _model.update { it.copy(message = t("models_upgraded")) }
           modelSetup.installedModel()?.let { service.attachModel(it) }
+          refreshModel()
         }
         is BundleResult.Refused -> _model.update { it.copy(installing = false, message = t(ModelSetup.refusalKey(result.reason, modelSetup.profile)), failed = true) }
         null -> _model.update { it.copy(installing = false, message = t("refusal_damaged"), failed = true) }

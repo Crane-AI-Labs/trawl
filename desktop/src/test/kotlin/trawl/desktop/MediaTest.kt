@@ -11,6 +11,7 @@ import com.craneai.findr.index.CrawlRecord
 import com.craneai.findr.index.FileState
 import com.craneai.findr.index.Fp16
 import com.craneai.findr.index.IndexStore
+import com.craneai.findr.index.Modality
 import com.craneai.findr.index.SegmentKind
 import com.craneai.findr.search.VectorIndex
 import java.awt.Color
@@ -333,7 +334,7 @@ private class FakeDecoder(
   }
 }
 
-private class FakeEmbedder : MediaEmbedder {
+private class FakeEmbedder(override val vision: Boolean = true) : MediaEmbedder {
   val images = java.util.concurrent.atomic.AtomicInteger()
   val documents = java.util.Collections.synchronizedList(ArrayList<String>())
   private fun unit() = FloatArray(Fp16.DIM).also { it[0] = 1f }
@@ -386,6 +387,21 @@ class MediaProcessorTest {
     assertTrue(speech.isNotEmpty() && speech.joinToString(" ") { it.text!! }.contains("quarterly budget"))
     assertTrue(speech.all { it.locStart != null }, "each spoken piece knows where it is")
     assertTrue(step.segments.any { it.kind == SegmentKind.SOUND && it.text!!.contains("Dog") })
+    dir.deleteRecursively()
+  }
+
+  @Test fun onTheSaveDataPackAVideoIsReadByItsCaptionsAndSoundNotItsLooks() {
+    val dir = tmpDir(); val e = FakeEmbedder(vision = false)
+    val d = FakeDecoder(MediaInfo(10_000, hasVideo = true, hasAudio = true)) { t -> if (t < 5_000) 1 else 2 }
+    val caption = object : Ocr { override val name = "fake"; override fun read(image: File) = "Buy more airtime today and win a prize"; override fun close() {} }
+    val p = MediaProcessor(d, e, FakeTranscriber(english()), gate(), { caption }, dir)
+    val step = p.step(fileOf(FileKind.VIDEO, 10_000), File("/x"), MediaInfo(10_000, true, true), null, 1)
+    assertEquals(0, e.images.get(), "the text-only model never sees a picture")
+    assertTrue(step.segments.none { it.kind == SegmentKind.FRAME })
+    val words = step.segments.filter { it.kind == SegmentKind.OCR }
+    assertTrue(words.isNotEmpty() && words.all { it.modality == Modality.OCR_TEXT && it.vector != null }, "the captions get text vectors")
+    assertTrue(words.first().text!!.contains("airtime"), "and the caption words stay in the keyword index")
+    assertTrue(step.segments.any { it.kind == SegmentKind.TRANSCRIPT }, "speech is the same on both packs")
     dir.deleteRecursively()
   }
 

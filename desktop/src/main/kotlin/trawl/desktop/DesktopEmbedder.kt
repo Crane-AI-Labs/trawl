@@ -20,28 +20,35 @@ class DesktopEmbedder(
   visionGpu: Boolean? = when { System.getenv("TRAWL_VISION_CPU") != null -> false; System.getenv("TRAWL_VISION_GPU") != null -> true; else -> null },
 ) : AutoCloseable {
   private var engine: EmbeddingEngine? = null
-  private val options = EmbeddingOptions(normalize = true, visionTokensPerImage = VISION_TOKENS)
+
+  /**
+   * The Save data pack's 270m model reads text only. It gets no vision backend (a vision budget without one is refused), the GPU
+   * probe is skipped, and [image] is not available: pictures are read through the words in them instead ([Indexer]).
+   */
+  val textOnly: Boolean = ModelSetup.isTextOnly(model)
+  private val options = if (textOnly) EmbeddingOptions(normalize = true) else EmbeddingOptions(normalize = true, visionTokensPerImage = VISION_TOKENS)
   private val wantGpu = visionGpu
   /** CPU threads for the text side: null leaves it to LiteRT-LM (the Balanced speed, how Trawl has always run). */
   @Volatile private var threads: Int? = null
   var initMs = 0L; private set
 
   /** Which vision backend ended up in use ("gpu" or "cpu"). */
-  var visionUsed = if (visionGpu == true) "gpu" else "cpu"; private set
+  var visionUsed = if (textOnly) "none" else if (visionGpu == true) "gpu" else "cpu"; private set
 
   private fun create(gpu: Boolean) = EmbeddingEngine(
     EmbeddingEngineConfig(
       modelPath = model.absolutePath,
       backend = Backend.CPU(threadCount = threads),
-      visionBackend = if (gpu) Backend.GPU() else Backend.CPU(),
+      visionBackend = if (textOnly) null else if (gpu) Backend.GPU() else Backend.CPU(),
       cacheDir = cacheDir.absolutePath,
-      visionTokensPerImage = VISION_TOKENS,
+      visionTokensPerImage = if (textOnly) null else VISION_TOKENS,
     )
   ).also { it.initialize() }
 
   @Synchronized private fun engine(): EmbeddingEngine = engine ?: run {
     val t = System.nanoTime()
     cacheDir.mkdirs()
+    if (textOnly) return@run create(false).also { engine = it; initMs = (System.nanoTime() - t) / 1_000_000 }
     // A computer with no usable GPU (a headless VM, no Vulkan or D3D12 adapter) does not always fail with an exception: LiteRT-LM's
     // GPU path can crash the whole process in native code, and nothing in the JVM can catch that. So the first time, a separate
     // process tries the GPU path on a tiny picture; only if it comes back clean does this process use the GPU. The answer is kept.
@@ -68,7 +75,10 @@ class DesktopEmbedder(
   fun query(text: String): FloatArray = run(InputData.Text(QUERY_PREFIX + text))
   fun document(text: String, title: String? = null): FloatArray =
     run(InputData.Text("title: ${title?.takeIf { it.isNotBlank() } ?: "none"} | text: $text"))
-  fun image(jpeg: ByteArray): FloatArray = run(InputData.Image(jpeg))
+  fun image(jpeg: ByteArray): FloatArray {
+    check(!textOnly) { "the text-only model cannot embed a picture" }
+    return run(InputData.Image(jpeg))
+  }
 
   @Synchronized override fun close() { engine?.close(); engine = null }
 }

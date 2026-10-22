@@ -74,6 +74,11 @@ fun QuickLook(row: ResultRow, position: Int, total: Int, c: AppController, onClo
           Spacer(Modifier.width(Sun.S8))
           KeyCap("Enter")
         }
+        SunOutlinedButton(onClick = { leave(f.id) { c.showInFolder(f) } }) {
+          Text(t("action_show_folder"), style = SunType.Label)
+          Spacer(Modifier.width(Sun.S8))
+          KeyCap("${MainUi.modName} Enter")
+        }
       }
     }
   }

@@ -28,6 +28,21 @@
   <string name="models_refused_no_space">There is not enough free space on this phone. Free up about %1$d MB, then try again.</string>
   <string name="models_refused_cancelled">Stopped. Nothing was changed.</string>
 
+  <!-- Save-data choice (first run and Settings → Add-ons): two model packs. %1$d is the pack's size in MB. The facts are measured (internal/research/save-data-choice.md). -->
+  <string name="models_choice_title">Choose how much to download</string>
+  <string name="models_choice_standard">Standard: %1$d MB (recommended)</string>
+  <string name="models_choice_standard_hint">Best search in every language, speech in videos and voice notes.</string>
+  <string name="models_choice_save">Save data: %1$d MB</string>
+  <string name="models_choice_save_hint">English search just as good; Luganda and Swahili photo search weaker; no speech in videos or voice notes. You can add the rest later.</string>
+  <string name="models_choice_switch_standard">Use Standard (%1$d MB)</string>
+  <string name="models_choice_switch_save">Use Save data (%1$d MB)</string>
+  <string name="models_pack_title">Your model pack</string>
+  <string name="models_pack_save_body">You have the Save data pack. English search is just as good; Luganda and Swahili photo search is weaker, and videos and voice notes are not read for speech.</string>
+  <string name="models_pack_standard_body">You have the Standard pack: the best search in every language, and speech in videos and voice notes.</string>
+  <string name="models_pack_upgrade_note">Adding the Standard pack makes <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> read your files again with the better model. Your list of files stays: searching by file name and finding photos by quick look keep working meanwhile. Words inside documents and screenshots, and search by meaning, come back as each file is read again, best while the phone charges.</string>
+  <string name="models_pack_get_standard">Get the Standard pack (%1$d MB)</string>
+  <string name="models_pack_upgraded">The Standard pack is installed. Close <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> and open it again to start using it. It then reads your files again with the better model. File names and quick photo search keep working meanwhile; words inside documents and screenshots come back as files are read.</string>
+
   <!-- Settings → Add-ons: a newer model bundle exists. The cost is stated honestly: some updates make the app read the files again. -->
   <string name="models_update_title">A better model is available</string>
   <string name="models_update_body_reread">Adding it makes <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> read your files again. That happens while the phone charges, and search keeps working meanwhile.</string>

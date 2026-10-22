@@ -74,13 +74,14 @@ class SettingsAndStringsTest {
     } finally { Strings.use(java.util.Locale.ENGLISH) }
   }
 
-  /** A translation that gives one form for every count (every language file does today) still wins over English, and English fills what it lacks. */
+  /** A translation that gives one form for every count still wins over English (a language file may carry just _other); a counted key with both forms picks by count. Every desktop key now has Luganda, so no key is left to fall back to English. */
   @Test fun aTranslationWithOneFormStillWorksAndEnglishFillsTheRest() {
     Strings.use(java.util.Locale.forLanguageTag("lg"))
     try {
-      assertEquals("Fayiro 1 zeetegefu okunoonya.", tn("meter_sub_up_to_date", 1, "1"))   // only meter_sub_up_to_date_other is translated: it serves every count
-      assertEquals("1 photo", tn("count_photos", 1, "1"))                                  // not translated: English, English's rule
-      assertEquals("2 photos", tn("count_photos", 2, "2"))
+      assertEquals("Fayiro 1 eyetegefu okunoonya.", tn("meter_sub_up_to_date", 1, "1"))   // Luganda now has its own singular and plural
+      assertEquals("Fayiro 2 zeetegefu okunoonya.", tn("meter_sub_up_to_date", 2, "2"))
+      assertEquals("Ekifaananyi 1", tn("count_photos", 1, "1"))                            // every desktop key now has Luganda; both forms are read by count
+      assertEquals("Ebifaananyi 2", tn("count_photos", 2, "2"))
     } finally { Strings.use(java.util.Locale.ENGLISH) }
   }
 

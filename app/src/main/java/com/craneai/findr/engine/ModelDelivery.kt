@@ -9,6 +9,10 @@ import com.craneai.findr.core.DeliveryPhase
 import com.craneai.findr.core.DeliveryService
 import com.craneai.findr.core.DeliveryState
 import com.craneai.findr.core.FindrLog as Log
+import com.craneai.findr.core.ChoiceKeyValue
+import com.craneai.findr.core.ModelChoice
+import com.craneai.findr.core.ModelChoiceStore
+import com.craneai.findr.core.ModelPlan
 import com.craneai.findr.core.ModelUpdate
 import com.craneai.findr.core.PackCatalog
 import com.craneai.findr.core.Refusal
@@ -108,12 +112,15 @@ class ModelDelivery(
   private val modelsDir = File(context.filesDir, "models")
   private val phoneClass = BundleClass.of(hardware)
   /** A standard phone also takes the lighter core bundle (its text-only model); a lite phone takes only its own class. Add-ons fit every phone. */
-  private val acceptClasses: Set<BundleClass> =
-    if (phoneClass == BundleClass.STANDARD) setOf(BundleClass.STANDARD, BundleClass.LITE) else setOf(phoneClass)
+  private val acceptClasses: Set<BundleClass> = ModelPlan.acceptClasses(phoneClass)
   private val prefs = context.getSharedPreferences("delivery", Context.MODE_PRIVATE)
+  private val choiceStore = ModelChoiceStore(object : ChoiceKeyValue {
+    override fun get(key: String): String? = prefs.getString(key, null)
+    override fun put(key: String, value: String) { prefs.edit().putString(key, value).apply() }
+  }, phoneClass)
   private val known: Map<BundleClass, KnownBundle> = runCatching { ModelsKnown.parse(context.assets.open("models-known.json").bufferedReader().readText()) }.getOrDefault(emptyMap())
 
-  private val flow = MutableStateFlow(DeliveryState(sizeMb = known[phoneClass]?.sizeMb ?: 0))
+  private val flow = MutableStateFlow(choiceState(DeliveryState()))
   override val state: StateFlow<DeliveryState> = flow
 
   private val lock = Any()
@@ -131,13 +138,36 @@ class ModelDelivery(
   init { refreshUpdate() }
 
   /**
-   * The first bundle for this phone. The lean-first policy (off: [LEAN_FIRST]) sends a standard phone with no model yet to the core
-   * bundle (the lite file, 304 MB) instead of the whole 670 MB; its vision model comes later as [ModelBundle.VISION_ARCHIVE_NAME].
+   * The pack in force: a 2 GB phone is always Save data; otherwise the person's answer, then what is installed (a small pack
+   * from the website counts as Save data), then Standard. The lean-first policy (off: [LEAN_FIRST]) would make the small
+   * core bundle the default for a phone with no model and no answer yet; its vision model comes later as [ModelBundle.VISION_ARCHIVE_NAME].
    */
-  override fun downloadUrl(): String = BuildConfig.MODELS_BASE_URL + when {
-    phoneClass == BundleClass.LITE -> ModelBundle.LITE_ARCHIVE_NAME
-    LEAN_FIRST && InstalledBundle.read(modelsDir) == null -> ModelBundle.LITE_ARCHIVE_NAME
-    else -> ModelBundle.ARCHIVE_NAME
+  private fun currentChoice(): ModelChoice {
+    val installed = InstalledBundle.read(modelsDir)
+    if (LEAN_FIRST && choiceStore.stored() == null && installed == null) return ModelPlan.effective(phoneClass, ModelChoice.SAVE_DATA, null)
+    return choiceStore.effective(installed?.bundleClass)
+  }
+
+  private fun sizeOf(choice: ModelChoice): Int = known[ModelPlan.bundleClass(phoneClass, choice)]?.sizeMb ?: 0
+
+  /** [s] with the pack-choice fields brought up to date (the sizes come from the same file as the update notice). */
+  private fun choiceState(s: DeliveryState): DeliveryState {
+    val choice = currentChoice()
+    return s.copy(
+      choice = choice,
+      choiceOffered = ModelPlan.offered(phoneClass),
+      standardMb = known[BundleClass.STANDARD]?.sizeMb ?: 0,
+      saveDataMb = known[BundleClass.LITE]?.sizeMb ?: 0,
+      installedChoice = ModelPlan.choiceOf(InstalledBundle.read(modelsDir)?.bundleClass),
+      sizeMb = sizeOf(choice),
+    )
+  }
+
+  override fun downloadUrl(): String = BuildConfig.MODELS_BASE_URL + ModelPlan.archiveName(phoneClass, currentChoice())
+
+  override fun setChoice(choice: ModelChoice) {
+    choiceStore.set(choice)
+    flow.value = choiceState(flow.value)
   }
 
   // ---- watching Downloads ----------------------------------------------------------------------------------------
@@ -173,7 +203,7 @@ class ModelDelivery(
         installFile(File(dir, next.name))
       }
       scan.partial != null && phase in setOf(DeliveryPhase.IDLE, DeliveryPhase.DOWNLOADING) ->
-        flow.value = flow.value.copy(phase = DeliveryPhase.DOWNLOADING, doneBytes = scan.partial.length, totalBytes = (known[phoneClass]?.sizeMb ?: 0) * 1_000_000L, refusal = null)
+        flow.value = flow.value.copy(phase = DeliveryPhase.DOWNLOADING, doneBytes = scan.partial.length, totalBytes = flow.value.sizeMb * 1_000_000L, refusal = null)
       scan.partial == null && phase == DeliveryPhase.DOWNLOADING -> flow.value = flow.value.copy(phase = DeliveryPhase.IDLE, doneBytes = 0)   // the download was cancelled
     }
   }
@@ -200,6 +230,7 @@ class ModelDelivery(
     synchronized(lock) {
       if (job?.isActive == true) return
       cancelled = false
+      val before = InstalledBundle.read(modelsDir)?.bundleClass
       flow.value = flow.value.copy(phase = DeliveryPhase.INSTALLING, doneBytes = 0, totalBytes = 0, refusal = null, removable = null)
       job = scope.launch(Dispatchers.IO) {
         PackLocks.of(MODEL_LOCK).withLock {
@@ -221,22 +252,29 @@ class ModelDelivery(
             com.craneai.findr.diag.Diag.handled(com.craneai.findr.diag.HandledKind.MODEL_INSTALL, t)
             BundleResult.Refused(Refusal.DAMAGED, "${t.javaClass.simpleName}: ${t.message}")
           }
-          finish(result, rec)
+          finish(result, rec, before)
         }
       }
     }
   }
 
-  private suspend fun finish(result: BundleResult, rec: Pending) {
+  private suspend fun finish(result: BundleResult, rec: Pending, before: BundleClass?) {
     when (result) {
       is BundleResult.Installed -> {
         Log.i(TAG, "installed ${result.manifest.bundle} v${result.manifest.version} (${result.installedBytes / 1_000_000} MB)")   // log-safe: our own bundle
         // An add-on is something the person asked for by downloading it: a pack they once declined is wanted now.
         if (result.manifest.role == BundleRole.ADDON) clearDeclined(result.manifest)
         pending = rec.takeIf { canRemove(it) }
+        // What is installed is now what the person has: remember it as the answer, so the pack on the phone and the choice agree.
+        val full = result.manifest.role == BundleRole.FULL
+        val upgraded = full && ModelPlan.upgradesStack(before, result.manifest.bundleClass)
+        if (full) choiceStore.recordInstalled(result.manifest.bundleClass)
         onInstalled()
         refreshUpdate()
-        flow.value = flow.value.copy(phase = DeliveryPhase.DONE, refusal = null, removable = offer(rec), doneBytes = 0, totalBytes = 0)
+        flow.value = choiceState(flow.value).copy(
+          phase = DeliveryPhase.DONE, refusal = null, removable = offer(rec), doneBytes = 0, totalBytes = 0,
+          upgradedToStandard = flow.value.upgradedToStandard || upgraded,
+        )
       }
       is BundleResult.Refused -> {
         Log.w(TAG, "bundle refused: ${result.reason} (${result.detail})")   // log-safe: a reason code and our own numbers
@@ -329,8 +367,10 @@ class ModelDelivery(
   // ---- the update notice -----------------------------------------------------------------------------------------
 
   private fun refreshUpdate() {
-    val u = ModelsKnown.update(InstalledBundle.read(modelsDir), phoneClass, known, prefs.getInt("update_dismissed", 0))
-    flow.value = flow.value.copy(update = u)
+    // A small pack on a standard phone is compared with the small pack's newest version (the class it was installed as).
+    val installed = InstalledBundle.read(modelsDir)
+    val u = ModelsKnown.update(installed, installed?.bundleClass ?: phoneClass, known, prefs.getInt("update_dismissed", 0))
+    flow.value = choiceState(flow.value).copy(update = u)
   }
 
   override fun dismissUpdate() {

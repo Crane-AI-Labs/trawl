@@ -169,7 +169,7 @@ fun PreviewPane(row: ResultRow?, browsing: Boolean, c: AppController, modifier: 
 }
 
 @Composable
-private fun FactRow(fact: Fact) {
+internal fun FactRow(fact: Fact) {
   val tk = LocalSunlight.current
   Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Sun.S12)) {
     Text(fact.label, style = SunType.Caption, color = tk.ink2, modifier = Modifier.width(84.dp).padding(top = 2.dp))
@@ -207,16 +207,23 @@ fun PreviewMedia(row: ResultRow, c: AppController, height: Dp?, side: Int, excer
         }
       }
     }
+    // A video or a recording: its frame at the moment the search matched (a recording gets a tile), the words that matched, and a button that
+    // plays from there. The same drawing as the quick panel's preview, so a file looks and plays the same in both.
+    (f.kind == FileKind.VIDEO || f.kind == FileKind.AUDIO) -> {
+      val preview = remember(c) { trawl.desktop.shell.ControllerPreview(c, player = c.previewPlayer) }
+      androidx.compose.runtime.DisposableEffect(f.id) { onDispose { c.previewPlayer.stop() } }
+      trawl.desktop.ui.quick.MediaBox(
+        f, row.startMs ?: 0L, cleanSnippet(row), preview, f.kind == FileKind.VIDEO,
+        modifier.fillMaxWidth().then(if (height != null) Modifier.height(height) else Modifier.fillMaxSize()),
+      )
+    }
     else -> {
       // The text shown: the match when there is one, else the file's opening text as it was indexed (the Recent view has no match to quote).
       // [lead] is null while it is being read, so "No text to show" is only ever said once the index has answered.
       val quoted = remember(row) { cleanSnippet(row) }
       val lead by androidx.compose.runtime.produceState<Lead?>(null, f.id, quoted) { value = if (quoted != null) Lead(null) else Lead(c.leadText(f)) }
       val text = quoted ?: lead?.text
-      if (f.kind == FileKind.VIDEO && text == null) {
-        // A video with no words in it is a labelled placeholder (the file is opened to watch it); while its words are looked up, the same frame.
-        Box(frame, contentAlignment = Alignment.Center) { if (lead != null) Note(Icons.Video, t("preview_video_note")) }
-      } else {
+      run {
         // A page of text is as tall as its words (up to the box it was given), not a tall empty card with one line in it. Quick Look has no
         // height of its own (it fills the space it is offered), so it keeps the full frame.
         val textFrame = if (height != null) modifier.fillMaxWidth().heightIn(min = 120.dp, max = height).clip(shape).background(tk.paper).border(Sun.Hairline, tk.line2, shape) else frame

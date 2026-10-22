@@ -68,6 +68,20 @@ data class DeliveryState(
   val removable: RemovableFile? = null,
   /** Set when the installed bundle is older than the newest this release knows and the person has not dismissed it. */
   val update: ModelUpdate? = null,
+  /** The model pack in force ([ModelPlan.effective]): what Get downloads and what the first-run choice shows as selected. */
+  val choice: ModelChoice = ModelChoice.STANDARD,
+  /** Whether the person is asked at all: false on a 2 GB phone, which always gets the small pack. */
+  val choiceOffered: Boolean = false,
+  /** The sizes of the two packs, for the choice rows ("670 MB", "304 MB"); 0 when the release does not know them. */
+  val standardMb: Int = 0,
+  val saveDataMb: Int = 0,
+  /** The pack installed now, from its signed record; null when there is none or the model came from loose files. */
+  val installedChoice: ModelChoice? = null,
+  /**
+   * A bundle just took this phone from the small pack to the standard one (this session). Files are read again with the better
+   * model, and the app has to be closed and opened once so it starts the full stack.
+   */
+  val upgradedToStandard: Boolean = false,
 )
 
 /**
@@ -79,6 +93,9 @@ interface DeliveryService {
 
   /** Where the Get button sends the browser: the bundle for this phone's class (BuildConfig.MODELS_BASE_URL). */
   fun downloadUrl(): String
+
+  /** The person picked a pack (first run, or Settings to get the standard pack on top of Save data). Remembered; ignored on a 2 GB phone. */
+  fun setChoice(choice: ModelChoice)
 
   /** Watch Downloads for the bundle while a card that asks for it is on screen (counted, so two cards can share it). */
   fun watch(on: Boolean)
@@ -104,6 +121,7 @@ interface DeliveryService {
 object NoDelivery : DeliveryService {
   override val state: StateFlow<DeliveryState> = MutableStateFlow(DeliveryState())
   override fun downloadUrl(): String = ""
+  override fun setChoice(choice: ModelChoice) {}
   override fun watch(on: Boolean) {}
   override fun installFrom(uri: String) {}
   override fun cancel() {}

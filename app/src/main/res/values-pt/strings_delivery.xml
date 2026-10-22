@@ -31,4 +31,17 @@
   <string name="models_update_body_light">Ao adicioná-lo, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> não precisa ler seus arquivos novamente.</string>
   <string name="models_update_get">Baixar a atualização (%1$d MB)</string>
   <string name="models_update_not_now">Agora não</string>
+  <string name="models_choice_title">Escolha quanto baixar</string>
+  <string name="models_choice_standard">Padrão: %1$d MB (recomendado)</string>
+  <string name="models_choice_standard_hint">A melhor busca em todos os idiomas, além de fala em vídeos e notas de voz.</string>
+  <string name="models_choice_save">Economizar dados: %1$d MB</string>
+  <string name="models_choice_save_hint">A busca em inglês é igualmente boa; a busca de fotos em luganda e suaíli é mais fraca; sem fala em vídeos nem notas de voz. Você pode adicionar o resto depois.</string>
+  <string name="models_choice_switch_standard">Usar Padrão (%1$d MB)</string>
+  <string name="models_choice_switch_save">Usar Economizar dados (%1$d MB)</string>
+  <string name="models_pack_title">Seu pacote de modelos</string>
+  <string name="models_pack_save_body">Você tem o pacote Economizar dados. A busca em inglês é igualmente boa; a busca de fotos em luganda e suaíli é mais fraca, e a fala em vídeos e notas de voz não é lida.</string>
+  <string name="models_pack_standard_body">Você tem o pacote Padrão: a melhor busca em todos os idiomas, além de fala em vídeos e notas de voz.</string>
+  <string name="models_pack_upgrade_note">Ao adicionar o pacote Padrão, o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> lê seus arquivos novamente com o modelo melhor. Sua lista de arquivos continua: a busca por nome de arquivo e a busca de fotos por visualização rápida seguem funcionando enquanto isso. As palavras dentro de documentos e capturas de tela e a busca por significado voltam conforme cada arquivo é lido de novo, melhor com o celular no carregador.</string>
+  <string name="models_pack_get_standard">Baixar o pacote Padrão (%1$d MB)</string>
+  <string name="models_pack_upgraded">O pacote Padrão foi instalado. Feche o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> e abra de novo para começar a usá-lo. Ele então lê seus arquivos novamente com o modelo melhor. Os nomes de arquivo e a busca rápida de fotos seguem funcionando enquanto isso; as palavras dentro de documentos e capturas de tela voltam conforme os arquivos são lidos.</string>
 </resources>

@@ -31,4 +31,17 @@
   <string name="models_update_body_light">Uma uyengeza, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ayiphindi ifunde amafayela akho.</string>
   <string name="models_update_get">Thola isibuyekezo (%1$d MB)</string>
   <string name="models_update_not_now">Hhayi manje</string>
+  <string name="models_choice_title">Khetha ukuthi ulande malini</string>
+  <string name="models_choice_standard">Standard: %1$d MB (kunconyiwe)</string>
+  <string name="models_choice_standard_hint">Ukusesha okungcono kakhulu ezilimini zonke, nenkulumo emavidiyo nasemanotini ezwi.</string>
+  <string name="models_choice_save">Londoloza idatha: %1$d MB</string>
+  <string name="models_choice_save_hint">Ukusesha kwesiNgisi kuhle ngokufanayo; ukusesha izithombe ngesiLuganda nesiSwahili kuthambile; akukho nkulumo emavidiyo noma emanotini ezwi. Ungangeza okusele kamuva.</string>
+  <string name="models_choice_switch_standard">Sebenzisa i-Standard (%1$d MB)</string>
+  <string name="models_choice_switch_save">Sebenzisa okuthi Londoloza idatha (%1$d MB)</string>
+  <string name="models_pack_title">Iphakheji lakho lamamodeli</string>
+  <string name="models_pack_save_body">Unephakheji elithi Londoloza idatha. Ukusesha kwesiNgisi kuhle ngokufanayo; ukusesha izithombe ngesiLuganda nesiSwahili kuthambile, futhi amavidiyo namanothi ezwi awafundwa ukuze kutholwe inkulumo.</string>
+  <string name="models_pack_standard_body">Unephakheji elithi Standard: ukusesha okungcono kakhulu ezilimini zonke, nenkulumo emavidiyo nasemanotini ezwi.</string>
+  <string name="models_pack_upgrade_note">Ukwengeza iphakheji elithi Standard kwenza i-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ifunde amafayela akho futhi ngemodeli engcono. Uhlu lwamafayela akho luyahlala: ukusesha ngegama lefayela nokuthola izithombe ngokubuka ngokushesha kuyaqhubeka nokusebenza khona manje. Amagama asemadokhumentini nasezithombeni-skrini, nokusesha ngencazelo, kubuya njengoba ifayela ngalinye lifundwa futhi, kangcono ifoni ishajwa.</string>
+  <string name="models_pack_get_standard">Thola iphakheji elithi Standard (%1$d MB)</string>
+  <string name="models_pack_upgraded">Iphakheji elithi Standard selifakiwe. Vala i-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> bese uyivula futhi ukuze uqale ukulisebenzisa. Bese ifunda amafayela akho futhi ngemodeli engcono. Amagama amafayela nokusesha izithombe ngokushesha kuyaqhubeka nokusebenza khona manje; amagama asemadokhumentini nasezithombeni-skrini abuya njengoba amafayela efundwa.</string>
 </resources>

@@ -63,6 +63,11 @@ object SunType {
   val Label get() = style(14, 18, FontWeight.Bold)
   val Caption get() = style(12, 16)
   val CaptionBold get() = style(12, 16, FontWeight.Bold)
+  /** The quick panel's query: Spotlight's proportions (a 22 to 26 pt query on a laptop), in sp so the Text size setting scales it. */
+  val Query get() = style(24, 30)
+  /** The quick panel's result name and its second line: one step above the window's Label and Caption, because the panel is read at a glance. */
+  val PanelTitle get() = style(16, 20, FontWeight.Bold)
+  val PanelDetail get() = style(13, 18)
 }
 
 /** Spacing and sizes: the phone's 4 dp grid, with desktop targets (a pointer is exact, so 36 dp is comfortable and 32 dp is a chip). */
@@ -104,10 +109,17 @@ object SunPanel {
   /** The margin around the panel is painted this nearly-invisible black, so a click there lands on the window (a fully clear pixel lets the click through on Windows and the Mac) and closes it. */
   val MarginScrim = androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.012f)
   val ShadowInset = 28.dp
-  val Width = 680.dp
-  val MaxHeight = 460.dp
+  /** The list-only panel's width (a laptop screen is 1280 to 1512 wide); [trawl.desktop.shell.QuickPanelSizing] narrows it on a small screen and widens it for a preview. */
+  val Width = 760.dp
+  val MaxHeight = 560.dp
   val Pad = Sun.S12
-  val Row = 52.dp
+  val Row = 64.dp
+  /** The search field: Spotlight-tall, with a [SunType.Query] query inside. */
+  val Field = 60.dp
+  val Thumb = 52.dp
+  val ThumbRadius = 10.dp
+  /** The result list's width beside an open preview. */
+  val ListBesidePreview = 340.dp
 }
 
 private val SunlightShapes = Shapes(

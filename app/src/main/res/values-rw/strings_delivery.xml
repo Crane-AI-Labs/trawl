@@ -31,4 +31,17 @@
   <string name="models_update_body_light">Kuyongeramo ntibituma <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yongera gusoma amafayiro yawe.</string>
   <string name="models_update_get">Fata ivugurura (%1$d MB)</string>
   <string name="models_update_not_now">Si ubu</string>
+  <string name="models_choice_title">Hitamo ingano yo gukuramo</string>
+  <string name="models_choice_standard">Standard: %1$d MB (birasabwa)</string>
+  <string name="models_choice_standard_hint">Gushakisha kwiza cyane mu ndimi zose, hamwe n\'amajwi yo muri videwo n\'ubutumwa bw\'amajwi.</string>
+  <string name="models_choice_save">Kuzigama data: %1$d MB</string>
+  <string name="models_choice_save_hint">Gushakisha mu Cyongereza ni byiza kimwe; gushakisha amafoto mu Luganda no mu Giswahili biri hasi; nta majwi yo muri videwo cyangwa mu butumwa bw\'amajwi. Ibisigaye ushobora kubyongeraho nyuma.</string>
+  <string name="models_choice_switch_standard">Koresha Standard (%1$d MB)</string>
+  <string name="models_choice_switch_save">Koresha Kuzigama data (%1$d MB)</string>
+  <string name="models_pack_title">Paki ya moderi yawe</string>
+  <string name="models_pack_save_body">Ufite paki ya Kuzigama data. Gushakisha mu Cyongereza ni byiza kimwe; gushakisha amafoto mu Luganda no mu Giswahili biri hasi, kandi amajwi yo muri videwo n\'ubutumwa bw\'amajwi ntasomwa.</string>
+  <string name="models_pack_standard_body">Ufite paki ya Standard: gushakisha kwiza cyane mu ndimi zose, hamwe n\'amajwi yo muri videwo n\'ubutumwa bw\'amajwi.</string>
+  <string name="models_pack_upgrade_note">Kongeramo paki ya Standard bituma <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yongera gusoma amafayiro yawe ikoresheje moderi nziza kurushaho. Urutonde rw\'amafayiro yawe ruguma ho: gushakisha ukurikije izina ry\'ifayiro no kubona amafoto ukoresheje kureba byihuse bikomeza gukora hagati aho. Amagambo ari mu nyandiko no mu mafoto ya ecran, no gushakisha ukurikije ibisobanuro, bigaruka uko buri fayiro isomwa nanone, cyane cyane telefone iri ku muriro.</string>
+  <string name="models_pack_get_standard">Fata paki ya Standard (%1$d MB)</string>
+  <string name="models_pack_upgraded">Paki ya Standard yashyizwemo. Funga <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> hanyuma uyifungure nanone kugira ngo utangire kuyikoresha. Nyuma yaho izongera gusoma amafayiro yawe ikoresheje moderi nziza kurushaho. Amazina y\'amafayiro no gushakisha amafoto byihuse bikomeza gukora hagati aho; amagambo ari mu nyandiko no mu mafoto ya ecran agaruka uko amafayiro asomwa.</string>
 </resources>

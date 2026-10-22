@@ -184,6 +184,7 @@ fun SettingsScreen(
         Text(appString(R.string.addons_intro), style = SunType.Body, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(Modifier.height(Sun.S12))
         Column(verticalArrangement = Arrangement.spacedBy(Sun.S12)) {
+          com.craneai.findr.ui.delivery.ModelPackCard(deliveryViewModel)
           com.craneai.findr.ui.delivery.UpdateNoticeCard(deliveryViewModel)
           addOnRows.forEach { row ->
             AddOnCard(

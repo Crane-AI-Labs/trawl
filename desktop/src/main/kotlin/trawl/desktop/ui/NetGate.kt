@@ -133,6 +133,11 @@ class NetGate(private val c: AppController, private val shell: Shell, private va
     facts.put("share_selfcheck", shareLine ?: "n/a")
     step("share-helper-selfcheck", shareLine == null || shareLine.startsWith("ok"), shareLine ?: "no share helper on this system")
 
+    // The Quick Look helper (macOS) likewise: its self-check loads the QuickLookUI framework and shows nothing.
+    val qlLine = quickLookSelfCheck()
+    facts.put("quicklook_selfcheck", qlLine ?: "n/a")
+    step("quicklook-helper-selfcheck", qlLine == null || qlLine.startsWith("ok"), qlLine ?: "no Quick Look helper on this system")
+
     c.openSettings(); delay(1_500)
     c.openLicences(); delay(1_000)
     c.closeLicences(); c.closeSettings(); delay(500)
@@ -171,6 +176,16 @@ class NetGate(private val c: AppController, private val shell: Shell, private va
             trawl.desktop.Helpers.extract(trawl.desktop.Share.WINDOWS_HELPER, helpers).absolutePath, "selfcheck", sample.absolutePath), 120_000L)
         trawl.desktop.Os.LINUX -> null
       }
+    }.getOrElse { "error:${it.message}" }
+  }
+
+  /** Runs the Quick Look helper's own self-check (no window), or returns null where the system has none (anything but a Mac build that includes it). */
+  private fun quickLookSelfCheck(): String? {
+    if (trawl.desktop.Platform.os != trawl.desktop.Os.MAC) return null
+    if (trawl.desktop.shell.QuickLookMac::class.java.classLoader.getResource(trawl.desktop.shell.QuickLookMac.HELPER) == null) return null
+    return runCatching {
+      trawl.desktop.privacy.HelperRunner.Process.run(
+        listOf(trawl.desktop.Helpers.extract(trawl.desktop.shell.QuickLookMac.HELPER, File(dataDir, "helpers")).also { it.setExecutable(true) }.absolutePath, "--self-check"), 60_000L)
     }.getOrElse { "error:${it.message}" }
   }
 

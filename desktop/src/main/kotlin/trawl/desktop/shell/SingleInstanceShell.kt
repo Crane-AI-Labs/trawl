@@ -14,9 +14,8 @@ import java.nio.file.StandardOpenOption
 import java.security.MessageDigest
 
 /**
- * One Trawl per data folder, and a second launch hands over to the first. (Package D's minimal version, so the shell works on its own;
- * if Package C's SingleInstance lands, either can be kept: this one has no dependencies and `SingleInstanceShell.acquire` is the only
- * call.)
+ * One Trawl per data folder, and a second launch hands over to the first. (The only single-instance code: an earlier, unused copy in
+ * `trawl.desktop.SingleInstance` was removed, so there is one lock and one hand-over to reason about.)
  *
  * Why this and not a TCP port: Trawl has no network code at all, and a loopback port is still a socket on the network stack. A Unix
  * domain socket is a file in the data folder, readable only by the person (0600 on a Unix-like OS; on Windows it lives under the

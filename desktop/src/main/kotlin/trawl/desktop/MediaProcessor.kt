@@ -5,6 +5,7 @@ import com.craneai.findr.core.FileKind
 import com.craneai.findr.core.FormatNotReadable
 import com.craneai.findr.core.IndexedFile
 import com.craneai.findr.engine.AudioPolicy
+import com.craneai.findr.engine.Chunker
 import com.craneai.findr.engine.SpeechLanguageGate
 import com.craneai.findr.engine.TranscriptPieces
 import com.craneai.findr.index.IndexStore
@@ -24,6 +25,8 @@ interface Transcriber {
 
 /** What the processor needs from the models: a picture's vector and a text's vector (DesktopEmbedder is both). */
 interface MediaEmbedder {
+  /** False on the Save data pack's text-only model: video frames are not embedded as pictures; their captions and soundtrack are read. */
+  val vision: Boolean get() = true
   fun image(jpeg: ByteArray): FloatArray
   fun document(text: String): FloatArray
 }
@@ -94,7 +97,7 @@ class MediaProcessor(
     var sampleNs = 0L
     var embedNs = 0L
     var ocrNs = 0L
-    class Kept(val hash: Long, val start: Long, var end: Long, val vector: CompletableFuture<FloatArray>)
+    class Kept(val hash: Long, val start: Long, var end: Long, val vector: CompletableFuture<FloatArray>?)
     val kept = ArrayList<Kept>()
     val captions = LinkedHashSet<String>()   // a meme's caption repeats in every frame: keep each line once
     try {
@@ -114,12 +117,12 @@ class MediaProcessor(
           if (same != null) { same.end = maxOf(same.end, shot.endMs); continue }
           // The picture's vector is computed while the caption OCR reads the same frame (different processors, as on the phone).
           val te = System.nanoTime()
-          val vector = CompletableFuture.supplyAsync({ embedder.image(jpeg) }, EMBED_POOL)
+          val vector = if (embedder.vision) CompletableFuture.supplyAsync({ embedder.image(jpeg) }, EMBED_POOL) else null
           val to = System.nanoTime()
           readCaption(jpeg)?.let { captions += it }
           ocrNs += System.nanoTime() - to
           kept += Kept(hash ?: 0L, shot.startMs, shot.endMs, vector)
-          vector.join()
+          vector?.join()
           embedNs += System.nanoTime() - te
         }
       }
@@ -128,8 +131,15 @@ class MediaProcessor(
       throw t
     }
     val segments = ArrayList<Segment>()
-    kept.forEach { k -> segments += Segment(SegmentKind.FRAME, Modality.IMAGE, k.start, k.end, vector = k.vector.join(), late = late) }
-    if (captions.isNotEmpty()) segments += Segment(SegmentKind.OCR, Modality.NONE, text = captions.joinToString("\n"), late = late)
+    kept.forEach { k -> k.vector?.let { v -> segments += Segment(SegmentKind.FRAME, Modality.IMAGE, k.start, k.end, vector = v.join(), late = late) } }
+    if (captions.isNotEmpty()) {
+      val words = captions.joinToString("\n")
+      // Without picture vectors (the text-only model) the caption words get their own text vector, as a picture's words do.
+      if (embedder.vision) segments += Segment(SegmentKind.OCR, Modality.NONE, text = words, late = late)
+      else Chunker.chunks(words).take(Indexer.MAX_READ_CHUNKS).forEachIndexed { i, c ->
+        segments += Segment(SegmentKind.OCR, Modality.OCR_TEXT, text = words.takeIf { i == 0 }, vector = embedder.document(c), late = late)
+      }
+    }
     var detail = "$frameCount frames, ${kept.size} distinct (sample ${secs(sampleNs)} embed ${secs(embedNs)} ocr ${secs(ocrNs)})"
     val soundtrack: Track? = sound?.join() ?: if (wantsSound && !together) trackOrNote() else null
     soundtrack?.let { t -> segments += t.segments; t.detail?.let { detail += ", $it" } }

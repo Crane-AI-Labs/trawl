@@ -31,4 +31,18 @@
   <string name="models_update_body_light">Si vous l\'ajoutez, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ne devra pas relire vos fichiers.</string>
   <string name="models_update_get">Télécharger la mise à jour (%1$d MB)</string>
   <string name="models_update_not_now">Pas maintenant</string>
+  <!-- Choix d'économie de données (premier lancement et Réglages → Extensions) : deux lots de modèles. %1$d est la taille du lot en MB. -->
+  <string name="models_choice_title">Choisissez la taille du téléchargement</string>
+  <string name="models_choice_standard">Standard : %1$d MB (recommandé)</string>
+  <string name="models_choice_standard_hint">La meilleure recherche dans toutes les langues, avec la voix des vidéos et des messages vocaux.</string>
+  <string name="models_choice_save">Économie de données : %1$d MB</string>
+  <string name="models_choice_save_hint">Recherche en anglais tout aussi bonne ; recherche de photos en luganda et en swahili moins bonne ; pas de voix dans les vidéos ni les messages vocaux. Vous pourrez ajouter le reste plus tard.</string>
+  <string name="models_choice_switch_standard">Utiliser Standard (%1$d MB)</string>
+  <string name="models_choice_switch_save">Utiliser Économie de données (%1$d MB)</string>
+  <string name="models_pack_title">Votre lot de modèles</string>
+  <string name="models_pack_save_body">Vous avez le lot Économie de données. La recherche en anglais est tout aussi bonne ; la recherche de photos en luganda et en swahili est moins bonne, et la voix des vidéos et des messages vocaux n\'est pas lue.</string>
+  <string name="models_pack_standard_body">Vous avez le lot Standard : la meilleure recherche dans toutes les langues, avec la voix des vidéos et des messages vocaux.</string>
+  <string name="models_pack_upgrade_note">En ajoutant le lot Standard, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> relira vos fichiers avec le meilleur modèle. Votre liste de fichiers est conservée : la recherche par nom de fichier et la recherche de photos par aperçu rapide continuent de fonctionner entre-temps. Les mots dans les documents et les captures d\'écran, ainsi que la recherche par sens, reviennent à mesure que chaque fichier est relu, surtout pendant la charge du téléphone.</string>
+  <string name="models_pack_get_standard">Obtenir le lot Standard (%1$d MB)</string>
+  <string name="models_pack_upgraded">Le lot Standard est installé. Fermez <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> puis rouvrez-le pour l\'utiliser. Il relira ensuite vos fichiers avec le meilleur modèle. Les noms de fichiers et la recherche rapide de photos continuent de fonctionner entre-temps ; les mots dans les documents et les captures d\'écran reviennent à mesure que les fichiers sont relus.</string>
 </resources>

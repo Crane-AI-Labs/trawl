@@ -102,6 +102,7 @@ internal fun KeyEvent.toStroke(): Keystroke? {
     Key.F -> K.LETTER_F
     Key.C -> K.LETTER_C
     Key.A -> K.LETTER_A
+    Key.Y -> K.LETTER_Y
     Key.Menu -> K.MENU
     Key.F10 -> K.F10
     Key.Comma -> K.COMMA

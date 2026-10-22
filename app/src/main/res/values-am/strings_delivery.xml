@@ -31,4 +31,17 @@
   <string name="models_update_body_light">እሱን መጨመር <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ፋይሎችዎን እንደገና እንዲያነብ አያደርገውም።</string>
   <string name="models_update_get">ዝማኔውን ያግኙ (%1$d MB)</string>
   <string name="models_update_not_now">አሁን አይደለም</string>
+  <string name="models_choice_title">ምን ያህል እንደሚወርድ ይምረጡ</string>
+  <string name="models_choice_standard">መደበኛ፦ %1$d MB (የሚመከር)</string>
+  <string name="models_choice_standard_hint">በሁሉም ቋንቋ ምርጥ ፍለጋ፣ እንዲሁም በቪዲዮዎችና በድምፅ መልዕክቶች ውስጥ ያለ ንግግር።</string>
+  <string name="models_choice_save">ዳታ ቆጣቢ፦ %1$d MB</string>
+  <string name="models_choice_save_hint">የእንግሊዝኛ ፍለጋ ልክ እንደ መደበኛው ጥሩ ነው፤ የሉጋንዳና የስዋሂሊ ፎቶ ፍለጋ ደካማ ነው፤ በቪዲዮዎችና በድምፅ መልዕክቶች ውስጥ ያለ ንግግር አይነበብም። የቀረውን በኋላ ማከል ይችላሉ።</string>
+  <string name="models_choice_switch_standard">መደበኛውን ይጠቀሙ (%1$d MB)</string>
+  <string name="models_choice_switch_save">ዳታ ቆጣቢውን ይጠቀሙ (%1$d MB)</string>
+  <string name="models_pack_title">የእርስዎ የሞዴል ጥቅል</string>
+  <string name="models_pack_save_body">ዳታ ቆጣቢ ጥቅል አለዎት። የእንግሊዝኛ ፍለጋ ልክ እንደ መደበኛው ጥሩ ነው፤ የሉጋንዳና የስዋሂሊ ፎቶ ፍለጋ ደካማ ነው፤ ቪዲዮዎችና የድምፅ መልዕክቶችም ለንግግር አይነበቡም።</string>
+  <string name="models_pack_standard_body">መደበኛ ጥቅል አለዎት፦ በሁሉም ቋንቋ ምርጥ ፍለጋ፣ እንዲሁም በቪዲዮዎችና በድምፅ መልዕክቶች ውስጥ ያለ ንግግር።</string>
+  <string name="models_pack_upgrade_note">መደበኛ ጥቅል ማከል <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ፋይሎችዎን በተሻለው ሞዴል እንደገና እንዲያነብ ያደርገዋል። የፋይሎችዎ ዝርዝር አይጠፋም፤ በፋይል ስም መፈለግና ፎቶዎችን በፈጣን እይታ ማግኘት በዚህ ጊዜ መስራታቸውን ይቀጥላሉ። በሰነዶችና በቅጽበታዊ ገጽ እይታዎች ውስጥ ያሉ ቃላትና በትርጉም መፈለግ እያንዳንዱ ፋይል እንደገና ሲነበብ ይመለሳሉ፤ ስልኩ ቻርጅ ሲደረግ ይሻላል።</string>
+  <string name="models_pack_get_standard">መደበኛውን ጥቅል ያግኙ (%1$d MB)</string>
+  <string name="models_pack_upgraded">መደበኛው ጥቅል ተጭኗል። መጠቀም ለመጀመር <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>ን ዘግተው እንደገና ይክፈቱት። ከዚያ ፋይሎችዎን በተሻለው ሞዴል እንደገና ያነባል። በዚህ ጊዜ የፋይል ስሞችና ፈጣን የፎቶ ፍለጋ መስራታቸውን ይቀጥላሉ፤ በሰነዶችና በቅጽበታዊ ገጽ እይታዎች ውስጥ ያሉ ቃላት ፋይሎች ሲነበቡ ይመለሳሉ።</string>
 </resources>

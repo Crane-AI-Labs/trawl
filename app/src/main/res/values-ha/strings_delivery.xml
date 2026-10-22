@@ -31,4 +31,18 @@
   <string name="models_update_body_light">Ƙara shi ba zai sa manhajar <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ta sake karanta fayilolinku ba.</string>
   <string name="models_update_get">Sauke sabuntawar (%1$d MB)</string>
   <string name="models_update_not_now">Ba yanzu ba</string>
+
+  <string name="models_choice_title">Zaɓi yawan abin da za ku sauke</string>
+  <string name="models_choice_standard">Na al\'ada: %1$d MB (an ba da shawara)</string>
+  <string name="models_choice_standard_hint">Mafi kyawun bincike a kowane harshe, da magana a bidiyo da saƙonnin murya.</string>
+  <string name="models_choice_save">Adana data: %1$d MB</string>
+  <string name="models_choice_save_hint">Binciken Turanci daidai yake da kyau; binciken hotuna a Luganda da Swahili ya fi rauni; babu magana a bidiyo ko saƙonnin murya. Za ku iya ƙara sauran daga baya.</string>
+  <string name="models_choice_switch_standard">Yi amfani da Na al\'ada (%1$d MB)</string>
+  <string name="models_choice_switch_save">Yi amfani da Adana data (%1$d MB)</string>
+  <string name="models_pack_title">Kunshin samfuranku</string>
+  <string name="models_pack_save_body">Kuna da kunshin Adana data. Binciken Turanci daidai yake da kyau; binciken hotuna a Luganda da Swahili ya fi rauni, kuma ba a karanta magana a bidiyo da saƙonnin murya.</string>
+  <string name="models_pack_standard_body">Kuna da kunshin Na al\'ada: mafi kyawun bincike a kowane harshe, da magana a bidiyo da saƙonnin murya.</string>
+  <string name="models_pack_upgrade_note">Ƙara kunshin Na al\'ada zai sa manhajar <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ta sake karanta fayilolinku da samfuri mafi inganci. Jerin fayilolinku yana nan: bincike ta sunan fayil da gano hotuna ta duba da sauri suna ci gaba da aiki a halin yanzu. Kalmomin da ke cikin takardu da hotunan allo, da bincike ta ma\'ana, suna dawowa yayin da ake sake karanta kowane fayil, mafi kyau yayin da wayar ke caji.</string>
+  <string name="models_pack_get_standard">Sauke kunshin Na al\'ada (%1$d MB)</string>
+  <string name="models_pack_upgraded">An shigar da kunshin Na al\'ada. Rufe <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> sannan ku sake buɗe ta don fara amfani da shi. Daga nan za ta sake karanta fayilolinku da samfuri mafi inganci. Sunayen fayil da duba hotuna da sauri suna ci gaba da aiki a halin yanzu; kalmomin da ke cikin takardu da hotunan allo suna dawowa yayin da ake karanta fayilolin.</string>
 </resources>

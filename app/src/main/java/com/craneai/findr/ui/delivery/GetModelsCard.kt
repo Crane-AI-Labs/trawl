@@ -36,6 +36,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.craneai.findr.R
 import com.craneai.findr.core.DeliveryPhase
 import com.craneai.findr.core.DeliveryState
+import com.craneai.findr.core.ModelChoice
 import com.craneai.findr.core.Refusal
 import com.craneai.findr.ui.app.AccessState
 import com.craneai.findr.ui.common.HomeBanner
@@ -106,7 +107,7 @@ fun GetModelsCard(
         Spacer(Modifier.height(Sun.S4))
       }
       when (state.phase) {
-        DeliveryPhase.IDLE -> Idle(state, access, noBrowser, showBody, onGet, onChoose)
+        DeliveryPhase.IDLE -> Idle(state, access, noBrowser, showBody, onGet, onChoose, viewModel::setChoice)
         DeliveryPhase.DOWNLOADING -> Downloading(state)
         DeliveryPhase.INSTALLING -> Installing(state, viewModel::cancel)
         DeliveryPhase.REFUSED -> Refused(state, onGet, onChoose, viewModel::acknowledge)
@@ -118,9 +119,21 @@ fun GetModelsCard(
 }
 
 @Composable
-private fun Idle(state: DeliveryState, access: AccessState, noBrowser: Boolean, showBody: Boolean, onGet: () -> Unit, onChoose: () -> Unit) {
+private fun Idle(
+  state: DeliveryState,
+  access: AccessState,
+  noBrowser: Boolean,
+  showBody: Boolean,
+  onGet: () -> Unit,
+  onChoose: () -> Unit,
+  onChoice: (ModelChoice) -> Unit,
+) {
   if (showBody) {
     Text(appString(R.string.models_body, state.sizeMb), style = SunType.Body, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    Spacer(Modifier.height(Sun.S12))
+  }
+  if (showsChoice(state)) {
+    ModelChoicePicker(state, onChoice)
     Spacer(Modifier.height(Sun.S12))
   }
   SunButton(onClick = onGet, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.models_get, state.sizeMb), style = SunType.Label) }
@@ -144,8 +157,11 @@ private fun Idle(state: DeliveryState, access: AccessState, noBrowser: Boolean, 
   )
 }
 
+/** The pack choice is asked on a phone that can hold either pack and has no signed pack yet; a 2 GB phone is on Save data without being asked. */
+internal fun showsChoice(state: DeliveryState): Boolean = state.choiceOffered && state.installedChoice == null
+
 @Composable
-private fun Downloading(state: DeliveryState) {
+internal fun Downloading(state: DeliveryState) {
   Text(stringResource(R.string.models_downloading, formatBytes(state.doneBytes)), style = SunType.Body, color = MaterialTheme.colorScheme.onSurface)
   Spacer(Modifier.height(Sun.S8))
   ProgressBar(null)
@@ -154,7 +170,7 @@ private fun Downloading(state: DeliveryState) {
 }
 
 @Composable
-private fun Installing(state: DeliveryState, onCancel: () -> Unit) {
+internal fun Installing(state: DeliveryState, onCancel: () -> Unit) {
   val fraction = if (state.totalBytes > 0) (state.doneBytes.toFloat() / state.totalBytes).coerceIn(0f, 1f) else null
   Text(
     if (fraction != null) stringResource(R.string.models_installing_pct, (fraction * 100).toInt()) else stringResource(R.string.models_installing),
@@ -167,7 +183,7 @@ private fun Installing(state: DeliveryState, onCancel: () -> Unit) {
 }
 
 @Composable
-private fun refusalText(state: DeliveryState): String = when (state.refusal) {
+internal fun refusalText(state: DeliveryState): String = when (state.refusal) {
   Refusal.WRONG_CLASS -> stringResource(R.string.models_refused_wrong_class)
   Refusal.NOT_SIGNED, Refusal.BAD_SIGNATURE, Refusal.BAD_MANIFEST -> appString(R.string.models_refused_not_signed)
   Refusal.OLDER_VERSION -> appString(R.string.models_refused_older)
@@ -187,7 +203,7 @@ private fun Refused(state: DeliveryState, onGet: () -> Unit, onChoose: () -> Uni
 }
 
 @Composable
-private fun Done(state: DeliveryState, viewModel: DeliveryViewModel, confirmDone: Boolean) {
+internal fun Done(state: DeliveryState, viewModel: DeliveryViewModel, confirmDone: Boolean) {
   if (confirmDone) {
     Text(
       if (state.refusal == Refusal.ALREADY_INSTALLED) stringResource(R.string.models_done_already) else stringResource(R.string.models_done),
@@ -228,6 +244,18 @@ private fun ModelsBanner(
   val close = stringResource(R.string.report_close)
   val get: @Composable () -> Unit = { SunButton(onClick = onGet) { Text(stringResource(R.string.models_get, state.sizeMb), style = SunType.Label) } }
   val choose: @Composable () -> Unit = { SunTextButton(onClick = onChoose) { Text(stringResource(R.string.models_choose), style = SunType.Label) } }
+  // The strip has no room for two rows: one text button switches to the other pack, naming its size.
+  val switch: @Composable () -> Unit = {
+    if (showsChoice(state)) {
+      val toSave = state.choice == ModelChoice.STANDARD
+      SunTextButton(onClick = { viewModel.setChoice(if (toSave) ModelChoice.SAVE_DATA else ModelChoice.STANDARD) }) {
+        Text(
+          if (toSave) stringResource(R.string.models_choice_switch_save, state.saveDataMb) else stringResource(R.string.models_choice_switch_standard, state.standardMb),
+          style = SunType.Label,
+        )
+      }
+    }
+  }
   when (state.phase) {
     DeliveryPhase.IDLE -> HomeBanner(
       title = stringResource(R.string.models_title),
@@ -235,7 +263,7 @@ private fun ModelsBanner(
       body = if (noBrowser) stringResource(R.string.models_no_browser) else if (access.allFiles) appString(R.string.models_hint_wait) else appString(R.string.models_hint_access),
       dismissLabel = close,
       onDismiss = onHide,
-    ) { get(); choose() }
+    ) { get(); choose(); switch() }
     DeliveryPhase.DOWNLOADING -> HomeBanner(
       title = stringResource(R.string.models_downloading, formatBytes(state.doneBytes)),
       modifier = modifier,
@@ -279,7 +307,7 @@ private fun ModelsBanner(
 }
 
 @Composable
-private fun ProgressBar(fraction: Float?) {
+internal fun ProgressBar(fraction: Float?) {
   val t = LocalSunlight.current
   val bar = Modifier.fillMaxWidth().height(14.dp).clip(CircleShape).sunBorder(CircleShape)
   if (fraction != null) {

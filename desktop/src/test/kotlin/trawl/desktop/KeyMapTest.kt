@@ -140,6 +140,15 @@ class KeyMapTest {
     assertEquals(KeyAction.ShowInFolder, map(key(K.ENTER, ctrl = true), q), "command shortcuts still work over Quick Look")
   }
 
+  @Test fun commandYPreviewsAsInTheQuickPanelAndABareYIsALetter() {
+    assertEquals(KeyAction.ToggleQuickLook, map(key(K.LETTER_Y, 'y'.code, ctrl = true)))
+    assertEquals(KeyAction.ToggleQuickLook, map(key(K.LETTER_Y, 'y'.code, ctrl = true), ctx(quickLook = true, zone = FocusZone.LIST)), "the same key closes it")
+    assertEquals(KeyAction.ToggleQuickLook, map(key(K.LETTER_Y, 'y'.code, meta = true), ctx(isMac = true)))
+    assertNull(map(key(K.LETTER_Y, 'y'.code, ctrl = true), ctx(hasResults = false)))
+    assertEquals(KeyAction.TypeIntoSearch('y'.code), map(key(K.LETTER_Y, 'y'.code), ctx(zone = FocusZone.LIST)))
+    assertNull(map(key(K.LETTER_Y, 'y'.code), ctx(zone = FocusZone.SEARCH)), "in the search field a y is typed by the field")
+  }
+
   @Test fun typingAnywhereGoesToTheSearchField() {
     assertEquals(KeyAction.TypeIntoSearch('a'.code), map(key(K.CHAR, 'a'.code), ctx(zone = FocusZone.LIST)))
     assertEquals(KeyAction.TypeIntoSearch('k'.code), map(key(K.LETTER_K, 'k'.code), ctx(zone = FocusZone.OTHER)), "a bare K is a letter")

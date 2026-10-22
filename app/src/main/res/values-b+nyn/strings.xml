@@ -456,4 +456,16 @@
   <string name="action_copy_file">Kopa %1$s</string>
   <string name="preview_hidden_words">Eky\'obusherekyerize · koma oreebe</string>
   <string name="filter_group">Yoreka fayiro ki</string>
+  <plurals name="meter_sub_up_to_date_unreadable">
+    <item quantity="one">Fayiro %1$s zeeteekire kusherurwamu. %2$d teshomeka, kyonka noobaasa kugizoora ahabw\'eiziina.</item>
+    <item quantity="other">Fayiro %1$s zeeteekire kusherurwamu. %2$d zitashomeka, kyonka noobaasa kuzizoora ahabw\'amaziina.</item>
+  </plurals>
+  <plurals name="sheet_too_large">
+    <item quantity="one">Fayiro %1$d yaabaire nkooto ahabw\'memori y\'esimu egi, n\'ahabw\'ekyo yaarekirwa. Ebindi byona nibisherurwa.</item>
+    <item quantity="other">Fayiro %1$d zaabaire nkooto ahabw\'memori y\'esimu egi, n\'ahabw\'ekyo zaarekirwa. Ebindi byona nibisherurwa.</item>
+  </plurals>
+  <plurals name="sheet_unreadable">
+    <item quantity="one">Fayiro %1$d teshomeka (ehendekire, nari omuringo gw\'esimu egi etarikubaasa kuguruha). Noobaasa kugizoora ahabw\'eiziina.</item>
+    <item quantity="other">Fayiro %1$d zitashomeka (zihendekire, nari omuringo gw\'esimu egi etarikubaasa kuguruha). Noobaasa kuzizoora ahabw\'amaziina.</item>
+  </plurals>
 </resources>

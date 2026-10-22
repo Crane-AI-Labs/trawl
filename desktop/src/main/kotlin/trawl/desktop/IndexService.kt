@@ -742,6 +742,7 @@ class IndexService(
     val d = decoder ?: return
     val e = embedder ?: return
     val models = object : MediaEmbedder {
+      override val vision = !e.textOnly
       override fun image(jpeg: ByteArray) = e.image(jpeg)
       override fun document(text: String) = e.document(text)
     }

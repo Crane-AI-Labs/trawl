@@ -463,4 +463,19 @@
   <string name="action_copy_file">Copiar %1$s</string>
   <string name="preview_hidden_words">Parece privado · toque para ver</string>
   <string name="filter_group">Mostrar quais arquivos</string>
+  <plurals name="meter_sub_up_to_date_unreadable">
+    <item quantity="one">%1$s arquivos estão prontos para a busca. %2$d não pôde ser lido, mas você ainda pode encontrá-lo pelo nome.</item>
+    <item quantity="many">%1$s arquivos estão prontos para a busca. %2$d não puderam ser lidos, mas você ainda pode encontrá-los pelo nome.</item>
+    <item quantity="other">%1$s arquivos estão prontos para a busca. %2$d não puderam ser lidos, mas você ainda pode encontrá-los pelo nome.</item>
+  </plurals>
+  <plurals name="sheet_too_large">
+    <item quantity="one">%1$d arquivo era grande demais para a memória deste celular e ficou de fora. O resto pode ser buscado.</item>
+    <item quantity="many">%1$d arquivos eram grandes demais para a memória deste celular e ficaram de fora. O resto pode ser buscado.</item>
+    <item quantity="other">%1$d arquivos eram grandes demais para a memória deste celular e ficaram de fora. O resto pode ser buscado.</item>
+  </plurals>
+  <plurals name="sheet_unreadable">
+    <item quantity="one">%1$d arquivo não pôde ser lido (danificado ou em um formato que este celular não abre). Você ainda pode encontrá-lo pelo nome.</item>
+    <item quantity="many">%1$d arquivos não puderam ser lidos (danificados ou em um formato que este celular não abre). Você ainda pode encontrá-los pelo nome.</item>
+    <item quantity="other">%1$d arquivos não puderam ser lidos (danificados ou em um formato que este celular não abre). Você ainda pode encontrá-los pelo nome.</item>
+  </plurals>
 </resources>

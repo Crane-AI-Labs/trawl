@@ -84,7 +84,7 @@ object SecureWindow {
   }
 
   /** The NSWindow behind an AWT window, through the JDK's own peer classes (they need `--add-opens`, see build.gradle.kts). */
-  private fun nsWindowOf(window: Window): Pointer? {
+  internal fun nsWindowOf(window: Window): Pointer? {
     val accessor = Class.forName("sun.awt.AWTAccessor").getMethod("getComponentAccessor").invoke(null)
     val accessorType = Class.forName("sun.awt.AWTAccessor\$ComponentAccessor")
     val peer = accessorType.getMethod("getPeer", java.awt.Component::class.java).invoke(accessor, window) ?: return null

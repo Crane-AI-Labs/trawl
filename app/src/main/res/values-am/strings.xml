@@ -456,4 +456,16 @@
   <string name="action_copy_file">%1$sን ቅዳ</string>
   <string name="preview_hidden_words">የግል ይመስላል · ለማየት ንካ</string>
   <string name="filter_group">የትኞቹ ፋይሎች ይታዩ</string>
+  <plurals name="meter_sub_up_to_date_unreadable">
+    <item quantity="one">%1$s ፋይሎች ለመፈለግ ዝግጁ ናቸው። %2$d ማንበብ አልተቻለም፣ ግን አሁንም በስሙ ማግኘት ይችላሉ።</item>
+    <item quantity="other">%1$s ፋይሎች ለመፈለግ ዝግጁ ናቸው። %2$d ማንበብ አልተቻለም፣ ግን አሁንም በስማቸው ማግኘት ይችላሉ።</item>
+  </plurals>
+  <plurals name="sheet_too_large">
+    <item quantity="one">%1$d ፋይል ለዚህ ስልክ ማህደረ ትውስታ በጣም ትልቅ ስለነበር ተዘሏል። የተቀረው ሁሉ ሊፈለግ ይችላል።</item>
+    <item quantity="other">%1$d ፋይሎች ለዚህ ስልክ ማህደረ ትውስታ በጣም ትልቅ ስለነበሩ ተዘለዋል። የተቀረው ሁሉ ሊፈለግ ይችላል።</item>
+  </plurals>
+  <plurals name="sheet_unreadable">
+    <item quantity="one">%1$d ፋይል ማንበብ አልተቻለም (ተበላሽቷል፣ ወይም ይህ ስልክ መክፈት የማይችለው ዓይነት ነው)። አሁንም በስሙ ማግኘት ይችላሉ።</item>
+    <item quantity="other">%1$d ፋይሎች ማንበብ አልተቻለም (ተበላሽተዋል፣ ወይም ይህ ስልክ መክፈት የማይችላቸው ዓይነት ናቸው)። አሁንም በስማቸው ማግኘት ይችላሉ።</item>
+  </plurals>
 </resources>

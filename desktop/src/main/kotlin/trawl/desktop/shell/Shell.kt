@@ -70,7 +70,10 @@ class Shell(
   private val _panelRaise = MutableStateFlow(0)
   val panelRaise: StateFlow<Int> = _panelRaise.asStateFlow()
 
-  val quickApi: QuickSearchApi = ControllerQuickSearch(controller)
+  /** The system's own big preview (macOS Quick Look), or none on Windows and Linux. */
+  val fullPreview: FullPreview = QuickLookMac.forOs(os, dataDir = { dataDir })
+
+  val quickApi: QuickSearchApi = ControllerQuickSearch(controller, full = fullPreview)
   val panel = QuickPanelState(quickApi, scope, onClose = ::hidePanel)
 
   // The press arrives on a native thread; everything it touches is a StateFlow, so it is safe to act right there.
@@ -84,6 +87,13 @@ class Shell(
   init {
     instance?.listen(::handle)
     if (!startWithMain) showPanel()
+    scope.launch {
+      var was = false
+      fullPreview.open.collect { now ->
+        if (was && !now && _panelVisible.value) _panelRaise.update { it + 1 }
+        was = now
+      }
+    }
     scope.launch(Dispatchers.IO) { hotkey.apply(_prefs.value) }
     scope.launch {
       controller.index.collect { ui ->
@@ -109,7 +119,16 @@ class Shell(
     _panelRaise.update { it + 1 }
   }
 
-  fun hidePanel() { _panelVisible.value = false }
+  fun hidePanel() {
+    panel.dismissPreviews()
+    _panelVisible.value = false
+  }
+
+  /**
+   * True while the system's preview (Quick Look) is on screen. It is another app's window, so the panel loses focus to it; that must not
+   * close the panel (the person is still using it). When the system preview goes, the panel comes back to the front with the keyboard.
+   */
+  val autoHideSuspended: Boolean get() = fullPreview.open.value
 
   fun togglePanel() { if (_panelVisible.value) hidePanel() else showPanel() }
 

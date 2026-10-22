@@ -31,4 +31,17 @@
   <string name="models_update_body_light">Ukiiongeza, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> haitasoma mafaili yako tena.</string>
   <string name="models_update_get">Pata sasisho (%1$d MB)</string>
   <string name="models_update_not_now">Si sasa</string>
+  <string name="models_choice_title">Chagua kiasi cha kupakua</string>
+  <string name="models_choice_standard">Standard: %1$d MB (inapendekezwa)</string>
+  <string name="models_choice_standard_hint">Utafutaji bora zaidi katika kila lugha, pamoja na maneno yaliyo kwenye video na ujumbe wa sauti.</string>
+  <string name="models_choice_save">Okoa data: %1$d MB</string>
+  <string name="models_choice_save_hint">Utafutaji wa Kiingereza ni mzuri vilevile; utafutaji wa picha kwa Kiluganda na Kiswahili ni dhaifu zaidi; hakuna maneno kutoka kwenye video wala ujumbe wa sauti. Unaweza kuongeza vilivyobaki baadaye.</string>
+  <string name="models_choice_switch_standard">Tumia Standard (%1$d MB)</string>
+  <string name="models_choice_switch_save">Tumia Okoa data (%1$d MB)</string>
+  <string name="models_pack_title">Kifurushi chako cha modeli</string>
+  <string name="models_pack_save_body">Una kifurushi cha Okoa data. Utafutaji wa Kiingereza ni mzuri vilevile; utafutaji wa picha kwa Kiluganda na Kiswahili ni dhaifu zaidi, na video na ujumbe wa sauti hazisomwi kwa maneno yaliyomo.</string>
+  <string name="models_pack_standard_body">Una kifurushi cha Standard: utafutaji bora zaidi katika kila lugha, pamoja na maneno yaliyo kwenye video na ujumbe wa sauti.</string>
+  <string name="models_pack_upgrade_note">Ukiongeza kifurushi cha Standard, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> itasoma mafaili yako tena kwa modeli iliyo bora zaidi. Orodha ya mafaili yako inabaki: kutafuta kwa jina la faili na kupata picha kwa kuziangalia haraka kunaendelea kufanya kazi wakati huo. Maneno yaliyomo ndani ya hati na picha za skrini, na utafutaji kwa maana, hurudi kadiri kila faili linavyosomwa tena, vizuri zaidi simu inapochajiwa.</string>
+  <string name="models_pack_get_standard">Pata kifurushi cha Standard (%1$d MB)</string>
+  <string name="models_pack_upgraded">Kifurushi cha Standard kimesakinishwa. Funga <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kisha ufungue tena ili kuanza kukitumia. Baada ya hapo itasoma mafaili yako tena kwa modeli iliyo bora zaidi. Majina ya mafaili na utafutaji wa haraka wa picha vinaendelea kufanya kazi wakati huo; maneno yaliyomo ndani ya hati na picha za skrini hurudi kadiri mafaili yanavyosomwa.</string>
 </resources>

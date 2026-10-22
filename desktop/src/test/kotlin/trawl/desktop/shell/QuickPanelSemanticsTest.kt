@@ -90,6 +90,7 @@ class QuickPanelSemanticsTest {
 
   private fun androidx.compose.ui.test.ComposeUiTest.onAllRows() =
     onAllNodes(hasClickAction() and hasContentDescription("invoice-", substring = true)).fetchSemanticsNodes()
+      .filter { n -> n.config.getOrNull(SemanticsProperties.ContentDescription)?.joinToString().orEmpty().startsWith("invoice-") }   // not each row's "Preview invoice-…" button
 
   @Test fun everyClickableThingHasANameAndCanTakeFocus() = runComposeUiTest {
     val r = rig(files)
@@ -143,7 +144,7 @@ class QuickPanelSemanticsTest {
       setContent { Panel(r, Os.WINDOWS) }
       waitUntil(timeoutMillis = 3000) { r.state.hits.value.size == 3 }
       waitForIdle()
-      onNode(hasContentDescription("invoice-march.pdf", substring = true)).assertIsSelected()
+      onNode(androidx.compose.ui.test.SemanticsMatcher("the row for invoice-march.pdf") { it.config.getOrNull(SemanticsProperties.ContentDescription)?.joinToString().orEmpty().startsWith("invoice-march.pdf") }).assertIsSelected()
     } finally { r.scope.cancel() }
   }
 

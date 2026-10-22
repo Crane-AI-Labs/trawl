@@ -456,4 +456,16 @@
   <string name="action_copy_file">Kopy %1$s</string>
   <string name="preview_hidden_words">Nen calo me mung · dii me neno</string>
   <string name="filter_group">Nyut fayil mene</string>
+  <plurals name="meter_sub_up_to_date_unreadable">
+    <item quantity="one">Fayil %1$s tye atera pi yenyo. %2$d pe twero kwano, ento pud itwero nongo ki nying.</item>
+    <item quantity="other">Fayil %1$s tye atera pi yenyo. %2$d pe twero kwano, ento pud itwero nongo gi ki nying.</item>
+  </plurals>
+  <plurals name="sheet_too_large">
+    <item quantity="one">Fayil %1$d dit dok pe romo i memori me cim man, pi meno kiweko woko. Jami mukene ducu twero yenyo.</item>
+    <item quantity="other">Fayil %1$d dit dok pe romo i memori me cim man, pi meno kiweko woko. Jami mukene ducu twero yenyo.</item>
+  </plurals>
+  <plurals name="sheet_unreadable">
+    <item quantity="one">Fayil %1$d pe twero kwano (obale, onyo kit ma cim man pe twero yabo). Pud itwero nongo ki nying.</item>
+    <item quantity="other">Fayil %1$d pe twero kwano (obale, onyo kit ma cim man pe twero yabo). Pud itwero nongo gi ki nying.</item>
+  </plurals>
 </resources>

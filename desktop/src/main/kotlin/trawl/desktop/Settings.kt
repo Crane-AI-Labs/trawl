@@ -1,6 +1,7 @@
 package trawl.desktop
 
 import com.craneai.findr.core.LearningSpeed
+import com.craneai.findr.core.ModelChoice
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
@@ -63,6 +64,8 @@ data class Settings(
   /** Text size for the whole app (see [TextSize]). */
   val textSize: TextSize = TextSize.DEFAULT,
   val contrast: ContrastChoice = ContrastChoice.SYSTEM,
+  /** Which model pack the person wants (Standard or Save data), or null when they have not said: the pack on the computer, then Standard, decide. */
+  val modelChoice: ModelChoice? = null,
 )
 
 /** `settings.json` in the data folder, written through a temp file and a rename so a crash never leaves half a file. */
@@ -87,6 +90,7 @@ class SettingsStore(private val dir: File) {
       language = o.optString("language").takeIf { it.isNotBlank() },
       textSize = TextSize.of(o.optString("textSize")),
       contrast = ContrastChoice.of(o.optString("contrast")),
+      modelChoice = ModelChoice.parse(o.optString("modelChoice")),
     )
   } catch (_: Exception) {
     Settings()   // no file yet, or one we cannot read: start from the first-run screen
@@ -99,7 +103,7 @@ class SettingsStore(private val dir: File) {
       JSONObject().put("onboarded", s.onboarded).put("folders", JSONArray(s.folders)).put("theme", s.theme.id)
         .put("modelsDeclined", s.modelsDeclined).put("indexPhotos", s.indexPhotos).put("indexScreenshots", s.indexScreenshots)
         .put("indexDocuments", s.indexDocuments).put("indexVideos", s.indexVideos).put("indexAudio", s.indexAudio).put("excludedFolders", JSONArray(s.excludedFolders)).put("learningSpeed", s.learningSpeed.key)
-        .put("indexPaused", s.indexPaused).put("language", s.language ?: "").put("textSize", s.textSize.id).put("contrast", s.contrast.id).toString(2),
+        .put("indexPaused", s.indexPaused).put("language", s.language ?: "").put("textSize", s.textSize.id).put("contrast", s.contrast.id).put("modelChoice", s.modelChoice?.id ?: "").toString(2),
     )
     Files.move(part.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING)
   }

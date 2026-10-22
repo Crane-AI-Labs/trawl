@@ -3,7 +3,7 @@ package trawl.desktop.ui
 import trawl.desktop.Screen
 
 /** The keys the window cares about; everything else is [OTHER] (a letter is [CHAR] and carries its character). */
-enum class K { UP, DOWN, LEFT, RIGHT, HOME, END, PAGE_UP, PAGE_DOWN, ENTER, SPACE, ESCAPE, BACKSPACE, TAB, LETTER_K, LETTER_F, LETTER_C, LETTER_A, COMMA, PLUS, MINUS, ZERO, MENU, F10, CHAR, OTHER }
+enum class K { UP, DOWN, LEFT, RIGHT, HOME, END, PAGE_UP, PAGE_DOWN, ENTER, SPACE, ESCAPE, BACKSPACE, TAB, LETTER_K, LETTER_F, LETTER_C, LETTER_A, LETTER_Y, COMMA, PLUS, MINUS, ZERO, MENU, F10, CHAR, OTHER }
 
 /** A key press stripped of Compose types, so the whole shortcut table is tested without a window. */
 data class Keystroke(
@@ -107,6 +107,8 @@ object KeyMap {
           ctx.zone == FocusZone.SEARCH && ctx.textSelected -> null
           else -> KeyAction.CopyFiles
         }
+        // Ctrl/Cmd+Y previews, as in the quick panel (Space does too, but only where it cannot be a space in a query)
+        k.key == K.LETTER_Y && !k.shift && !k.alt -> if (ctx.hasResults) KeyAction.ToggleQuickLook else null
         k.key == K.LETTER_A && !k.shift -> if (ctx.hasResults && ctx.zone == FocusZone.LIST) KeyAction.SelectAll else null
         else -> null
       }
@@ -165,7 +167,7 @@ object KeyMap {
         else -> KeyAction.FocusSearch
       }
       K.BACKSPACE -> if (ctx.zone == FocusZone.SEARCH) null else KeyAction.TypeIntoSearch(8)
-      K.CHAR, K.LETTER_K, K.LETTER_F, K.LETTER_C, K.LETTER_A, K.COMMA, K.PLUS, K.MINUS, K.ZERO -> if (ctx.zone == FocusZone.SEARCH || k.char == 0) null else KeyAction.TypeIntoSearch(k.char)
+      K.CHAR, K.LETTER_K, K.LETTER_F, K.LETTER_C, K.LETTER_A, K.LETTER_Y, K.COMMA, K.PLUS, K.MINUS, K.ZERO -> if (ctx.zone == FocusZone.SEARCH || k.char == 0) null else KeyAction.TypeIntoSearch(k.char)
       else -> null
     }
   }

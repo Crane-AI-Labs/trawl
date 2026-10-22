@@ -207,8 +207,11 @@ fun runWindow(args: List<String> = emptyList()) {
         runCatching { if (java.awt.Taskbar.isTaskbarSupported()) java.awt.Taskbar.getTaskbar().iconImage = Brand.icon(512) }
       }
       // --- shell (Package D): come to the front when asked, know whether we have the focus, and make Cmd+Q / Dock "Quit" really quit. ---
+      // The same verified raise as the quick panel (tray click, a second launch, "Open Trawl" from the panel), minus the parts that float it
+      // over full-screen apps: this is an ordinary window.
+      val mainRaiser = remember { trawl.desktop.shell.PanelRaiser.forWindow(shell.os, onSettled = { n, ok -> controller.appLog.log("main window raise: $n attempts, focused ${if (ok) "yes" else "no"}") }, overlay = false) }
       LaunchedEffect(mainRaise) {
-        if (mainRaise > 0) { state.isMinimized = false; trawl.desktop.ui.quick.bringForward(window) }
+        if (mainRaise > 0) { state.isMinimized = false; mainRaiser.raise(window) }
       }
       DisposableEffect(window) {
         val focus = object : java.awt.event.WindowAdapter() {
