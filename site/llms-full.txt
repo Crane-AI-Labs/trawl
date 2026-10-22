@@ -4,7 +4,7 @@
 
 This file repeats the facts and the questions from https://trawl.craneailabs.com/ in one place. The web page is the source: if they ever differ, the web page is right.
 
-Status on 2026-10-22: version 1.0.0 is released and free to download. The Android app is at https://github.com/Crane-AI-Labs/trawl/releases/download/v1.0.0/trawl-1.0.0.apk, with Trawl Go beside it at https://github.com/Crane-AI-Labs/trawl/releases/download/v1.0.0/trawl-go-1.0.0.apk. The search models are a separate download: https://github.com/Crane-AI-Labs/trawl/releases/download/models-v1/trawl-models.zip (standard, 670 MB) and https://github.com/Crane-AI-Labs/trawl/releases/download/models-v1/trawl-models-lite.zip (lite, 304 MB). The source code is at https://github.com/Crane-AI-Labs/trawl under the Apache 2.0 licence.
+Status on 2026-10-22: version 1.0.1 is released and free to download. The Android app is at https://github.com/Crane-AI-Labs/trawl/releases/download/v1.0.1/trawl-1.0.1.apk, with Trawl Go beside it at https://github.com/Crane-AI-Labs/trawl/releases/download/v1.0.1/trawl-go-1.0.1.apk. The search models are a separate download: https://github.com/Crane-AI-Labs/trawl/releases/download/models-v1/trawl-models.zip (standard, 670 MB) and https://github.com/Crane-AI-Labs/trawl/releases/download/models-v1/trawl-models-lite.zip (Save data, 304 MB). The source code is at https://github.com/Crane-AI-Labs/trawl under the Apache 2.0 licence.
 
 "Trawl" here means Trawl by Crane AI Labs, the Android file-search app. It is unrelated to other software or services that share the name.
 
@@ -42,9 +42,9 @@ Measured for Trawl 1.0.0 on a Samsung Galaxy A06 with 4 GB of memory. The method
 ## Editions and requirements
 
 - Trawl: 64-bit phones with Android 11 or newer, 2 GB of memory or more, about 47 MB.
-- Models for Trawl: Standard (670 MB, for phones with 3 GB of memory or more) and Lite (304 MB, for 64-bit phones with 2 GB of memory). They come as one separate download that the user's browser fetches. Trawl's Get the models picks the right one.
+- Models for Trawl: Standard (670 MB, for phones with 3 GB of memory or more) and Save data (304 MB, for any 64-bit phone that should download less; phones with 2 GB of memory always use it; no speech search, weaker Luganda and Swahili photo search). They come as one separate download that the user's browser fetches. Trawl's Get the models picks the right one.
 - Trawl Go: for 32-bit Android Go phones, about 21 MB, Android 11 or newer. It finds files by their names and the words in them, including the words in photos and screenshots, and needs no model download. It does not search by meaning or listen to recordings.
-- Free space: about 1 GB with the standard models, about 500 MB with lite. The index grows with the files.
+- Free space: about 1 GB with the standard models, about 500 MB with Save data. The index grows with the files.
 - Internet: once, to download the models. After that, never.
 - Search models: EmbeddingGemma 2 by Google (Apache 2.0) runs on the phone.
 - Languages: English works best today. Luganda and Swahili are being measured, not claimed.
@@ -56,7 +56,7 @@ Will it work on my phone?
 If your phone is 64-bit and runs Android 11 or newer, yes. Most phones sold in recent years are 64-bit. Android Go phones (often 2 GB, many itel models) are usually 32-bit: they need Trawl Go, which finds files by name and by the words in them. If Android says "App not installed", the phone is most likely one of these.
 
 Will it use my data bundle?
-Only once, when your browser downloads the models (670 MB, or 304 MB for lite). Trawl itself has no internet permission, so it can't use data at all.
+Only once, when your browser downloads the models (670 MB, or 304 MB with Save data). Trawl itself has no internet permission, so it can't use data at all.
 
 How long until it finds everything?
 File names and words in documents work within minutes. Photos get a quick look while you use the phone, and the full reading, which gives the best matches, happens while it charges. Trawl shows how far it has got.
@@ -64,8 +64,8 @@ File names and words in documents work within minutes. Photos get a quick look w
 Will it drain my battery?
 It shouldn't. The heavy work waits for the charger, and on battery Trawl only does light work.
 
-Which should I get, standard or lite?
-Standard, unless your phone has 2 GB of memory; then lite. Trawl's Get the models picks for you, and a file for the wrong kind of phone is refused, so you can't get it wrong.
+Which should I get, Standard or Save data?
+Standard, if you can: it is the best search in every language and it hears speech in videos and voice notes. Save data downloads less than half as much: English search is just as good, but Luganda and Swahili photo search is weaker and there is no speech search. You can move to Standard later and keep your index. A phone with 2 GB of memory always uses Save data, and a file for the wrong kind of phone is refused, so you can't get it wrong.
 
 Can I delete what Trawl has learned?
 Yes. Settings > Delete everything Trawl knows removes it all. Your own files stay exactly as they are.

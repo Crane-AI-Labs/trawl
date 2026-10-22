@@ -2,7 +2,7 @@
 
 > Trawl by Crane AI Labs is an Android app that finds any photo, screenshot, document, video or voice note on the phone by describing it. It runs entirely on the phone: the app has no internet permission, needs no account and shows no ads.
 
-Status on 2026-10-22: version 1.0.0 is released and free to download. The Android app is at https://github.com/Crane-AI-Labs/trawl/releases/download/v1.0.0/trawl-1.0.0.apk, with Trawl Go beside it at https://github.com/Crane-AI-Labs/trawl/releases/download/v1.0.0/trawl-go-1.0.0.apk. The search models are a separate download: https://github.com/Crane-AI-Labs/trawl/releases/download/models-v1/trawl-models.zip (standard, 670 MB) and https://github.com/Crane-AI-Labs/trawl/releases/download/models-v1/trawl-models-lite.zip (lite, 304 MB). The source code is at https://github.com/Crane-AI-Labs/trawl under the Apache 2.0 licence.
+Status on 2026-10-22: version 1.0.1 is released and free to download. The Android app is at https://github.com/Crane-AI-Labs/trawl/releases/download/v1.0.1/trawl-1.0.1.apk, with Trawl Go beside it at https://github.com/Crane-AI-Labs/trawl/releases/download/v1.0.1/trawl-go-1.0.1.apk. The search models are a separate download: https://github.com/Crane-AI-Labs/trawl/releases/download/models-v1/trawl-models.zip (standard, 670 MB) and https://github.com/Crane-AI-Labs/trawl/releases/download/models-v1/trawl-models-lite.zip (Save data, 304 MB). The source code is at https://github.com/Crane-AI-Labs/trawl under the Apache 2.0 licence.
 
 "Trawl" here means Trawl by Crane AI Labs, the Android file-search app. It is unrelated to other software or services that share the name.
 
@@ -18,7 +18,7 @@ Status on 2026-10-22: version 1.0.0 is released and free to download. The Androi
 
 - What it does: finds photos, screenshots, documents, videos and voice notes on the phone by what is in them, not by file name. Photos are found by what they show, screenshots by the words on them, documents by what they say, videos by what happens and is said in them, voice notes by what was said.
 - Privacy: the Android app has no INTERNET permission, so it cannot send files, searches or anything it learns off the phone. No account, no ads, no analytics. The website sets no cookies and loads nothing from other sites.
-- Search models: EmbeddingGemma 2 (Google, Apache 2.0) runs on the phone. The models are a separate download (670 MB standard, 304 MB lite) fetched through the user's browser.
+- Search models: EmbeddingGemma 2 (Google, Apache 2.0) runs on the phone. The models are a separate download (670 MB Standard, 304 MB Save data) fetched through the user's browser.
 - Editions: Trawl for 64-bit phones on Android 11 or newer (about 47 MB), and Trawl Go for 32-bit Android Go phones (about 21 MB), which searches by file names and the words in files and needs no model download.
 - Measured on a Samsung Galaxy A06 with 4 GB of memory: 42 seconds from install to the first search, 126 photos a minute made findable, 0.9 seconds from typing to answers, under 1% battery in 3 hours unplugged with Trawl idle.
 - Languages: English works best today. Luganda and Swahili are being measured, not claimed.

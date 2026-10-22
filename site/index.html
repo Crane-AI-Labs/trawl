@@ -59,9 +59,9 @@
       "description": "Trawl finds any photo, screenshot, document, video or voice note on an Android phone by describing it. It runs entirely on the phone: the app has no internet permission, needs no account and shows no ads.",
       "applicationCategory": "UtilitiesApplication",
       "operatingSystem": "Android 11 or newer",
-      "softwareVersion": "1.0.0",
-      "downloadUrl": "https://github.com/Crane-AI-Labs/trawl/releases/download/v1.0.0/trawl-1.0.0.apk",
-      "installUrl": "https://github.com/Crane-AI-Labs/trawl/releases/tag/v1.0.0",
+      "softwareVersion": "1.0.1",
+      "downloadUrl": "https://github.com/Crane-AI-Labs/trawl/releases/download/v1.0.1/trawl-1.0.1.apk",
+      "installUrl": "https://github.com/Crane-AI-Labs/trawl/releases/tag/v1.0.1",
       "fileSize": "47 MB",
       "isAccessibleForFree": true,
       "offers": {
@@ -93,8 +93,8 @@
   (stills and one clip from Mixkit, see CREDITS.md). Nothing is loaded from any other site: no fonts, scripts, analytics or trackers.
   Colours, type and shapes are the app's Sunlight tokens; the mark is Trawl's (Crane AI Labs' X and diamonds, one arm a handle).
 
-  Download links: GitHub Releases on github.com/Crane-AI-Labs/trawl. The app is releases/download/v1.0.0/trawl-1.0.0.apk, Trawl Go
-  beside it (trawl-go-1.0.0.apk), the models at releases/download/models-v1/trawl-models.zip and trawl-models-lite.zip, and the
+  Download links: GitHub Releases on github.com/Crane-AI-Labs/trawl. The app is releases/download/v1.0.1/trawl-1.0.1.apk, Trawl Go
+  beside it (trawl-go-1.0.1.apk), the models at releases/download/models-v1/trawl-models.zip and trawl-models-lite.zip, and the
   desktop developer preview under releases/download/desktop-preview-1.0.1/. Sizes on this page: 47 MB, 21 MB, 670 MB, 304 MB.
 -->
 <style>
@@ -947,19 +947,20 @@ h2.flush{margin-bottom:28px}
             </ul>
           </div>
           <div class="plan lift rv">
-            <span class="badge ghost">2&nbsp;GB phones</span>
-            <h3>Lite</h3>
+            <span class="badge ghost">Downloads less</span>
+            <h3>Save data</h3>
             <p class="size">304 <small>MB</small></p>
-            <p class="muted">For 64-bit phones with 2&nbsp;GB of memory. Trawl uses it only on those phones.</p>
+            <p class="muted">For any 64-bit phone, if you&rsquo;d rather download less. Phones with 2&nbsp;GB of memory always use it.</p>
             <ul>
               <li><svg aria-hidden="true"><use href="#i-check"/></svg>A quick look at photos</li>
               <li><svg aria-hidden="true"><use href="#i-check"/></svg>Words in documents and screenshots</li>
               <li class="no"><svg aria-hidden="true"><use href="#i-minus"/></svg>No speech search</li>
+              <li class="no"><svg aria-hidden="true"><use href="#i-minus"/></svg>Weaker Luganda and Swahili photo search</li>
               <li><svg aria-hidden="true"><use href="#i-check"/></svg>Blurred private previews</li>
             </ul>
           </div>
         </div>
-        <p class="advice"><b>Not sure?</b> Inside Trawl, <b>Get the models</b> picks the right one for your phone.</p>
+        <p class="advice"><b>Not sure?</b> Choose Standard. Inside Trawl, <b>Get the models</b> offers both, and you can move from Save data to Standard later.</p>
       </div>
     </div>
   </section>
@@ -976,7 +977,7 @@ h2.flush{margin-bottom:28px}
           <h4><span class="n">1</span>The app</h4>
           <p>Trawl for Android, as an APK file you install yourself. For 64-bit phones with Android 11 or newer.</p>
           <div class="btns">
-            <a class="btn btn-primary" href="https://github.com/Crane-AI-Labs/trawl/releases/download/v1.0.0/trawl-1.0.0.apk"><svg aria-hidden="true"><use href="#i-download"/></svg><span>Download Trawl<small>APK · about 47&nbsp;MB</small></span></a>
+            <a class="btn btn-primary" href="https://github.com/Crane-AI-Labs/trawl/releases/download/v1.0.1/trawl-1.0.1.apk"><svg aria-hidden="true"><use href="#i-download"/></svg><span>Download Trawl<small>APK · about 47&nbsp;MB</small></span></a>
           </div>
         </div>
         <div class="card lift rv">
@@ -984,7 +985,7 @@ h2.flush{margin-bottom:28px}
           <p>Only if you want to download them somewhere else and copy the file across. Otherwise Trawl&rsquo;s <b>Get the models</b> does it for you.</p>
           <div class="btns">
             <a class="btn" href="https://github.com/Crane-AI-Labs/trawl/releases/download/models-v1/trawl-models.zip"><svg aria-hidden="true"><use href="#i-download"/></svg><span>Standard · 670&nbsp;MB<small>Recommended: 3&nbsp;GB of memory or more</small></span></a>
-            <a class="btn" href="https://github.com/Crane-AI-Labs/trawl/releases/download/models-v1/trawl-models-lite.zip"><svg aria-hidden="true"><use href="#i-download"/></svg><span>Lite · 304&nbsp;MB<small>Only for phones with 2&nbsp;GB of memory</small></span></a>
+            <a class="btn" href="https://github.com/Crane-AI-Labs/trawl/releases/download/models-v1/trawl-models-lite.zip"><svg aria-hidden="true"><use href="#i-download"/></svg><span>Save data · 304&nbsp;MB<small>Downloads less; no speech search</small></span></a>
           </div>
         </div>
       </div>
@@ -994,7 +995,7 @@ h2.flush{margin-bottom:28px}
           <div class="opt-head"><h3>Trawl Go <span class="bits">32-bit</span></h3><span class="badge ghost">For Android Go phones</span></div>
           <p>Finds files by their names and the words in them, including the words in photos and screenshots. It&rsquo;s small, and it needs no model download. It doesn&rsquo;t search by meaning or listen to recordings: those need a 64-bit phone.</p>
           <div class="btns">
-            <a class="btn" href="https://github.com/Crane-AI-Labs/trawl/releases/download/v1.0.0/trawl-go-1.0.0.apk"><svg aria-hidden="true"><use href="#i-download"/></svg><span>Download Trawl Go<small>APK · about 21&nbsp;MB · Android 11 or newer</small></span></a>
+            <a class="btn" href="https://github.com/Crane-AI-Labs/trawl/releases/download/v1.0.1/trawl-go-1.0.1.apk"><svg aria-hidden="true"><use href="#i-download"/></svg><span>Download Trawl Go<small>APK · about 21&nbsp;MB · Android 11 or newer</small></span></a>
           </div>
         </div>
         <div class="which rv">
@@ -1019,10 +1020,10 @@ h2.flush{margin-bottom:28px}
       <h3 class="steps-head">Install it in six steps</h3>
       <ol class="steps">
         <li class="rv"><b>Download the app</b><span>Tap <b>Download Trawl</b>. If your browser asks whether to keep the file, tap <b>Download</b> or <b>Keep</b>.</span></li>
-        <li class="rv"><b>Open the file</b><span>Tap <b>Open</b> when it finishes, or find <b>trawl-1.0.0.apk</b> in <b>Files › Downloads</b>.</span></li>
+        <li class="rv"><b>Open the file</b><span>Tap <b>Open</b> when it finishes, or find <b>trawl-1.0.1.apk</b> in <b>Files › Downloads</b>.</span></li>
         <li class="rv"><b>Allow installs, once</b><span>If Android says it can&rsquo;t install apps from this source, tap <b>Settings</b>, turn this on, then go back.</span><span class="toggle" aria-hidden="true">Allow from this source<i></i></span></li>
         <li class="rv"><b>Tap Install, then Open</b><span>Follow Trawl&rsquo;s first pages and allow access to your files, so it can search them.</span></li>
-        <li class="rv"><b>Tap Get the models</b><span>Your browser downloads one file: 670&nbsp;MB, or 304&nbsp;MB on a 2&nbsp;GB phone. Wi-Fi is best.</span></li>
+        <li class="rv"><b>Tap Get the models</b><span>Your browser downloads one file: 670&nbsp;MB, or 304&nbsp;MB if you choose Save data. Wi-Fi is best.</span></li>
         <li class="rv"><b>That&rsquo;s it</b><span>When the download ends, Trawl adds the models by itself and starts learning your files. Search works within minutes.</span></li>
       </ol>
       <p class="advice">Got the models file from a friend over Bluetooth, a sharing app or a memory card? In Trawl, tap <b>Choose the file</b>. You can turn <b>Allow from this source</b> off again afterwards. Only install Trawl from this page.</p>
@@ -1069,8 +1070,8 @@ h2.flush{margin-bottom:28px}
         <h2 id="needs-h" class="flush">What your phone needs</h2>
         <dl class="req">
           <div><dt>Android</dt><dd>Android 11 or newer, on a 64-bit phone. For 32-bit Android Go phones, there&rsquo;s Trawl Go.</dd></div>
-          <div><dt>Memory</dt><dd>2&nbsp;GB or more. 64-bit phones with 2&nbsp;GB use the lite models.</dd></div>
-          <div><dt>Free space</dt><dd>About 1&nbsp;GB with the standard models, about 500&nbsp;MB with lite. The index grows with your files.</dd></div>
+          <div><dt>Memory</dt><dd>2&nbsp;GB or more. 64-bit phones with 2&nbsp;GB use the Save data models.</dd></div>
+          <div><dt>Free space</dt><dd>About 1&nbsp;GB with the standard models, about 500&nbsp;MB with Save data. The index grows with your files.</dd></div>
           <div><dt>Internet</dt><dd>Once, to download the models. After that, never.</dd></div>
         </dl>
       </div>
@@ -1091,10 +1092,10 @@ h2.flush{margin-bottom:28px}
       <div class="faq">
         <details><summary>Will it work on my phone?<svg aria-hidden="true"><use href="#i-down"/></svg></summary><p>If your phone is 64-bit and runs Android 11 or newer, yes. Most phones sold in recent years are 64-bit. Android Go phones (often 2&nbsp;GB, many itel models) are usually 32-bit: they need Trawl Go (see <a href="#download">Download</a>), which finds files by name and by the words in them. If Android says &ldquo;App not installed&rdquo;, the phone is most likely one of these.</p></details>
         <details><summary>Is Trawl free?<svg aria-hidden="true"><use href="#i-down"/></svg></summary><p>Yes. Trawl is free to download and use, with no ads and no account. It is open source under the Apache&nbsp;2.0 licence, and the <a href="https://github.com/Crane-AI-Labs/trawl">source code is on GitHub</a>.</p></details>
-        <details><summary>Will it use my data bundle?<svg aria-hidden="true"><use href="#i-down"/></svg></summary><p>Only once, when your browser downloads the models (670&nbsp;MB, or 304&nbsp;MB for lite). Trawl itself has no internet permission, so it can&rsquo;t use data at all.</p></details>
+        <details><summary>Will it use my data bundle?<svg aria-hidden="true"><use href="#i-down"/></svg></summary><p>Only once, when your browser downloads the models (670&nbsp;MB, or 304&nbsp;MB with Save data). Trawl itself has no internet permission, so it can&rsquo;t use data at all.</p></details>
         <details><summary>How long until it finds everything?<svg aria-hidden="true"><use href="#i-down"/></svg></summary><p>File names and words in documents work within minutes. Photos get a quick look while you use the phone, and the full reading, which gives the best matches, happens while it charges. Trawl shows how far it has got.</p></details>
         <details><summary>Will it drain my battery?<svg aria-hidden="true"><use href="#i-down"/></svg></summary><p>It shouldn&rsquo;t. The heavy work waits for the charger, and on battery Trawl only does light work.</p></details>
-        <details><summary>Which should I get, standard or lite?<svg aria-hidden="true"><use href="#i-down"/></svg></summary><p>Standard, unless your phone has 2&nbsp;GB of memory; then lite. Trawl&rsquo;s <b>Get the models</b> picks for you, and a file for the wrong kind of phone is refused, so you can&rsquo;t get it wrong.</p></details>
+        <details><summary>Which should I get, Standard or Save data?<svg aria-hidden="true"><use href="#i-down"/></svg></summary><p>Standard, if you can: it is the best search in every language and it hears speech in videos and voice notes. Save data downloads less than half as much: English search is just as good, but Luganda and Swahili photo search is weaker and there is no speech search. You can move to Standard later and keep your index. A phone with 2&nbsp;GB of memory always uses Save data, and a file for the wrong kind of phone is refused, so you can&rsquo;t get it wrong.</p></details>
         <details><summary>Can I delete what Trawl has learned?<svg aria-hidden="true"><use href="#i-down"/></svg></summary><p>Yes. <b>Settings › Delete everything Trawl knows</b> removes it all. Your own files stay exactly as they are.</p></details>
         <details><summary>Why isn&rsquo;t it on the Play Store?<svg aria-hidden="true"><use href="#i-down"/></svg></summary><p>It will come to the Play Store later. Until then, install it from this page.</p></details>
       </div>

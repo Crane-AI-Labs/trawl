@@ -92,6 +92,9 @@ class ShareHelperTest {
     assertNotNull(cl.getResource("share-apple.swift"), "its Swift source ships next to the other helpers")
     val ps = String(cl.getResourceAsStream("share-windows.ps1")!!.readBytes())
     for (needle in listOf("DataTransferManager", "ShowShareUIForWindow", "SetStorageItems", "'cancelled'", "'ok'", "error:nosheet", "GetForegroundWindow", "add_Deactivate")) assertTrue(needle in ps, needle)
+    // 1.0.1 matrix, Windows 10: the anchor form deactivates within 0.1 s with no pane (foreground window 0), so an early deactivation is not
+    // a pane and "no window in front" counts as no pane.
+    for (needle in listOf("[IntPtr]::Zero", "ElapsedMilliseconds -gt 1500")) assertTrue(needle in ps, "nosheet logic: $needle")
   }
 
   @Test fun aPaneThatNeverCameIsAFailureAndTheMessageSendsThePersonToShowInFolder() {

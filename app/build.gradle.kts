@@ -12,8 +12,8 @@ android {
     applicationId = "com.craneai.findr"
     minSdk = 30   // MediaStore generations (the change journal Findr's crawler relies on) start at Android 11
     targetSdk = 36   // compile against 37, but keep 36 runtime behaviour until it's tested
-    versionCode = 1
-    versionName = "1.0.0"
+    versionCode = 2
+    versionName = "1.0.1"
     // Compose UI tests (src/androidTest): screenshot-free checks of the Sunlight components on a phone.
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     // The ABI is per edition (productFlavors below): the full app is 64-bit only, Trawl Go is 32-bit only.

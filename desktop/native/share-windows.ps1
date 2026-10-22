@@ -7,7 +7,7 @@
 #                                         Share contract, or "error:<why>". Shows NOTHING.
 #   share-windows.ps1 share <path>...  -> shows Windows' own Share pane (DataTransferManager) for those files, near the mouse, then
 #                                         prints "ok" (a target took the files), "cancelled" (the pane was dismissed) or "error:<why>".
-#                                         "error:nosheet" is a pane that never came: Windows said yes and nothing took the keyboard in 4 s
+#                                         "error:nosheet" is a pane that never came: Windows said yes and, 4 s later, no pane is the foreground window
 #                                         (ShellExperienceHost crashed, as on the Windows 10 image of the 2026-10-22 matrix).
 #
 # DataTransferManager needs a window to hang the pane on, so a 1x1 invisible form is made at the mouse and closed with the pane.
@@ -122,18 +122,23 @@ public static class TrawlShareInterop {
     $cancel.Interval = 1500
     $cancel.add_Tick({ $cancel.Stop(); if (-not $script:chosen) { Say 'cancelled'; $form.Close() } })
     $form.add_Activated({ if ($script:shown -and -not $script:chosen) { $cancel.Stop(); $cancel.Start() } })
-    # A pane that opens takes the keyboard from this form. If, 4 s after the call, nothing has taken it (no deactivation, this form still the
-    # foreground window, no target chosen), no pane came: say so, so Trawl can tell the person instead of leaving them waiting.
+    # A pane that opens takes the keyboard from this form, and it is then the foreground window. If, 4 s after the call, no pane is the
+    # foreground window (it is this form, or no window at all) and no target was chosen, no pane came: say so, so Trawl can tell the
+    # person instead of leaving them waiting. The form's own deactivation right after the call does NOT count as a pane: on the Windows 10
+    # image of the 2026-10-22 matrix the form deactivated within 0.1 s, nothing took its place (foreground window 0), and the old
+    # "deactivated, so a pane came" test waited out the 10 minute limit in silence. Only a deactivation after 1.5 s is taken as a pane.
     $script:paneSeen = $false
-    $form.add_Deactivate({ if ($script:shown) { $script:paneSeen = $true } })
+    $script:shownAt = $null
+    $form.add_Deactivate({ if ($script:shown -and $script:shownAt -ne $null -and $script:shownAt.ElapsedMilliseconds -gt 1500) { $script:paneSeen = $true } })
     $watch = New-Object System.Windows.Forms.Timer
     $watch.Interval = 4000
     $watch.add_Tick({
       $watch.Stop()
-      if (-not $script:paneSeen -and -not $script:chosen -and ([TrawlShareInterop]::Foreground() -eq $form.Handle)) { Say 'error:nosheet'; $form.Close() }
+      $fg = [TrawlShareInterop]::Foreground()
+      if (-not $script:paneSeen -and -not $script:chosen -and ($fg -eq [IntPtr]::Zero -or $fg -eq $form.Handle)) { Say 'error:nosheet'; $form.Close() }
     })
     $form.add_Shown({
-      try { [TrawlShareInterop]::Show($form.Handle); $script:shown = $true; $watch.Start() }
+      try { [TrawlShareInterop]::Show($form.Handle); $script:shown = $true; $script:shownAt = [System.Diagnostics.Stopwatch]::StartNew(); $watch.Start() }
       catch { Say ('error:' + $_.Exception.GetType().Name); $form.Close() }
     })
     # Nobody should be left waiting on a pane for ever.
