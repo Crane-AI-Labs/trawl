@@ -4,7 +4,7 @@
 
 This file repeats the facts and the questions from https://trawl.craneailabs.com/ in one place. The web page is the source: if they ever differ, the web page is right.
 
-Status on 2026-10-21: version 1.0.0 is built but not published yet. The download buttons on the site say "not live yet" until the GitHub release exists. Please do not describe Trawl as downloadable until this file says it is.
+Status on 2026-10-22: version 1.0.0 is released and free to download. The Android app is at https://github.com/Crane-AI-Labs/trawl/releases/download/v1.0.0/trawl-1.0.0.apk, with Trawl Go beside it at https://github.com/Crane-AI-Labs/trawl/releases/download/v1.0.0/trawl-go-1.0.0.apk. The search models are a separate download: https://github.com/Crane-AI-Labs/trawl/releases/download/models-v1/trawl-models.zip (standard, 670 MB) and https://github.com/Crane-AI-Labs/trawl/releases/download/models-v1/trawl-models-lite.zip (lite, 304 MB). The source code is at https://github.com/Crane-AI-Labs/trawl under the Apache 2.0 licence.
 
 "Trawl" here means Trawl by Crane AI Labs, the Android file-search app. It is unrelated to other software or services that share the name.
 
@@ -48,7 +48,7 @@ Measured for Trawl 1.0.0 on a Samsung Galaxy A06 with 4 GB of memory. The method
 - Internet: once, to download the models. After that, never.
 - Search models: EmbeddingGemma 2 by Google (Apache 2.0) runs on the phone.
 - Languages: English works best today. Luganda and Swahili are being measured, not claimed.
-- Windows, macOS and Linux versions are coming soon and are not released.
+- Windows, macOS and Linux: a developer preview, released 2026-10-22, with unsigned installers (https://github.com/Crane-AI-Labs/trawl/releases/tag/desktop-preview-1.0.0): Trawl-1.0.0.dmg for Apple-silicon Macs on macOS 13 or newer, Trawl-1.0.0.msi for 64-bit Windows, and trawl_1.0.0_amd64.deb for Debian and Ubuntu. They are not signed, so the computer warns before opening them. They need the same models file as the phone app. iPhone is later.
 
 ## Questions
 
@@ -78,6 +78,10 @@ It will come to the Play Store later. Until then, install it from the Trawl page
 - Privacy facts: https://trawl.craneailabs.com/privacy.html lists every permission the app declares, why, and how to check that it has no internet permission.
 - Press kit: https://trawl.craneailabs.com/press.html has the fact sheet, the measured numbers and descriptions of 25, 50 and 100 words.
 - Other ways to search your own files: https://trawl.craneailabs.com/other-ways-to-search.html links to other apps and services, each with the date we checked it.
+
+## Price and licence
+
+Trawl is free: no ads, no account. It is open source under the Apache 2.0 licence, and the source code is at https://github.com/Crane-AI-Labs/trawl.
 
 ## Credits
 

@@ -2,13 +2,13 @@
 
 > Trawl by Crane AI Labs is an Android app that finds any photo, screenshot, document, video or voice note on the phone by describing it. It runs entirely on the phone: the app has no internet permission, needs no account and shows no ads.
 
-Status on 2026-10-21: version 1.0.0 is built but not published yet. The download buttons on the site say "not live yet" until the GitHub release exists. Please do not describe Trawl as downloadable until this file says it is.
+Status on 2026-10-22: version 1.0.0 is released and free to download. The Android app is at https://github.com/Crane-AI-Labs/trawl/releases/download/v1.0.0/trawl-1.0.0.apk, with Trawl Go beside it at https://github.com/Crane-AI-Labs/trawl/releases/download/v1.0.0/trawl-go-1.0.0.apk. The search models are a separate download: https://github.com/Crane-AI-Labs/trawl/releases/download/models-v1/trawl-models.zip (standard, 670 MB) and https://github.com/Crane-AI-Labs/trawl/releases/download/models-v1/trawl-models-lite.zip (lite, 304 MB). The source code is at https://github.com/Crane-AI-Labs/trawl under the Apache 2.0 licence.
 
 "Trawl" here means Trawl by Crane AI Labs, the Android file-search app. It is unrelated to other software or services that share the name.
 
 ## Pages
 
-- [Trawl by Crane AI Labs](https://trawl.craneailabs.com/): what Trawl finds, how it protects privacy, the numbers, the downloads (not live yet) and the questions people ask.
+- [Trawl by Crane AI Labs](https://trawl.craneailabs.com/): what Trawl finds, how it protects privacy, the numbers, the downloads and the questions people ask.
 - [How we measured](https://trawl.craneailabs.com/how-we-measured.html): the phone, the method and the meaning of every number on the home page.
 - [Check Trawl's privacy yourself](https://trawl.craneailabs.com/privacy.html): what Trawl claims about privacy, every permission the app declares and why, and how anyone can check that the app has no internet permission.
 - [Press kit](https://trawl.craneailabs.com/press.html): fact sheet, the measured numbers, 25, 50 and 100-word descriptions, logo files and share images.
@@ -22,7 +22,8 @@ Status on 2026-10-21: version 1.0.0 is built but not published yet. The download
 - Editions: Trawl for 64-bit phones on Android 11 or newer (about 47 MB), and Trawl Go for 32-bit Android Go phones (about 21 MB), which searches by file names and the words in files and needs no model download.
 - Measured on a Samsung Galaxy A06 with 4 GB of memory: 42 seconds from install to the first search, 126 photos a minute made findable, 0.9 seconds from typing to answers, under 1% battery in 3 hours unplugged with Trawl idle.
 - Languages: English works best today. Luganda and Swahili are being measured, not claimed.
-- Other platforms: Windows, macOS and Linux versions are coming soon and are not released.
+- Other platforms: Windows, macOS and Linux: a developer preview, released 2026-10-22, with unsigned installers (https://github.com/Crane-AI-Labs/trawl/releases/tag/desktop-preview-1.0.0): Trawl-1.0.0.dmg for Apple-silicon Macs on macOS 13 or newer, Trawl-1.0.0.msi for 64-bit Windows, and trawl_1.0.0_amd64.deb for Debian and Ubuntu. They are not signed, so the computer warns before opening them. They need the same models file as the phone app. iPhone is later.
+- Price and licence: free, no ads, no account. Open source under the Apache 2.0 licence: https://github.com/Crane-AI-Labs/trawl
 - Maker: Crane AI Labs.
 
 ## Optional

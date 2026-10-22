@@ -60,6 +60,17 @@
       "applicationCategory": "UtilitiesApplication",
       "operatingSystem": "Android 11 or newer",
       "softwareVersion": "1.0.0",
+      "downloadUrl": "https://github.com/Crane-AI-Labs/trawl/releases/download/v1.0.0/trawl-1.0.0.apk",
+      "installUrl": "https://github.com/Crane-AI-Labs/trawl/releases/tag/v1.0.0",
+      "fileSize": "47 MB",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock"
+      },
+      "license": "https://www.apache.org/licenses/LICENSE-2.0",
       "image": "https://trawl.craneailabs.com/icon-512.png",
       "publisher": {
         "@id": "https://trawl.craneailabs.com/#publisher"
@@ -82,10 +93,9 @@
   (stills and one clip from Mixkit, see CREDITS.md). Nothing is loaded from any other site: no fonts, scripts, analytics or trackers.
   Colours, type and shapes are the app's Sunlight tokens; the mark is Trawl's (Crane AI Labs' X and diamonds, one arm a handle).
 
-  TODO(publish): the download links follow scripts/release.sh's GitHub Releases on github.com/Crane-AI-Labs/trawl (not created
-  yet): the app at releases/download/v1.0.0/trawl-1.0.0.apk (the first release is 1.0.0), Trawl Go beside it at
-  releases/download/v1.0.0/trawl-go-1.0.0.apk, the models at releases/download/models-v1/trawl-models.zip and
-  trawl-models-lite.zip. release.sh prints the real names and sizes (47 MB, 21 MB, 670 MB, 304 MB on this page). When the releases exist, delete the "not live yet" note (class="note-todo").
+  Download links: GitHub Releases on github.com/Crane-AI-Labs/trawl. The app is releases/download/v1.0.0/trawl-1.0.0.apk, Trawl Go
+  beside it (trawl-go-1.0.0.apk), the models at releases/download/models-v1/trawl-models.zip and trawl-models-lite.zip, and the
+  desktop developer preview under releases/download/desktop-preview-1.0.0/. Sizes on this page: 47 MB, 21 MB, 670 MB, 304 MB.
 -->
 <style>
 @font-face{font-family:"Atkinson Hyperlegible";font-style:normal;font-weight:400;font-display:swap;src:url("fonts/atkinson-hyperlegible-regular.woff2") format("woff2")}
@@ -415,6 +425,10 @@ h2.flush{margin-bottom:28px}
 /* Download */
 .note-todo{display:flex;gap:12px;align-items:flex-start;padding:14px 18px;border:2px dashed var(--line);border-radius:14px;font-size:1.05rem;margin-bottom:28px}
 .get{display:grid;gap:20px}
+.get.three .card{display:flex;flex-direction:column}
+.get.three .btns{margin-top:auto;padding-top:14px}
+.get.three code{font-size:.95em;overflow-wrap:anywhere}
+@media (min-width:1100px){.get.three{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (min-width:900px){.get{grid-template-columns:1fr 1fr}}
 .card{border:2px solid var(--line);border-radius:24px;padding:30px 28px;display:grid;gap:18px;align-content:start;background:var(--paper);height:100%}
 .card h3,.card h4{display:flex;align-items:center;gap:14px;font-size:1.75rem;margin:0;line-height:1.2}
@@ -611,6 +625,7 @@ h2.flush{margin-bottom:28px}
         <li><svg aria-hidden="true"><use href="#i-nonet"/></svg>No internet permission</li>
         <li><svg aria-hidden="true"><use href="#i-phone"/></svg>64-bit Android 11 or newer</li>
         <li><svg aria-hidden="true"><use href="#i-check"/></svg>No account</li>
+        <li><svg aria-hidden="true"><use href="#i-check"/></svg>Free</li>
       </ul>
     </div>
 
@@ -665,7 +680,7 @@ h2.flush{margin-bottom:28px}
       <div>
         <h2 id="what-h">What Trawl is</h2>
         <p class="quote">Trawl by Crane AI Labs is an Android app that finds the photos, screenshots, documents, videos and voice notes on your phone when you describe what is in them. It runs entirely on the phone: the app has no internet permission, needs no account and shows no ads. English works best today.</p>
-        <p class="upd">Updated <time datetime="2026-10-21">21 October 2026</time>. <a href="privacy.html">How to check the privacy claims</a> &middot; <a href="press.html">Press kit</a></p>
+        <p class="upd">Updated <time datetime="2026-10-22">22 October 2026</time>. <a href="privacy.html">How to check the privacy claims</a> &middot; <a href="press.html">Press kit</a></p>
       </div>
       <dl class="sheet">
         <div><dt>Made by</dt><dd>Crane AI Labs</dd></div>
@@ -674,8 +689,10 @@ h2.flush{margin-bottom:28px}
         <div><dt>Privacy</dt><dd>No internet permission, no account, no ads, no analytics.</dd></div>
         <div><dt>Model</dt><dd>EmbeddingGemma 2 by Google (Apache&nbsp;2.0), running on the phone.</dd></div>
         <div><dt>Languages</dt><dd>English works best today. Luganda and Swahili are being measured, not claimed.</dd></div>
-        <div><dt>Version</dt><dd>1.0.0. The download links are not live yet.</dd></div>
-        <div><dt>Coming</dt><dd>Windows, macOS and Linux versions: coming soon.</dd></div>
+        <div><dt>Price</dt><dd>Free. No ads, no account.</dd></div>
+        <div><dt>Licence</dt><dd>Open source under <a href="https://github.com/Crane-AI-Labs/trawl/blob/main/LICENSE">Apache&nbsp;2.0</a>. The <a href="https://github.com/Crane-AI-Labs/trawl">source code is on GitHub</a>.</dd></div>
+        <div><dt>Version</dt><dd>1.0.0, released 22 October 2026.</dd></div>
+        <div><dt>Computers</dt><dd>Windows, Mac and Linux: a <a href="#desktop">developer preview</a>, not yet signed.</dd></div>
       </dl>
     </div>
   </section>
@@ -972,9 +989,8 @@ h2.flush{margin-bottom:28px}
     <div class="wrap">
       <div class="sec-head">
         <h2 id="download-h">Download Trawl</h2>
-        <p class="lead">Most phones need Trawl for <span class="nw">64-bit</span>: the app, then its models. Most people only need the first button: inside Trawl, <b>Get the models</b> opens your browser on the right file for your phone.</p>
+        <p class="lead">Trawl is free. Most phones need Trawl for <span class="nw">64-bit</span>: the app, then its models. Most people only need the first button: inside Trawl, <b>Get the models</b> opens your browser on the right file for your phone.</p>
       </div>
-      <p class="note-todo" role="note"><b>Preview:</b>&nbsp;the download links are not live yet.</p>
       <div class="opt-head"><h3>Trawl <span class="bits">64-bit</span></h3><span class="badge">For most phones</span></div>
       <div class="get">
         <div class="card lift rv">
@@ -1012,11 +1028,11 @@ h2.flush{margin-bottom:28px}
       <div class="platforms rv">
         <h3>Where Trawl runs</h3>
         <ul class="plat">
-          <li><svg aria-hidden="true"><use href="#i-phone"/></svg><b>Android</b><span>64-bit phones, Android 11 or newer</span><em class="badge">Launching soon</em></li>
-          <li><svg aria-hidden="true"><use href="#i-phone"/></svg><b>Android Go</b><span>Trawl Go, for 32-bit phones</span><em class="badge">Launching soon</em></li>
-          <li class="soon"><svg aria-hidden="true"><use href="#i-window"/></svg><b>Windows</b><span>Your PC&rsquo;s files and folders</span><em class="badge ghost">Coming soon</em></li>
-          <li class="soon"><svg aria-hidden="true"><use href="#i-laptop"/></svg><b>macOS</b><span>Your Mac&rsquo;s files and folders</span><em class="badge ghost">Coming soon</em></li>
-          <li class="soon"><svg aria-hidden="true"><use href="#i-terminal"/></svg><b>Linux</b><span>Your home folder and drives</span><em class="badge ghost">Coming soon</em></li>
+          <li><svg aria-hidden="true"><use href="#i-phone"/></svg><b>Android</b><span>64-bit phones, Android 11 or newer</span><em class="badge">Available now</em></li>
+          <li><svg aria-hidden="true"><use href="#i-phone"/></svg><b>Android Go</b><span>Trawl Go, for 32-bit phones</span><em class="badge">Available now</em></li>
+          <li class="soon"><svg aria-hidden="true"><use href="#i-window"/></svg><b>Windows</b><span>Your PC&rsquo;s files and folders</span><em class="badge ghost">Developer preview</em></li>
+          <li class="soon"><svg aria-hidden="true"><use href="#i-laptop"/></svg><b>macOS</b><span>Your Mac&rsquo;s files and folders</span><em class="badge ghost">Developer preview</em></li>
+          <li class="soon"><svg aria-hidden="true"><use href="#i-terminal"/></svg><b>Linux</b><span>Your home folder and drives</span><em class="badge ghost">Developer preview</em></li>
           <li class="soon"><svg aria-hidden="true"><use href="#i-phone"/></svg><b>iPhone</b><span>The photos and folders you choose</span><em class="badge ghost">Later</em></li>
         </ul>
       </div>
@@ -1024,13 +1040,47 @@ h2.flush{margin-bottom:28px}
       <h3 class="steps-head">Install it in six steps</h3>
       <ol class="steps">
         <li class="rv"><b>Download the app</b><span>Tap <b>Download Trawl</b>. If your browser asks whether to keep the file, tap <b>Download</b> or <b>Keep</b>.</span></li>
-        <li class="rv"><b>Open the file</b><span>Tap <b>Open</b> when it finishes, or find <b>trawl.apk</b> in <b>Files › Downloads</b>.</span></li>
+        <li class="rv"><b>Open the file</b><span>Tap <b>Open</b> when it finishes, or find <b>trawl-1.0.0.apk</b> in <b>Files › Downloads</b>.</span></li>
         <li class="rv"><b>Allow installs, once</b><span>If Android says it can&rsquo;t install apps from this source, tap <b>Settings</b>, turn this on, then go back.</span><span class="toggle" aria-hidden="true">Allow from this source<i></i></span></li>
         <li class="rv"><b>Tap Install, then Open</b><span>Follow Trawl&rsquo;s first pages and allow access to your files, so it can search them.</span></li>
         <li class="rv"><b>Tap Get the models</b><span>Your browser downloads one file: 670&nbsp;MB, or 304&nbsp;MB on a 2&nbsp;GB phone. Wi-Fi is best.</span></li>
         <li class="rv"><b>That&rsquo;s it</b><span>When the download ends, Trawl adds the models by itself and starts learning your files. Search works within minutes.</span></li>
       </ol>
       <p class="advice">Got the models file from a friend over Bluetooth, a sharing app or a memory card? In Trawl, tap <b>Choose the file</b>. You can turn <b>Allow from this source</b> off again afterwards. Only install Trawl from this page.</p>
+    </div>
+  </section>
+
+  <section id="desktop" aria-labelledby="desktop-h">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2 id="desktop-h">Desktop developer preview</h2>
+        <p class="lead">Trawl for Windows, Mac and Linux finds the files on your computer the way the phone app does. It is free. This is a <b>developer preview</b>: the installers are <b>not signed</b>, so your computer will warn you before it lets you open them. Install one only if you are comfortable with that.</p>
+      </div>
+      <div class="get three">
+        <div class="card lift rv">
+          <h4><span class="n"><svg aria-hidden="true" style="width:24px;height:24px"><use href="#i-laptop"/></svg></span>Mac</h4>
+          <p>Macs with Apple silicon (M1 or newer), macOS 13 or newer. Open the file and drag Trawl to Applications. The first time, <b>right-click Trawl and choose Open</b>. On macOS 15 or newer, if there is no Open button, try once, then use <b>Open Anyway</b> in System Settings › Privacy &amp; Security.</p>
+          <div class="btns">
+            <a class="btn" href="https://github.com/Crane-AI-Labs/trawl/releases/download/desktop-preview-1.0.0/Trawl-1.0.0.dmg"><svg aria-hidden="true"><use href="#i-download"/></svg><span>Download for Mac<small>DMG · about 240&nbsp;MB</small></span></a>
+          </div>
+        </div>
+        <div class="card lift rv">
+          <h4><span class="n"><svg aria-hidden="true" style="width:24px;height:24px"><use href="#i-window"/></svg></span>Windows</h4>
+          <p>64-bit Windows. Double-click the file. When Windows SmartScreen says &ldquo;Windows protected your PC&rdquo;, choose <b>More info</b>, then <b>Run anyway</b>.</p>
+          <div class="btns">
+            <a class="btn" href="https://github.com/Crane-AI-Labs/trawl/releases/download/desktop-preview-1.0.0/Trawl-1.0.0.msi"><svg aria-hidden="true"><use href="#i-download"/></svg><span>Download for Windows<small>MSI · about 228&nbsp;MB</small></span></a>
+          </div>
+        </div>
+        <div class="card lift rv">
+          <h4><span class="n"><svg aria-hidden="true" style="width:24px;height:24px"><use href="#i-terminal"/></svg></span>Linux</h4>
+          <p>Debian, Ubuntu and relatives, 64-bit. Run <code>sudo apt install ./trawl_1.0.0_amd64.deb</code>. Reading video and recordings needs <code>ffmpeg</code> (<code>sudo apt install ffmpeg</code>).</p>
+          <div class="btns">
+            <a class="btn" href="https://github.com/Crane-AI-Labs/trawl/releases/download/desktop-preview-1.0.0/trawl_1.0.0_amd64.deb"><svg aria-hidden="true"><use href="#i-download"/></svg><span>Download for Linux<small>DEB · about 226&nbsp;MB</small></span></a>
+          </div>
+        </div>
+      </div>
+      <p class="advice"><b>The models.</b> Like the phone app, the desktop app needs the standard models file, <a href="https://github.com/Crane-AI-Labs/trawl/releases/download/models-v1/trawl-models.zip">trawl-models.zip</a> (670&nbsp;MB). Keep it in your Downloads folder and Trawl finds it. The desktop app never downloads anything itself.</p>
+      <p class="advice"><b>Check the download.</b> The installers are unsigned, so compare the file with its checksum on the <a href="https://github.com/Crane-AI-Labs/trawl/releases/tag/desktop-preview-1.0.0">release page</a> (<a href="https://github.com/Crane-AI-Labs/trawl/releases/download/desktop-preview-1.0.0/SHA256SUMS">SHA256SUMS</a>). We ran each installer for ten minutes on its own system while watching for network connections, and saw none. <a href="https://github.com/Crane-AI-Labs/trawl/blob/main/desktop/scripts/NET-GATE.md">How to repeat the test</a> is in the source code.</p>
     </div>
   </section>
 
@@ -1061,6 +1111,7 @@ h2.flush{margin-bottom:28px}
       <div class="sec-head"><h2 id="faq-h">Questions</h2></div>
       <div class="faq">
         <details><summary>Will it work on my phone?<svg aria-hidden="true"><use href="#i-down"/></svg></summary><p>If your phone is 64-bit and runs Android 11 or newer, yes. Most phones sold in recent years are 64-bit. Android Go phones (often 2&nbsp;GB, many itel models) are usually 32-bit: they need Trawl Go (see <a href="#download">Download</a>), which finds files by name and by the words in them. If Android says &ldquo;App not installed&rdquo;, the phone is most likely one of these.</p></details>
+        <details><summary>Is Trawl free?<svg aria-hidden="true"><use href="#i-down"/></svg></summary><p>Yes. Trawl is free to download and use, with no ads and no account. It is open source under the Apache&nbsp;2.0 licence, and the <a href="https://github.com/Crane-AI-Labs/trawl">source code is on GitHub</a>.</p></details>
         <details><summary>Will it use my data bundle?<svg aria-hidden="true"><use href="#i-down"/></svg></summary><p>Only once, when your browser downloads the models (670&nbsp;MB, or 304&nbsp;MB for lite). Trawl itself has no internet permission, so it can&rsquo;t use data at all.</p></details>
         <details><summary>How long until it finds everything?<svg aria-hidden="true"><use href="#i-down"/></svg></summary><p>File names and words in documents work within minutes. Photos get a quick look while you use the phone, and the full reading, which gives the best matches, happens while it charges. Trawl shows how far it has got.</p></details>
         <details><summary>Will it drain my battery?<svg aria-hidden="true"><use href="#i-down"/></svg></summary><p>It shouldn&rsquo;t. The heavy work waits for the charger, and on battery Trawl only does light work.</p></details>
@@ -1080,7 +1131,7 @@ h2.flush{margin-bottom:28px}
       <a class="foot-cta" href="#download"><svg aria-hidden="true"><use href="#i-download"/></svg>Get Trawl</a>
     </div>
     <div class="foot-cols">
-      <div><h3>Trawl</h3><ul><li><a href="#download">Download</a></li><li><a href="#numbers">By the numbers</a></li><li><a href="how-we-measured.html">How we measured</a></li><li><a href="privacy.html">Privacy facts</a></li><li><a href="press.html">Press kit</a></li><li><a href="other-ways-to-search.html">Other ways to search</a></li><li><a href="#faq">Questions</a></li></ul></div>
+      <div><h3>Trawl</h3><ul><li><a href="#download">Download</a></li><li><a href="#numbers">By the numbers</a></li><li><a href="how-we-measured.html">How we measured</a></li><li><a href="privacy.html">Privacy facts</a></li><li><a href="press.html">Press kit</a></li><li><a href="other-ways-to-search.html">Other ways to search</a></li><li><a href="#faq">Questions</a></li><li><a href="https://github.com/Crane-AI-Labs/trawl">Source code (Apache&nbsp;2.0)</a></li></ul></div>
       <div><h3>Private by design</h3><ul><li>No internet permission</li><li>No account, no ads</li><li>This site sets no cookies and loads nothing from other websites</li></ul></div>
       <div><h3>Made with</h3><ul><li><a href="https://huggingface.co/google/embeddinggemma-2">EmbeddingGemma 2</a> by Google (<a href="https://www.apache.org/licenses/LICENSE-2.0">Apache&nbsp;2.0</a>), on your phone</li><li><a href="https://www.brailleinstitute.org/freefont/">Atkinson Hyperlegible</a> by the Braille Institute (<a href="https://openfontlicense.org/">SIL Open Font License</a>)</li><li>Photos and video from <a href="https://mixkit.co/">Mixkit</a> (see <a href="CREDITS.md">CREDITS.md</a>)</li></ul></div>
     </div>
