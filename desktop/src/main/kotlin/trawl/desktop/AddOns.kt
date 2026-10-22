@@ -29,7 +29,8 @@ import trawl.desktop.privacy.PackChoices
  * Add-ons: optional model packs Trawl works better with, each a one-time file the person adds because Trawl never goes online. The
  * desktop's list is the phone's list ([PackIds]) cut down to what applies to a computer:
  *  - Privacy pack: yes (the same model, run with ONNX Runtime on the JVM).
- *  - Speech: listed as "comes with video and recordings" until that stage lands; flip [AddOnDef.files] on to enable it.
+ *  - Speech: runs today, but it arrives inside the Trawl models file (the `asr` folder), not as an add-on of its own, so its card only
+ *    says whether it is there ([AddOnDef.bundled]); it used to say "Coming soon" while it was already reading videos.
  *  - Quick look: left out. It exists so a phone's slow CPU can read a photo in a fraction of EmbeddingGemma's time; a computer does not need it.
  */
 data class AddOnDef(
@@ -43,6 +44,8 @@ data class AddOnDef(
   val files: AddOnFiles?,
   /** False where the add-on's engine cannot run (the Privacy pack on an Intel Mac): shown as "Not available on this computer", never as installed. */
   val supported: () -> Boolean = { true },
+  /** Comes with the models file instead of being added on its own (Speech): the card says whether it is there, and offers nothing to add. */
+  val bundled: Boolean = false,
 ) {
   val available: Boolean get() = files != null
   val sizeMb: Long get() = sizeBytes / 1_000_000
@@ -88,6 +91,7 @@ object AddOnCatalog {
     costKey = "addon_speech_cost",
     sizeBytes = 142_772_368L,
     files = null,
+    bundled = true,
   )
 
   val all: List<AddOnDef> = listOf(privacy, speech)

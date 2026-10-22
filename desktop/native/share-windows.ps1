@@ -7,6 +7,8 @@
 #                                         Share contract, or "error:<why>". Shows NOTHING.
 #   share-windows.ps1 share <path>...  -> shows Windows' own Share pane (DataTransferManager) for those files, near the mouse, then
 #                                         prints "ok" (a target took the files), "cancelled" (the pane was dismissed) or "error:<why>".
+#                                         "error:nosheet" is a pane that never came: Windows said yes and nothing took the keyboard in 4 s
+#                                         (ShellExperienceHost crashed, as on the Windows 10 image of the 2026-10-22 matrix).
 #
 # DataTransferManager needs a window to hang the pane on, so a 1x1 invisible form is made at the mouse and closed with the pane.
 # Files are handed over as real files (StorageFile), so Mail, Nearby sharing and the rest get them. Nothing is stored or sent by Trawl.
@@ -48,6 +50,10 @@ public static class TrawlShareInterop {
     try { return Marshal.GetObjectForIUnknown(p); } finally { Marshal.Release(p); }
   }
   public static void Show(IntPtr hwnd) { Factory().ShowShareUIForWindow(hwnd); }
+  [DllImport("user32.dll")]
+  static extern IntPtr GetForegroundWindow();
+  /// The window that has the keyboard now: still the anchor form means no pane took it.
+  public static IntPtr Foreground() { return GetForegroundWindow(); }
 }
 '@
 
@@ -116,8 +122,18 @@ public static class TrawlShareInterop {
     $cancel.Interval = 1500
     $cancel.add_Tick({ $cancel.Stop(); if (-not $script:chosen) { Say 'cancelled'; $form.Close() } })
     $form.add_Activated({ if ($script:shown -and -not $script:chosen) { $cancel.Stop(); $cancel.Start() } })
+    # A pane that opens takes the keyboard from this form. If, 4 s after the call, nothing has taken it (no deactivation, this form still the
+    # foreground window, no target chosen), no pane came: say so, so Trawl can tell the person instead of leaving them waiting.
+    $script:paneSeen = $false
+    $form.add_Deactivate({ if ($script:shown) { $script:paneSeen = $true } })
+    $watch = New-Object System.Windows.Forms.Timer
+    $watch.Interval = 4000
+    $watch.add_Tick({
+      $watch.Stop()
+      if (-not $script:paneSeen -and -not $script:chosen -and ([TrawlShareInterop]::Foreground() -eq $form.Handle)) { Say 'error:nosheet'; $form.Close() }
+    })
     $form.add_Shown({
-      try { [TrawlShareInterop]::Show($form.Handle); $script:shown = $true }
+      try { [TrawlShareInterop]::Show($form.Handle); $script:shown = $true; $watch.Start() }
       catch { Say ('error:' + $_.Exception.GetType().Name); $form.Close() }
     })
     # Nobody should be left waiting on a pane for ever.

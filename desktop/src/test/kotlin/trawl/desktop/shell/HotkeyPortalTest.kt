@@ -61,14 +61,15 @@ class HotkeyPortalPureTest {
   }
 
   @Test fun aPortalWithNoTriggerYetSaysSoAndKeepsTheFallback() {
-    val (msg, good) = ShortcutMessages.forStatus(HotkeyStatus.Portal(null), Os.LINUX)
+    val (msg, good) = ShortcutMessages.forStatus(HotkeyStatus.Portal(null), Os.LINUX, "/opt/trawl/bin/Trawl --quick")
     assertFalse(good)
-    assertTrue(msg.contains("trawl --quick"))
+    assertTrue(msg.contains("/opt/trawl/bin/Trawl --quick"))
+    assertFalse(msg.contains("\"trawl --quick\""), "the .deb installs no trawl on the PATH")
   }
 
   @Test fun theWaylandFallbackStillNamesTheTrayAndTheCommand() {
-    val msg = ShortcutMessages.forStatus(HotkeyStatus.Wayland, Os.LINUX).first
-    assertTrue(msg.contains("trawl --quick"))
+    val msg = ShortcutMessages.forStatus(HotkeyStatus.Wayland, Os.LINUX, "/opt/trawl/bin/Trawl --quick").first
+    assertTrue(msg.contains("/opt/trawl/bin/Trawl --quick"))
     assertTrue(msg.contains("tray"))
   }
 

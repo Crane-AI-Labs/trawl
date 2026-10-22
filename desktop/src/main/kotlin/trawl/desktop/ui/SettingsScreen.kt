@@ -85,7 +85,7 @@ private enum class SettingsSection(val navKey: String) {
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun SettingsScreen(c: AppController) {
+fun SettingsScreen(c: AppController, scroll: androidx.compose.foundation.ScrollState = rememberScrollState()) {
   val tk = LocalSunlight.current
   val settings by c.settings.collectAsState()
   val counts by c.folderCounts.collectAsState()
@@ -98,7 +98,7 @@ fun SettingsScreen(c: AppController) {
   var removing by remember { mutableStateOf<String?>(null) }
   var forgetting by remember { mutableStateOf(false) }
   var reporting by remember { mutableStateOf(false) }
-  val scroll = rememberScrollState()
+
   val tops = remember { mutableStateMapOf<SettingsSection, Int>() }
   val scope = rememberCoroutineScope()
   val ordered = SettingsSection.entries
@@ -230,7 +230,7 @@ fun SettingsScreen(c: AppController) {
                 trawl.desktop.ui.privacy.PrivacySection(pui, addOnStates[com.craneai.findr.core.PackIds.PRIVACY] is trawl.desktop.AddOnState.Installed && canRun, supported = canRun, roots = settings.folders.map(::File))
               }
               Spacer(Modifier.height(Sun.S24))
-              AddOnsSection(c.addOns, c.privacy, c.modelsDir)
+              AddOnsSection(c.addOns, c.privacy, c.modelsDir, speechInstalled = index.speechPack)
             }
 
             Section(SettingsSection.DATA) {

@@ -91,6 +91,14 @@ class ShareHelperTest {
     assertNotNull(cl.getResource("share-windows.ps1"), "the Windows script ships in the resources")
     assertNotNull(cl.getResource("share-apple.swift"), "its Swift source ships next to the other helpers")
     val ps = String(cl.getResourceAsStream("share-windows.ps1")!!.readBytes())
-    for (needle in listOf("DataTransferManager", "ShowShareUIForWindow", "SetStorageItems", "'cancelled'", "'ok'")) assertTrue(needle in ps, needle)
+    for (needle in listOf("DataTransferManager", "ShowShareUIForWindow", "SetStorageItems", "'cancelled'", "'ok'", "error:nosheet", "GetForegroundWindow", "add_Deactivate")) assertTrue(needle in ps, needle)
+  }
+
+  @Test fun aPaneThatNeverCameIsAFailureAndTheMessageSendsThePersonToShowInFolder() {
+    val a = file(dir(), "a.txt")
+    assertFalse(HelperShare({ listOf("h") }, Recorder("error:nosheet")).share(listOf(a)))
+    Strings.use(java.util.Locale.ENGLISH)
+    assertEquals("Sharing isn't working on this computer. Use Show in folder instead.", t("share_failed"))
+    assertEquals("Show in folder", t("action_show_folder"), "the message names a menu entry that exists")
   }
 }

@@ -6,7 +6,7 @@ import com.craneai.findr.ui.common.formatBytes
 /** Facts about the app itself that the About section and the problem report print. */
 object AppInfo {
   /** Kept in step with `packageVersion` in desktop/build.gradle.kts (a test compares them). */
-  const val VERSION = "1.0.0"
+  const val VERSION = "1.0.1"
   const val MAKER = "Crane AI Labs"
   const val MODEL = "EmbeddingGemma 2"
 }

@@ -104,6 +104,18 @@ class IndexScreensTest {
     assertTrue(one.sub.contains("1 file could not be read"))
   }
 
+  @Test fun videosWaitingForAMissingDecoderAreNotAllCaughtUp() {
+    val base = ix(phase = Phase.UP_TO_DATE, total = 40, understood = 40, wordsIn = 40).copy(mediaDecoder = "none", mediaNeedDecoder = 2)
+    val linux = MeterTexts.of(base, Os.LINUX)
+    assertEquals("Videos and recordings are waiting", linux.title)
+    assertEquals("Install ffmpeg to read video and audio. 2 waiting.", linux.sub)
+    assertTrue(linux.bad)
+    val win = MeterTexts.of(base, Os.WINDOWS)
+    assertFalse(win.sub.contains("ffmpeg"), "only Linux is told to install ffmpeg")
+    assertTrue(win.bad)
+    assertEquals("All caught up", MeterTexts.of(base.copy(mediaNeedDecoder = 0), Os.LINUX).title)
+  }
+
   @Test fun aModelUpgradeSaysHowFarTheReReadIs() {
     val m = MeterTexts.of(ix().copy(reembed = 1_200 to 3_400))
     assertTrue(m.sub.contains("1,200 of 3,400"), m.sub)

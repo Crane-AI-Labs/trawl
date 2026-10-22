@@ -58,7 +58,7 @@ fun ResultsList(c: AppController, built: BuiltResults, ui: MainUi, state: LazyLi
       LazyColumn(state = state, contentPadding = PaddingValues(top = 2.dp, bottom = 16.dp, end = 12.dp), modifier = Modifier.fillMaxSize()) {
         items(built.entries, key = { it.key }) { entry ->
           when (entry) {
-            is Entry.Header -> GroupHeader(entry.group, entry.count)
+            is Entry.Header -> GroupHeader(entry.group, entry.count, entry.mix)
             is Entry.Doc -> DocRow(entry.row, c, ui, ui.isPicked(entry.row.file.id), ui.listFocused)
             is Entry.Tiles -> TileRow(entry.rows, built.cols, c, ui, ui.listFocused)
             is Entry.Weak -> WeakToggle(entry.count, entry.expanded) { ui.showWeak = !ui.showWeak }
@@ -67,7 +67,7 @@ fun ResultsList(c: AppController, built: BuiltResults, ui: MainUi, state: LazyLi
               val at = built.entries.indexOfFirst { it is Entry.Header && it.group == Group.PHOTOS }
               if (at >= 0) scope.launch { state.animateScrollToItem(at) }
             }
-            is Entry.More -> MoreRow(entry.group, entry.hidden) { ui.recentAll = true }
+            is Entry.More -> MoreRow(entry.group, entry.hidden, entry.mix) { ui.recentAll = true }
           }
         }
       }

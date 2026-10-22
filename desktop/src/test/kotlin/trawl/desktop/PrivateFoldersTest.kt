@@ -84,6 +84,27 @@ class PrivateFoldersTest {
     assertTrue(c.settings.value.rules.privateFolders.isEmpty())
   }
 
+  // The system cannot read a NUL as part of a path on any OS, as it cannot read a second colon on Windows (the matrix crash, 2026-10-22).
+  private val unreadable = File("/tmp/trawl-test-root/Photos/bad\u0000name")
+
+  @Test fun `text the system cannot read as a path says so beside the button and does not crash`() = runComposeUiTest {
+    val c = controller()
+    val ui = PrivacyUi(c) { _, _ -> }
+    var next: File? = unreadable
+    setContent { SunlightTheme(ThemeChoice.LIGHT) { PrivateFolders(ui, listOf(root)) { next } } }
+    onNodeWithText("Add a private folder").performClick()
+    waitForIdle()
+    onNodeWithText("That is not a folder name this computer can read. Choose a folder from the list instead.").assertIsDisplayed()
+    assertTrue(c.settings.value.rules.privateFolders.isEmpty())
+
+    // A good choice afterwards clears the message and is kept.
+    next = File(root, "Private")
+    onNodeWithText("Add a private folder").performClick()
+    waitForIdle()
+    onNodeWithText("That is not a folder name this computer can read. Choose a folder from the list instead.").assertDoesNotExist()
+    assertEquals(setOf("private"), c.settings.value.rules.privateFolders)
+  }
+
   @Test fun `with no lock and no prompt a folder is lifted at once`() = runComposeUiTest {
     val c = controller()
     c.setPrivateFolder("Private", true)

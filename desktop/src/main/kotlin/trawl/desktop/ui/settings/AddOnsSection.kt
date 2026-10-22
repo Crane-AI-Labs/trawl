@@ -71,7 +71,7 @@ fun addOnProblemText(p: AddOnProblem): String = when (p) {
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun AddOnsSection(manager: AddOnManager, privacy: PrivacyController, modelsDir: File, searchFolders: () -> List<File> = { Platform.userFolders().let { listOf(it.downloads, it.documents) } }) {
+fun AddOnsSection(manager: AddOnManager, privacy: PrivacyController, modelsDir: File, speechInstalled: Boolean = false, searchFolders: () -> List<File> = { Platform.userFolders().let { listOf(it.downloads, it.documents) } }) {
   val states by manager.states.collectAsState()
   val settings by privacy.settings.collectAsState()
   var removing by remember { mutableStateOf<AddOnDef?>(null) }
@@ -87,7 +87,8 @@ fun AddOnsSection(manager: AddOnManager, privacy: PrivacyController, modelsDir: 
   Column(verticalArrangement = Arrangement.spacedBy(Sun.S12)) {
     for (def in AddOnCatalog.all) {
       val update = updates.firstOrNull { it.packId == def.id }
-      AddOnCard(def, states[def.id] ?: AddOnState.NotInstalled, declined = privacy.declined(def.id), update = update, manager = manager, privacy = privacy, onRemove = { removing = def })
+      if (def.bundled) BundledCard(def, speechInstalled)
+      else AddOnCard(def, states[def.id] ?: AddOnState.NotInstalled, declined = privacy.declined(def.id), update = update, manager = manager, privacy = privacy, onRemove = { removing = def })
     }
     Text(t("addons_checked"), style = SunType.Caption)
   }
@@ -123,6 +124,21 @@ fun FirstRunAddOns(manager: AddOnManager, privacy: PrivacyController) {
   Column(verticalArrangement = Arrangement.spacedBy(Sun.S12)) {
     for (def in offered) AddOnCard(def, states[def.id] ?: AddOnState.NotInstalled, declined = privacy.declined(def.id), update = null, manager = manager, privacy = privacy, onRemove = {})
     Text(t("first_addons_skip"), style = SunType.Caption)
+  }
+}
+
+/** An add-on that comes with the models file (Speech): says whether it is there and where it comes from; nothing to add or remove here. */
+@Composable
+internal fun BundledCard(def: AddOnDef, installed: Boolean) {
+  SunCard(Modifier.fillMaxWidth()) {
+    Column(Modifier.padding(Sun.S16), verticalArrangement = Arrangement.spacedBy(Sun.S8)) {
+      Row(horizontalArrangement = Arrangement.spacedBy(Sun.S12)) {
+        Text(t(def.nameKey), style = SunType.Heading, modifier = Modifier.weight(1f))
+        Badge(t(if (installed) "addons_status_included" else "addons_status_not_added"), marker = installed)
+      }
+      Text(t(def.benefitKey), style = SunType.Body)
+      Text(t(if (installed) "addons_bundled_on" else "addons_bundled_off"), style = SunType.Caption)
+    }
   }
 }
 

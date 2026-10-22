@@ -306,9 +306,11 @@ class AddOnsTest {
     assertFalse(File(models2, "private/nsfw-384/nsfw-384.onnx").exists())
   }
 
-  @Test fun `the catalog lists the Privacy pack as available and Speech as coming soon`() {
+  @Test fun `the catalog lists the Privacy pack as an add-on and Speech as part of the models file`() {
     assertTrue(AddOnCatalog.privacy.available)
-    assertFalse(AddOnCatalog.speech.available)
+    assertFalse(AddOnCatalog.privacy.bundled)
+    assertFalse(AddOnCatalog.speech.available, "there is no separate speech file to add")
+    assertTrue(AddOnCatalog.speech.bundled, "its card says whether it is there, not 'Coming soon'")
     assertEquals(22_501_653L, AddOnCatalog.privacy.sizeBytes)
     assertEquals(listOf("privacy", "speech"), AddOnCatalog.all.map { it.id })
   }

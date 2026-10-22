@@ -84,6 +84,8 @@ data class IndexUi(
    * without ffmpeg). Null until the first check. With "none" the videos and recordings are left out of the meter, not counted as waiting.
    */
   val mediaDecoder: String? = null,
+  /** Videos and recordings that wait only because this computer has no decoder (Linux without ffmpeg): the meter then says so instead of "All caught up". */
+  val mediaNeedDecoder: Int = 0,
   /** The speech pack (Parakeet and the voice detector) is installed, so recordings and soundtracks give words. */
   val speechPack: Boolean = false,
   /** Files whose words are in (the pale level of the meter): every file kept, less the ones the words pass has not reached. */
@@ -304,7 +306,7 @@ class IndexService(
   /** How many files a folder holds in the index, for Settings. */
   fun countUnder(folder: File): Int {
     val store = opener.current ?: return 0
-    val prefix = prefixOf(folder.toPath().toAbsolutePath().normalize())
+    val prefix = prefixOf(SafePath.of(folder) ?: return 0)
     return store.read { db -> db.long("SELECT COUNT(*) FROM files WHERE volume = ? AND state != 'skipped' AND uri >= ? AND uri < ?", Crawler.VOLUME, prefix, prefix + "￿") ?: 0L }.toInt()
   }
 
@@ -377,7 +379,7 @@ class IndexService(
   private fun handle(job: Job) {
     when (job) {
       is SetRoots -> {
-        roots = job.roots.map { it.toPath().toAbsolutePath().normalize() }
+        roots = job.roots.mapNotNull { SafePath.of(it) }
         dropOutsideRoots()
         if (blocked.keys.removeAll { b -> roots.none { b.startsWith(it) } }) { blockedSummary = BlockedSummary.of(blocked, home) }
         scanAll()
@@ -893,6 +895,8 @@ class IndexService(
       }
     }
     val waiting = s.waiting(on)
+    val noDecoder = decoder == null && _ui.value.mediaDecoder == "none"
+    val mediaNeedDecoder = if (ready && noDecoder) s.waiting(kinds.intersect(Crawler.MEDIA_KINDS)) else 0
     val mediaWaiting = s.waiting(on.intersect(Crawler.MEDIA_KINDS))
     val hold = hold()
     // With no model the work is the words pass; with one, the whole reading.
@@ -925,7 +929,7 @@ class IndexService(
         phase = phase, scanned = scannedSoFar, total = total, understood = if (ready) total - waiting else total - wordsLeft, photos = photos, documents = docs, videos = videos, recordings = recordings,
         current = current, etaMs = eta, modelReady = ready, generation = generation,
         hold = if (phase == Phase.PAUSED) hold else null, byKind = byKind, ratePerMin = rate ?: it.ratePerMin, unreadable = unreadable, readingWords = !ready && wordsLeft > 0,
-        mediaDecoder = decoder?.name ?: it.mediaDecoder, speechPack = speechInstalled,
+        mediaDecoder = decoder?.name ?: it.mediaDecoder, mediaNeedDecoder = mediaNeedDecoder, speechPack = speechInstalled,
         wordsIn = total - wordsLeftAll, openProblem = null, opening = false, reembed = reembedNow(store, on),
         disk = diskLevel, freeBytes = freeBytes, blocked = blockedSummary,
       )

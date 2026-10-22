@@ -25,6 +25,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.craneai.findr.ui.theme.LocalSunlight
 import java.io.File
+import trawl.desktop.SafePath
 import trawl.desktop.privacy.PrivacyController
 import trawl.desktop.t
 import trawl.desktop.ui.Icons
@@ -52,7 +53,7 @@ fun PrivateFolders(ui: PrivacyUi, roots: List<File>, pick: () -> File? = { Picke
   val c: PrivacyController = ui.c
   val s by c.settings.collectAsState()
   val tk = LocalSunlight.current
-  var bad by remember { mutableStateOf(false) }
+  var problem by remember { mutableStateOf<String?>(null) }   // the string key of what is wrong with the last folder chosen
 
   Text(t("privacy_folders"), style = SunType.Label, color = tk.ink, modifier = Modifier.padding(top = Sun.S12).a11yHeading())
   Text(t("privacy_folders_hint"), style = SunType.Caption, color = tk.ink2)
@@ -75,12 +76,14 @@ fun PrivateFolders(ui: PrivacyUi, roots: List<File>, pick: () -> File? = { Picke
       }
     }
   }
-  if (bad) Notice(t("privacy_folders_bad"), bad = true, modifier = Modifier.padding(vertical = Sun.S4))
+  problem?.let { Notice(t(it), bad = true, modifier = Modifier.padding(vertical = Sun.S4)) }
   SunOutlinedButton(
     onClick = {
       val chosen = pick() ?: return@SunOutlinedButton
+      // Text typed into the chooser's name field can be something the system cannot read as a path ("C:\x:y"): say so here, beside the button.
+      if (SafePath.of(chosen) == null) { problem = "privacy_folders_invalid"; return@SunOutlinedButton }
       val relative = PrivacyController.relativeFolder(chosen, roots)
-      if (relative == null) bad = true else { bad = false; c.setPrivateFolder(relative, true) }
+      if (relative == null) problem = "privacy_folders_bad" else { problem = null; c.setPrivateFolder(relative, true) }
     },
     modifier = Modifier.padding(top = Sun.S8),
   ) {

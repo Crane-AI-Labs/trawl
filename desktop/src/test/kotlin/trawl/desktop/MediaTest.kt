@@ -434,6 +434,23 @@ class MediaProcessorTest {
     dir.deleteRecursively()
   }
 
+  @Test fun aSliverOfALastWindowIsNotGivenToTheSpeechEngineAndSaysNothingAboutIt() {
+    val dir = tmpDir(); val e = FakeEmbedder()
+    val total = 3 * 60_000L + 200
+    val info = MediaInfo(total, true, true)
+    val windows = MediaSchedule.windowCount(total)
+    assertEquals(4, windows)
+    val tr = FakeTranscriber(english())
+    val d = FakeDecoder(info) { t -> ((t / 700) % 4).toInt() }
+    val last = processor(d, e, tr, dir).step(fileOf(FileKind.VIDEO, total), File("/x"), info, windows - 1, windows)
+    assertTrue(tr.calls.isEmpty(), "200 ms of sound is not read: ${tr.calls}")
+    assertFalse(last.detail.orEmpty().contains("soundtrack"), last.detail)
+    processor(d, e, tr, dir).step(fileOf(FileKind.VIDEO, total), File("/x"), info, 2, windows)
+    assertEquals(listOf(120_000L to 60_000L), tr.calls, "a full window still is")
+    assertTrue(MediaProcessor.soundWorthReading(null, 0) && MediaProcessor.soundWorthReading(500, 0) && !MediaProcessor.soundWorthReading(499, 0))
+    dir.deleteRecursively()
+  }
+
   @Test fun speechInAnotherLanguageKeepsOnlyTheSoundLabels() {
     val dir = tmpDir(); val e = FakeEmbedder()
     val info = MediaInfo(10_000, false, true)

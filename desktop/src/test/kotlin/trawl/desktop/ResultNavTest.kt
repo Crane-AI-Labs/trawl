@@ -12,7 +12,10 @@ import trawl.desktop.ui.Entry
 import trawl.desktop.ui.Group
 import trawl.desktop.ui.NavSection
 import trawl.desktop.ui.ResultNav
+import trawl.desktop.ui.ListStyle
+import trawl.desktop.ui.Mix
 import trawl.desktop.ui.ResultsLayout
+import trawl.desktop.ui.groupTitle
 
 class ResultNavTest {
   private fun row(id: Long, kind: FileKind, strong: Boolean = true) =
@@ -31,6 +34,22 @@ class ResultNavTest {
     assertTrue(onlyDocs.entries.none { it is Entry.Header })
     val mixed = ResultsLayout.build(listOf(doc(1), photo(2), photo(3)), showWeak = false, cols = 3)
     assertEquals(listOf(Group.DOCUMENTS to 1, Group.PHOTOS to 2), mixed.entries.filterIsInstance<Entry.Header>().map { it.group to it.count })
+  }
+
+  @Test fun videosAndRecordingsAreNotLabelledDocumentsAndPdfs() {
+    fun mixOf(vararg r: ResultRow) = ResultsLayout.build(r.toList() + photo(99), showWeak = false, cols = 3).entries.filterIsInstance<Entry.Header>().first { it.group == Group.DOCUMENTS }.mix
+    assertEquals(Mix.DOCUMENTS, mixOf(doc(1), row(2, FileKind.PDF)))
+    assertEquals(Mix.MEDIA, mixOf(row(1, FileKind.VIDEO), row(2, FileKind.AUDIO)))
+    assertEquals(Mix.BOTH, mixOf(doc(1), row(2, FileKind.VIDEO)))
+    Strings.use(java.util.Locale.ENGLISH)
+    assertEquals("Documents and PDFs", groupTitle(Group.DOCUMENTS, Mix.DOCUMENTS))
+    assertEquals("Videos and recordings", groupTitle(Group.DOCUMENTS, Mix.MEDIA))
+    assertEquals("Documents, videos and recordings", groupTitle(Group.DOCUMENTS, Mix.BOTH))
+    assertEquals("Photos", groupTitle(Group.PHOTOS, Mix.MEDIA))
+    // the Recent feed's "show more" row and header say the same
+    val feed = ResultsLayout.build(List(8) { row(it + 1L, FileKind.VIDEO) } + photo(50), showWeak = false, cols = 3, style = ListStyle.RECENT)
+    assertEquals(Mix.MEDIA, feed.entries.filterIsInstance<Entry.Header>().first().mix)
+    assertEquals(Mix.MEDIA, feed.entries.filterIsInstance<Entry.More>().single().mix)
   }
 
   @Test fun theGroupHoldingTheBestHitLeads() {

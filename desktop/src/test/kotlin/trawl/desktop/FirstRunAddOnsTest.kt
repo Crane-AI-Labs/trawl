@@ -1,6 +1,7 @@
 package trawl.desktop
 
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.runComposeUiTest
@@ -38,6 +39,20 @@ class FirstRunAddOnsTest {
 
   @Test fun theSpeechPackIsNotOfferedUntilItHasABundle() {
     assertTrue(AddOnCatalog.speech.id !in AddOnOffer.idsAtFirstRun(AddOnCatalog.all, emptyMap()))
+  }
+
+  @Test fun settingsSpeechCardTellsTheTruthAndNeverSaysComingSoon() = runComposeUiTest {
+    val installed = androidx.compose.runtime.mutableStateOf(true)
+    setContent { SunlightTheme { trawl.desktop.ui.settings.BundledCard(AddOnCatalog.speech, installed.value) } }
+    onNodeWithText("Speech").assertExists()
+    onNodeWithText("Included").assertExists()
+    onNodeWithText(t("addons_bundled_on")).assertExists()
+    onAllNodesWithText("Coming soon").assertCountEquals(0)
+    installed.value = false
+    waitForIdle()
+    onNodeWithText("Not added").assertExists()
+    onNodeWithText(t("addons_bundled_off")).assertExists()
+    onAllNodesWithText("Coming soon").assertCountEquals(0)
   }
 
   @Test fun theFirstRunPageShowsTheExtrasWithTheSameCardsAsSettings() = runComposeUiTest {

@@ -96,6 +96,8 @@ object MeterTexts {
     val namesOnly = !ix.modelReady && !ix.modelLoading && !ix.readingWords && (ix.phase == Phase.INDEXING || ix.phase == Phase.UP_TO_DATE)
     val eta = ix.etaMs
     val reembed = ix.reembed
+    // Everything else is read, but videos or recordings wait for a decoder the computer lacks: not "All caught up".
+    val needsDecoder = ix.phase == Phase.UP_TO_DATE && !namesOnly && ix.mediaNeedDecoder > 0
     val title = when {
       ix.openProblem != null -> t("open_problem_title", t("app_name"))
       ix.opening -> t("index_opening")
@@ -111,6 +113,7 @@ object MeterTexts {
       namesOnly -> t("meter_title_waiting_models")
       ix.phase == Phase.INDEXING && ix.readingWords -> t("meter_title_words")
       ix.phase == Phase.INDEXING -> t("meter_title_indexing")
+      needsDecoder -> t("meter_title_media_waiting")
       else -> t("meter_title_up_to_date")
     }
     val sub = when {
@@ -132,10 +135,11 @@ object MeterTexts {
       ix.phase == Phase.INDEXING && ix.modelLoading -> t("meter_sub_names_first")
       ix.phase == Phase.INDEXING && eta != null -> t("meter_sub_progress_eta", formatCount(ix.understood), formatCount(ix.total), etaText(eta))
       ix.phase == Phase.INDEXING -> t("meter_sub_progress", formatCount(ix.understood), formatCount(ix.total))
+      needsDecoder -> t(if (os == Os.LINUX) "meter_sub_media_no_ffmpeg" else "meter_sub_media_no_decoder", formatCount(ix.mediaNeedDecoder))
       ix.unreadable > 0 -> tn("index_ready_unreadable", ix.unreadable, formatCount(ix.unreadable))
       else -> tn("meter_sub_up_to_date", ix.total, formatCount(ix.total))
     }
-    val bad = ix.phase == Phase.ERROR || ix.openProblem != null || namesOnly ||
+    val bad = ix.phase == Phase.ERROR || ix.openProblem != null || namesOnly || needsDecoder ||
       (ix.phase == Phase.PAUSED && (ix.hold == Hold.STORAGE_LOW || ix.hold == Hold.NO_PERMISSION))
     return MeterText(title, sub, bad)
   }

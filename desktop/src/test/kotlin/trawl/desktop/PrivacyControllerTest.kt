@@ -17,6 +17,7 @@ import trawl.desktop.privacy.OsAvailability
 import trawl.desktop.privacy.OsOutcome
 import trawl.desktop.privacy.OsPrompt
 import trawl.desktop.privacy.OsUnlock
+import trawl.desktop.privacy.OwnWindowFocus
 import trawl.desktop.privacy.PassResult
 import trawl.desktop.privacy.Passphrase
 import trawl.desktop.privacy.PrivacyController
@@ -202,6 +203,36 @@ class PrivacyControllerTest {
     rig.advance(2_000)
     c.onWindowFocus("main", true)
     assertTrue(c.locked.value)
+  }
+
+  @Test fun `Trawls own dialog taking the keyboard is not leaving, however long it stays open`() {
+    val rig = Rig()
+    rig.controller().also { it.enableLock(p()); it.setLockAfterMinutes(0) }   // zero: locks at every return, the strictest setting
+    val c = rig.controller()
+    c.authWithPassphrase(Purpose.UNLOCK, p())
+    val dialog = Any()
+    c.onWindowFocus("main", true)
+    OwnWindowFocus.report(c, Any())             // AWT: a window of this process has the focus
+    // the folder chooser opens: AWT says no window for an instant, then the dialog; the main window reports its loss
+    OwnWindowFocus.report(c, null)
+    c.onWindowFocus("main", false)
+    OwnWindowFocus.report(c, dialog)
+    rig.advance(30_000); rig.later.runDue()      // the person browses folders for half a minute
+    rig.advance(60_000); rig.later.runDue()
+    assertFalse(c.locked.value, "a dialog of ours is not leaving")
+    // the dialog closes and the main window gets the focus back
+    OwnWindowFocus.report(c, null)
+    c.onWindowFocus("main", true)
+    OwnWindowFocus.report(c, Any())
+    rig.advance(1_000); rig.later.runDue()
+    assertFalse(c.locked.value)
+    // really leaving: the focus goes to another application, so no window of ours has it
+    c.onWindowFocus("main", false)
+    OwnWindowFocus.report(c, null)
+    rig.advance(500); rig.later.runDue()
+    rig.advance(2_000)
+    c.onWindowFocus("main", true)
+    assertTrue(c.locked.value, "leaving for another app still locks")
   }
 
   @Test fun `two windows share one lock and hopping between them is not leaving`() {

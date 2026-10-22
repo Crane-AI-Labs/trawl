@@ -69,6 +69,9 @@ private fun AppContent(c: AppController) {
   val addOnStates by c.addOns.states.collectAsState()
   val packInstalled = addOnStates[PackIds.PRIVACY] is AddOnState.Installed && PrivacyRuntime.usable()
   val privacyUi = remember(c) { PrivacyUi(c.privacy, c::say) }
+  // Settings keeps its place when the lock screen replaces it and the person unlocks (the screen leaves the composition meanwhile).
+  val settingsScroll = androidx.compose.foundation.rememberScrollState()
+  LaunchedEffect(screen) { if (screen != Screen.SETTINGS) settingsScroll.scrollTo(0) }   // a later visit starts at the top
   SunlightTheme(settings) {
    ProvideLayoutDirection(settings.language) {   // hook (Package C): right-to-left for Arabic
     Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
@@ -98,7 +101,7 @@ private fun AppContent(c: AppController) {
           else when (screen) {
             Screen.FIRST_RUN -> FirstRunScreen(c)
             Screen.MAIN -> MainScreen(c)
-            Screen.SETTINGS -> SettingsScreen(c)
+            Screen.SETTINGS -> SettingsScreen(c, settingsScroll)
             Screen.LICENCES -> LicencesScreen(c)
           }
           privacyUi.Dialogs()
@@ -137,6 +140,7 @@ internal fun usableScreens(): List<Rect> = runCatching {
 @OptIn(FlowPreview::class)
 fun runWindow(args: List<String> = emptyList()) {
   Strings.use(Locale.getDefault())
+  trawl.desktop.WmClass.apply()   // before the first window: the dock groups Trawl's windows with its launcher entry (Linux)
   val dataDir = Platform.dataDir()
   // --- shell (Package D): one Trawl per data folder. A second launch (or `trawl --quick`) hands over to the running one and exits. ---
   val quickLaunch = "--quick" in args
@@ -219,12 +223,14 @@ fun runWindow(args: List<String> = emptyList()) {
           override fun windowLostFocus(e: java.awt.event.WindowEvent?) { shell.mainFocused = false; controller.privacy.onWindowFocus("main", false) }
         }
         window.addWindowFocusListener(focus)
+        // Trawl's own dialogs (the folder chooser, file dialogs) take the keyboard from this window: that is not leaving.
+        val stopOwnFocus = trawl.desktop.privacy.OwnWindowFocus.install(controller.privacy)
         runCatching {
           val d = java.awt.Desktop.getDesktop()
           if (d.isSupported(java.awt.Desktop.Action.APP_QUIT_HANDLER)) d.setQuitHandler { _, r -> r.cancelQuit(); shell.quit() }
           if (d.isSupported(java.awt.Desktop.Action.APP_EVENT_REOPENED)) d.addAppEventListener(java.awt.desktop.AppReopenedListener { shell.showMain() })
         }
-        onDispose { window.removeWindowFocusListener(focus) }
+        onDispose { window.removeWindowFocusListener(focus); stopOwnFocus() }
       }
       // --- end shell ---
       // Privacy: keep the window out of screenshots and screen sharing while hidden or sensitive things show (or when the person asked). A request

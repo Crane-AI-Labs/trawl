@@ -109,7 +109,7 @@ class FolderWatcher(
     val ws = service ?: FileSystems.getDefault().newWatchService().also { service = it; startPump(it) }
     val sched = scheduler ?: Executors.newSingleThreadScheduledExecutor { r -> Thread(r, "trawl-watch-flush").apply { isDaemon = true } }.also { scheduler = it }
     for (f in roots) {
-      val root = f.toPath().toAbsolutePath().normalize()
+      val root = SafePath.of(f) ?: continue
       if (!Files.isDirectory(root)) { modes[root.toString()] = WatchMode.POLLING; continue }   // gone or unplugged: polling notices it coming back
       val mode = try { register(ws, root) } catch (e: Exception) {
         log("watch $root: ${e.javaClass.simpleName} ${e.message}; polling instead"); WatchMode.POLLING

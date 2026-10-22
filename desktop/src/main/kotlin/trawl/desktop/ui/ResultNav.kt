@@ -10,7 +10,7 @@ sealed interface Entry {
   val key: String
 
   /** A group label ("Documents", "Photos") with its count, shown only when both groups are present. */
-  data class Header(val group: Group, val count: Int) : Entry { override val key get() = "h-${group.name}" }
+  data class Header(val group: Group, val count: Int, val mix: Mix = Mix.DOCUMENTS) : Entry { override val key get() = "h-${group.name}" }
 
   /** One document, PDF or other non-picture result: one compact row. */
   data class Doc(val row: ResultRow) : Entry { override val key get() = "d-${row.file.id}" }
@@ -25,10 +25,25 @@ sealed interface Entry {
   data class Peek(val count: Int, val more: Boolean) : Entry { override val key get() = "peek" }
 
   /** "Show 214 more documents": the Recent list shows a few document rows, then photos; the rest are one click away. */
-  data class More(val group: Group, val hidden: Int) : Entry { override val key get() = "more-${group.name}" }
+  data class More(val group: Group, val hidden: Int, val mix: Mix = Mix.DOCUMENTS) : Entry { override val key get() = "more-${group.name}" }
 }
 
 enum class Group { DOCUMENTS, PHOTOS }
+
+/**
+ * What the non-picture group holds, so its label does not call a video a document: only documents and PDFs, only videos and recordings,
+ * or both. (Pictures are always the other group. The layout and the ranking inside it are unchanged: only the words differ.)
+ */
+enum class Mix {
+  DOCUMENTS, MEDIA, BOTH;
+
+  companion object {
+    fun of(rows: List<ResultRow>): Mix {
+      val media = rows.count { it.file.kind == com.craneai.findr.core.FileKind.VIDEO || it.file.kind == com.craneai.findr.core.FileKind.AUDIO }
+      return when { media == 0 -> DOCUMENTS; media == rows.size -> MEDIA; else -> BOTH }
+    }
+  }
+}
 
 /**
  * How the list is put together. [RESULTS] groups strong matches into documents and photos (the group with the best hit leads, with the photo
@@ -99,10 +114,10 @@ object ResultsLayout {
     val photos = rows.filter(::isTile)
     val shown = docs.take(docRows)
     if (shown.isNotEmpty()) {
-      if (photos.isNotEmpty()) entries += Entry.Header(Group.DOCUMENTS, docs.size)
+      if (photos.isNotEmpty()) entries += Entry.Header(Group.DOCUMENTS, docs.size, Mix.of(docs))
       shown.forEach { entries += Entry.Doc(it) }
       sections += NavSection(grid = false, ids = shown.map { it.file.id })
-      if (docs.size > shown.size) entries += Entry.More(Group.DOCUMENTS, docs.size - shown.size)
+      if (docs.size > shown.size) entries += Entry.More(Group.DOCUMENTS, docs.size - shown.size, Mix.of(docs.drop(shown.size)))
     }
     if (photos.isNotEmpty()) {
       if (shown.isNotEmpty()) entries += Entry.Header(Group.PHOTOS, photos.size)
@@ -123,7 +138,7 @@ object ResultsLayout {
     val peek = mixed && headers && !photosFirst && docs.size > PEEK_AFTER_ROWS
     fun docsOut() {
       if (docs.isEmpty()) return
-      if (mixed && headers) entries += Entry.Header(Group.DOCUMENTS, docs.size)
+      if (mixed && headers) entries += Entry.Header(Group.DOCUMENTS, docs.size, Mix.of(docs))
       if (peek) {
         val take = cols.coerceIn(1, PEEK_MAX_CELLS)
         val top = photos.take(take)

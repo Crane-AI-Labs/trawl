@@ -51,6 +51,25 @@ class PlatformTest {
     assertEquals(File("/h/Pictures"), Platform.userFolders(Os.WINDOWS, File("/h"), null).pictures)
   }
 
+  @Test fun videosAndMusicAreAmongTheFirstRunFolders() {
+    val dirs = "XDG_VIDEOS_DIR=\"\$HOME/Filme\"\nXDG_MUSIC_DIR=\"\$HOME/Musik\"\n"
+    val de = Platform.userFolders(Os.LINUX, File("/h"), dirs)
+    assertEquals(File("/h/Filme"), de.videos)
+    assertEquals(File("/h/Musik"), de.music)
+    val plain = Platform.userFolders(Os.LINUX, File("/h"), null)
+    assertEquals(listOf("Pictures", "Documents", "Downloads", "Videos", "Music").map { File("/h", it) }, plain.all)
+    assertEquals(File("/h/Movies"), Platform.userFolders(Os.MAC, File("/h"), null).videos)
+    assertEquals(File("/h/Videos"), Platform.userFolders(Os.WINDOWS, File("/h"), null).videos)
+    assertEquals(3, Platform.UserFolders(File("a"), File("b"), File("c")).all.size, "a list built with three folders still has three")
+  }
+
+  @Test fun theQuickCommandIsTheLauncherThatReallyExists() {
+    assertEquals("/opt/trawl/bin/Trawl --quick", Platform.quickCommand("/opt/trawl/bin/Trawl", "/opt/trawl/lib/runtime/bin/java"))
+    assertEquals("/usr/local/trawl/bin/Trawl --quick", Platform.quickCommand(null, "/usr/local/trawl/bin/Trawl"))
+    assertEquals("/opt/trawl/bin/Trawl --quick", Platform.quickCommand(null, "/usr/lib/jvm/java-21/bin/java"), "a development run is told the installed place")
+    assertEquals("/opt/trawl/bin/Trawl --quick", Platform.quickCommand("", null))
+  }
+
   @Test fun openAndShowCommands() {
     assertEquals(listOf("xdg-open", "/a b/c.pdf"), Platform.openCommand("/a b/c.pdf", Os.LINUX))
     assertEquals(listOf("open", "/a"), Platform.openCommand("/a", Os.MAC))

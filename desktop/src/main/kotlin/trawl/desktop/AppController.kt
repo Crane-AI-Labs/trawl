@@ -498,7 +498,7 @@ class AppController(
     service.configure(Scope.enabledKinds(s), skippedPaths, s.learningSpeed, s.indexPaused)
   }
 
-  private fun sameFolder(a: String, b: String) = File(a).toPath().normalize() == File(b).toPath().normalize()
+  private fun sameFolder(a: String, b: String) = (SafePath.of(a) ?: a) == (SafePath.of(b) ?: b)
 
   fun rescan() = service.rescan()
 

@@ -22,24 +22,46 @@ object GpuProbe {
   private const val TIMEOUT_S = 180L
   const val FLAG = "--gpu-probe"
 
-  fun usable(model: File, answer: File, run: (File) -> Boolean = ::tryInChild): Boolean {
+  /**
+   * [softwareOnly]: the computer has no Vulkan driver but software ones ([VulkanIcds]); then the answer is "cpu" without starting
+   * anything, and it is not written down (a GPU driver installed later is noticed the next time).
+   */
+  fun usable(model: File, answer: File, run: (File) -> Boolean = ::tryInChild, softwareOnly: () -> Boolean = { VulkanIcds.onlySoftwareHere() }): Boolean {
     val key = "${model.name}:${model.length()}:${System.getProperty("os.name")}:${System.getProperty("java.version")}"
     runCatching {
       val lines = answer.takeIf { it.isFile }?.readLines()
       if (lines != null && lines.size >= 2 && lines[0] == key) return lines[1] == "gpu"
     }
+    if (runCatching(softwareOnly).getOrDefault(false)) return false
     val ok = run(model)
     runCatching { answer.parentFile?.mkdirs(); answer.writeText("$key\n${if (ok) "gpu" else "cpu"}\n") }
     return ok
   }
 
-  private fun tryInChild(model: File): Boolean = try {
-    val java = File(System.getProperty("java.home"), "bin/" + if (Platform.os == Os.WINDOWS) "java.exe" else "java")
+  /**
+   * The JVM flags that make a probe crash cheap. A crashing JVM writes `hs_err_pid<n>.log` in the working folder (the person's home) and then
+   * aborts, which on Ubuntu hands a core of the whole process to apport (1 GB, about 95 s while the app waited for the child to be reaped). So
+   * the crash report goes to Trawl's own logs folder, and no core is asked for: the child just ends and the answer is "cpu" at once.
+   */
+  fun crashFlags(logsDir: File): List<String> = listOf("-XX:ErrorFile=${File(logsDir, "hs_err_gpu_probe_%p.log").path}", "-XX:-CreateCoredumpOnCrash")
+
+  /** The child's command line: a plain `java` when the runtime has one, else the app's own launcher (jpackage's macOS runtime has no bin/java). */
+  fun childCommand(model: File, javaHome: String, classPath: String, launcher: () -> String, logsDir: File, os: Os = Platform.os): List<String> {
+    val java = File(javaHome, "bin/" + if (os == Os.WINDOWS) "java.exe" else "java")
     // jpackage's macOS runtime has no bin/java (found on the first real Mac build: the child never started, so the answer was always "cpu").
     // There the child is the app's own launcher, which hands "--gpu-probe <model>" to main() before any window opens.
-    val cmd = if (java.isFile) listOf(java.absolutePath, "-Xmx768m", "-cp", System.getProperty("java.class.path"), "trawl.desktop.GpuProbe", model.absolutePath)
-    else listOf(ProcessHandle.current().info().command().orElseThrow(), FLAG, model.absolutePath)
-    val p = ProcessBuilder(cmd).redirectErrorStream(true).redirectOutput(ProcessBuilder.Redirect.DISCARD).start()
+    return if (java.isFile) listOf(java.absolutePath, "-Xmx768m") + crashFlags(logsDir) + listOf("-cp", classPath, "trawl.desktop.GpuProbe", model.absolutePath)
+    else listOf(launcher(), FLAG, model.absolutePath)
+  }
+
+  private fun tryInChild(model: File): Boolean = try {
+    val logs = File(Platform.dataDir(), "logs").also { it.mkdirs() }
+    val cmd = childCommand(model, System.getProperty("java.home"), System.getProperty("java.class.path"), { ProcessHandle.current().info().command().orElseThrow() }, logs)
+    val pb = ProcessBuilder(cmd).redirectErrorStream(true).redirectOutput(ProcessBuilder.Redirect.DISCARD)
+    // The launcher path cannot take JVM flags on its command line; they go in through the environment instead (a flag with a space in its
+    // path, as macOS's "Application Support" has, is left out: JAVA_TOOL_OPTIONS splits on spaces).
+    if (cmd.getOrNull(1) == FLAG) pb.environment()["JAVA_TOOL_OPTIONS"] = crashFlags(logs).filter { f -> f.none { it.isWhitespace() } }.joinToString(" ")
+    val p = pb.start()
     val done = p.waitFor(TIMEOUT_S, TimeUnit.SECONDS)
     if (!done) p.destroyForcibly()
     done && p.exitValue() == 0

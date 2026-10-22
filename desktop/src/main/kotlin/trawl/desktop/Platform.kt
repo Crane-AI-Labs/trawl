@@ -29,7 +29,7 @@ object Platform {
   }
 
   /**
-   * The person's own Pictures, Documents and Downloads. Linux honours `~/.config/user-dirs.dirs` (a localised "Bilder" is still
+   * The person's own Pictures, Documents, Downloads, Videos and Music. Linux honours `~/.config/user-dirs.dirs` (a localised "Bilder" is still
    * the Pictures folder); the other two use the fixed English names every Windows and macOS account has.
    */
   fun userFolders(os: Os = this.os, home: File = File(System.getProperty("user.home")), userDirs: String? = readUserDirs(home)): UserFolders {
@@ -38,14 +38,30 @@ object Platform {
       val value = line.substringAfter('=').trim().trim('"').replace("\$HOME", home.path)
       return if (value.isBlank() || File(value) == home) File(home, fallback) else File(value)
     }
-    return if (os == Os.LINUX) UserFolders(xdg("PICTURES", "Pictures"), xdg("DOCUMENTS", "Documents"), xdg("DOWNLOAD", "Downloads"))
-    else UserFolders(File(home, "Pictures"), File(home, "Documents"), File(home, "Downloads"))
+    return if (os == Os.LINUX) UserFolders(xdg("PICTURES", "Pictures"), xdg("DOCUMENTS", "Documents"), xdg("DOWNLOAD", "Downloads"), xdg("VIDEOS", "Videos"), xdg("MUSIC", "Music"))
+    else UserFolders(File(home, "Pictures"), File(home, "Documents"), File(home, "Downloads"), File(home, if (os == Os.MAC) "Movies" else "Videos"), File(home, "Music"))
+  }
+
+  /**
+   * The command that opens quick search, as typed in a system shortcut. jpackage names its launcher in `jpackage.app-path`
+   * (the .deb installs only `/opt/trawl/bin/Trawl`, there is no `trawl` on the PATH), else the running executable if it is Trawl's own
+   * launcher, else the .deb's usual place.
+   */
+  fun quickCommand(
+    appPath: String? = System.getProperty("jpackage.app-path"),
+    running: String? = runCatching { ProcessHandle.current().info().command().orElse(null) }.getOrNull(),
+  ): String {
+    val path = appPath?.takeIf { it.isNotBlank() }
+      ?: running?.takeIf { File(it).name.removeSuffix(".exe").equals("Trawl", ignoreCase = true) }
+      ?: "/opt/trawl/bin/Trawl"
+    return "$path --quick"
   }
 
   private fun readUserDirs(home: File): String? = runCatching { File(home, ".config/user-dirs.dirs").takeIf { it.isFile }?.readText() }.getOrNull()
 
-  data class UserFolders(val pictures: File, val documents: File, val downloads: File) {
-    val all: List<File> get() = listOf(pictures, documents, downloads)
+  /** [videos] and [music] are where the first-run list finds the videos and recordings the Video and Audio boxes read (Movies on a Mac). */
+  data class UserFolders(val pictures: File, val documents: File, val downloads: File, val videos: File? = null, val music: File? = null) {
+    val all: List<File> get() = listOfNotNull(pictures, documents, downloads, videos, music)
   }
 
   /** The command that opens [path] with whatever app the system has set for it. */

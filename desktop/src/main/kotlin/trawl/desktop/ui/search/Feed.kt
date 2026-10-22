@@ -77,7 +77,7 @@ fun PeekHeading(count: Int, more: Boolean, onSeeAll: () -> Unit) {
 
 /** "Show 214 more documents": the Recent list keeps to a few rows; the rest are one click away (it types nothing, it just asks for the documents). */
 @Composable
-fun MoreRow(group: trawl.desktop.ui.Group, hidden: Int, onMore: () -> Unit) {
+fun MoreRow(group: trawl.desktop.ui.Group, hidden: Int, mix: trawl.desktop.ui.Mix = trawl.desktop.ui.Mix.DOCUMENTS, onMore: () -> Unit) {
   val tk = LocalSunlight.current
   val shape = RoundedCornerShape(8.dp)
   Row(
@@ -87,7 +87,12 @@ fun MoreRow(group: trawl.desktop.ui.Group, hidden: Int, onMore: () -> Unit) {
   ) {
     Icon(Icons.ExpandMore, contentDescription = null, tint = tk.ink, modifier = Modifier.size(Sun.Icon))
     Spacer(Modifier.width(Sun.S8))
-    val key = if (group == trawl.desktop.ui.Group.DOCUMENTS) "recent_more_documents" else "recent_more_photos"
+    val key = when {
+      group != trawl.desktop.ui.Group.DOCUMENTS -> "recent_more_photos"
+      mix == trawl.desktop.ui.Mix.MEDIA -> "recent_more_media"
+      mix == trawl.desktop.ui.Mix.BOTH -> "recent_more_files"
+      else -> "recent_more_documents"
+    }
     Text(tn(key, hidden, formatCount(hidden)), style = SunType.Label, color = tk.ink)
   }
 }

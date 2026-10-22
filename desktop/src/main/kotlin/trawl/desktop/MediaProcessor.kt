@@ -84,7 +84,8 @@ class MediaProcessor(
     // Up to two minutes (and any window of a long video) the soundtrack is read beside the frames; a longer single step reads it after,
     // so a decoder, the picture engine and the speech engine are not all in memory at once.
     val together = windowed || seconds <= MediaSchedule.OVERLAP_MAX_SECONDS
-    val wantsSound = info.hasAudio
+    // A sliver of a last window (a video 3 min 0.2 s long has one) holds no speech the decoder can open: leave it out, quietly.
+    val wantsSound = info.hasAudio && (!windowed || soundWorthReading(durationMs, startMs))
     fun trackOrNote(): Track = try {
       if (windowed) soundtrack(path, startMs, MediaSchedule.MEDIA_WINDOW_MS, late) else soundtrack(path, 0, null, late)
     } catch (e: FormatNotReadable) {
@@ -197,6 +198,11 @@ class MediaProcessor(
   private fun secs(ns: Long) = String.format(java.util.Locale.ROOT, "%.1f s", ns / 1e9)
 
   companion object {
+    /** Less than this much sound left at [startMs] (in a file [durationMs] long; null when unknown) is not read: decoders cannot open a sliver, and it holds no words. */
+    const val MIN_SOUND_MS = 500L
+
+    fun soundWorthReading(durationMs: Long?, startMs: Long): Boolean = durationMs == null || durationMs - startMs >= MIN_SOUND_MS
+
     /** The phone reads a single-step file's first five minutes of sound at most (it asked ASR for 300 s). */
     const val SINGLE_STEP_MS = 300_000L
     private val EMBED_POOL = Executors.newSingleThreadExecutor { r -> Thread(r, "trawl-frame-embed").apply { isDaemon = true } }

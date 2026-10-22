@@ -226,13 +226,21 @@ fun TileRow(rows: List<ResultRow>, cols: Int, c: AppController, ui: MainUi, list
   }
 }
 
+/** The words over a group: Documents and PDFs only when that is all the group holds. */
+fun groupTitle(group: Group, mix: Mix): String = when {
+  group == Group.PHOTOS -> t("kind_plural_photos")
+  mix == Mix.MEDIA -> t("group_media")
+  mix == Mix.BOTH -> t("group_documents_media")
+  else -> t("kind_plural_documents")
+}
+
 /** A group label above documents or photos: quiet small caps-style text and a count. */
 @Composable
-fun GroupHeader(group: Group, count: Int) {
+fun GroupHeader(group: Group, count: Int, mix: Mix = Mix.DOCUMENTS) {
   val tk = LocalSunlight.current
   Row(Modifier.fillMaxWidth().padding(start = Sun.S16, end = Sun.S16, top = Sun.S12, bottom = Sun.S4), verticalAlignment = Alignment.CenterVertically) {
     Text(
-      if (group == Group.DOCUMENTS) t("kind_plural_documents") else t("kind_plural_photos"),
+      groupTitle(group, mix),
       style = SunType.CaptionBold, color = tk.ink2, modifier = Modifier.weight(1f),
     )
     Text(count.toString(), style = SunType.Caption, color = tk.ink2)

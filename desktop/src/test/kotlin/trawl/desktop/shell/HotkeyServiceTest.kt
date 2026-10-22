@@ -73,7 +73,7 @@ class HotkeyServiceTest {
     val s = svc(Os.LINUX, n).also { it.apply(ShellPrefs()) }
     assertEquals(HotkeyStatus.Wayland, s.status.value)
     assertEquals(1, n.log.count { it.startsWith("reg ") })
-    assertTrue(ShortcutMessages.forStatus(HotkeyStatus.Wayland, Os.LINUX).first.contains("trawl --quick"))
+    assertTrue(ShortcutMessages.forStatus(HotkeyStatus.Wayland, Os.LINUX, "/opt/trawl/bin/Trawl --quick").first.contains("\"/opt/trawl/bin/Trawl --quick\""))
   }
 
   @Test fun aFailureIsNotTreatedAsTaken() {

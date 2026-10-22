@@ -349,6 +349,7 @@ fun SearchScreen(
     )
   }
 
+  ReleaseFocusWhenLeaving(fieldFocused)
   // Choosing files: Back leaves selection first. Choosing starts with the keyboard put away and the search box not in use.
   BackHandler(enabled = selecting) { searchViewModel.clearSelection() }
   LaunchedEffect(selecting) {

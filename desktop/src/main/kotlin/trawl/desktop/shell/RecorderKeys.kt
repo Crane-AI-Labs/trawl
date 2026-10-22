@@ -1,6 +1,7 @@
 package trawl.desktop.shell
 
 import trawl.desktop.Os
+import trawl.desktop.Platform
 import trawl.desktop.t
 
 /** Turns what the recorder in Settings hears (an AWT key code plus the modifier flags) into a [Hotkey], and what the check says into words. */
@@ -51,7 +52,7 @@ object ShortcutMessages {
   }
 
   /** The standing line about where the shortcut is now. [good] false draws it as a warning. */
-  fun forStatus(s: HotkeyStatus, os: Os): Pair<String, Boolean> = when (s) {
+  fun forStatus(s: HotkeyStatus, os: Os, quickCommand: String = Platform.quickCommand()): Pair<String, Boolean> = when (s) {
     HotkeyStatus.Off -> t("shell_hotkey_off") to true
     is HotkeyStatus.Active -> when {
       s.fellBackFrom != null -> t("shell_hotkey_fallback", s.fellBackFrom.label(os), s.hotkey.label(os)) to true
@@ -60,8 +61,8 @@ object ShortcutMessages {
     }
     HotkeyStatus.AllTaken -> t("shell_hotkey_all_taken") to false
     is HotkeyStatus.Taken -> t("shell_hotkey_taken", s.hotkey.label(os)) to false
-    HotkeyStatus.Wayland -> t("shell_hotkey_wayland") to false
-    is HotkeyStatus.Portal -> if (s.trigger != null) t("shell_hotkey_portal", s.trigger) to true else t("shell_hotkey_portal_none") to false
+    HotkeyStatus.Wayland -> t("shell_hotkey_wayland", quickCommand) to false
+    is HotkeyStatus.Portal -> if (s.trigger != null) t("shell_hotkey_portal", s.trigger) to true else t("shell_hotkey_portal_none", quickCommand) to false
     is HotkeyStatus.Failed -> t("shell_hotkey_failed", s.detail) to false
   }
 }

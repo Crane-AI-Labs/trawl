@@ -118,6 +118,25 @@ class PrivacyPassTest {
     assertFalse(b.hides(row(4, null)))
   }
 
+  // Matrix bug 5 (2026-10-22): "a marked file was not blurred". That is the phone's design too: the blur is the picture's own score and nothing
+  // else. A mark or a private folder keeps the file out of the results until it is shown, and once shown it is clear. Pinned here so a
+  // later change of that (either way) has to be deliberate.
+  @Test fun `being marked sensitive or in a private folder neither blurs a picture nor stops its blur`() {
+    val b = PreviewBlur(enabled = true)
+    val plain = row(1, null)
+    val marked = plain.copy(id = 2, sensitiveFlags = 1)
+    val markedAndScored = row(3, 0.99f).copy(sensitiveFlags = 1)
+    val scoredLow = row(4, 0.5f).copy(sensitiveFlags = 1)
+    assertTrue(marked.sensitive)
+    assertFalse(b.hides(marked), "a mark alone does not blur: it hides the file from the results until shown, then shows it clear")
+    assertFalse(b.hides(scoredLow))
+    assertTrue(b.hides(markedAndScored), "the score decides, marked or not")
+    assertEquals(b.hides(row(5, 0.99f)), b.hides(markedAndScored))
+    // Showing the sensitive files (the lock's reveal) is not the blur's eye: the picture is still blurred until its own eye is clicked.
+    assertTrue(b.reveal(markedAndScored))
+    assertFalse(b.hides(markedAndScored))
+  }
+
   @Test fun `with the blur off nothing is hidden whatever the score`() {
     assertFalse(PreviewBlur(enabled = false).hides(row(1, 0.99f)))
   }

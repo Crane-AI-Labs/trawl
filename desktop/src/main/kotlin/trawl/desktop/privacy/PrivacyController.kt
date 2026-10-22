@@ -3,6 +3,7 @@ package trawl.desktop.privacy
 import com.craneai.findr.index.PrivacyRules
 import com.craneai.findr.privacy.PrivacyGate
 import java.io.File
+import trawl.desktop.SafePath
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
@@ -420,11 +421,12 @@ class PrivacyController(
 
     /**
      * [folder] relative to the chosen root that holds it ("Photos/Private"), or null when it is outside every root or is a root
-     * itself (a whole chosen folder cannot be marked private: remove it from Trawl instead).
+     * itself (a whole chosen folder cannot be marked private: remove it from Trawl instead), or when the text is not a path the system can
+     * read at all (typed into the chooser's name field): that is "not a folder", never an exception ([SafePath]).
      */
     fun relativeFolder(folder: File, roots: List<File>): String? {
-      val f = folder.toPath().toAbsolutePath().normalize()
-      for (root in roots.map { it.toPath().toAbsolutePath().normalize() }) {
+      val f = SafePath.of(folder) ?: return null
+      for (root in roots.mapNotNull { SafePath.of(it) }) {
         if (f != root && f.startsWith(root)) return root.relativize(f).joinToString("/") { it.toString() }
       }
       return null

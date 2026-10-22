@@ -20,7 +20,7 @@ object Scope {
     if (s.indexAudio) add(FileKind.AUDIO)
   }
 
-  fun paths(folders: List<String>): List<Path> = folders.map { File(it).toPath().toAbsolutePath().normalize() }
+  fun paths(folders: List<String>): List<Path> = folders.mapNotNull { SafePath.of(it) }   // an entry the system cannot read as a path (a hand-edited file) is left out, not a crash
 
   /** True when [path] is one of the skipped folders or sits anywhere under one. */
   fun isSkipped(path: Path, skipped: List<Path>): Boolean {
@@ -35,7 +35,7 @@ object Scope {
   /** A folder may be skipped when it exists and lies strictly inside one of the chosen folders (to stop reading a chosen folder itself, remove it). */
   fun skipProblem(pick: File, chosen: List<String>): SkipProblem? {
     if (!pick.isDirectory) return SkipProblem.NOT_A_FOLDER
-    val p = pick.toPath().toAbsolutePath().normalize()
+    val p = SafePath.of(pick) ?: return SkipProblem.NOT_A_FOLDER
     val roots = paths(chosen)
     if (roots.any { it == p }) return SkipProblem.IS_CHOSEN_FOLDER
     if (roots.none { p.startsWith(it) }) return SkipProblem.NOT_INSIDE
@@ -44,7 +44,7 @@ object Scope {
 
   /** [existing] with [add] in it, keeping the list free of entries that another entry already covers. */
   fun withSkipped(existing: List<String>, add: String): List<String> {
-    val a = File(add).toPath().toAbsolutePath().normalize()
+    val a = SafePath.of(add) ?: return existing
     val kept = paths(existing).filterNot { it.startsWith(a) }   // the new one covers these
     if (kept.any { a.startsWith(it) }) return kept.map { it.toString() }   // an existing one already covers the new one
     return (kept + listOf(a)).map { it.toString() }   // listOf: a Path is itself a list of its segments, and + would add those
@@ -53,6 +53,6 @@ object Scope {
   /** The skipped folders that still lie inside a chosen folder: removing a chosen folder drops its skip entries with it. */
   fun pruneSkipped(skipped: List<String>, chosen: List<String>): List<String> {
     val roots = paths(chosen)
-    return skipped.filter { s -> File(s).toPath().toAbsolutePath().normalize().let { p -> roots.any { p.startsWith(it) && p != it } } }
+    return skipped.filter { s -> SafePath.of(s)?.let { p -> roots.any { p.startsWith(it) && p != it } } == true }
   }
 }
