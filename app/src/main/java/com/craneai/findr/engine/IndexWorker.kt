@@ -104,6 +104,22 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
     }
   }
 
+  /**
+   * Between two files of the meaning pass: files that landed meanwhile get their words (and an incremental crawl finds them first,
+   * in case ChangeWorker is late). Runs in this coroutine, so it is the one writer and the meaning pass is only paused for it
+   * ([MidRunWords]). Skipped while the phone is polite, hot or the run is stopping: those rules hold the words pass back too.
+   */
+  private suspend fun wordsForNewFiles(engine: FindrEngine, processor: FileProcessor, watch: MidRunWords) {
+    if (isStopped || engine.paused || engine.polite() || batteryTemperature() >= Tuning.current.hotStopC) return
+    val n = watch.between(
+      crawl = { engine.crawl(forceFull = false) },
+      wordsWaiting = { engine.wordsWaiting() },
+      // wait = false: ChangeWorker's or the in-app pass is already at it (and takes these files); look again in a few seconds.
+      words = { limit -> engine.wordsPass(processor, limit = limit, stop = { isStopped || engine.polite() }, wait = false) },
+    )
+    if (n > 0) Log.i(TAG, "mid-run words: $n files that landed during the run are searchable by their words")
+  }
+
   /** Adds what the meter has seen to the totals and says where the totals stand (only when this stretch had screen-off time). */
   private fun saveScreenOff(engine: FindrEngine, meter: ScreenOffMeter) {
     val part = meter.drain()
@@ -356,11 +372,13 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
       var capNoted = false
       val mediaShare = MediaShare(Tuning.current.mediaShare)
       var lastTierLine = ""
+      val midRun = MidRunWords(clock = { android.os.SystemClock.elapsedRealtime() })
       while (!isStopped) {
         startPrivacy()
         startQuickLook()   // new photos since it finished, or quick look just turned on: back within a minute
         val settings = engine.settings.value
         if (engine.paused) return Result.success()
+        wordsForNewFiles(engine, processor, midRun)   // a file that landed since the last look is searchable by its words now
         val decision = engine.policy()
         engine.embeddingNow = false
         // The mode the app believes it is in (read by the learn-control study): once per change, not once per loop.
@@ -408,6 +426,7 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
                 newFiles++
                 if (tight) unloadSoundModels(engine, p, fresh.getOrNull(i + 1), endOfMediaTurn = i == fresh.lastIndex)
                 rest(engine)
+                wordsForNewFiles(engine, processor, midRun)
               }
               engine.store.trimWal(WAL_TRIM_BYTES)
               continue
@@ -447,6 +466,7 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
           mediaShare.record(p.file.kind in MediaShare.MEDIA_KINDS, (System.nanoTime() - t0) / 1_000_000, p.file.kind)
           if (tight) unloadSoundModels(engine, p, batch.getOrNull(i + 1), endOfMediaTurn = mediaTurn && i == batch.lastIndex)
           rest(engine)
+          wordsForNewFiles(engine, processor, midRun)   // between files, not between batches: a batch of photos takes a minute or more
           // A video or recording is owed its turn: end this batch of photos early rather than after all eight.
           if (!mediaTurn && media.isNotEmpty() && mediaShare.mediaTurn(true, true)) break
         }

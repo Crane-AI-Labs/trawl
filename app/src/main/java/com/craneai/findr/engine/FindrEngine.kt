@@ -958,6 +958,12 @@ class FindrEngine(private val context: Context) : SearchEngine {
   /** A run handed itself off and the screen has not gone off yet ([scheduleResume], [watchScreen]). */
   @Volatile var handOffPending = false
 
+  /** Files crawled but without their words yet: one cheap query (the worker looks between files, [MidRunWords]). */
+  fun wordsWaiting(): Boolean {
+    val store = storeOrNull() ?: return false
+    return store.nextWithoutWords(1, enabledKinds().intersect(WORDS_PASS_KINDS)).isNotEmpty()
+  }
+
   /** Something is left for the worker to do: files without their words, or waiting for the meaning pass. */
   fun workWaiting(): Boolean {
     val kinds = enabledKinds()

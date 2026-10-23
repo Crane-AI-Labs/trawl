@@ -320,9 +320,73 @@ class IndexStoreTest {
     val order = store.nextPending(20, FileKind.entries.toSet()).map { it.file.name }
     assertEquals(
       listOf("recent_photo.jpg", "recent_note.m4a", "recent_clip.mp4", "edge.jpg",
-        "old_shot.png", "just_outside.jpg", "old_photo.jpg", "old_doc.pdf", "old_clip.mp4", "old_song.mp3"),
+        "old_doc.pdf", "old_shot.png", "just_outside.jpg", "old_photo.jpg", "old_clip.mp4", "old_song.mp3"),
       order,
     )
+  }
+
+  // ---- the order inside the recent window: newest day first, then cheap files (screenshots, small documents), then photos ----------
+
+  @Test fun inTheRecentWindowANewerDayWinsAndWithinADayCheapFilesGoFirst() {
+    store.clock = { now }
+    val big = Schema.WORDS_BIG_DOC_BYTES + 1
+    val h = 60 * 60 * 1000L
+    store.upsertFromCrawl(listOf(
+      // today (the day that holds `now - 3 h`): a photo is the newest file, the document the oldest
+      record("today_photo.jpg", FileKind.IMAGE, mtime = now - 1 * h),
+      record("today_clip.mp4", FileKind.VIDEO, mtime = now - 2 * h),
+      record("today_shot.png", FileKind.SCREENSHOT, mtime = now - 3 * h),
+      record("today_notes.docx", FileKind.DOCUMENT, mtime = now - 4 * h),
+      record("today_book.pdf", FileKind.PDF, mtime = now - 5 * h, size = big),
+      // yesterday: a screenshot, which is cheap but is from an earlier day than every file above
+      record("yesterday_shot.png", FileKind.SCREENSHOT, mtime = now - day - h),
+      record("week_old_doc.pdf", FileKind.PDF, mtime = now - 7 * day),
+    ))
+    val order = store.nextPending(20, FileKind.entries.toSet()).map { it.file.name }
+    assertEquals(
+      listOf("today_shot.png", "today_notes.docx", "today_photo.jpg", "today_clip.mp4", "today_book.pdf", "yesterday_shot.png", "week_old_doc.pdf"),
+      order,
+    )
+  }
+
+  @Test fun theWordsPassHasTheSameDayThenCheapFirstOrderInTheRecentWindow() {
+    store.clock = { now }
+    val h = 60 * 60 * 1000L
+    store.upsertFromCrawl(listOf(
+      record("today_photo.jpg", FileKind.IMAGE, mtime = now - 1 * h),
+      record("today_shot.png", FileKind.SCREENSHOT, mtime = now - 3 * h),
+      record("today_notes.docx", FileKind.DOCUMENT, mtime = now - 4 * h),
+      record("yesterday_doc.pdf", FileKind.PDF, mtime = now - day - h),
+    ))
+    val names = store.nextWithoutWords(10, com.craneai.findr.engine.FindrEngine.WORDS_PASS_KINDS).map { it.file.name }
+    assertEquals(listOf("today_notes.docx", "today_shot.png", "today_photo.jpg", "yesterday_doc.pdf"), names)
+  }
+
+  @Test fun aPrioritisedFileStillRunsBeforeTheRecentWindow() {
+    store.clock = { now }
+    store.upsertFromCrawl(listOf(
+      record("today_shot.png", FileKind.SCREENSHOT, mtime = now - 1000, id = 1),
+      record("old_video.mp4", FileKind.VIDEO, mtime = now - 90 * day, id = 2),
+    ))
+    store.prioritize(listOf(store.knownMediaStoreIds("external_primary")[2]!!))
+    assertEquals(listOf("old_video.mp4", "today_shot.png"), store.nextPending(10, FileKind.entries.toSet()).map { it.file.name })
+  }
+
+  @Test fun theQueueOrderIsCheapEnoughOnALargeLibrary() {
+    // The order is an ORDER BY expression, not an index: every fetch sorts the files still waiting. A big phone (20,000 files) must stay noise
+    // next to the work a batch of 8 files costs (seconds), so the budget here is generous: well under a second per fetch on the CI box.
+    store.clock = { now }
+    val kinds = listOf(FileKind.IMAGE, FileKind.SCREENSHOT, FileKind.DOCUMENT, FileKind.PDF, FileKind.VIDEO, FileKind.AUDIO)
+    store.upsertFromCrawl((1..20_000).map { i ->
+      record("f$i.bin", kinds[i % kinds.size], id = i.toLong(), mtime = now - (i % 400) * day - i)
+    })
+    val all = FileKind.entries.toSet()
+    store.nextPending(8, all)   // warm
+    val t0 = System.nanoTime()
+    repeat(5) { assertEquals(8, store.nextPending(8, all).size) }
+    val ms = (System.nanoTime() - t0) / 5_000_000
+    println("nextPending over 20,000 queued files: $ms ms per fetch")
+    assertTrue("a fetch took $ms ms", ms < 1000)
   }
 
   // ---- a wrong phone clock (ClockSense): the 14-day "recent first" window counts back from what the files prove ----------------
@@ -426,8 +490,9 @@ class IndexStoreTest {
     assertEquals(emptyList<String>(), fresh)   // afterId <= 0 means "no backlog mark yet": nothing is "new"
     val afterMark = store.nextNewPending(10, IndexPolicy.NEW_FILE_KINDS, 1L).map { it.file.name }
     assertEquals(listOf("new_doc.pdf"), afterMark)   // ids 2 (audio) and 3 (video) are past the mark too, and still left out
-    // On the charger the bulk takes everything, recent first: the voice note and the video run before the old photo.
-    assertEquals(listOf("note.m4a", "clip.mp4", "new_doc.pdf", "old_photo.jpg"), store.nextPending(10, FileKind.entries.toSet()).map { it.file.name })
+    // On the charger the bulk takes everything, recent first: all of today's files run before the old photo, and within today the small
+    // document (cheap) runs ahead of the voice note and the video (the media still get their own fair turns, MediaShare).
+    assertEquals(listOf("new_doc.pdf", "note.m4a", "clip.mp4", "old_photo.jpg"), store.nextPending(10, FileKind.entries.toSet()).map { it.file.name })
   }
 
   @Test fun onBatteryShortNewVideosAndRecordingsAreTakenAndLongOnesWaitForTheCharger() {
@@ -492,7 +557,7 @@ class IndexStoreTest {
     )
     val order = store.nextPending(20, FileKind.entries.toSet()).map { it.file.name }
     assertEquals(
-      listOf("shot.png", "photo_new.jpg", "photo_old.jpg", "new.docx", "old.pdf", "clip.mp4", "song.mp3", "misc.zip"),
+      listOf("new.docx", "old.pdf", "shot.png", "photo_new.jpg", "photo_old.jpg", "clip.mp4", "song.mp3", "misc.zip"),
       order,
     )
     assertEquals(listOf("shot.png"), store.nextPending(5, setOf(FileKind.SCREENSHOT)).map { it.file.name })

@@ -189,9 +189,38 @@ object Schema {
    * An ORDER BY expression, not a column: the queue is fetched 8 files at a time, so a sort per fetch is noise.
    */
   const val WORDS_BIG_DOC_BYTES = 5L * 1024 * 1024
+
+  private const val DAY_MS = 24L * 60 * 60 * 1000
+  private const val SMALL_DOC = "kind IN ('DOCUMENT','PDF') AND size <= $WORDS_BIG_DOC_BYTES"
+
+  /**
+   * Inside the recent window, files of the same day are not equal: a screenshot or a small document is understood in a
+   * fraction of the time a long file or a recording takes, and is the thing someone searches for first. So within the window the
+   * queue runs newest DAY first (a file from today is never behind one from last week), then cheap-first inside the day, then
+   * newest first by time. Measured before and after in internal/research/index-order.md.
+   * Only the sort changes: no row is rewritten, the stored priority is as before, so nothing needs migrating.
+   */
+  private const val RECENT_DAY = "CASE WHEN priority = 0 THEN -(mtime / $DAY_MS) ELSE 0 END"
+
+  /** [IndexStore.nextWithoutWords]: recent and prioritized files first (newest day, then small documents' text, screenshots, photos, the rest). */
   val WORDS_ORDER = "CASE WHEN priority <= 0 THEN priority ELSE CASE " +
-    "WHEN kind IN ('DOCUMENT','PDF') AND size <= $WORDS_BIG_DOC_BYTES THEN 1 WHEN kind = 'SCREENSHOT' THEN 2 " +
-    "WHEN kind = 'IMAGE' THEN 3 WHEN kind IN ('DOCUMENT','PDF') THEN 4 ELSE 5 END END"
+    "WHEN $SMALL_DOC THEN 1 WHEN kind = 'SCREENSHOT' THEN 2 " +
+    "WHEN kind = 'IMAGE' THEN 3 WHEN kind IN ('DOCUMENT','PDF') THEN 4 ELSE 5 END END, " +
+    "$RECENT_DAY, " +
+    "CASE WHEN priority <> 0 THEN 0 WHEN $SMALL_DOC THEN 0 WHEN kind = 'SCREENSHOT' THEN 1 WHEN kind = 'IMAGE' THEN 2 " +
+    "WHEN kind IN ('DOCUMENT','PDF') THEN 3 ELSE 4 END"
+
+  /**
+   * [IndexStore.nextPending], the full-meaning queue: prioritized (-1), then the recent window (newest day first, then screenshots and
+   * small documents, then photos, then the rest, newest first), then the older backlog small documents first (a document is a
+   * few chunks), screenshots, photos, long documents, videos, audio. A recording or video is still served by its own fair turns
+   * (MediaShare), whatever its place here.
+   */
+  val QUEUE_ORDER = "CASE WHEN priority <= 0 THEN priority ELSE CASE " +
+    "WHEN $SMALL_DOC THEN 1 WHEN kind = 'SCREENSHOT' THEN 2 WHEN kind = 'IMAGE' THEN 3 " +
+    "WHEN kind IN ('DOCUMENT','PDF') THEN 4 WHEN kind = 'VIDEO' THEN 5 WHEN kind = 'AUDIO' THEN 6 ELSE 9 END END, " +
+    "$RECENT_DAY, " +
+    "CASE WHEN priority <> 0 THEN 0 WHEN $SMALL_DOC OR kind = 'SCREENSHOT' THEN 0 WHEN kind = 'IMAGE' THEN 1 ELSE 2 END"
 
   /** Within the older backlog: what people look for first. Lower runs earlier. */
   fun kindPriority(kind: FileKind): Int = when (kind) {

@@ -464,8 +464,9 @@ class IndexStore private constructor(
   }
 
   /**
-   * Files waiting to be understood, in the order people look for things: files from the last [Schema.RECENT_DAYS] days
-   * first, newest first, then the older backlog by kind (screenshots, photos, documents/PDFs, videos, audio), newest first within each. [includePartial] adds long files that were read in part, for the
+   * Files waiting to be understood, in the order people look for things ([Schema.QUEUE_ORDER]): files from the last
+   * [Schema.RECENT_DAYS] days first (newest day first, cheap screenshots and small documents ahead of photos within a day),
+   * then the older backlog (small documents, screenshots, photos, long documents, videos, audio), newest first within each. [includePartial] adds long files that were read in part, for the
    * later pass that runs once nothing else is waiting.
    */
   fun nextPending(limit: Int, kinds: Set<FileKind>, includePartial: Boolean = false): List<PendingFile> = read { db ->
@@ -473,7 +474,7 @@ class IndexStore private constructor(
     val states = if (includePartial) "'new','searchable','partial'" else "'new','searchable'"
     val out = ArrayList<PendingFile>()
     db.query(
-      "SELECT $FILE_COLUMNS, state, detail FROM files WHERE state IN ($states) AND kind IN (${kindList(kinds)}) ORDER BY priority, mtime DESC, id LIMIT ?",
+      "SELECT $FILE_COLUMNS, state, detail FROM files WHERE state IN ($states) AND kind IN (${kindList(kinds)}) ORDER BY ${Schema.QUEUE_ORDER}, mtime DESC, id LIMIT ?",
       limit,
     ) { out += PendingFile(fileOf(it), FileState.of(it.getText(12)), it.textOrNull(13)) }
     out
