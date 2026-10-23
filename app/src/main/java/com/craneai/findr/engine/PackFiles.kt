@@ -10,7 +10,8 @@ import kotlinx.coroutines.sync.Mutex
  *
  * @property dir folder under `files/models/` the pack installs into
  * @property folderName a folder with this name in Downloads is also accepted (a tester copied the unzipped pack)
- * @property archive Downloads file names that count as the pack's zip (a browser may add " (1)")
+ * @property archive Downloads file names that count as the pack's zip (a browser may add " (1)"). Both the current `trawl-` and the
+ *   pre-1.0.3 `findr-` names are accepted: a zip someone already downloaded or was sent still installs
  */
 class PackFiles(val dir: String, val manifest: List<AsrModelFile>, val folderName: String, val archive: Regex)
 
@@ -19,7 +20,7 @@ object PackFilesRegistry {
     dir = "asr",
     manifest = AsrModelPack.files,
     folderName = AsrModelPack.FOLDER_NAME,
-    archive = Regex("""findr-speech-models.*\.zip""", RegexOption.IGNORE_CASE),
+    archive = Regex("""(?:findr|trawl)-speech-models.*\.zip""", RegexOption.IGNORE_CASE),
   )
 
   /** Quick look (D2, D10): TinyCLIP-61M/32, both towers (engine/QuickLookPack.kt). */
@@ -27,7 +28,7 @@ object PackFilesRegistry {
     dir = QuickLookPack.DIR,
     manifest = QuickLookPack.files,
     folderName = QuickLookPack.FOLDER_NAME,
-    archive = Regex("""findr-quicklook-models.*\.zip""", RegexOption.IGNORE_CASE),
+    archive = Regex("""(?:findr|trawl)-quicklook-models.*\.zip""", RegexOption.IGNORE_CASE),
   )
 
   /** Blur private-looking previews: Marqo/nsfw-image-detection-384 and its licence (engine/PrivatePack.kt). */
@@ -35,7 +36,7 @@ object PackFilesRegistry {
     dir = PrivatePack.DIR,
     manifest = PrivatePack.files,
     folderName = PrivatePack.FOLDER_NAME,
-    archive = Regex("""findr-private-models.*\.zip""", RegexOption.IGNORE_CASE),
+    archive = Regex("""(?:findr|trawl)-private-models.*\.zip""", RegexOption.IGNORE_CASE),
   )
 
   /** `null` for a pack whose files do not exist yet. */
@@ -48,7 +49,7 @@ object PackFilesRegistry {
 }
 
 /**
- * The pack's own folder first, then its own archives newest first (a browser may have saved "findr-speech-models (1).zip"),
+ * The pack's own folder first, then its own archives newest first (a browser may have saved "trawl-speech-models (1).zip"),
  * then the one-file bundle ([ModelBundle]): its folder or archives, where the pack sits in a folder of its own name. A
  * bundle that does not carry this pack is skipped, not reported as a failure.
  */

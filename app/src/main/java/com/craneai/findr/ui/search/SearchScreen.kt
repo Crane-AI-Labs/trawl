@@ -116,6 +116,9 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import com.craneai.findr.ui.theme.ContentWidth
+import com.craneai.findr.ui.theme.sunContentWidth
+import com.craneai.findr.ui.theme.sunSideInset
 
 /** Opens the system's "free up space" page. */
 private fun Context.openStorageSettings() {
@@ -257,12 +260,13 @@ fun SearchScreen(
     if (selecting) {
       val shown = state.feed.shownFiles()
       SelectionTopBar(
+        modifier = Modifier.sunContentWidth(),
         count = state.selected.size,
         allSelected = shown.isNotEmpty() && state.selected.size >= shown.size,
         onSelectAll = searchViewModel::selectAll,
         onExit = searchViewModel::clearSelection,
       )
-    } else if (!short) Header(onOpenSettings, Modifier.statusBarsPadding())
+    } else if (!short) Header(onOpenSettings, Modifier.sunContentWidth().statusBarsPadding())
     // Home shows at most one card above the meter (crash report, missing access, models, pause note, notification question),
     // and a short strip instead of a full card on a wide, short or large-text window, so the results always keep their room.
     val searchingNow = state.query.isNotBlank()
@@ -278,6 +282,7 @@ fun SearchScreen(
         onRequestNotifications = onRequestNotifications,
         onAllowAccess = onAllowAccess,
         compact = homeCompact,
+        modifier = Modifier.sunContentWidth(),
       )
     }
     val meter: @Composable (Modifier) -> Unit = { m ->
@@ -292,9 +297,9 @@ fun SearchScreen(
       }
     }
     val sensitiveChip: @Composable () -> Unit = {
-      SensitiveChip(state.hiddenCount, state.revealedForNow && state.showsSensitive, Modifier.padding(horizontal = Sun.Gutter, vertical = Sun.S4))
+      SensitiveChip(state.hiddenCount, state.revealedForNow && state.showsSensitive, Modifier.sunContentWidth().padding(horizontal = Sun.Gutter, vertical = Sun.S4))
     }
-    val meterPadding = Modifier.padding(horizontal = Sun.Gutter, vertical = Sun.S4)
+    val meterPadding = Modifier.sunContentWidth().padding(horizontal = Sun.Gutter, vertical = Sun.S4)
     if (!short) {
       homeCards()
       meter(meterPadding)
@@ -302,7 +307,7 @@ fun SearchScreen(
     }
     val shortTop: (@Composable () -> Unit)? = if (!short) null else {
       {
-        Column {
+        Column(Modifier.sunContentWidth()) {
           // Wide enough: the wordmark, the meter and Settings share one line. Narrower (or choosing files, when the bar above
           // already says so), the header and the meter stack as they do on a phone.
           if (!selecting) ShortHeader(onOpenSettings, if (ShortWindow.mergedHeader(widthDp) && access.allFiles) meter else null)
@@ -327,6 +332,7 @@ fun SearchScreen(
     if (selecting) {
       val picked = searchViewModel.selectedFiles()
       SelectionActionBar(
+        modifier = Modifier.sunContentWidth(),
         onShare = { leave(picked, copy = false) },
         onCopy = { leave(picked, copy = true) },
         onMark = if (picked.any { !it.sensitive }) ({
@@ -340,6 +346,7 @@ fun SearchScreen(
         onMore = if (picked.size == 1) ({ actionUri = picked.single().uri }) else null,
       )
     } else SearchDock(
+      modifier = Modifier.sunContentWidth(),
       textState = textState,
       status = dockStatus(state),
       fieldFocused = fieldFocused,
@@ -409,6 +416,9 @@ fun SearchScreen(
     )
   }
 }
+
+/** Filters whose lists are all thumbnails: no long rows to cap, so a wide window gives them more columns instead (ContentWidth). */
+private val MEDIA_ONLY_FILTERS = setOf(KindFilter.PHOTOS, KindFilter.SCREENSHOTS, KindFilter.VIDEOS)
 
 /** The only place (besides the sheet) that follows the live status, so its updates redraw the meter and nothing else. */
 @Composable
@@ -568,7 +578,10 @@ private fun Results(
   // they scroll away with it and the grid keeps the whole screen between the meter and the search box.
   // The sort and date chips sit under the kind filters. A date typed in the box ("last week") is a chip here too (never inside the box).
   val searching = (state.query.isNotBlank() || state.similar != null) && state.mode == SearchMode.RESULTS
-  val filters: @Composable () -> Unit = if (short) ({
+  // A short window that is also wider than the reading column (a tablet on its side): one line of chips would run past the column and
+  // hide Sort and Date off the right edge, so the chips take the two lines of the tall layout, compact kind chips over sort and date.
+  val wideShort = short && !ContentWidth.chipsOnOneLine(short, LocalConfiguration.current.screenWidthDp)
+  val filters: @Composable () -> Unit = if (short && !wideShort) ({
     // Short window: the kind, sort and date chips share one line (the tiles of the home screen are too tall for it too).
     FilterSortRow(
       state.filter, onFilter, state.sort, searching, state.date, onSort, onDatePreset, onPickDates, onClearDate,
@@ -576,7 +589,7 @@ private fun Results(
     )
   }) else ({
     Column {
-      if (state.mode == SearchMode.RESULTS) FilterRow(state.filter, onFilter, Modifier.padding(horizontal = Sun.S4, vertical = Sun.S4))
+      if (state.mode == SearchMode.RESULTS || wideShort) FilterRow(state.filter, onFilter, Modifier.padding(horizontal = Sun.S4, vertical = Sun.S4))
       else FilterTiles(state.filter, onFilter, Modifier.padding(horizontal = Sun.S4, vertical = Sun.S4))
       SortDateRow(
         state.sort, searching, state.date, onSort, onDatePreset, onPickDates, onClearDate, Modifier.padding(horizontal = Sun.S4, vertical = Sun.S4),
@@ -637,14 +650,14 @@ private fun Results(
         // scrolling parent would hand them unbounded height, which Compose refuses.
         if (short) LazyColumn(Modifier.weight(1f).fillMaxWidth()) {
           item { shortLead() }
-          item { Box(Modifier.padding(horizontal = Sun.S12)) { filters() } }
+          item { Box(Modifier.sunContentWidth().padding(horizontal = Sun.S12)) { filters() } }
           item {
             Box(Modifier.fillMaxWidth().height(SHORT_EMPTY_BODY), contentAlignment = Alignment.Center) {
               NothingFound(query = state.resultsQuery, indexIncomplete = state.indexIncomplete, date = state.date?.filter?.label, similarTo = state.similar?.name)
             }
           }
         } else {
-          Box(Modifier.padding(horizontal = Sun.S12)) { filters() }
+          Box(Modifier.sunContentWidth().padding(horizontal = Sun.S12)) { filters() }
           Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
             NothingFound(query = state.resultsQuery, indexIncomplete = state.indexIncomplete, date = state.date?.filter?.label, similarTo = state.similar?.name)
           }
@@ -653,14 +666,14 @@ private fun Results(
       state.feed.isEmpty() && state.mode == SearchMode.RECENT && !state.searching -> {
         if (short) LazyColumn(Modifier.weight(1f).fillMaxWidth()) {
           item { shortLead() }
-          if (!compactRows) item { Box(Modifier.padding(horizontal = Sun.S12)) { filters() } }
+          if (!compactRows) item { Box(Modifier.sunContentWidth().padding(horizontal = Sun.S12)) { filters() } }
           item {
             Box(Modifier.fillMaxWidth().height(SHORT_EMPTY_BODY), contentAlignment = Alignment.Center) {
               EmptyHome(indexViewModel)
             }
           }
         } else {
-          if (!compactRows) Box(Modifier.padding(horizontal = Sun.S12)) { filters() }
+          if (!compactRows) Box(Modifier.sunContentWidth().padding(horizontal = Sun.S12)) { filters() }
           Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
             EmptyHome(indexViewModel)
           }
@@ -690,11 +703,14 @@ private fun Results(
             } finally { GridFling.fast = false }
           }
         }
+        // A wide window caps the lists at a reading width and centres them (ContentWidth). A grid of photos, screenshots or videos has
+        // no long rows to stretch, so it keeps the whole width and the Adaptive columns simply add more of themselves.
+        val listInset = if (state.filter in MEDIA_ONLY_FILTERS) 12.dp else sunSideInset(12.dp)
         LazyVerticalGrid(
           columns = GridCells.Adaptive(104.dp),
           state = gridState,
           modifier = Modifier.weight(1f).fillMaxWidth(),
-          contentPadding = PaddingValues(start = 12.dp, end = 12.dp, top = if (compactRows) 2.dp else 6.dp, bottom = 12.dp),
+          contentPadding = PaddingValues(start = listInset, end = listInset, top = if (compactRows) 2.dp else 6.dp, bottom = 12.dp),
           horizontalArrangement = Arrangement.spacedBy(6.dp),
           verticalArrangement = Arrangement.spacedBy(6.dp),
         ) {

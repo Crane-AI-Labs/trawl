@@ -8,4 +8,11 @@
   <string name="bgs_title">Samsung ayaa laga yaabaa inay joojiso app-kan habeenkii</string>
   <string name="bgs_body">Taleefannada Samsung waxay awoodaan inay seexiyaan ama xidhaan app-yada habeenkii, sidaas darteed <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> wuu joojinayaa barashada faylashaada. Gudaha Battery, dooro «Unrestricted» <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>.</string>
   <string name="bgs_open">Fur dejinta batariga</string>
+  <string name="bgx_title">U oggolow <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> inuu sii wado akhrinta marka aadan isticmaalin</string>
+  <string name="bgx_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> wuxuu faylashaada ka akhriyaa gadaal, wuuna joogsadaa marka aad isticmaasho app kale. Tani waxay kaliya ka hortagtaa Android inuu seexiyo.</string>
+  <string name="bgx_allow">Ogolow akhrinta gadaal</string>
+  <string name="bgx_not_now">Hadda maya</string>
+  <string name="bgx_granted">Waa la oggolaaday. Android ma seexin doono.</string>
+  <string name="bgx_denied">Lama oggolaan. Taas waad beddeli kartaa mar dambe gudaha Habaynta.</string>
+  <string name="bgx_page_hint">Bogga furmay, dooro «Unrestricted» (taleefannada qaar «Not optimised»), kadibna soo laabo.</string>
 </resources>

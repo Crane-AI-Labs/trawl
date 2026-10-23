@@ -258,7 +258,7 @@ class EngineSelfTestTest {
     assertEquals("the one place that builds the model embedder (quick panel, tile and widget use the app's engine)", listOf("EditionFactory.kt"), owners)
     assertTrue("the engine builds its embedder through the edition's factory", src("engine/FindrEngine.kt").contains("newEmbedder(context, profile)"))
     assertTrue(src("quick/QuickSearchActivity.kt").contains("(application as FindrApp).engine"))
-    assertTrue("every load goes through ensure(), which callers reach only under the mutex", fullSrc("engine/LiteRtEmbedder.kt").let { it.contains("mutex.withLock { ensure(Level.TEXT) }") && it.contains("val e = ensure(needed)") })
+    assertTrue("every load goes through ensure(), which callers reach only inside the engine guard (one thread, one lock)", fullSrc("engine/LiteRtEmbedder.kt").let { it.contains("guard.serial { ensure(Level.TEXT) }") && it.contains("val e = ensure(needed)") })
   }
 
   @Test fun `the embedder verifies every engine it loads and the worker does not blame files for it`() {

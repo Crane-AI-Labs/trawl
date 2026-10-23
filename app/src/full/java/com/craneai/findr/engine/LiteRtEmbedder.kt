@@ -11,12 +11,8 @@ import com.google.ai.edge.litertlm.EmbeddingEngineConfig
 import com.google.ai.edge.litertlm.EmbeddingOptions
 import com.google.ai.edge.litertlm.InputData
 import java.io.File
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withContext
 import com.craneai.findr.engine.Embedder.Companion.AUDIO_NAMES
 import com.craneai.findr.engine.Embedder.Companion.IMAGE_SPACE
 import com.craneai.findr.engine.Embedder.Companion.LITE_FINGERPRINT_PREFIX
@@ -34,8 +30,8 @@ private const val TAG = "FindrEmbedder"
  * CPU and only when asked for (17 s per 30 s window). One model file serves text and images: its text vectors are
  * identical to the text-only model's.
  *
- * One engine per process, shared by search and the indexer, behind a mutex: two loaded copies would cost ~1.3 GB on a
- * 4 GB phone. The engine starts text-only (fast to load, ~0.6–2.5 s) and is rebuilt with vision/audio when the indexer
+ * One engine per process, shared by search and the indexer, behind [EngineGuard] (one dedicated thread plus a lock: the engine is
+ * created, used and closed on that thread, never concurrently): two loaded copies would cost ~1.3 GB on a 4 GB phone. The engine starts text-only (fast to load, ~0.6–2.5 s) and is rebuilt with vision/audio when the indexer
  * needs them; search keeps working on whichever engine is loaded.
  *
  * In the [MemoryProfile.LITE] profile (2 GB phones) the engine is text-only for good: the text-only model file is preferred,
@@ -44,8 +40,11 @@ private const val TAG = "FindrEmbedder"
 class LiteRtEmbedder(private val context: Context, override val profile: MemoryProfile = MemoryProfile.STANDARD) : Embedder {
   private enum class Level { TEXT, VISION, AUDIO }
 
-  private val mutex = Mutex()
-  private var engine: EmbeddingEngine? = null
+  /**
+   * Qualcomm Adreno: closing a GPU-backed engine crashed inside the driver (Galaxy S24, Trawl 1.0.0: SIGSEGV in clReleaseContext), so
+   * there a GPU engine is kept until the process dies. See [EngineGuard].
+   */
+  private val guard = EngineGuard<EmbeddingEngine>(EngineGuard.newEngineDispatcher(), keepGpuEngines = GpuVendor.adreno, log = { Log.i(TAG, it) })
   private var level: Level? = null
   /**
    * False after the GPU failed to load the vision encoder (CPU fallback); benches set it to compare backends. Test builds for
@@ -101,7 +100,7 @@ class LiteRtEmbedder(private val context: Context, override val profile: MemoryP
   override suspend fun query(text: String): FloatArray = embedText(QUERY_PREFIX + text, forIndexing = false)
 
   /** Loads the text engine if nothing is loaded yet; no-op otherwise. For search-box focus (prewarm). */
-  override suspend fun warm() { withContext(Dispatchers.Default) { mutex.withLock { ensure(Level.TEXT) } } }
+  override suspend fun warm() { guard.serial { ensure(Level.TEXT) } }
 
   override suspend fun document(text: String, title: String?): FloatArray =
     embedText("title: ${title?.takeIf { it.isNotBlank() } ?: "none"} | text: $text")
@@ -121,15 +120,14 @@ class LiteRtEmbedder(private val context: Context, override val profile: MemoryP
   private fun liteCut(text: String): String = if (lite && text.length > LITE_MAX_INPUT_CHARS) text.take(LITE_MAX_INPUT_CHARS) else text
 
   /** [forIndexing]: the worker's call, which may rebuild the engine for the screen state ([textThreads]); a query never waits for that. */
-  private suspend fun run(needed: Level, inputs: List<InputData>, forIndexing: Boolean): FloatArray = withContext(Dispatchers.Default) {
-    mutex.withLock {
-      if (forIndexing && engine != null && loadedThreads != textThreads()) {
-        Log.i(TAG, "text threads ${loadedThreads ?: "default"} -> ${textThreads() ?: "default"} (screen ${if (screenOn) "on" else "off"})")
-        engine?.close(); engine = null; level = null
-      }
-      val e = ensure(needed)
-      e.computeEmbedding(inputs, if (hasVisionExecutor) OPTIONS else TEXT_OPTIONS).embedding
+  private suspend fun run(needed: Level, inputs: List<InputData>, forIndexing: Boolean): FloatArray = guard.serial {
+    // A GPU engine on Adreno is never rebuilt just for the thread count: it could not be closed (EngineGuard), so it would leak.
+    if (forIndexing && guard.current != null && !guard.pinsGpu && loadedThreads != textThreads()) {
+      Log.i(TAG, "text threads ${loadedThreads ?: "default"} -> ${textThreads() ?: "default"} (screen ${if (screenOn) "on" else "off"})")
+      guard.discard("text threads changed"); level = null
     }
+    val e = ensure(needed)
+    e.computeEmbedding(inputs, if (hasVisionExecutor) OPTIONS else TEXT_OPTIONS).embedding
   }
 
   /**
@@ -145,20 +143,19 @@ class LiteRtEmbedder(private val context: Context, override val profile: MemoryP
     return if (!screenOn && now - screenChangedAt >= SCREEN_OFF_SETTLE_MS) Tuning.current.textThreadsOff else Tuning.current.textThreadsOn
   }
 
-  /** Loads (or upgrades) the engine to at least `needed`. Called with the mutex held. */
+  /** Loads (or upgrades) the engine to at least `needed`. Called inside [EngineGuard.serial]. */
   private fun ensure(needed: Level): EmbeddingEngine {
     val current = level
-    engine?.let { if (current != null && current >= needed) return it }
+    guard.current?.let { if (current != null && current >= needed) return it.engine }
     val file = modelFile ?: error("No embedding model in ${File(context.filesDir, "models")}")
     check(!lite || needed == Level.TEXT) { "the lite profile loads no $needed encoder" }
     if (needed == Level.AUDIO) check(supportsAudio) { "${file.name} has no audio encoder" }
     if (SystemClock.elapsedRealtime() < unhealthyUntil) throw EngineUnhealthyException("failed its self-test a moment ago; trying again later")
-    engine?.close()
-    engine = null
+    guard.discard("rebuilding at $needed"); level = null
     val start = System.nanoTime()
     val threads = textThreads()
     val schedule = ProbeSchedule(probeMemory, context.cacheDir, file, BuildConfig.VERSION_CODE.toLong(), ::lastCrashAtMs)
-    val selfTest = EngineSelfTest<EmbeddingEngine>(
+    val selfTest = EngineSelfTest<EngineHandle<EmbeddingEngine>>(
       probes,
       clearCache = { EngineCache.clear(context.cacheDir, file.name) },
       log = { Log.i(TAG, it) },
@@ -172,7 +169,12 @@ class LiteRtEmbedder(private val context: Context, override val profile: MemoryP
       onFailed = schedule::failed,
     )
     val e = try {
-      selfTest.loadVerified(file.name, { load(file, needed, threads) }, ::probeEmbedding, { it.close() })
+      selfTest.loadVerified(
+        file.name,
+        { EngineHandle(load(file, needed, threads), gpu = needed >= Level.VISION && visionOnGpu) },   // after load(): it may have fallen back to CPU
+        { h, text -> probeEmbedding(h.engine, text) },
+        guard::dispose,
+      )
     } catch (u: EngineUnhealthyException) {
       unhealthyUntil = SystemClock.elapsedRealtime() + UNHEALTHY_RETRY_MS
       repairingFlow.value = true
@@ -181,11 +183,11 @@ class LiteRtEmbedder(private val context: Context, override val profile: MemoryP
       throw u
     }
     repairingFlow.value = false
-    engine = e
+    guard.install(e)
     level = needed
     loadedThreads = threads
     Log.i(TAG, "loaded ${file.name} at $needed (vision ${if (needed >= Level.VISION && visionOnGpu) "GPU" else "CPU, idle"}) in ${(System.nanoTime() - start) / 1_000_000} ms, self-test ${selfTest.lastProbeMs} ms")   // log-safe: our model file
-    return e
+    return e.engine
   }
 
   /** When the system last recorded a Findr crash, native crash or ANR (the diag package's exit history); 0 when none or unreadable. */
@@ -236,24 +238,28 @@ class LiteRtEmbedder(private val context: Context, override val profile: MemoryP
 
   private fun isMultimodal(file: File) = "text-270m" !in file.name
 
-  /** Drops back to nothing (memory) when the indexer is done; the next search reloads text-only. */
-  override suspend fun release() = mutex.withLock {
-    engine?.close()
-    engine = null
-    level = null
-    loadedThreads = null
+  /**
+   * Drops back to nothing (memory) when the indexer is done; the next search reloads text-only. On Qualcomm Adreno a GPU engine stays
+   * loaded instead ([EngineGuard.unload]): the memory is not given back there.
+   */
+  override suspend fun release() = guard.serial {
+    if (guard.unload("release")) { level = null; loadedThreads = null }
+  }
+
+  /** The loaded engine is stale (a new model file): gone for good, closed unless that is the Adreno GPU engine, which is set aside unclosed. */
+  override suspend fun discard() = guard.serial {
+    guard.discard("model replaced"); level = null; loadedThreads = null
   }
 
   /**
    * Lets go of the audio encoder (~100 MB mapped, plus its buffers) once a stretch of recordings is over: only an engine loaded at
    * [Level.AUDIO] is closed, and the next picture or text reloads at the level it needs (5-10 s, with the xnnpack cache in place).
-   * For a phone short of memory (MemoryBudget); a roomy one keeps the engine as it is for the whole run.
+   * For a phone short of memory (MemoryBudget); a roomy one keeps the engine as it is for the whole run. Not on Adreno (the engine holds
+   * the GPU vision executor, which stays).
    */
-  override suspend fun dropAudioEncoder() = mutex.withLock {
-    if (level == Level.AUDIO) {
+  override suspend fun dropAudioEncoder() = guard.serial {
+    if (level == Level.AUDIO && guard.unload("audio encoder")) {
       Log.i(TAG, "audio encoder released (the engine reloads at the level the next file needs)")
-      engine?.close()
-      engine = null
       level = null
       loadedThreads = null
     }

@@ -8,4 +8,11 @@
   <string name="bgs_title">Samsung nigubaasa kuhagarika app egi ekiro</string>
   <string name="bgs_body">Esimu za Samsung nizibaasa kuryamisa app nari kuzigara ekiro, nahabweki <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> neehagarika kwega fayiro zawe. Omuri Battery, hitamu «Unrestricted» ya <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>.</string>
   <string name="bgs_open">Yeggura ebishoboorora bya batiri</string>
+  <string name="bgx_title">Reka <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> egumizeemu kushoma ku orikutagikozesa</string>
+  <string name="bgx_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> neshoma fayiro zaawe omu nyima, kandi neehagarika buri obu orikukozesa app endiijo. Eki nikireka Android kuhagarika kurikuryamisa.</string>
+  <string name="bgx_allow">Ikiriza okushoma omu nyima</string>
+  <string name="bgx_not_now">Ti hati</string>
+  <string name="bgx_granted">Kyikirizibwa. Android teriryamisa app.</string>
+  <string name="bgx_denied">Tikyikirizibwa. Noobaasa kukihindura inyima omu Entebeekanisa.</string>
+  <string name="bgx_page_hint">Omu rupapura orwiguruka, hitamu «Unrestricted» (omu esimu ezimwe «Not optimised»), kandi ogaruke.</string>
 </resources>

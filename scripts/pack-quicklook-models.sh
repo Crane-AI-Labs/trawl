@@ -8,7 +8,7 @@
 # quantize_dynamic(QInt8, per_channel=True) (image.dyn8pc.onnx), the text tower with experiments/twotower/weight_only_int8.py
 # (text.wo8.onnx: dynamic int8 text graphs have been wrong on ARM).
 # (The SigLIP 2 alternative, commit bed806c, also packs scripts/build_siglip_vocab.py's tokenizer.vocab.)
-# The app finds Download/findr-quicklook-models/ or Download/findr-quicklook-models*.zip and copies each checked file to
+# The app finds Download/findr-quicklook-models/ or Download/trawl-quicklook-models*.zip (findr-quicklook-models*.zip works too) and copies each checked file to
 # files/models/quicklook/ the next time it starts or indexes. A Play Asset Delivery pack later uses the same layout.
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -21,7 +21,7 @@ D="$OUT/findr-quicklook-models"
 SUB=$(sed -nE 's/.*const val IMAGE = "([^/]+)\/.*/\1/p' "$MANIFEST")
 IMG=$(sed -nE 's/.*const val IMAGE = "[^/]+\/([^"]+)".*/\1/p' "$MANIFEST")
 TXT=$(sed -nE 's/.*const val TEXT = "[^/]+\/([^"]+)".*/\1/p' "$MANIFEST")
-rm -rf "$D" "$OUT/findr-quicklook-models.zip"; mkdir -p "$D/$SUB"
+rm -rf "$D" "$OUT/trawl-quicklook-models.zip"; mkdir -p "$D/$SUB"
 for f in "$IMG" "$TXT"; do
   ln "$SRC/$f" "$D/$SUB/$f" 2>/dev/null || cp "$SRC/$f" "$D/$SUB/"
 done
@@ -32,9 +32,9 @@ for pair in "$IMG IMAGE" "$TXT TEXT"; do
   tr -d _ < "$MANIFEST" | grep -E "AsrModelFile\($2, $size, \"$sha\"\)" >/dev/null || { echo "MISMATCH $SUB/$1 ($size bytes, $sha)"; exit 1; }
   echo "ok $SUB/$1 $size"
 done
-(cd "$OUT" && zip -q -r findr-quicklook-models.zip findr-quicklook-models)   # deflated: the int8 weights shrink a little
-ls -l "$OUT/findr-quicklook-models.zip"
+(cd "$OUT" && zip -q -r trawl-quicklook-models.zip findr-quicklook-models)   # deflated: the int8 weights shrink a little
+ls -l "$OUT/trawl-quicklook-models.zip"
 if [ "$PUSH" = 1 ]; then
   : "${ANDROID_SERIAL:?name the phone: ANDROID_SERIAL=<serial>}"
-  adb -s "$ANDROID_SERIAL" push "$OUT/findr-quicklook-models.zip" /sdcard/Download/ | tail -1
+  adb -s "$ANDROID_SERIAL" push "$OUT/trawl-quicklook-models.zip" /sdcard/Download/ | tail -1
 fi

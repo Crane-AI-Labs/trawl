@@ -76,6 +76,7 @@ import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Locale
+import com.craneai.findr.ui.theme.sunContentWidth
 
 // ---- words ------------------------------------------------------------------------------------------------------------
 
@@ -414,7 +415,7 @@ fun DateRangeDialog(onApply: (LocalDate, LocalDate) -> Unit, onDismiss: () -> Un
   // dialog gives the picker the full width of the screen.
   Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
     Surface(
-      modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp).heightIn(max = 640.dp),
+      modifier = Modifier.sunContentWidth().padding(horizontal = 8.dp).heightIn(max = 640.dp),
       shape = DatePickerDefaults.shape,
       color = DatePickerDefaults.colors().containerColor,
     ) {

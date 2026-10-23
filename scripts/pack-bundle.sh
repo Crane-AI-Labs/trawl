@@ -2,7 +2,7 @@
 # Builds the one-file models bundle trawl-models.zip: the embedding model plus the quick-look, speech and private-preview packs, which is what a
 # new phone needs and what people pass around over WhatsApp or Xender (engine/ModelBundle.kt reads it from Downloads). Stored,
 # not deflated: the models are already compressed. The app installs the model and all three packs from it without a question; the
-# separate files (the .litertlm, findr-quicklook-models.zip, findr-speech-models.zip, findr-private-models.zip) still work too.
+# separate files (the .litertlm, trawl-quicklook-models.zip, trawl-speech-models.zip, trawl-private-models.zip, or their pre-1.0.3 findr- names) still work too.
 #   scripts/pack-bundle.sh [--push]          (MODEL=<.litertlm> OUT=bench-data/bundle)
 #   LITE=1 scripts/pack-bundle.sh            trawl-models-lite.zip for 2 GB phones: the text-only 270m model, quick look and
 #                                            private previews, no speech (the lite profile keeps speech off: the research notes)

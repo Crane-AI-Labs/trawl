@@ -236,12 +236,20 @@ class RulesTest {
     assertNull(skip("Android/media/com.whatsapp/WhatsApp/Media/WhatsApp Documents/", "receipt.pdf", FileKind.PDF, w = null, h = null))
   }
 
-  @Test fun findrsOwnPacksAreNotUserFiles() {
-    for (n in listOf("findr-quicklook-models.zip", "findr-speech-models.zip", "Findr-Speech-Models (1).zip", "embeddinggemma-2-740m.litertlm")) {
-      assertEquals(n, "Findr's own add-on pack", skip("Download/", n, FileKind.OTHER, w = null, h = null))
+  @Test fun trawlsOwnPacksAreNotUserFiles() {
+    // The current trawl- names, and the pre-1.0.3 findr- names that may still sit in Downloads.
+    for (n in listOf(
+      "trawl-quicklook-models.zip", "trawl-speech-models.zip", "trawl-private-models.zip", "Trawl-Speech-Models (1).zip",
+      "findr-quicklook-models.zip", "findr-speech-models.zip", "findr-private-models.zip", "Findr-Speech-Models (1).zip",
+      "embeddinggemma-2-740m.litertlm",
+    )) {
+      assertEquals(n, "Trawl's own add-on pack", skip("Download/", n, FileKind.OTHER, w = null, h = null))
     }
     // Look-alikes that are the person's own stay.
-    for (n in listOf("findr-models-notes.zip", "my-findr-quicklook-models.zip", "findr-quicklook-models-backup.zip", "findr.zip", "findr-report.pdf")) {
+    for (n in listOf(
+      "findr-models-notes.zip", "my-findr-quicklook-models.zip", "findr-quicklook-models-backup.zip", "findr.zip", "findr-report.pdf",
+      "trawl-models-notes.zip", "my-trawl-speech-models.zip", "trawl-speech-models-backup.zip", "trawl.zip", "trawl-report.pdf",
+    )) {
       assertNull(n, skip("Download/", n, FileKind.OTHER, w = null, h = null))
     }
   }

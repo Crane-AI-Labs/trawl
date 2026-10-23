@@ -88,6 +88,8 @@ import com.craneai.findr.ui.theme.SunType
 import com.craneai.findr.ui.theme.ThemeMode
 import com.craneai.findr.ui.theme.sunBorder
 import com.craneai.findr.ui.theme.sunFocusRing
+import com.craneai.findr.ui.theme.sunContentWidth
+import com.craneai.findr.ui.theme.sunSideInset
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -118,28 +120,22 @@ fun SettingsScreen(
       .fillMaxSize()
       .background(MaterialTheme.colorScheme.background),
   ) {
-    SettingsTopBar(stringResource(R.string.settings_title), onBack, Modifier.statusBarsPadding())
+    SettingsTopBar(stringResource(R.string.settings_title), onBack, Modifier.sunContentWidth().statusBarsPadding())
     Column(
       Modifier
         .weight(1f)
         .verticalScroll(rememberScrollState())
         .navigationBarsPadding()
-        .padding(horizontal = Sun.Gutter, vertical = Sun.S8),
+        .padding(horizontal = sunSideInset(Sun.Gutter), vertical = Sun.S8),
     ) {
+      SunSectionHeading(appString(R.string.bg_settings_section))
       if (com.craneai.findr.ui.background.BackgroundAccess.appliesHere()) {   // TECNO, Infinix, itel: the phone may pause apps with the screen off
-        SunSectionHeading(appString(R.string.bg_settings_section))
         com.craneai.findr.ui.background.BackgroundAccessSettingsRow()
       }
-      // Samsung: Battery > Unrestricted keeps overnight learning going. Gone once it is set; read again when coming back from Settings.
-      val samsungPhone = remember { com.craneai.findr.ui.background.SamsungSleep.appliesHere() }
-      var samsungUnrestricted by remember { mutableStateOf(samsungPhone && com.craneai.findr.ui.background.SamsungSleep.isUnrestricted(context)) }
-      androidx.lifecycle.compose.LifecycleEventEffect(androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
-        if (samsungPhone) samsungUnrestricted = com.craneai.findr.ui.background.SamsungSleep.isUnrestricted(context)
-      }
-      if (com.craneai.findr.ui.background.SamsungSleep.settingsRowShown(samsungPhone, samsungUnrestricted)) {
-        SunSectionHeading(appString(R.string.bg_settings_section))
-        com.craneai.findr.ui.background.SamsungSleepSettingsRow()
-      }
+      // Every phone (setup asks the same thing once): let Trawl keep reading when it is not in front. Android's own yes/no box, or the
+      // app's battery page where there is none; shows "Allowed" when it is on, read again when coming back. On Samsung this is the same
+      // state as Battery > Unrestricted, so it replaces the old Samsung-only row (the Home card hides itself once it is on).
+      com.craneai.findr.ui.background.BatteryExemptionSettingsRow()
 
       // Trawl Go reads words only, which is light enough to do on battery: it has no charger-only tier to choose.
       if (!Edition.GO) {

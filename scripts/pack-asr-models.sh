@@ -3,7 +3,7 @@
 # as a folder and a zip, and can push the zip to a phone's Download folder. Works with release builds (no run-as needed).
 #   scripts/pack-asr-models.sh [--with-moonshine] [--push]      (SRC=bench-data/models/asr OUT=bench-data/asr-pack)
 #   ANDROID_SERIAL=<serial> scripts/phone-lock.sh run <who> scripts/pack-asr-models.sh --push
-# The app finds either Download/findr-speech-models/ (folder) or Download/findr-speech-models*.zip, checks each file, and copies it to
+# The app finds either Download/findr-speech-models/ (folder) or Download/trawl-speech-models*.zip (the pre-1.0.3 findr-speech-models*.zip works too), checks each file, and copies it to
 # files/models/asr/ the next time it starts or indexes. A Play Asset Delivery pack later uses the same layout.
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -15,7 +15,7 @@ P="$SRC/sherpa-onnx-nemo-parakeet_tdt_ctc_110m-en-36000-int8"
 C="$SRC/sherpa-onnx-ced-mini-audio-tagging-2024-04-19"
 M="$SRC/sherpa-onnx-moonshine-tiny-en-int8"
 D="$OUT/findr-speech-models"
-rm -rf "$D" "$OUT/findr-speech-models.zip"; mkdir -p "$D/parakeet-tdt-ctc-110m-int8" "$D/ced-mini-int8"
+rm -rf "$D" "$OUT/trawl-speech-models.zip"; mkdir -p "$D/parakeet-tdt-ctc-110m-int8" "$D/ced-mini-int8"
 cp "$P/model.int8.onnx" "$P/tokens.txt" "$D/parakeet-tdt-ctc-110m-int8/"
 cp "$SRC/silero_vad.onnx" "$D/"
 cp "$C/model.int8.onnx" "$C/class_labels_indices.csv" "$D/ced-mini-int8/"
@@ -32,9 +32,9 @@ grep -E 'AsrModelFile\("' app/src/main/java/com/craneai/findr/engine/AsrModelPac
   [ "$(stat -f %z "$D/$path")" = "$size" ] && [ "$(shasum -a 256 "$D/$path" | cut -c1-64)" = "$sha" ] || { echo "MISMATCH $path"; exit 1; }
   echo "ok $path"
 done
-(cd "$OUT" && zip -q -0 -r findr-speech-models.zip findr-speech-models)   # stored, not deflated: the models are already compressed
-ls -l "$OUT/findr-speech-models.zip"
+(cd "$OUT" && zip -q -0 -r trawl-speech-models.zip findr-speech-models)   # stored, not deflated: the models are already compressed
+ls -l "$OUT/trawl-speech-models.zip"
 if [ "$PUSH" = 1 ]; then
   : "${ANDROID_SERIAL:?name the phone: ANDROID_SERIAL=<serial>}"
-  adb -s "$ANDROID_SERIAL" push "$OUT/findr-speech-models.zip" /sdcard/Download/ | tail -1
+  adb -s "$ANDROID_SERIAL" push "$OUT/trawl-speech-models.zip" /sdcard/Download/ | tail -1
 fi

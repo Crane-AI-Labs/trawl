@@ -8,4 +8,11 @@
   <string name="bgs_title">Samsung le da app yii duro ni alẹ</string>
   <string name="bgs_body">Awọn foonu Samsung le fi awọn app sinu oorun tabi ti wọn ni alẹ, nitorina <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yoo dẹkun kikọ awọn faili rẹ. Ninu Battery, yan «Unrestricted» fun <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>.</string>
   <string name="bgs_open">Ṣii eto batiri</string>
+  <string name="bgx_title">Jẹ́ kí <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> máa kàwé nígbà tí o kò bá ń lò ó</string>
+  <string name="bgx_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ń ka àwọn fáìlì rẹ ní ẹ̀yìn, ó sì ń dúró nígbàkigbà tí o bá lo app mìíràn. Èyí kàn ń dá Android dúró láti fi sí ipò oorun ni.</string>
+  <string name="bgx_allow">Gba kíkà ní ẹ̀yìn láàyè</string>
+  <string name="bgx_not_now">Kì í ṣe báyìí</string>
+  <string name="bgx_granted">Gba àyè. Android kò ní fi sí ipò oorun.</string>
+  <string name="bgx_denied">Kò gba àyè. O lè yí èyí padà nígbà tó bá yá nínú Ètò.</string>
+  <string name="bgx_page_hint">Lórí ojú-ewé tó ṣí, yan «Unrestricted» (lórí àwọn foonu kan «Not optimised»), kí o sì padà wá.</string>
 </resources>

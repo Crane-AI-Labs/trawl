@@ -36,15 +36,17 @@ import com.craneai.findr.ui.theme.SunTextButton
 import com.craneai.findr.ui.theme.SunType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import com.craneai.findr.ui.theme.sunContentWidth
+import com.craneai.findr.ui.theme.sunSideInset
 
 /** The notices screen: what Parakeet's CC BY 4.0, the Gemma terms and ML Kit's terms require, then the rest, then full texts. */
 @Composable
 fun LicencesScreen(onBack: () -> Unit) {
   Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
-    SettingsTopBar(stringResource(R.string.licences_title), onBack, Modifier.statusBarsPadding())
+    SettingsTopBar(stringResource(R.string.licences_title), onBack, Modifier.sunContentWidth().statusBarsPadding())
     LazyColumn(
       Modifier.weight(1f).navigationBarsPadding(),
-      contentPadding = PaddingValues(start = Sun.Gutter, end = Sun.Gutter, top = Sun.S8, bottom = Sun.S32),
+      contentPadding = PaddingValues(start = sunSideInset(Sun.Gutter), end = sunSideInset(Sun.Gutter), top = Sun.S8, bottom = Sun.S32),
     ) {
       item {
         Text(appString(R.string.licences_intro), style = SunType.Body, color = MaterialTheme.colorScheme.onSurfaceVariant)

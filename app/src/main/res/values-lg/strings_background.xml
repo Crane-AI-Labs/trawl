@@ -8,4 +8,11 @@
   <string name="bgs_title">Samsung eyinza okuyimiriza app eno ekiro</string>
   <string name="bgs_body">Essimu za Samsung ziyinza okwebasa app oba okuziggala ekiro, bwe kityo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> eyimirira okusoma fayiro zo. Mu Battery, londa «Unrestricted» ku lwa <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>.</string>
   <string name="bgs_open">Ggulawo enteekateeka za battery</string>
+  <string name="bgx_title">Leka <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> egenda mu maaso n\'okusoma ng\'otogikozesa</string>
+  <string name="bgx_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> esoma fayiro zo emabega, era eyimirira buli lw\'okozesa app endala. Kino kiziyiza Android okugyebasa kyokka.</string>
+  <string name="bgx_allow">Kkiriza okusoma emabega</string>
+  <string name="bgx_not_now">Sii kaakano</string>
+  <string name="bgx_granted">Kikkiriziddwa. Android tegenda kugyebasa.</string>
+  <string name="bgx_denied">Tekikkirizibwa. Osobola okukikyusa oluvannyuma mu Enteekateeka.</string>
+  <string name="bgx_page_hint">Ku lupapula olugguddwa, londa «Unrestricted» (ku ssimu ezimu «Not optimised»), oddeyo.</string>
 </resources>

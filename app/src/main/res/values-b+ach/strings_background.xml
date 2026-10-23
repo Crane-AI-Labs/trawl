@@ -8,4 +8,11 @@
   <string name="bgs_title">Samsung romo juko app man i otyeno</string>
   <string name="bgs_body">Cim pa Samsung romo yero app me lyel nyo gengo gi i otyeno, ma weko <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> juko kwano pwail ni. I Battery, yer «Unrestricted» pi <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>.</string>
   <string name="bgs_open">Yab ngec me batiri</string>
+  <string name="bgx_title">Weko <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ocokke kwano ka pe i tic ki en</string>
+  <string name="bgx_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kwano fayil ni i dye cen, ci te ka i tic ki app mukene. Man weko Android keken pe oryemo ki me lyel.</string>
+  <string name="bgx_allow">Ye kwano i dye cen</string>
+  <string name="bgx_not_now">Pe kombeddi</string>
+  <string name="bgx_granted">Kiye. Android pe bi ketone i lyel.</string>
+  <string name="bgx_denied">Pe kiye. Itwero loko man bangi i Yub.</string>
+  <string name="bgx_page_hint">I pot buk ma kiyabo, yer «Unrestricted» (i cim mogo «Not optimised»), ci i dok cen.</string>
 </resources>

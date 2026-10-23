@@ -33,7 +33,7 @@
   <!-- Shown above the add-on's description. "the quick-search panel" is the Quick search feature. -->
   <string name="pack_privacy_recommended">Recommended if you use the quick-search panel</string>
 
-  <!-- Before the person taps Install. %1$s is a file name (keep it as is, for example findr-speech-models.zip), %2$s is its size ("142 MB"). -->
+  <!-- Before the person taps Install. %1$s is a file name (keep it as is, for example trawl-speech-models.zip), %2$s is its size ("142 MB"). -->
   <string name="pack_how_to_add_downloads"><xliff:g id="app_name" example="Trawl">%3$s</xliff:g> never goes online, so it cannot download this itself. Get the file %1$s (%2$s) from Crane AI Labs and copy it into this phone\'s Downloads folder. Then tap Install: <xliff:g id="app_name" example="Trawl">%3$s</xliff:g> checks the file and adds it. You can delete the .zip afterwards.</string>
   <!-- %1$s is the add-on's title, %2$s its size ("142 MB"). -->
   <string name="pack_how_to_add_play">Play will deliver %1$s (%2$s) when you tap Install. Nothing else to do.</string>

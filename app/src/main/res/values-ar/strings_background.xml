@@ -8,4 +8,11 @@
   <string name="bgs_title">قد توقف سامسونج هذا التطبيق ليلاً</string>
   <string name="bgs_body">يمكن لهواتف سامسونج أن تضع التطبيقات في وضع السكون أو تغلقها أثناء الليل، فيتوقف <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> عن تعلّم ملفاتك. في البطارية، اختر «غير مقيّد» لتطبيق <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>.</string>
   <string name="bgs_open">فتح إعدادات البطارية</string>
+  <string name="bgx_title">اسمح لـ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> بمواصلة القراءة حين لا تستخدمه</string>
+  <string name="bgx_body">يقرأ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ملفاتك في الخلفية ويتوقف كلما استخدمت تطبيقاً آخر. هذا يمنع Android فقط من وضعه في وضع السكون.</string>
+  <string name="bgx_allow">السماح بالقراءة في الخلفية</string>
+  <string name="bgx_not_now">ليس الآن</string>
+  <string name="bgx_granted">تم السماح. لن يضعه Android في وضع السكون.</string>
+  <string name="bgx_denied">غير مسموح. يمكنك تغيير ذلك لاحقاً من الإعدادات.</string>
+  <string name="bgx_page_hint">في الصفحة التي فُتحت، اختر «غير مقيّد» (أو «غير محسّن» في بعض الهواتف)، ثم عُد.</string>
 </resources>

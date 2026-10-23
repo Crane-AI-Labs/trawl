@@ -8,4 +8,11 @@
   <string name="bgs_title">A Samsung pode parar esta app à noite</string>
   <string name="bgs_body">Os telemóveis Samsung podem pôr as apps em suspensão ou fechá-las durante a noite, e <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> deixa de aprender os seus ficheiros. Em Bateria, escolha «Sem restrições» para <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>.</string>
   <string name="bgs_open">Abrir definições da bateria</string>
+  <string name="bgx_title">Deixe o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> continuar lendo quando você não está usando</string>
+  <string name="bgx_body">O <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> lê seus arquivos em segundo plano e para sempre que você usa outro app. Isso só impede o Android de colocá-lo em repouso.</string>
+  <string name="bgx_allow">Permitir leitura em segundo plano</string>
+  <string name="bgx_not_now">Agora não</string>
+  <string name="bgx_granted">Permitido. O Android não vai colocá-lo em repouso.</string>
+  <string name="bgx_denied">Não permitido. Você pode mudar isso depois, em Configurações.</string>
+  <string name="bgx_page_hint">Na página que abriu, escolha «Sem restrições» (em alguns telefones «Não otimizado») e depois volte.</string>
 </resources>

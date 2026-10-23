@@ -304,7 +304,7 @@ class FindrEngine(private val context: Context) : SearchEngine {
    * (engine/ModelDelivery.kt). After an install the loaded model is given back so the next query or index pass loads the new file.
    */
   private val modelDelivery = ModelDelivery(context, scope, hardwareProfile) {
-    embedder.release()
+    embedder.discard()   // not release(): the loaded engine holds the old file and must not be kept, even on Adreno
     packManager.refresh()
     refreshStatus()
     schedule()

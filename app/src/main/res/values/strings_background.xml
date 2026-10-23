@@ -22,4 +22,18 @@
   <string name="bgs_body">Samsung phones can put apps to sleep or close them overnight, so <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> stops learning your files. In Battery, choose Unrestricted for <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>.</string>
   <!-- Button: opens the app's battery page in Android Settings -->
   <string name="bgs_open">Open battery settings</string>
+  <!-- Setup step after All files access, and the Settings row (ui/background/BatteryExemption.kt). The app name span is the placeholder: it names the app, never translate it. -->
+  <string name="bgx_title">Let <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> keep reading when you\'re not using it</string>
+  <!-- One plain sentence on what it does and what it does not: the app still stops when the person uses another app. 'Putting it to sleep' = the system's battery optimisation. -->
+  <string name="bgx_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> reads your files in the background and stops whenever you use another app. This only lets Android stop putting it to sleep.</string>
+  <!-- Primary button: asks Android to stop putting the app to sleep (the system shows its own yes/no box). -->
+  <string name="bgx_allow">Allow background reading</string>
+  <!-- Skips the step. Same word as onb4_not_now. -->
+  <string name="bgx_not_now">Not now</string>
+  <!-- Shown after a yes, and in Settings while it is on. -->
+  <string name="bgx_granted">Allowed. Android will not put it to sleep.</string>
+  <!-- Shown after the person said no to the system box. -->
+  <string name="bgx_denied">Not allowed. You can change this later in Settings.</string>
+  <!-- Shown when the phone has no system box and the app's battery page was opened instead. Unrestricted is the word on Samsung's Battery screen: keep it as the phone shows it. -->
+  <string name="bgx_page_hint">In the page that opened, choose “Unrestricted” (on some phones “Not optimised”), then come back.</string>
 </resources>

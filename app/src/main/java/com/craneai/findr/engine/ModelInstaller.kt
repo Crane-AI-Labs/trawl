@@ -109,7 +109,7 @@ class ModelInstaller(
 
   /**
    * The speech models (D3: on in release builds). A tester copies either the folder `findr-speech-models/` or the archive
-   * `findr-speech-models.zip` (scripts/pack-asr-models.sh makes both) into Downloads; this verifies each file by size and
+   * `trawl-speech-models.zip` (scripts/pack-asr-models.sh makes both) into Downloads; this verifies each file by size and
    * SHA-256 and moves it into `files/models/asr/`, the layout [com.craneai.findr.extract.SherpaAsrEngine] reads. A later
    * Play Asset Delivery pack is one more [AsrModelSource] fed to the same [AsrModelInstaller].
    * Returns true when every required speech file is in place.
@@ -144,7 +144,7 @@ class ModelInstaller(
   }
 
   /**
-   * The quick-look pack (D2): `findr-quicklook-models.zip` (or the unzipped folder) in Downloads, made by
+   * The quick-look pack (D2): `trawl-quicklook-models.zip` (or the unzipped folder) in Downloads, made by
    * scripts/pack-quicklook-models.sh, checked file by file into `files/models/quicklook/`. Same rules as speech: a pack the
    * user said "Not now" to or removed is left alone until they tap Add.
    */
@@ -166,7 +166,7 @@ class ModelInstaller(
   }
 
   /**
-   * The "Blur private-looking previews" pack: `findr-private-models.zip` (or the unzipped folder) in Downloads, made by
+   * The "Blur private-looking previews" pack: `trawl-private-models.zip` (or the unzipped folder) in Downloads, made by
    * scripts/pack-private-models.sh, checked file by file into `files/models/private/`. Same rules as the other packs.
    */
   suspend fun installPrivateFromDownloads(): Boolean = withContext(Dispatchers.IO) {
@@ -211,7 +211,7 @@ class ModelInstaller(
   companion object {
     private const val MODEL_LOCK = ModelDelivery.MODEL_LOCK
 
-    /** The folder first, then archives newest first (a browser may have saved "findr-speech-models (1).zip"). */
+    /** The folder first, then archives newest first (a browser may have saved "trawl-speech-models (1).zip"). */
     internal fun findAsrSources(inDownloads: List<File>): List<AsrModelSource> = findPackSources(inDownloads, PackFilesRegistry.speech)
   }
 }

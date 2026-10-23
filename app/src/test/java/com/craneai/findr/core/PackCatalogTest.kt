@@ -38,11 +38,11 @@ class PackCatalogTest {
   @Test fun quickLookIsAvailableWithItsFilesAndItsOwnSetting() {
     val q = PackCatalog.quickLook
     assertTrue(q.available)
-    assertEquals("findr-quicklook-models.zip", q.archiveName)
+    assertEquals("trawl-quicklook-models.zip", q.archiveName)
     assertEquals(QuickLookPack.files.sumOf { it.size }, q.sizeBytes)
     assertEquals(117L, q.sizeMb)
     assertEquals(QuickLookPack.files, PackFilesRegistry.of(q.id)!!.manifest)
-    assertTrue(PackFilesRegistry.of(q.id)!!.archive.matches("findr-quicklook-models (1).zip"))
+    assertTrue(PackFilesRegistry.of(q.id)!!.archive.matches("trawl-quicklook-models (1).zip"))
     val off = q.withEnabled(FindrSettings(), false)
     assertFalse(off.quickLook)
     assertFalse(q.enabledIn(off))
@@ -66,13 +66,13 @@ class PackCatalogTest {
   @Test fun theBlurPackIsAnAddOnWithItsOwnSwitchAndASizeThatMatchesItsFiles() {
     val p = PackCatalog.privacy
     assertTrue(p.available)
-    assertEquals("findr-private-models.zip", p.archiveName)
+    assertEquals("trawl-private-models.zip", p.archiveName)
     assertEquals(PrivatePack.files.sumOf { it.size }, p.sizeBytes)
     assertEquals(PackCatalog.Facts.PRIVATE_SIZE_BYTES, p.sizeBytes)
     assertEquals(22L, p.sizeMb)
     assertEquals(PrivatePack.files, PackFilesRegistry.of(p.id)!!.manifest)
     assertEquals("private", PackFilesRegistry.of(p.id)!!.dir)
-    assertTrue(PackFilesRegistry.of(p.id)!!.archive.matches("findr-private-models (1).zip"))
+    assertTrue(PackFilesRegistry.of(p.id)!!.archive.matches("trawl-private-models (1).zip"))
     assertTrue("the model and its licence travel together", PrivatePack.files.any { it.path == PrivatePack.LICENCE })
     assertEquals("recommended for the panel's users", R.string.pack_privacy_recommended, p.recommendedFor?.res)
     assertEquals(listOf(PackCatalog.Facts.PRIVATE_SLOWDOWN_PCT), p.cost.args)
@@ -101,5 +101,21 @@ class PackCatalogTest {
     assertFalse(off.speechToText)
     assertFalse(PackCatalog.speech.enabledIn(off))
     assertTrue(PackCatalog.speech.enabledIn(PackCatalog.speech.withEnabled(off, true)))
+  }
+  @Test fun everyPackIsShownUnderItsTrawlNameAndBothOldAndNewZipNamesStillInstall() {
+    for (def in PackCatalog.all) {
+      val files = PackFilesRegistry.of(def.id) ?: continue
+      assertTrue(def.archiveName, def.archiveName.startsWith("trawl-") && !def.archiveName.contains("findr"))
+      assertTrue("the name shown is a name the app picks up", files.archive.matches(def.archiveName))
+      val old = def.archiveName.replace("trawl-", "findr-")
+      assertTrue("a zip downloaded before 1.0.3 as $old still installs", files.archive.matches(old))
+      assertTrue(files.archive.matches(old.replace(".zip", " (2).zip")))
+      assertTrue(files.archive.matches(def.archiveName.uppercase()))
+      assertFalse("look-alikes are not packs", files.archive.matches("my-" + def.archiveName.replace("-models", "-notes")))
+    }
+    assertEquals("trawl-speech-models.zip", PackCatalog.speech.archiveName)
+    assertEquals("trawl-speech-models.zip", AsrModelPack.ARCHIVE_NAME)
+    // The folder inside an archive is internal and unchanged, so a pack built either way has the same layout.
+    assertEquals("findr-speech-models", PackFilesRegistry.speech.folderName)
   }
 }

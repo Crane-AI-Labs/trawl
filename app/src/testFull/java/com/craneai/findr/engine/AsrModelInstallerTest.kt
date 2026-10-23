@@ -131,9 +131,11 @@ class AsrModelInstallerTest {
   @Test fun downloadsLookupFindsTheFolderAndArchivesNewestFirst() {
     val dl = tmp.newFolder()
     val folder = File(dl, AsrModelPack.FOLDER_NAME).apply { mkdirs() }
+    // A zip saved under the pre-1.0.3 name is still found beside one under the current name (the Trawl name here is the newer).
     val old = File(dl, "findr-speech-models.zip").apply { writeBytes(zipBytes()); setLastModified(1_000) }
-    val newer = File(dl, "findr-speech-models (1).zip").apply { writeBytes(zipBytes()); setLastModified(9_000) }
+    val newer = File(dl, "trawl-speech-models (1).zip").apply { writeBytes(zipBytes()); setLastModified(9_000) }
     File(dl, "unrelated.zip").writeBytes(zipBytes())
+    File(dl, "trawl-speech-models.zip.crdownload").writeBytes(ByteArray(1))
     File(dl, "findr-speech-models.zip.crdownload").writeBytes(ByteArray(1))
     val found = ModelInstaller.findAsrSources(dl.listFiles()!!.toList())
     try {

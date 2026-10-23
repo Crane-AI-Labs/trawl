@@ -249,11 +249,12 @@ object Rules {
   const val STATUS_REASON = "WhatsApp status"
 
   /**
-   * Findr's own downloads: add-on packs (`findr-speech-models.zip`, `findr-quicklook-models.zip`, a browser's
-   * "findr-speech-models (1).zip") and the embedding model file. They sit in Downloads until installed, and are not the
-   * person's files, so they never show up in Recent or in results.
+   * Trawl's own downloads: add-on packs (`trawl-speech-models.zip`, `trawl-quicklook-models.zip`, a browser's
+   * "trawl-speech-models (1).zip") and the embedding model file. The pre-1.0.3 `findr-` pack names count too: a zip saved under
+   * the old name is still ours. They sit in Downloads until installed, and are not the person's files, so they never show up
+   * in Recent or in results.
    */
-  private val OWN_PACK = Regex("""^findr-[a-z0-9-]+-models( \(\d+\))?\.zip$""", RegexOption.IGNORE_CASE)
+  private val OWN_PACK = Regex("""^(?:findr|trawl)-[a-z0-9-]+-models( \(\d+\))?\.zip$""", RegexOption.IGNORE_CASE)
   private val OWN_MODEL = Regex("""^embeddinggemma[a-z0-9._-]*\.litertlm$""", RegexOption.IGNORE_CASE)
 
   fun isOwnPack(name: String): Boolean = OWN_PACK.matches(name) || OWN_MODEL.matches(name)
@@ -335,7 +336,7 @@ object Rules {
     folderSkipReason(relativePath, excludedFolders, allowStatuses = scope.isOn(FolderGroups.WHATSAPP_STATUS))?.let { return it }
     if (noMedia) return ".nomedia folder"
     if (name.startsWith(".")) return if (name.startsWith(".trashed")) "trashed" else if (name.startsWith(".pending")) "pending download" else "hidden file"
-    if (isOwnPack(name)) return "Findr's own add-on pack"
+    if (isOwnPack(name)) return "Trawl's own add-on pack"
     appDataReason(relativePath, name)?.let { return it }
     if (extensionOf(name) in JUNK_EXT) return "temporary or system file"
     // An empty file is usually one still being written (WhatsApp, browsers): skip it for now. Once it has bytes its

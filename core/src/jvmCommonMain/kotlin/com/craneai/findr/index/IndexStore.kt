@@ -1144,7 +1144,7 @@ class IndexStore private constructor(
      *    a growing wait of [backoffMs], and then thrown with the file untouched;
      *  - a full-text index that fails its check is rebuilt in place by [create];
      *  - damage to a main table is confirmed by a second look, then every readable row is copied into a new file;
-     *  - only an index with nothing readable, or one from a newer Findr (a downgrade), is deleted and started again.
+     *  - only an index with nothing readable, or one from a newer Trawl (a downgrade), is deleted and started again.
      * It used to be moved aside as `*.corrupt-<time>`, which kept a full copy of the user's text that nothing ever removed;
      * any such copy, and any half-made salvage file, is deleted here.
      */
@@ -1225,7 +1225,7 @@ class IndexStore private constructor(
         // Deleted rows are zeroed on disk, not just unlinked, so a forensic copy can't read back a deleted file's words.
         writer.exec("PRAGMA secure_delete = ON")
         val version = writer.long("PRAGMA user_version") ?: 0
-        if (version > Schema.VERSION) throw IndexRecovery.TooNew("index was made by a newer Findr (schema $version)")
+        if (version > Schema.VERSION) throw IndexRecovery.TooNew("index was made by a newer Trawl (schema $version)")
         if (version > 0) IndexRecovery.check(writer, log)
         if (version == 0L) {
           writer.transaction {

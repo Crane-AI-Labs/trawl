@@ -278,6 +278,14 @@ class AddOnsTest {
     assertTrue(UpdateNotice.find(r.models, listOf(r.downloads), catalog, verifier).isEmpty())
   }
 
+  @Test fun `the blur pack zip is found under its Trawl name and under the name it had before 1_0_3`() {
+    val a = AddOnCatalog.privacyFiles.archive
+    for (n in listOf("trawl-private-models.zip", "trawl-private-models (1).zip", "findr-private-models.zip", "findr-private-models (2).zip", "Trawl-Private-Models.ZIP")) {
+      assertTrue(a.matches(n), n)
+    }
+    for (n in listOf("trawl-models.zip", "private-models.zip", "my-trawl-private-models.zip", "trawl-private-models.txt")) assertFalse(a.matches(n), n)
+  }
+
   // ---- the real Privacy pack (needs the fixture; skipped where it is not) ---------------------------------------------
 
   private val fixture: File? = (System.getenv("TRAWL_PRIVACY_PACK_DIR") ?: "/mnt/data/trawl-fixtures/findr-private-models").let(::File).takeIf { it.isDirectory }

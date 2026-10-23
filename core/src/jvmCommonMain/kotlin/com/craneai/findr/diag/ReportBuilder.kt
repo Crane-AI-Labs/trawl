@@ -50,7 +50,7 @@ object ReportBuilder {
     val d = input.device
     val note = input.note?.trim()?.takeIf { it.isNotEmpty() }?.take(NOTE_MAX)
     val head = buildString {
-      appendLine("Findr problem report")
+      appendLine("Trawl problem report")
       appendLine("Made: ${STAMP.format(Instant.ofEpochMilli(input.createdAt))}")
       appendLine("This report holds the phone and app facts below, error traces with their messages removed, and the app's own")
       appendLine("log with names and searches removed. It holds no file names, folders, searches, text from files or transcripts.")
@@ -68,7 +68,7 @@ object ReportBuilder {
     }
     val handledBlock = buildString {
       appendLine()
-      appendLine("== Errors Findr handled and carried on from (since the app was installed or reports were last deleted) ==")
+      appendLine("== Errors Trawl handled and carried on from (since the app was installed or reports were last deleted) ==")
       if (input.handled.isEmpty()) appendLine("none") else input.handled.entries.sortedBy { it.key.ordinal }.forEach { (k, s) ->
         appendLine("${k.label}: ${s.count}, last ${s.lastClass}")
       }
@@ -76,7 +76,7 @@ object ReportBuilder {
     val logBlock = buildString {
       appendLine()
       appendLine("== Recent log from this launch (redacted) ==")
-      if (input.logLines.isEmpty()) appendLine("none") else input.logLines.forEach { appendLine(it) }
+      if (input.logLines.isEmpty()) appendLine("none") else input.logLines.forEach { appendLine(brand(it)) }
     }
 
     val events = StringBuilder()
@@ -104,7 +104,7 @@ object ReportBuilder {
   fun summary(input: ReportInput, note: String?): String {
     val d = input.device
     return buildString {
-      append("Findr ${d.appVersion} (build ${d.appBuild}) on ${d.manufacturer} ${d.model}, Android ${d.androidRelease}.")
+      append("Trawl ${d.appVersion} (build ${d.appBuild}) on ${d.manufacturer} ${d.model}, Android ${d.androidRelease}.")
       input.events.firstOrNull()?.let { e ->
         append("\nLatest event: ${e.kind.label}, ${STAMP.format(Instant.ofEpochMilli(e.time))}")
         headline(e.body)?.let { append("\n$it") }
@@ -124,6 +124,13 @@ object ReportBuilder {
     }
     return lines.firstOrNull { it.trimStart().startsWith("at ") }?.trim()?.let { "Main thread: $it" }
   }
+
+  /**
+   * The product name as the person knows it. Log lines carry the internal tags and prose of the app's former name ("FindrWorker",
+   * "Findr started"); in a report they read "Trawl". Applied to the log block only: the logcat tags themselves are untouched, and
+   * stack frames keep their real class names so they still match the source and the R8 mapping.
+   */
+  fun brand(line: String): String = line.replace("Findr", "Trawl")
 
   private val EXCEPTION = Regex("""^[\w.$]+(?:Exception|Error|Throwable)\b""")
 }

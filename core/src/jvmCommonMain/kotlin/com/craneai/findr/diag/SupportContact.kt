@@ -3,7 +3,7 @@ package com.craneai.findr.diag
 import java.net.URLEncoder
 
 /**
- * Where a problem report goes. Findr has no internet permission and never connects: the person's own email app (and,
+ * Where a problem report goes. Trawl has no internet permission and never connects: the person's own email app (and,
  * later, WhatsApp) sends it, after they have read it. These two constants are the only addresses in the app.
  */
 object SupportContact {
@@ -26,9 +26,9 @@ object SendPlans {
   const val MAIL_BODY_MAX = 1_800
   /** A wa.me link that fits in every browser and in WhatsApp's own limit with room to spare. */
   const val WHATSAPP_TEXT_MAX = 600
-  const val ATTACHMENT_NAME = "findr-report.txt"
+  const val ATTACHMENT_NAME = "trawl-report.txt"
 
-  fun subject(appVersion: String, deviceModel: String): String = "Findr problem report ($appVersion, $deviceModel)"
+  fun subject(appVersion: String, deviceModel: String): String = "Trawl problem report ($appVersion, $deviceModel)"
 
   /** The email body: [summary] first, then (with an attachment) a line saying the file holds the rest. */
   fun mailBody(summary: String, hasAttachment: Boolean): String {

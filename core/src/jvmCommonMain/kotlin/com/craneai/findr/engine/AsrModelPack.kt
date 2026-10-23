@@ -20,7 +20,7 @@ data class AsrModelFile(val path: String, val size: Long, val sha256: String, va
 object AsrModelPack {
   /** What to look for in Downloads: a folder with this name, or an archive named like this (a browser may add " (1)"). */
   const val FOLDER_NAME = "findr-speech-models"
-  const val ARCHIVE_NAME = "findr-speech-models.zip"
+  const val ARCHIVE_NAME = "trawl-speech-models.zip"
 
   val files: List<AsrModelFile> = listOf(
     // Parakeet-TDT-CTC 110M int8 (the default recogniser; CC-BY-4.0, NVIDIA)

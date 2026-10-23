@@ -21,6 +21,7 @@ class SendPlansTest {
     logLines = listOf("10:00:00.000 I/Index: 12 files understood"),
     note = note,
   )
+  private fun inputWithLog(vararg lines: String) = input().copy(logLines = lines.toList())
   private val crashBody = "Event: crash (uncaught exception)\nProcess: pid 1\njava.lang.IllegalStateException: <private>\n\tat com.craneai.findr.engine.FileProcessor.process(FileProcessor.kt:325)\n"
 
   // ---- the two constants -----------------------------------------------------------------------------------------------
@@ -58,7 +59,7 @@ class SendPlansTest {
     val report = ReportBuilder.build(input(listOf(StoredEvent(1_760_000_000_000L, EventKind.CRASH, 1, crashBody))))
     val plan = SendPlan.email(report, to = "info@example.org")
     assertEquals("info@example.org", plan.to)
-    assertEquals("findr-report.txt", plan.attachmentName)
+    assertEquals("trawl-report.txt", plan.attachmentName)
     assertEquals("text/plain", plan.mime)
     assertTrue(plan.subject, plan.subject.contains("0.1.0") && plan.subject.contains("SM-A065F"))
     assertTrue(plan.body, plan.body.contains("IllegalStateException"))
@@ -86,8 +87,8 @@ class SendPlansTest {
   }
 
   @Test fun mailtoEncodesSpacesNewlinesAmpersandsAndNonAscii() {
-    val uri = SendPlans.mailtoUri("a@b.org", "Findr problem report (0.1.0, SM-A065F)", "Line one & two\nOluganda: nkwagala = I love")
-    assertTrue(uri, uri.startsWith("mailto:a@b.org?subject=Findr%20problem%20report%20%280.1.0%2C%20SM-A065F%29&body="))
+    val uri = SendPlans.mailtoUri("a@b.org", "Trawl problem report (0.1.0, SM-A065F)", "Line one & two\nOluganda: nkwagala = I love")
+    assertTrue(uri, uri.startsWith("mailto:a@b.org?subject=Trawl%20problem%20report%20%280.1.0%2C%20SM-A065F%29&body="))
     assertFalse(uri, uri.contains(" "))
     assertFalse(uri, uri.contains("+"))
     assertTrue(uri, uri.contains("%26") && uri.contains("%0A"))
@@ -101,6 +102,36 @@ class SendPlansTest {
     assertTrue(body.length <= SendPlans.MAIL_BODY_MAX)
   }
 
+  // ---- the product name ----------------------------------------------------------------------------------------------------
+
+  @Test fun theAttachmentTheSubjectAndTheHeaderSayTrawl() {
+    assertEquals("trawl-report.txt", SendPlans.ATTACHMENT_NAME)
+    assertEquals("Trawl problem report (1.0.3, SM-S928B)", SendPlans.subject("1.0.3", "SM-S928B"))
+    val built = ReportBuilder.build(input())
+    assertEquals("Trawl problem report (0.1.0, SM-A065F)", built.subject)
+    assertTrue(built.text, built.text.startsWith("Trawl problem report\n"))
+    assertTrue(built.summary, built.summary.startsWith("Trawl 0.1.0 (build 1)"))
+    assertTrue(built.text, built.text.contains("== Errors Trawl handled and carried on from"))
+    assertTrue(SendPlans.mailBody("x", hasAttachment = true).contains("(trawl-report.txt)"))
+    // The report is read by a person: nowhere does it call the app Findr (the package name is lower case and stays).
+    assertFalse(built.text, built.text.replace("com.craneai.findr", "").contains("Findr"))
+    assertFalse(built.summary, built.summary.contains("Findr"))
+  }
+
+  @Test fun logLinesReadTrawlInTheReportButStackFramesKeepTheirRealNames() {
+    val text = ReportBuilder.build(
+      inputWithLog("10:00:00.000 I/FindrWorker: Findr started 3 files", "10:00:01.000 W/FindrEmbedder: engine ready"),
+    ).text
+    assertTrue(text, text.contains("I/TrawlWorker: Trawl started 3 files"))
+    assertTrue(text, text.contains("W/TrawlEmbedder: engine ready"))
+    assertFalse(text, text.contains("FindrWorker"))
+    // An event body is a stack trace: its class names must still match the source and the R8 mapping.
+    val withEvent = ReportBuilder.build(input(listOf(StoredEvent(1_760_000_000_000L, EventKind.CRASH, 1, "Event: crash\n\tat com.craneai.findr.engine.FindrEngine.start(FindrEngine.kt:1)\n")))).text
+    assertTrue(withEvent, withEvent.contains("com.craneai.findr.engine.FindrEngine.start"))
+    assertEquals("I/TrawlWorker: Trawl", ReportBuilder.brand("I/FindrWorker: Findr"))
+    assertEquals("findr stays, it is not the name", ReportBuilder.brand("findr stays, it is not the name"))
+  }
+
   // ---- WhatsApp -----------------------------------------------------------------------------------------------------------
 
   @Test fun theWhatsAppLinkHasDigitsOnlyAndAShortEncodedText() {
@@ -110,7 +141,7 @@ class SendPlansTest {
     assertFalse(plan.url.contains("+256"))
     assertFalse(plan.url.contains(" "))
     assertTrue(plan.text.length <= SendPlans.WHATSAPP_TEXT_MAX)
-    assertEquals("findr-report.txt", plan.attachmentName)
+    assertEquals("trawl-report.txt", plan.attachmentName)
   }
 
   // ---- the report itself --------------------------------------------------------------------------------------------------

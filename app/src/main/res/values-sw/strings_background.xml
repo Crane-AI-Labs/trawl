@@ -8,4 +8,11 @@
   <string name="bgs_title">Samsung inaweza kusimamisha programu hii usiku</string>
   <string name="bgs_body">Simu za Samsung zinaweza kulaza programu au kuzifunga usiku, hivyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> huacha kujifunza faili zako. Katika Betri, chagua «Bila vikwazo» kwa <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>.</string>
   <string name="bgs_open">Fungua mipangilio ya betri</string>
+  <string name="bgx_title">Ruhusu <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> iendelee kusoma usipoitumia</string>
+  <string name="bgx_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> husoma mafaili yako chinichini na husimama kila unapotumia programu nyingine. Hii huzuia tu Android isiilaze.</string>
+  <string name="bgx_allow">Ruhusu kusoma chinichini</string>
+  <string name="bgx_not_now">Si sasa</string>
+  <string name="bgx_granted">Imeruhusiwa. Android haitaiweka usingizini.</string>
+  <string name="bgx_denied">Haijaruhusiwa. Unaweza kubadilisha hili baadaye katika Mipangilio.</string>
+  <string name="bgx_page_hint">Kwenye ukurasa uliofunguka, chagua «Bila vikwazo» (kwenye simu zingine «Haijaboreshwa»), kisha rudi.</string>
 </resources>

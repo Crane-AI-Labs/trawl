@@ -267,7 +267,7 @@ class IndexRecoveryTest {
     open().let { s -> fill(s, 5); s.close() }
     raw { it.exec("PRAGMA user_version = ${Schema.VERSION + 1}") }
     val s = open()
-    assertTrue(logs.toString(), logs.any { it.contains("newer Findr") && it.contains("deleting it and starting fresh") })
+    assertTrue(logs.toString(), logs.any { it.contains("newer Trawl") && it.contains("deleting it and starting fresh") })
     assertEquals(0L, count(s, "SELECT COUNT(*) FROM files"))
     s.close()
   }

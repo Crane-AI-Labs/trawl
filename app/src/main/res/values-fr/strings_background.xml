@@ -8,4 +8,11 @@
   <string name="bgs_title">Samsung peut arrêter cette appli la nuit</string>
   <string name="bgs_body">Les téléphones Samsung peuvent mettre des applis en veille ou les fermer pendant la nuit, et <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> cesse alors d\'apprendre vos fichiers. Dans Batterie, choisissez « Sans restriction » pour <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>.</string>
   <string name="bgs_open">Ouvrir les réglages de la batterie</string>
+  <string name="bgx_title">Laisser <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> continuer à lire quand vous ne l\'utilisez pas</string>
+  <string name="bgx_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> lit vos fichiers en arrière-plan et s\'arrête dès que vous utilisez une autre appli. Cela empêche seulement Android de la mettre en veille.</string>
+  <string name="bgx_allow">Autoriser la lecture en arrière-plan</string>
+  <string name="bgx_not_now">Pas maintenant</string>
+  <string name="bgx_granted">Autorisé. Android ne la mettra pas en veille.</string>
+  <string name="bgx_denied">Non autorisé. Vous pourrez le changer plus tard dans les paramètres.</string>
+  <string name="bgx_page_hint">Dans la page qui s\'est ouverte, choisissez « Sans restriction » (sur certains téléphones « Non optimisée »), puis revenez.</string>
 </resources>

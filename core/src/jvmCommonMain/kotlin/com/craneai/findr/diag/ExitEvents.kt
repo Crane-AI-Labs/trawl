@@ -51,7 +51,7 @@ object ExitEvents {
           val main = r.trace?.let { Redaction.anrMainThread(it) }
           if (main != null) { appendLine("What the main thread was doing:"); appendLine(main) } else appendLine("No thread dump was kept for this ANR.")
         }
-        EventKind.CRASH -> appendLine("No stack trace was saved for this crash (the process ended before Findr could write one).")
+        EventKind.CRASH -> appendLine("No stack trace was saved for this crash (the process ended before Trawl could write one).")
         EventKind.NATIVE_CRASH -> appendLine("A crash in native code. The system's crash dump is binary and is not included.")
         else -> Unit
       }

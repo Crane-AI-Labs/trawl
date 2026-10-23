@@ -71,7 +71,7 @@ object AddOnCatalog {
     dir = PrivatePack.DIR,
     manifest = PrivatePack.files,
     folderName = PrivatePack.FOLDER_NAME,
-    archive = Regex("""findr-private-models.*\.zip""", RegexOption.IGNORE_CASE),
+    archive = Regex("""(?:findr|trawl)-private-models.*\.zip""", RegexOption.IGNORE_CASE),
   )
 
   val privacy = AddOnDef(

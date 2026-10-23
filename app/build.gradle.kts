@@ -4,6 +4,9 @@ plugins {
   alias(libs.plugins.androidx.baselineprofile)
 }
 
+// See BATTERY_EXEMPTION_REQUEST below. Default ON (sideload); a Play build sets -PbatteryExemptionRequest=false.
+val batteryExemptionRequest = providers.gradleProperty("batteryExemptionRequest").orNull != "false"
+
 android {
   namespace = "com.craneai.findr"
   compileSdk = 37
@@ -12,8 +15,8 @@ android {
     applicationId = "com.craneai.findr"
     minSdk = 30   // MediaStore generations (the change journal Findr's crawler relies on) start at Android 11
     targetSdk = 36   // compile against 37, but keep 36 runtime behaviour until it's tested
-    versionCode = 3
-    versionName = "1.0.2"
+    versionCode = 4
+    versionName = "1.0.3"
     // Compose UI tests (src/androidTest): screenshot-free checks of the Sunlight components on a phone.
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     // The ABI is per edition (productFlavors below): the full app is 64-bit only, Trawl Go is 32-bit only.
@@ -43,6 +46,11 @@ android {
     // `-PmodelsBaseUrl=http://localhost:8765/` with `adb reverse tcp:8765 tcp:8765`.
     buildConfigField("String", "MODELS_BASE_URL", "\"${providers.gradleProperty("modelsBaseUrl").orNull ?: "https://github.com/Crane-AI-Labs/trawl/releases/download/models-v1/"}\"")
     buildConfigField("double", "QUICK_WORDS_DUTY", providers.gradleProperty("quickWordsDuty").orNull ?: "1.0")
+    // The one-tap "let Trawl keep reading when you're not using it" (ui/background/BatteryExemption.kt): Android's own yes/no box,
+    // ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS. ON for the sideload build we ship today. A Google Play build passes
+    // `-PbatteryExemptionRequest=false`: the permission is then NOT declared (see the sourceSets block below) and the button opens the
+    // app's battery page instead (Play restricts the permission to a short list of use cases; internal/research/setup-background-step.md).
+    buildConfigField("boolean", "BATTERY_EXEMPTION_REQUEST", batteryExemptionRequest.toString())
   }
 
   // The publishing key is the maintainers' and never enters the repo: a release build is signed with it only
@@ -69,6 +77,11 @@ android {
   //    three native stacks above has an armeabi-v7a build we can use, so Go has NO model code at all: it finds files by their
   //    names and the words in them (document text, and OCR of photos and screenshots), and says so. Its own package id, so it
   //    installs beside the full app (and so the full app's data and a Go phone's never mix).
+  // The permission itself lives in its own manifest, added only when the request is built, so the flag and the manifest cannot disagree.
+  if (batteryExemptionRequest) {
+    sourceSets.getByName("debug").manifest.srcFile("src/batteryRequest/AndroidManifest.xml")
+    sourceSets.getByName("release").manifest.srcFile("src/batteryRequest/AndroidManifest.xml")
+  }
   flavorDimensions += "edition"
   productFlavors {
     create("full") {

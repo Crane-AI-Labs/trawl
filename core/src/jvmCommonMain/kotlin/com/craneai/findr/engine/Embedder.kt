@@ -50,6 +50,12 @@ interface Embedder {
   suspend fun release()
 
   /**
+   * Like [release], but the loaded engine is stale and must not be used again (a new model file was installed): the next call loads
+   * the new file. [release] may keep a GPU engine on Qualcomm phones (closing it there crashed the driver); this one never reuses it.
+   */
+  suspend fun discard() = release()
+
+  /**
    * Lets go of the audio encoder (~100 MB mapped, plus its buffers) once a stretch of recordings is over: only an engine loaded with
    * the audio encoder is closed, and the next picture or text reloads at the level it needs (5-10 s, with the xnnpack cache in place).
    * For a phone short of memory (MemoryBudget); a roomy one keeps the engine as it is for the whole run.

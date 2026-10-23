@@ -8,4 +8,11 @@
   <string name="bgs_title">I-Samsung ingamisa le app ebusuku</string>
   <string name="bgs_body">Amafoni e-Samsung angalala ama-app noma awavale ebusuku, ngakho <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> iyayeka ukufunda amafayela akho. Ku-Battery, khetha «Unrestricted» ku-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g>.</string>
   <string name="bgs_open">Vula izilungiselelo zebhethri</string>
+  <string name="bgx_title">Vumela i-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> iqhubeke ifunda uma ungayisebenzisi</string>
+  <string name="bgx_body">I-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ifunda amafayela akho ngemuva, futhi iyama noma nini lapho usebenzisa elinye i-app. Lokhu kuvimbela kuphela i-Android ukuyilalisa.</string>
+  <string name="bgx_allow">Vumela ukufunda ngemuva</string>
+  <string name="bgx_not_now">Hhayi manje</string>
+  <string name="bgx_granted">Kuvunyelwe. I-Android ngeke iyilalise.</string>
+  <string name="bgx_denied">Akuvunyelwe. Ungakushintsha lokhu kamuva Ezilungiselelweni.</string>
+  <string name="bgx_page_hint">Ekhasini elivuliwe, khetha «Unrestricted» (kwamanye amafoni «Not optimised»), bese ubuya.</string>
 </resources>

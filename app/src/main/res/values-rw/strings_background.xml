@@ -8,4 +8,11 @@
   <string name="bgs_title">Samsung ishobora guhagarika iyi porogaramu nijoro</string>
   <string name="bgs_body">Telefoni za Samsung zishobora gusinzirisha porogaramu cyangwa kuzifunga nijoro, bityo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> igahagarika kwiga dosiye zawe. Muri Battery, hitamo «Unrestricted» kuri <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>.</string>
   <string name="bgs_open">Fungura igenamiterere rya batiri</string>
+  <string name="bgx_title">Emerera <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> gukomeza gusoma mu gihe utayikoresha</string>
+  <string name="bgx_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> isoma dosiye zawe inyuma, igahagarara igihe cyose ukoresheje indi porogaramu. Ibi bibuza Android gusa kuyisinzirisha.</string>
+  <string name="bgx_allow">Emera gusoma inyuma</string>
+  <string name="bgx_not_now">Si ubu</string>
+  <string name="bgx_granted">Byemewe. Android ntizayisinzirisha.</string>
+  <string name="bgx_denied">Ntibyemewe. Ushobora kubihindura nyuma muri Igenamiterere.</string>
+  <string name="bgx_page_hint">Ku rupapuro rwafunguwe, hitamo «Unrestricted» (kuri telefoni zimwe «Not optimised»), hanyuma usubire inyuma.</string>
 </resources>

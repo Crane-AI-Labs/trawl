@@ -8,4 +8,11 @@
   <string name="bgs_title">ሳምሰንግ ይህን መተግበሪያ ሌሊት ሊያቆመው ይችላል</string>
   <string name="bgs_body">የሳምሰንግ ስልኮች መተግበሪያዎችን ሌሊት ሊያስተኙ ወይም ሊዘጉ ይችላሉ፣ ስለዚህ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ፋይሎችዎን መማር ያቆማል። በባትሪ ውስጥ ለ<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> «Unrestricted» ን ይምረጡ።</string>
   <string name="bgs_open">የባትሪ ቅንብሮችን ክፈት</string>
+  <string name="bgx_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ባልተጠቀምክበት ጊዜ ማንበቡን እንዲቀጥል ፍቀድ</string>
+  <string name="bgx_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ፋይሎችህን ከበስተጀርባ ያነባል፤ ሌላ መተግበሪያ በተጠቀምክ ቁጥር ይቆማል። ይህ አንድሮይድ እንዳያስተኛው ብቻ ይከለክላል።</string>
+  <string name="bgx_allow">ከበስተጀርባ ማንበብን ፍቀድ</string>
+  <string name="bgx_not_now">አሁን አይደለም</string>
+  <string name="bgx_granted">ተፈቅዷል። አንድሮይድ አያስተኛውም።</string>
+  <string name="bgx_denied">አልተፈቀደም። ይህንን በኋላ በቅንብሮች ውስጥ መለወጥ ትችላለህ።</string>
+  <string name="bgx_page_hint">በተከፈተው ገጽ ውስጥ «Unrestricted» ን ምረጥ (በአንዳንድ ስልኮች «Not optimised»)፣ ከዚያ ተመለስ።</string>
 </resources>

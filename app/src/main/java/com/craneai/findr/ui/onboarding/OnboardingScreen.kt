@@ -86,6 +86,11 @@ import com.craneai.findr.ui.addons.PackHeader
 import com.craneai.findr.ui.addons.PackProblemText
 import com.craneai.findr.ui.addons.sizeLabel
 import com.craneai.findr.ui.app.AccessState
+import com.craneai.findr.ui.background.BatteryExemption
+import com.craneai.findr.ui.background.BatteryExemptionControl
+import com.craneai.findr.ui.background.BatteryExemptionStatus
+import com.craneai.findr.ui.background.rememberBatteryExemption
+import androidx.compose.ui.platform.LocalContext
 import com.craneai.findr.ui.common.BrandMark
 import com.craneai.findr.ui.index.IndexViewModel
 import com.craneai.findr.ui.settings.FolderScopeEditor
@@ -93,14 +98,19 @@ import com.craneai.findr.ui.theme.LocalReduceMotion
 import com.craneai.findr.ui.theme.Motion
 import com.craneai.findr.ui.theme.motionTween
 import kotlinx.coroutines.launch
+import com.craneai.findr.ui.theme.sunSideInset
 
-private enum class Page { LANGUAGE, WELCOME, FILES, MODELS, EXTRAS }
+private enum class Page { LANGUAGE, WELCOME, FILES, BACKGROUND, MODELS, EXTRAS }
 
 /**
  * Four short pages (v2, the "find a middle ground" design): the language first (each language in its own name), then one
  * welcome page that says what Trawl does and makes the privacy promise in three points, then All files access with the honest
  * why right above the button (the page moves on by itself once access is on), then the search models, which "Start Trawl" does
  * not wait for. The models page is there only when the phone has no model, so a phone that has one (Play) gets three.
+ *
+ * A background page follows All files access ([BatteryExemption]): "Let Trawl keep reading when you're not using it", one tap to
+ * Android's own yes/no box. It is skipped on a phone that already ignores battery optimisation, "Not now" always moves on, and
+ * nothing here gates Start.
  *
  * What used to be here moved to the moment it matters: the folder choice is a "Choose folders" link on the files page and a
  * Settings section; notifications are asked after the first search; the app lock when a file is first marked sensitive; the
@@ -121,11 +131,20 @@ fun OnboardingScreen(
   val offerIds = remember { idsToOfferAtOnboarding(addOns.rows.value) }
   // The models page is there when the phone has no model yet (read once, so the page does not vanish the moment it is installed).
   val needsModels = remember { delivery.noModel.value }
-  val pages = remember { Page.entries.filter { (it != Page.MODELS || needsModels) && (it != Page.EXTRAS || offerIds.isNotEmpty()) } }
+  // The background page is only for a phone that is still optimised (read once, so it does not vanish when the person says yes).
+  val context = LocalContext.current
+  val showBackground = remember { BatteryExemption.stepShown(exemptAtStart = BatteryExemption.isExempt(context)) }
+  val pages = remember {
+    Page.entries.filter {
+      (it != Page.MODELS || needsModels) && (it != Page.EXTRAS || offerIds.isNotEmpty()) && (it != Page.BACKGROUND || showBackground)
+    }
+  }
+  val battery = rememberBatteryExemption()
   val pager = rememberPagerState(pageCount = { pages.size })
   val scope = rememberCoroutineScope()
   val last = pager.currentPage == pages.size - 1
   val onFiles = pages[pager.currentPage] == Page.FILES
+  val onBackground = pages[pager.currentPage] == Page.BACKGROUND
   var choosingFolders by rememberSaveable { mutableStateOf(false) }
 
   // Access that was already on when setup opened (a phone that kept it) does not skip the page behind the person's back.
@@ -148,29 +167,46 @@ fun OnboardingScreen(
       .statusBarsPadding()
       .navigationBarsPadding(),
   ) {
-    Wordmark(Modifier.fillMaxWidth().padding(horizontal = Sun.S24, vertical = Sun.S16))
+    Wordmark(Modifier.fillMaxWidth().padding(horizontal = sunSideInset(Sun.S24), vertical = Sun.S16))
 
     HorizontalPager(state = pager, modifier = Modifier.weight(1f)) { page ->
       Column(
         Modifier
           .fillMaxSize()
           .verticalScroll(rememberScrollState())
-          .padding(horizontal = Sun.S24, vertical = Sun.S8),
+          .padding(horizontal = sunSideInset(Sun.S24), vertical = Sun.S8),
       ) {
         when (pages[page]) {
           Page.LANGUAGE -> PageLanguage()
           Page.WELCOME -> PageWelcome()
           Page.FILES -> PageFiles(access, onChooseFolders = { choosingFolders = true })
+          Page.BACKGROUND -> PageBackground(battery)
           Page.MODELS -> PageModels(delivery, access)
           Page.EXTRAS -> PageExtras(addOns, offerIds)
         }
       }
     }
 
-    Column(Modifier.fillMaxWidth().padding(horizontal = Sun.S24, vertical = Sun.S16)) {
+    Column(Modifier.fillMaxWidth().padding(horizontal = sunSideInset(Sun.S24), vertical = Sun.S16)) {
       PageDots(current = pager.currentPage, count = pages.size)
       Spacer(Modifier.height(Sun.S16))
-      if (last) {
+      if (onBackground && battery.state != BatteryExemption.State.ALLOWED) {
+        // The ask: the explanation is on the page right above. A yes turns this into the normal Next / Start button; "Not now"
+        // always moves on (to Start when this is the last page), so the page can never hold setup back.
+        SunButton(onClick = battery.request, modifier = Modifier.fillMaxWidth()) {
+          Text(stringResource(R.string.bgx_allow), style = SunType.Label)
+        }
+        SunTextButton(
+          onClick = {
+            if (last) {
+              if (access.allFiles) onFinish() else onOpenFilesSettings()
+            } else {
+              scope.launch { pager.animateScrollToPage(pager.currentPage + 1) }
+            }
+          },
+          modifier = Modifier.align(Alignment.CenterHorizontally),
+        ) { Text(stringResource(R.string.bgx_not_now)) }
+      } else if (last) {
         // Without All files access the way forward is the settings page, not a dead button and a trip back to the files page.
         SunButton(
           onClick = if (access.allFiles) onFinish else onOpenFilesSettings,
@@ -315,15 +351,28 @@ private fun ChooseFolders(index: IndexViewModel, hasAccess: Boolean, onDone: () 
       .statusBarsPadding()
       .navigationBarsPadding(),
   ) {
-    Wordmark(Modifier.fillMaxWidth().padding(horizontal = Sun.S24, vertical = Sun.S16))
-    Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = Sun.S24, vertical = Sun.S8)) {
+    Wordmark(Modifier.fillMaxWidth().padding(horizontal = sunSideInset(Sun.S24), vertical = Sun.S16))
+    Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = sunSideInset(Sun.S24), vertical = Sun.S8)) {
       PageTitle(appString(R.string.scope_title))
       FolderScopeEditor(index, refreshKey = hasAccess)
     }
-    SunButton(onClick = onDone, modifier = Modifier.fillMaxWidth().padding(horizontal = Sun.S24, vertical = Sun.S16)) {
+    SunButton(onClick = onDone, modifier = Modifier.fillMaxWidth().padding(horizontal = sunSideInset(Sun.S24), vertical = Sun.S16)) {
       Text(stringResource(R.string.models_ok), style = SunType.Label)
     }
   }
+}
+
+/**
+ * The background page: "Let Trawl keep reading when you're not using it". The reason is here; the Allow and Not now buttons are
+ * in the pager's bar (like the files page). The line under the text is the live state, read again whenever the app or the
+ * system box comes back.
+ */
+@Composable
+private fun PageBackground(battery: BatteryExemptionControl) {
+  PageTitle(appString(R.string.bgx_title))
+  Text(appString(R.string.bgx_body), style = SunType.BodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+  Spacer(Modifier.height(Sun.S16))
+  BatteryExemptionStatus(battery.state)
 }
 
 /**

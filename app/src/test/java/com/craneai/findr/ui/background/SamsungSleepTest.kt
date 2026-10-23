@@ -52,12 +52,10 @@ class SamsungSleepTest {
     assertEquals("the system page for the app always exists", SamsungSleep.Target.AppDetails, t.last())
   }
 
-  @Test fun noRestrictedPermissionIsRequested() {
-    // Play-compatible: the app reads the state (isIgnoringBatteryOptimizations) and opens Settings; it never asks for the exemption.
+  @Test fun theMainManifestStillDeclaresNoRestrictedPermission() {
+    // Play-compatible: the permission lives only in the opt-in src/batteryRequest manifest (BatteryExemptionTest checks the wiring).
     val manifest = File("src/main/AndroidManifest.xml").readText()
     assertFalse(manifest.contains("REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"))
-    val sources = File("src/main/java").walkTopDown().filter { it.extension == "kt" }.joinToString("\n") { it.readText() }
-    assertFalse(sources.contains("ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"))
   }
 
   @Test fun everySamsungStringIsUsedAndTheNameIsAlwaysThePlaceholder() {

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Only in builds made with the battery request on (the default; app/build.gradle.kts, -PbatteryExemptionRequest). Lets the app
+  show Android's own "Let the app keep running in the background?" yes/no box (ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).
+  It is a normal permission (no runtime grant, no data access) but Google Play restricts it: a Play build leaves this file out
+  and the button opens the app's battery page instead. internal/research/setup-background-step.md.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+</manifest>

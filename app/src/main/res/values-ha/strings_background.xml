@@ -8,4 +8,11 @@
   <string name="bgs_title">Samsung na iya dakatar da wannan manhaja da dare</string>
   <string name="bgs_body">Wayoyin Samsung na iya kwantar da manhajoji ko rufe su da dare, don haka <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ya daina koyon fayilolinka. A cikin Battery, zaɓi «Unrestricted» don <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>.</string>
   <string name="bgs_open">Buɗe saitunan batir</string>
+  <string name="bgx_title">Bari <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ya ci gaba da karatu lokacin da ba kwa amfani da shi</string>
+  <string name="bgx_body"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yana karanta fayilolinku a bayan fage, kuma yana tsayawa duk lokacin da kuke amfani da wata manhaja. Wannan kawai yana hana Android kwantar da shi.</string>
+  <string name="bgx_allow">Ba da izinin karatu a bayan fage</string>
+  <string name="bgx_not_now">Ba yanzu ba</string>
+  <string name="bgx_granted">An ba da izini. Android ba zai kwantar da shi ba.</string>
+  <string name="bgx_denied">Ba a ba da izini ba. Kuna iya canza wannan daga baya a Saituna.</string>
+  <string name="bgx_page_hint">A shafin da ya buɗe, zaɓi «Unrestricted» (a wasu wayoyi «Not optimised»), sannan ku koma.</string>
 </resources>

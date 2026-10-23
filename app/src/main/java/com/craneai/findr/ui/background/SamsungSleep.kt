@@ -41,8 +41,10 @@ import com.craneai.findr.ui.theme.SunType
  *
  * Unlike TECNO/Infinix (see [BackgroundAccess]) Samsung's own setting works, and it is plain Android underneath: Battery >
  * Unrestricted puts the app on the Doze allow-list (so [PowerManager.isIgnoringBatteryOptimizations] reads it, no special
- * permission), lifts RUN_ANY_IN_BACKGROUND and moves it to the exempted standby bucket. The app only reads that state and opens
- * the settings page. It never asks for REQUEST_IGNORE_BATTERY_OPTIMIZATIONS (a restricted permission on Google Play).
+ * permission), lifts RUN_ANY_IN_BACKGROUND and moves it to the exempted standby bucket. This object only reads that state and
+ * opens the settings page. The one-tap ask (the system's own yes/no box, REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, a restricted
+ * permission on Google Play) is [BatteryExemption], a setup step and a Settings row; it falls back to [open] here. A yes there
+ * makes [isUnrestricted] true, so the Home card and the Settings row below hide themselves.
  * Samsung's "Never auto sleeping apps" list is not enough on its own: on the tablet it only took the app out of Sleeping apps
  * (back to the Optimised state) and did not touch the Doze allow-list. Research notes: internal/research/samsung-sleep.md.
  */

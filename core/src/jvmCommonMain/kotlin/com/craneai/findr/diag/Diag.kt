@@ -29,7 +29,7 @@ interface DiagPlatform {
 }
 
 /**
- * Crash and error reporting, as the rest of the app sees it. Findr never sends anything itself (it has no internet
+ * Crash and error reporting, as the rest of the app sees it. Trawl never sends anything itself (it has no internet
  * permission): this keeps redacted reports on the phone and builds the text the person can choose to send through
  * their own email or WhatsApp ([ReportSender]).
  *
@@ -69,7 +69,7 @@ object Diag {
   /** The engine exists once the app has started; the report reads settings and add-on states from it. */
   fun attach(engine: SearchEngine) { this.engine = engine }
 
-  /** A failure Findr handled and carried on from. Only the kind and the exception's class are kept, never its message. */
+  /** A failure Trawl handled and carried on from. Only the kind and the exception's class are kept, never its message. */
   fun handled(kind: HandledKind, t: Throwable) {
     try { store?.recordHandled(kind, t) } catch (_: Throwable) { }
   }
@@ -83,7 +83,7 @@ object Diag {
   /** Whether there is anything to attach: a report can always be built, but "View report" is more useful with events. */
   fun hasEvents(): Boolean = try { store?.events()?.isNotEmpty() == true } catch (_: Throwable) { false }
 
-  /** "Delete everything Findr knows" reaches the reports too. */
+  /** "Delete everything Trawl knows" reaches the reports too. */
   fun forgetReports() {
     try { store?.wipe() } catch (_: Throwable) { }
     ring.clear()
@@ -96,7 +96,7 @@ object Diag {
     val p = platform
     val s = store
     if (p == null || s == null) {
-      return BuiltReport("Findr problem report\nReporting was not ready.\n", "Findr problem report", SendPlans.subject("?", "?"), 0)
+      return BuiltReport("Trawl problem report\nReporting was not ready.\n", "Trawl problem report", SendPlans.subject("?", "?"), 0)
     }
     s.flushHandled()
     return ReportBuilder.build(
