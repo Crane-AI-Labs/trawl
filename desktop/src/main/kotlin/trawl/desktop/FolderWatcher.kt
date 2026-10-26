@@ -155,7 +155,7 @@ class FolderWatcher(
     val dirs = ArrayList<Path>()
     Files.walkFileTree(root, object : SimpleFileVisitor<Path>() {
       override fun preVisitDirectory(dir: Path, attrs: BasicFileAttributes): FileVisitResult {
-        if (dir != root && (isHidden(dir) || ignore(dir))) return FileVisitResult.SKIP_SUBTREE
+        if (dir != root && (isHidden(dir) || DependencyFolders.isSkipped(dir) || ignore(dir))) return FileVisitResult.SKIP_SUBTREE
         dirs.add(dir)
         return if (dirs.size > cap) FileVisitResult.TERMINATE else FileVisitResult.CONTINUE
       }
@@ -213,7 +213,7 @@ class FolderWatcher(
     try {
       Files.walkFileTree(dir, object : SimpleFileVisitor<Path>() {
         override fun preVisitDirectory(d: Path, attrs: BasicFileAttributes): FileVisitResult {
-          if ((d != dir && isHidden(d)) || ignore(d)) return FileVisitResult.SKIP_SUBTREE
+          if (isHidden(d) && d != dir || DependencyFolders.isSkipped(d) || ignore(d)) return FileVisitResult.SKIP_SUBTREE
           if (limit != null && keyDirs.size >= (limit * budgetShare).toLong()) throw IOException("over the watch budget")
           val key = d.register(ws, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY)
           keyDirs[key] = d; rootOfKey[key] = root
@@ -230,7 +230,7 @@ class FolderWatcher(
   private fun report(d: Dirty) {
     if (ignore(d.dir)) return   // inside a skipped folder: the index does not read it, so a change there is not news
     val under = modes.keys.map { File(it).toPath() }.firstOrNull { d.dir.startsWith(it) }
-    if (under != null && Crawler.insideHidden(under, d.dir)) return   // nor is a hidden folder (".git"): never read, and often the busiest
+    if (under != null && Crawler.insideIgnored(under, d.dir)) return   // nor is a hidden folder (".git") or a dependency/build folder ("node_modules"): never read, and the busiest
     val now = System.currentTimeMillis()
     synchronized(pending) {
       if (pending.isEmpty()) firstPendingAt = now

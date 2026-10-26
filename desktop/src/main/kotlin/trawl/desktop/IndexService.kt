@@ -226,6 +226,7 @@ class IndexService(
     // A video the last run died inside twice is given up on (or its window skipped); the first death is only counted.
     st.recoverInflight()?.let { log("recovered from a stop inside a file: step ${it.step}${if (it.skippedWindow) ", window skipped" else ""}") }
     IndexAdmin.rereadNewFormats(st, log)   // files the first build knew by name only go back in the queue, once
+    IndexAdmin.dropFalseTransportStreams(st, log, onDropped = { vectors.removeFiles(it) })   // TypeScript an older build took for videos leaves the index, once
     searcher = Searcher(st, vectors, indexedKinds = { kinds })
     wordsReader = WordsReader(st) { ensureOcr() }
     onStoreOpened(st)
@@ -240,11 +241,25 @@ class IndexService(
   private val dirtyPending = java.util.concurrent.ConcurrentHashMap<Path, Boolean>()
   private val reconcileQueued = java.util.concurrent.atomic.AtomicBoolean(false)
 
+  /** The earliest time the next watcher-driven walk may start: a walk that took long leaves the worker alone for a while after it ([ReconcilePacing]). */
+  @Volatile private var reconcileNotBefore = 0L
+  /** A [Reconcile] job came while the pacing said wait: the loop runs it when the time is up (the folders keep merging into [dirtyPending] meanwhile). */
+  @Volatile private var reconcileDeferred = false
+
+  /**
+   * The watcher names folders that changed. They are noted at once and walked later: while paused they are only noted (a Pause that went
+   * on walking a whole tree every few seconds was the problem it was meant to end), and after a long walk the next one waits a while.
+   */
   fun reconcile(dirs: List<Dirty>) {
     if (dirs.isEmpty()) return
     // Folders named again while one job waits are merged into it (a folder named twice is walked once; a deep one is told apart from a shallow one).
     for (d in dirs) dirtyPending.merge(d.dir, d.recursive) { a, b -> a || b }
-    if (reconcileQueued.compareAndSet(false, true)) queue.add(Reconcile)
+    if (!paused) wakeReconcile()
+  }
+
+  /** Queues one [Reconcile] for what is noted, if there is something noted and no job waiting already. */
+  private fun wakeReconcile() {
+    if (dirtyPending.isNotEmpty() && reconcileQueued.compareAndSet(false, true)) queue.add(Reconcile)
   }
   fun rescan() { decoderCheckedAt = 0L; queue.add(Rescan) }
   fun attachModel(file: File) { queue.add(Attach(file)) }
@@ -257,11 +272,13 @@ class IndexService(
   fun configure(kinds: Set<FileKind>, skipped: List<Path>, speed: LearningSpeed, paused: Boolean) {
     val kindsChanged = this.kinds != kinds
     this.kinds = kinds.intersect(Crawler.KINDS)
+    val resumed = this.paused && !paused
     this.paused = paused
     this.skipped = skipped
     if (this.speed != speed || !speedApplied) { this.speed = speed; queue.add(Speed(speed)) }
     queue.add(Skip(skipped))
     if (kindsChanged) bump()
+    if (resumed) wakeReconcile()   // what changed while paused is looked at now, in one walk
   }
 
   @Volatile private var speedApplied = false
@@ -360,6 +377,7 @@ class IndexService(
         refreshDisk()
         val job = queue.poll()
         if (job != null) { handle(job); continue }
+        if (reconcileDeferred && !paused && System.currentTimeMillis() >= reconcileNotBefore) { reconcileDeferred = false; handle(Reconcile); continue }
         if (scans.isNotEmpty()) { stepScans(); continue }   // a walk that gave way carries on where it stopped
         retryRepair()
         if (readSome()) continue
@@ -388,7 +406,14 @@ class IndexService(
       is Skip -> applySkipped(job.skipped)
       is Speed -> applySpeed(job.speed)
       is Reconcile -> {
+        if (paused) {   // on hold: the folders stay noted in dirtyPending and are walked once, when the person resumes
+          reconcileDeferred = false; reconcileQueued.set(false)
+          return
+        }
+        if (System.currentTimeMillis() < reconcileNotBefore) { reconcileDeferred = true; return }   // too soon after a long walk; reconcileQueued stays set, so reports just merge
+        reconcileDeferred = false
         reconcileQueued.set(false)   // anything named from now on makes a new job
+        val startedAt = System.currentTimeMillis()
         val named = dirtyPending.entries.map { it.key to it.value }
         named.forEach { dirtyPending.remove(it.first) }
         // A folder walked all the way down already covers the folders named under it.
@@ -397,9 +422,11 @@ class IndexService(
           if (deep.any { it != dir && dir.startsWith(it) }) continue
           val root = roots.firstOrNull { dir.startsWith(it) } ?: continue
           if (Scope.isSkipped(dir, skipped)) continue   // inside a skipped folder: nothing there is read
-          if (Crawler.insideHidden(root, dir)) continue  // a ".git" or ".cache" is never read, however busy it is
+          if (Crawler.insideIgnored(root, dir)) continue  // a ".git", a ".cache" or a "node_modules" is never read, however busy it is
           reconcile(root, dir, recursive)
         }
+        val now = System.currentTimeMillis()
+        reconcileNotBefore = ReconcilePacing.notBefore(now, now - startedAt)
       }
       is Attach -> attach(job.model)
     }
@@ -965,4 +992,19 @@ class IndexService(
       return if (s.endsWith("/")) s else "$s/"
     }
   }
+}
+
+/**
+ * How long the watcher-driven walks leave the worker alone after a long one, so that a tree which changes all the time (a sync tool, a
+ * build) costs a fraction of a core instead of all of one: after a walk of `t` the next waits `4 t`, at most a minute. A walk under a
+ * quarter of a second (the usual one, now that dependency folders are not entered) is not slowed at all. The folders named meanwhile are
+ * merged into one walk, so nothing is lost, only delayed.
+ */
+object ReconcilePacing {
+  const val FREE_MS = 250L
+  const val FACTOR = 4L
+  const val MAX_WAIT_MS = 60_000L
+
+  /** When the next walk may start, given that one ended at [now] after taking [tookMs]. */
+  fun notBefore(now: Long, tookMs: Long): Long = if (tookMs <= FREE_MS) 0L else now + minOf(tookMs * FACTOR, MAX_WAIT_MS)
 }

@@ -147,6 +147,46 @@ object IndexAdmin {
     return n
   }
 
+  /** The note that says the false-video clean-up ([dropFalseTransportStreams]) has run on this index. */
+  const val TRANSPORT_KEY = "ts-not-video-cleanup-v1"
+
+  /**
+   * Forgets the TypeScript files that an older build took for videos. It listed every `.ts`, `.mts` and `.m2ts` as a video, asked the
+   * decoder to open it, and filed the refusal as "can't open this format": thousands of rows for a developer's `node_modules`, each one
+   * a probe that cost a process start. The crawl no longer takes them in ([DocFormats.classify]); this removes what it already took.
+   *
+   * Only a failed video row with one of those extensions whose file is still there and whose first 600 bytes are not a transport
+   * stream is dropped ([TransportStream.check]); a real recording that failed for another reason, and a file that has gone (the walk
+   * of its folder forgets that), are left alone. Cheap: one query, then one small read per candidate. Runs once per index; a failure here
+   * does not stop the index opening. [onDropped] hears the ids so the caller can take their vectors out too. Returns how many rows went.
+   */
+  fun dropFalseTransportStreams(store: IndexStore, log: (String) -> Unit = {}, onDropped: (List<Long>) -> Unit = {}, check: (java.nio.file.Path) -> Boolean = TransportStream::check): Int {
+    if (store.meta(TRANSPORT_KEY) != null) return 0
+    val gone = ArrayList<Long>()
+    try {
+      val candidates = ArrayList<Pair<Long, String>>()
+      store.read { db ->
+        db.query(
+          "SELECT id, uri FROM files WHERE volume = ? AND kind = 'VIDEO' AND state = 'failed' AND detail = ? AND " +
+            "(lower(name) LIKE '%.ts' OR lower(name) LIKE '%.mts' OR lower(name) LIKE '%.m2ts')",
+          Crawler.VOLUME, IndexStore.CANT_OPEN,
+        ) { candidates += it.getLong(0) to it.getText(1) }
+      }
+      for ((id, uri) in candidates) {
+        val path = runCatching { java.nio.file.Paths.get(java.net.URI.create(uri)) }.getOrNull() ?: continue
+        if (!java.nio.file.Files.isRegularFile(path)) continue
+        if (!check(path)) gone += id
+      }
+      if (gone.isNotEmpty()) { onDropped(gone); store.markDeleted(gone) }
+    } catch (t: Throwable) {
+      log("transport-stream clean-up skipped: ${t.javaClass.simpleName}")
+      return 0
+    }
+    store.setMeta(TRANSPORT_KEY, "1")
+    if (gone.isNotEmpty()) log("${gone.size} TypeScript files no longer counted as videos were removed from the index")
+    return gone.size
+  }
+
   /** The estimate over the kinds on, for the Settings storage line, when [stats] says there is anything to count. */
   fun hasFiles(s: IndexStats) = s.filesKnown > 0
 }

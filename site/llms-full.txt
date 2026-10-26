@@ -48,7 +48,7 @@ Measured for Trawl 1.0.0 on a Samsung Galaxy A06 with 4 GB of memory. The method
 - Internet: once, to download the models. After that, never.
 - Search models: EmbeddingGemma 2 by Google (Apache 2.0) runs on the phone.
 - Languages: English works best today. Luganda and Swahili are being measured, not claimed.
-- Windows, macOS and Linux: a developer preview, released 2026-10-22, with unsigned installers (https://github.com/Crane-AI-Labs/trawl/releases/tag/desktop-preview-1.0.1): Trawl-1.0.1.dmg for Apple-silicon Macs on macOS 13 or newer, Trawl-1.0.1.msi for 64-bit Windows, and trawl_1.0.1_amd64.deb for Debian and Ubuntu. They are not signed, so the computer warns before opening them. They need the same models file as the phone app. iPhone is later.
+- Windows, macOS and Linux: a developer preview (first released 2026-10-22, version 1.0.2 on 2026-10-26), with unsigned installers (https://github.com/Crane-AI-Labs/trawl/releases/tag/desktop-preview-1.0.2): Trawl-1.0.2.dmg for Apple-silicon Macs on macOS 13 or newer, Trawl-1.0.2.msi for 64-bit Windows, and trawl_1.0.2_amd64.deb for Debian and Ubuntu. They are not signed, so the computer warns before opening them. They need the same models file as the phone app. iPhone is later.
 
 ## Questions
 

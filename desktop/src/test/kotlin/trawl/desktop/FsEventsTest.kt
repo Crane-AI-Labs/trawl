@@ -22,6 +22,20 @@ class FsEventsTest {
     assertEquals(listOf(Dirty(File("/Users/x/Pictures/new").toPath(), true)), got)
   }
 
+  @Test fun aFolderThatOnlyHadItsAttributesTouchedIsLookedAtOnlyForItsOwnFiles() {
+    val dir = File("/Users/x/Pictures/busy").toPath()
+    for (flags in listOf(0x400, 0x1000, 0x2000, 0x8000, 0x4000)) {   // inode meta, modified, Finder info, xattr, owner: nothing below changed
+      val got = ArrayList<Dirty>()
+      MacFsEvents.report(root, root, dir.toString(), flags or 0x20000, got::add)
+      assertEquals(listOf(Dirty(dir, false)), got, "flags 0x${flags.toString(16)}")
+    }
+    for (flags in listOf(0x100, 0x200, 0x800, 0x0)) {   // created, removed, renamed (moved in), or no item flag at all: look all the way down
+      val got = ArrayList<Dirty>()
+      MacFsEvents.report(root, root, dir.toString(), flags or 0x20000, got::add)
+      assertEquals(listOf(Dirty(dir, true)), got, "flags 0x${flags.toString(16)}")
+    }
+  }
+
   @Test fun hiddenFilesAreIgnoredAndTheKernelsRealPathIsMappedBack() {
     val got = ArrayList<Dirty>()
     MacFsEvents.report(root, root, "/Users/x/Pictures/.DS_Store", 0x100, got::add)

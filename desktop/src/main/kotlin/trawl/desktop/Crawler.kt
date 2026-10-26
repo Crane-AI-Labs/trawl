@@ -16,6 +16,7 @@ import java.nio.file.Path
 import java.nio.file.SimpleFileVisitor
 import java.nio.file.attribute.BasicFileAttributes
 import java.util.EnumSet
+import java.util.concurrent.atomic.LongAdder
 
 /** One file the walk found and the shared rules keep. */
 class Found(val path: Path, val rel: String, val name: String, val kind: FileKind, val size: Long, val modified: Long, val taken: Long = 0) {
@@ -43,7 +44,7 @@ class WalkResult(val unreadable: List<UnreadablePlace> = emptyList(), val pendin
 
 /**
  * The directory walk shared by the first scan, the watcher's reconcile and the polling fallback. java.nio only (no Spotlight,
- * no MediaStore): the same [Rules.classify] the phone uses decides what a file is. Hidden files and folders are never read.
+ * no MediaStore): the same [Rules.classify] the phone uses decides what a file is. Hidden files and folders, and dependency, build and cache folders ([DependencyFolders]), are never read.
  * Only the kinds the desktop reads are kept: documents, PDFs, photos, screenshots, videos and recordings.
  */
 object Crawler {
@@ -51,6 +52,13 @@ object Crawler {
   val KINDS = setOf(FileKind.DOCUMENT, FileKind.PDF, FileKind.IMAGE, FileKind.SCREENSHOT, FileKind.VIDEO, FileKind.AUDIO)
   /** The kinds that go through a decoder and the speech engine (read a window at a time, in their own queue). */
   val MEDIA_KINDS = setOf(FileKind.VIDEO, FileKind.AUDIO)
+
+  /** How much walking was done in this run: calls to [walk], folders entered and files looked at. For the CPU harness and the problem report, never for decisions. */
+  object Counters {
+    val walks = LongAdder()
+    val dirs = LongAdder()
+    val files = LongAdder()
+  }
 
   /** A stable 63-bit id per path: the desktop's stand-in for MediaStore's row id. */
   fun idOf(path: Path): Long = fnv64(path.toAbsolutePath().normalize().toString())
@@ -76,6 +84,14 @@ object Crawler {
     if (!dir.startsWith(root) || dir == root) return false
     var p: Path = root
     for (seg in root.relativize(dir)) { p = p.resolve(seg); if (isHidden(p)) return true }
+    return false
+  }
+
+  /** True when [dir] is inside a hidden folder or a dependency/build/cache folder of [root] ([DependencyFolders]): such a folder is never read, and a change in it is not news. */
+  fun insideIgnored(root: Path, dir: Path): Boolean {
+    if (!dir.startsWith(root) || dir == root) return false
+    var p: Path = root
+    for (seg in root.relativize(dir)) { p = p.resolve(seg); if (isHidden(p) || DependencyFolders.isSkipped(p)) return true }
     return false
   }
 
@@ -112,15 +128,19 @@ object Crawler {
     val unreadable = ArrayList<UnreadablePlace>()
     val pending = ArrayList<Path>()
     var vanished = 0
+    if (DependencyFolders.insideSkipped(root, dir)) return WalkResult()   // asked for a place inside a skipped folder: nothing there is read
+    Counters.walks.increment()
     Files.walkFileTree(dir, EnumSet.noneOf(FileVisitOption::class.java), if (recursive) Int.MAX_VALUE else 1, object : SimpleFileVisitor<Path>() {
       override fun preVisitDirectory(d: Path, attrs: BasicFileAttributes): FileVisitResult {
-        if ((d != dir && isHidden(d)) || Scope.isSkipped(d, skipped)) return FileVisitResult.SKIP_SUBTREE
+        if ((d != dir && (isHidden(d) || DependencyFolders.isSkipped(d))) || Scope.isSkipped(d, skipped)) return FileVisitResult.SKIP_SUBTREE
+        Counters.dirs.increment()
         if (d != dir && stop()) { pending.add(d); return FileVisitResult.SKIP_SUBTREE }
         return FileVisitResult.CONTINUE
       }
 
       override fun visitFile(file: Path, attrs: BasicFileAttributes): FileVisitResult {
         if (!attrs.isRegularFile || isHidden(file)) return FileVisitResult.CONTINUE
+        Counters.files.increment()
         val rel = relOf(root, file)
         val name = file.fileName.toString()
         val kind = DocFormats.classify(file, name, rel)   // hook (Package C): Rules.classify plus first-bytes sniffing and the .log type, as on the phone

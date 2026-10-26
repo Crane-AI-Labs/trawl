@@ -64,7 +64,13 @@ object MacFsEvents : FsEventsBackend {
   private const val FILE_EVENTS = 0x10
   private const val MUST_SCAN_SUBDIRS = 0x1
   private const val ROOT_CHANGED = 0x20
+  private const val ITEM_CREATED = 0x100
+  private const val ITEM_REMOVED = 0x200
+  private const val ITEM_RENAMED = 0x800
   private const val ITEM_IS_DIR = 0x20000
+  private const val FOLDER_APPEARED_OR_WENT = ITEM_CREATED or ITEM_REMOVED or ITEM_RENAMED
+  /** Every per-item flag: created, removed, inode-meta, renamed, modified, Finder info, owner, xattr. A folder event with none of them is a plain "look here". */
+  private const val ANY_ITEM_CHANGE = 0x100 or 0x200 or 0x400 or 0x800 or 0x1000 or 0x2000 or 0x4000 or 0x8000
   private const val SINCE_NOW = -1L
   private const val UTF8 = 0x08000100
   private const val LATENCY_S = 0.5
@@ -118,7 +124,10 @@ object MacFsEvents : FsEventsBackend {
     // Anything inside a hidden folder (a ".git", a ".cache") is never read, and such folders are the busiest on a developer's disk: not news.
     if (rel.any { it.toString().startsWith(".") && it.toString() != ".." }) return
     if (flags and (MUST_SCAN_SUBDIRS or ROOT_CHANGED) != 0) { sink(Dirty(mapped, true)); return }
-    if (flags and ITEM_IS_DIR != 0) sink(Dirty(mapped, true))
+    // A folder that came, went or moved in is looked at all the way down (it may hold anything). A folder that only had its own
+    // attributes touched (Finder, Spotlight, a backup tool, a child added or removed) has changed nothing below it: its own files at most.
+    // Walking it whole each time was the biggest cost of a busy tree.
+    if (flags and ITEM_IS_DIR != 0) sink(Dirty(mapped, flags and FOLDER_APPEARED_OR_WENT != 0 || flags and ANY_ITEM_CHANGE == 0))
     else sink(Dirty(mapped.parent ?: root, false))
   }
 }

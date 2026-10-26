@@ -111,6 +111,10 @@ object DocFormats {
   fun classify(file: java.nio.file.Path, name: String, relativePath: String): FileKind {
     val ext = Rules.extensionOf(name)
     var kind = Rules.classify(name, if (ext == "log") "text/plain" else null, relativePath)
+    // `.ts` is TypeScript far more often than video, and the shared rules (which the phone also uses) go by the extension alone. Here the
+    // first bytes decide: a file that is not a transport stream is not a video, and OTHER is a kind the desktop does not keep, so it is
+    // skipped quietly, before anything is queued or any decoder is asked.
+    if (kind == FileKind.VIDEO && TransportStream.isAmbiguous(name) && !TransportStream.check(file)) return FileKind.OTHER
     if (Rules.shouldSniff(name, kind)) {
       val head = try {
         java.nio.file.Files.newInputStream(file).use { readHead(it, Rules.SNIFF_BYTES).first }
