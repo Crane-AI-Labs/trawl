@@ -12,7 +12,7 @@ import com.craneai.findr.core.FileKind
  *  - A trigger drops the keyword row when a segment goes, so a cascade from `files` can never leave words behind.
  */
 object Schema {
-  const val VERSION = 6L
+  const val VERSION = 7L
 
   /**
    * `meta.vec_gen` (EmbeddingGemma's modalities) and `meta.vec_gen_quick` (the quick-look pass's) count every change to what
@@ -81,6 +81,9 @@ object Schema {
     // 5 -> 6: `segments.marks`, where each spoken segment sits inside a transcript piece (see [com.craneai.findr.core.TranscriptMarks]),
     // so a hit can say when the matched words were said. NULL on every old row, which keeps working (placed by character position).
     listOf("ALTER TABLE segments ADD COLUMN marks TEXT"),
+    // 6 -> 7: `files(kind, state)`, so the per-kind-and-state counts behind every status (and the phone's "is anything waiting") read a
+    // small index instead of the whole table: 115 ms -> 12 ms on 180,000 files (the research notes, "desktop-cpu-stats"). No data moves.
+    listOf("CREATE INDEX files_kind_state ON files(kind, state)"),
   )
 
   /** FTS5 table: file names in `name`, folder words and extracted/OCR text in `body`. Porter stems word endings. */
@@ -121,6 +124,7 @@ object Schema {
     "CREATE INDEX files_work ON files(state, priority, mtime DESC)",
     "CREATE INDEX files_kind_mtime ON files(kind, mtime DESC)",
     "CREATE INDEX files_date ON files(date_ms DESC)",
+    "CREATE INDEX files_kind_state ON files(kind, state)",
     """
     CREATE TABLE segments(
       id INTEGER PRIMARY KEY,

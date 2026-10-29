@@ -107,8 +107,8 @@ object IndexAdmin {
   fun wordsLeft(store: IndexStore, on: Set<FileKind>): Int {
     val kindsIn = on.intersect(WordsReader.KINDS).joinToString(",") { "'${it.name}'" }
     if (kindsIn.isEmpty()) return 0
-    return store.read { db ->
-      db.long("SELECT COUNT(*) FROM files WHERE volume = ? AND state IN ('new','searchable') AND detail IS NULL AND kind IN ($kindsIn)", Crawler.VOLUME) ?: 0L
+    return store.cached("wordsLeft:$kindsIn") { db ->
+      db.long("SELECT COUNT(*) FROM files WHERE +volume = ? AND state IN ('new','searchable') AND detail IS NULL AND kind IN ($kindsIn)", Crawler.VOLUME) ?: 0L
     }.toInt()
   }
 

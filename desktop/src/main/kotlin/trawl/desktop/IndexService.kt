@@ -208,6 +208,7 @@ class IndexService(
   @Volatile private var closed = false
   @Volatile private var roots: List<Path> = emptyList()
   @Volatile private var scanning = false
+  private var wasBusy = false
   @Volatile private var scannedSoFar = 0
   private var sessionDone = 0
   private var sessionStarted = 0L
@@ -273,11 +274,12 @@ class IndexService(
     val kindsChanged = this.kinds != kinds
     this.kinds = kinds.intersect(Crawler.KINDS)
     val resumed = this.paused && !paused
+    if (this.paused != paused) stateDirty.set(true)   // pause and resume show at once, however busy the worker is
     this.paused = paused
     this.skipped = skipped
     if (this.speed != speed || !speedApplied) { this.speed = speed; queue.add(Speed(speed)) }
     queue.add(Skip(skipped))
-    if (kindsChanged) bump()
+    if (kindsChanged) { generation++; stateDirty.set(true) }   // the worker publishes it on its next turn (the Skip job below wakes it)
     if (resumed) wakeReconcile()   // what changed while paused is looked at now, in one walk
   }
 
@@ -375,15 +377,17 @@ class IndexService(
         if (_ui.value.openProblem != null || _ui.value.opening) bump()   // it just opened: take the card down, and let an open query run again
         refreshAccess()
         refreshDisk()
+        flushStatus()
         val job = queue.poll()
         if (job != null) { handle(job); continue }
         if (reconcileDeferred && !paused && System.currentTimeMillis() >= reconcileNotBefore) { reconcileDeferred = false; handle(Reconcile); continue }
         if (scans.isNotEmpty()) { stepScans(); continue }   // a walk that gave way carries on where it stopped
         retryRepair()
-        if (readSome()) continue
+        if (readSome()) { wasBusy = true; continue }
         scanning = false
-        publish(current = null)
-        queue.poll(1, TimeUnit.SECONDS)?.let { handle(it) }
+        if (wasBusy) { wasBusy = false; stateDirty.set(true) }   // the work just ran out: "caught up" shows at once, not a second late
+        idleStatus()
+        queue.poll(idleWaitMs(), TimeUnit.MILLISECONDS)?.let { handle(it) }
       } catch (_: InterruptedException) {
         return
       } catch (t: Throwable) {
@@ -562,10 +566,10 @@ class IndexService(
     if (!Files.isDirectory(dir)) {
       // The directory is gone: so is everything under it.
       removeUnder(dir, recursive = true, present = emptySet())
-      bump(); return
+      bumpProgress(); return
     }
     walkNow(root, dir, recursive) { }
-    bump()
+    bumpProgress()
   }
 
   /** Walks [dir] now; if a more urgent job asks for the worker half-way, the rest waits in [scans] and the loop carries on with it later. */
@@ -585,12 +589,16 @@ class IndexService(
     private val todo = java.util.ArrayDeque<Path>().also { it.add(dir) }
     private val batch = ArrayList<CrawlRecord>()
 
+    private var stepBegan = System.nanoTime()
+
     private fun flush() {
       if (batch.isEmpty()) return
       val r = store.upsertFromCrawl(batch)
       vectors.removeFiles(r.reset + r.newlySkipped)
       progress(batch.size)
       batch.clear()
+      pace(stepBegan)   // paused: a walk that has to run (the first after an upgrade) rests between its steps
+      stepBegan = System.nanoTime()
     }
 
     /** Walks until nothing is left (true), or until a more urgent job is waiting (false; call again to carry on from the next folder). */
@@ -638,7 +646,7 @@ class IndexService(
     if (blocked == before) return
     blockedSummary = BlockedSummary.of(blocked, home)
     log("walk: " + blockedSummary.logLine())
-    publish(current = null)
+    publishNow(current = null)
   }
 
   /**
@@ -682,10 +690,52 @@ class IndexService(
     drop(gone)
   }
 
+  /**
+   * Takes files out of the index (rows, words and vectors) in small committed batches, so a search is never kept waiting behind one long
+   * write and the pass makes steady progress whatever else asks for the worker. Between batches it steps aside for a search, paces itself
+   * while paused, and stops when the app closes: what is left is found again by the next walk, which drops it the same way.
+   * The write-ahead log is emptied now and then (the deleted words must not linger in it), not after every batch.
+   */
   private fun drop(ids: List<Long>) {
     if (ids.isEmpty()) return
-    ids.chunked(500).forEach { vectors.removeFiles(it); store.markDeleted(it) }
-    log("dropped ${ids.size} files that are gone")
+    var done = 0
+    var sinceCheckpoint = 0
+    var at = 0
+    while (at < ids.size && !closed) {
+      // Paused, the batches are small so the rest between them (nine times the work, at most PAUSED_REST_MAX_MS) keeps the pass near a tenth of a core.
+      val batch = ids.subList(at, minOf(ids.size, at + if (paused) FORGET_BATCH_PAUSED else FORGET_BATCH))
+      at += batch.size
+      val began = System.nanoTime()
+      vectors.removeFiles(batch)
+      done += store.markDeleted(batch, checkpoint = false)
+      sinceCheckpoint += batch.size
+      if (sinceCheckpoint >= FORGET_CHECKPOINT_EVERY) { store.trimWal(0); sinceCheckpoint = 0 }
+      forgetCount.forgotten(batch.size)
+      searchYield.awaitQuiet { closed || queue.any { it !is Reconcile } }
+      pace(began)
+    }
+    store.trimWal(0)
+    bumpProgress()
+    log("dropped $done files that are gone")
+  }
+
+  /** What the forget pass reports as it goes (tests and the harness watch it); the files dropped so far in this run. */
+  private val forgetCount = ForgetCount()
+  internal class ForgetCount { @Volatile var total = 0L; fun forgotten(n: Int) { total += n } }
+  internal val forgottenSoFar: Long get() = forgetCount.total
+
+  /**
+   * While paused, background work that still has to run (the first walk after an upgrade, a forget pass) is paced: after a step that took
+   * `t` it rests `9 t`, so it uses a tenth of one core, in slices that notice the end of the pause or a closing app.
+   */
+  private fun pace(beganNanos: Long) {
+    if (!paused) return
+    val rest = ((System.nanoTime() - beganNanos) / 1_000_000L) * PAUSED_REST_FACTOR
+    var left = rest.coerceAtMost(PAUSED_REST_MAX_MS)
+    while (left > 0 && paused && !closed && queue.none { it !is Reconcile }) {
+      val step = minOf(left, 100L)
+      Thread.sleep(step); left -= step
+    }
   }
 
   // ---- reading -------------------------------------------------------------------------------------------------
@@ -696,6 +746,7 @@ class IndexService(
    * as they are. False when there is nothing to read.
    */
   private fun readSome(): Boolean {
+    if (paused) return false   // paused is quiet: no decoder search, no speech-pack look, nothing read
     if (kinds.any { it in Crawler.MEDIA_KINDS }) { ensureDecoder(); checkSpeechPack() }   // Settings says so at once when this computer has none
     if (scanning) return false
     if (hold() != null) return false
@@ -706,7 +757,7 @@ class IndexService(
     // The phone's turns: a video or recording when one is owed its fifth of the busy time (or nothing else waits), else a few photos and documents.
     if (media != null && mediaShare.mediaTurn(true, batch.isNotEmpty())) {
       readMedia(media)
-      bump()
+      bumpProgress()
       return true
     }
     if (batch.isEmpty()) return false
@@ -731,7 +782,7 @@ class IndexService(
       readNs += ns
       mediaShare.record(false, ns / 1_000_000)
     }
-    bump()
+    bumpProgress()
     return true
   }
 
@@ -834,7 +885,7 @@ class IndexService(
         true
       }
     }
-    if (done > 0) bump()
+    if (done > 0) bumpProgress()
     return done > 0
   }
 
@@ -873,7 +924,7 @@ class IndexService(
       runCatching { StorageEstimate.estimate(st.storageTotals(), kinds, withVectors = embedder != null).indexBytes - st.bytesOnDisk() }.getOrDefault(0L).coerceAtLeast(0L)
     } ?: 0L else 0L
     diskLevel = DiskSpace.level(free, before, growth)
-    if (diskLevel != before) { log("disk space: $before -> $diskLevel (${free / DiskSpace.MB} MB free)"); publish(current = null) }
+    if (diskLevel != before) { log("disk space: $before -> $diskLevel (${free / DiskSpace.MB} MB free)"); publishNow(current = null) }
   }
 
   @Volatile private var noAccess = false
@@ -886,7 +937,7 @@ class IndexService(
     accessCheckedAt = now
     val before = noAccess
     noAccess = FolderAccess.denied(roots, canList)
-    if (noAccess != before) { log(if (noAccess) "the system will not let Trawl list the chosen folders" else "the chosen folders can be listed again"); publish(current = null); if (!noAccess) queue.add(Rescan) }
+    if (noAccess != before) { log(if (noAccess) "the system will not let Trawl list the chosen folders" else "the chosen folders can be listed again"); publishNow(current = null); if (!noAccess) queue.add(Rescan) }
   }
 
   /** While the index opens or cannot open: tell the window which, in the phone's classes, so it can show the calm card. */
@@ -898,11 +949,57 @@ class IndexService(
 
   // ---- status --------------------------------------------------------------------------------------------------
 
-  private fun bump() { generation++; publish(current = null) }
+  /** The index changed in a way the person should see now (a model attached, a folder skipped, a scan done): published at once. */
+  private fun bump() { generation++; publishNow(current = null) }
 
+  /** The index grew a little (a file read, a folder walked): the window hears of it at most about once a second ([throttle]). */
+  private fun bumpProgress() { generation++; publish(current = null) }
+
+  /** Decides when the status is worked out again: state changes at once, progress at most once a second, with a final publish when it goes quiet. */
+  private val throttle = PublishThrottle()
+  @Volatile private var pendingCurrent: String? = null
+  /** Set from other threads (Settings: pause, resume): the worker publishes it at once on its next turn. */
+  private val stateDirty = java.util.concurrent.atomic.AtomicBoolean(false)
+  private var idleRefreshAt = 0L
+
+  /** Progress: the file being read, a walk's tick. Held back when the status went out less than a second ago; [flushStatus] sends it later. */
   private fun publish(current: String?) {
+    if (stateDirty.getAndSet(false) || throttle.progress()) publishNow(current) else pendingCurrent = current
+  }
+
+  /** A state change: the status goes out now, whatever went out a moment ago. */
+  private fun publishNow(current: String?) {
+    throttle.immediate()
+    pendingCurrent = null
+    work(current)
+  }
+
+  /** Sends what [publish] held back once its second is over, and a state change someone else asked for. Cheap when there is nothing to send. */
+  private fun flushStatus() {
+    if (stateDirty.getAndSet(false)) { publishNow(null); return }
+    if (throttle.flushDue()) { val c = pendingCurrent; pendingCurrent = null; work(c) }
+  }
+
+  /** The idle turn: nothing is being read. Whatever was held back goes out, and the status is looked at again every few seconds (a charger, the disk). */
+  private fun idleStatus() {
+    val now = System.currentTimeMillis()
+    if (stateDirty.getAndSet(false) || throttle.hasPending() || now - idleRefreshAt >= (if (paused) PAUSED_REFRESH_MS else IDLE_REFRESH_MS)) {
+      if (throttle.hasPending() && !throttle.flushDue() && !stateDirty.get()) return   // held back; the wait below is cut to when it is due
+      idleRefreshAt = now
+      publishNow(null)
+    }
+  }
+
+  /** How long the idle wait may be: short while an update is held back, long when paused (nothing is going to change but a click, which wakes the worker). */
+  private fun idleWaitMs(): Long = throttle.msUntilDue()?.coerceAtLeast(20L) ?: if (paused) PAUSED_REFRESH_MS else 1000L
+
+  /** How many times the status was worked out (a full pass over the counts each). For the CPU harness and the tests, never for decisions. */
+  internal val publishCount = java.util.concurrent.atomic.AtomicLong()
+
+  private fun work(current: String?) {
     val store = opener.current ?: return   // the window can ask for a refresh before the index has opened: nothing to count yet
-    val s = store.stats()
+    publishCount.incrementAndGet()
+    val s = store.fileStats()   // the files' counts only, and the same answer until something is written; the segment counts are the detail sheet's
     val ready = embedder != null
     // Videos and recordings are part of the meter only when they can be read: the models are in and the computer has a decoder.
     val on = if (ready && decoder != null) kinds else kinds - Crawler.MEDIA_KINDS
@@ -979,12 +1076,21 @@ class IndexService(
 
   companion object {
     const val DISK_CHECK_MS = 10_000L
+    /** An idle worker looks at the status again this often (a charger plugged in, the disk filling); paused, less often. */
+    private const val IDLE_REFRESH_MS = 5_000L
+    private const val PAUSED_REFRESH_MS = 15_000L
     private const val ACCESS_CHECK_MS = 3_000L
     private const val OPEN_POLL_MS = 200L
     private const val REEMBED_EVERY_MS = 4_000L
     /** Above this much free space the growth of the index is not worth working out. */
     private const val GROWTH_CHECK_BELOW = 20L * 1024 * 1024 * 1024
     private const val DECODER_RECHECK_MS = 30_000L
+    /** Files dropped per committed batch of the forget pass, and how many are dropped between two emptyings of the write-ahead log. */
+    internal const val FORGET_BATCH = 200
+    internal const val FORGET_BATCH_PAUSED = 50
+    internal const val FORGET_CHECKPOINT_EVERY = 5_000
+    private const val PAUSED_REST_FACTOR = 9L
+    private const val PAUSED_REST_MAX_MS = 5_000L
 
     /** The URI prefix every file of [dir] shares: `file:///<your folder>/Pictures/`. Taken the way the crawler takes each file's URI, so they always compare. */
     fun prefixOf(dir: Path): String {

@@ -45,7 +45,26 @@ class IndexStore private constructor(
 
   // ---- connections ---------------------------------------------------------------------------------------------
 
-  fun <T> write(block: (Db) -> T): T = writeLock.withLock { block(writer) }
+  fun <T> write(block: (Db) -> T): T = writeLock.withLock { try { block(writer) } finally { changes.incrementAndGet() } }
+
+  /** How many writes this store has finished. A count that has not moved since a value was worked out means that value is still true ([cached]). */
+  private val changes = java.util.concurrent.atomic.AtomicLong()
+  val changeCount: Long get() = changes.get()
+  private val cache = java.util.concurrent.ConcurrentHashMap<String, Pair<Long, Any?>>()
+
+  /**
+   * [block]'s answer from a read connection, worked out again only after a write has finished since it was last worked out. The count is
+   * taken before the read, so a write that lands during it makes the next call work it out again: a cached answer is never newer than its
+   * count, only possibly older than the data by a write that was still running, which the count then already shows.
+   */
+  @Suppress("UNCHECKED_CAST")
+  fun <T> cached(key: String, block: (Db) -> T): T {
+    val c = changes.get()
+    cache[key]?.let { if (it.first == c) return it.second as T }
+    val v = read(block)
+    cache[key] = c to v
+    return v
+  }
 
   /** Runs [block] on a pooled read connection. Safe from any thread; blocks only if every reader is busy. */
   fun <T> read(block: (Db) -> T): T {
@@ -351,16 +370,15 @@ class IndexStore private constructor(
    * of its index at once, and a truncating checkpoint empties the write-ahead log, which would otherwise keep old copies
    * of the pages until they were overwritten (the research notes, "Deleted files").
    */
-  fun markDeleted(fileIds: Collection<Long>): Int = write { db ->
+  fun markDeleted(fileIds: Collection<Long>, checkpoint: Boolean = true): Int = write { db ->
     var n = 0
     db.transaction {
       for (id in fileIds) {
-        val before = db.long("SELECT COUNT(*) FROM files WHERE id = ?", id) ?: 0
         db.run("DELETE FROM files WHERE id = ?", id)
-        n += before.toInt()
+        n += (db.long("SELECT changes()") ?: 0L).toInt()   // the file row only: the cascade's rows are not counted
       }
     }
-    if (n > 0) truncateWal(db)
+    if (n > 0 && checkpoint) truncateWal(db)
     n
   }
 
@@ -958,7 +976,7 @@ class IndexStore private constructor(
   fun infoOf(fileId: Long): String? = read { it.text("SELECT info FROM files WHERE id = ?", fileId) }
 
   /** Files per kind and state: the first of [stats]' counts, alone, for callers that only need to know what is still waiting. */
-  private fun fileCounts(db: Db): HashMap<FileKind, MutableMap<FileState, Int>> {
+  private fun fileCounts(db: Db): Map<FileKind, MutableMap<FileState, Int>> {
     val byKind = HashMap<FileKind, MutableMap<FileState, Int>>()
     db.query("SELECT kind, state, COUNT(*) FROM files GROUP BY kind, state") {
       val kind = runCatching { FileKind.valueOf(it.getText(0)) }.getOrNull() ?: return@query
@@ -971,10 +989,26 @@ class IndexStore private constructor(
    * Files of [kinds] that still need reading: exactly `stats().waiting(kinds)`, without the other counts [stats] makes. Those scan
    * every segment and its vector (about 0.8 s on a phone at 100,000 vectors), and a search asks this on every keystroke.
    */
-  fun waiting(kinds: Set<FileKind>): Int = read { db -> IndexStats(fileCounts(db), 0, 0, 0).waiting(kinds) }
+  fun waiting(kinds: Set<FileKind>): Int = cachedFileCounts().waiting(kinds)
 
-  fun stats(): IndexStats = read { db ->
-    val byKind = fileCounts(db)
+  private fun cachedFileCounts(): IndexStats = cached("fileStats") { db -> IndexStats(fileCounts(db), 0, 0, 0) }
+
+  /**
+   * The cheap half of [stats]: files per kind and state, nothing else ([IndexStats.segments], vectors and the quick-look counts are 0).
+   * It reads the files table only and is kept until the next write finishes, so asking again and again (the desktop's status, the phone's
+   * search on every keystroke) costs nothing while the index is quiet.
+   */
+  fun fileStats(): IndexStats = cachedFileCounts().copy(bytesOnDisk = bytesOnDisk())
+
+  /** [stats]: the files' counts, with the size on disk as it is now. The heavy counts over every segment are kept until the next write. */
+  fun stats(): IndexStats {
+    val f = cachedFileCounts()
+    val h = cached("segmentStats") { db -> segmentCounts(db) }
+    return IndexStats(f.byKindAndState, h.segments, h.vectors, bytesOnDisk(), h.quickOnly, h.quickUnreadable, h.tooLarge)
+  }
+
+  private fun segmentCounts(db: Db): IndexStats {
+    val byKind = emptyMap<FileKind, Map<FileState, Int>>()
     var segments = 0; var vectors = 0
     db.query("SELECT COUNT(*), COUNT(vec) FROM segments WHERE kind != 'name'") { segments = it.getLong(0).toInt(); vectors = it.getLong(1).toInt() }
     val quick = HashMap<FileKind, Int>()
@@ -994,7 +1028,7 @@ class IndexStore private constructor(
       unreadable[kind] = it.getLong(1).toInt()
     }
     val tooLarge = (db.long("SELECT COUNT(*) FROM files WHERE state = 'failed' AND detail = ?", TOO_LARGE_DETAIL) ?: 0).toInt()
-    IndexStats(byKind, segments, vectors, bytesOnDisk(), quick, unreadable, tooLarge)
+    return IndexStats(byKind, segments, vectors, 0, quick, unreadable, tooLarge)
   }
 
   /** What the crawl knows, per kind, of the files that will be read (skipped ones left out): the input of the storage estimate. */

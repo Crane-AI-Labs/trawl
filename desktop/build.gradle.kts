@@ -544,10 +544,10 @@ compose.desktop {
     jvmArgs += listOf("--add-opens=java.desktop/sun.awt.X11=ALL-UNNAMED")
     nativeDistributions {
       targetFormats(TargetFormat.Deb, TargetFormat.Msi, TargetFormat.Dmg)
-      // The name people see: Trawl.app and Trawl-1.0.2.dmg on a Mac, the Start menu and the .msi on Windows. A per-OS `packageName` in the
+      // The name people see: Trawl.app and Trawl-1.0.3.dmg on a Mac, the Start menu and the .msi on Windows. A per-OS `packageName` in the
       // macOS block only sets the menu-bar name (jpackage --mac-package-name), not the file names, so the top-level one has to be "Trawl".
       packageName = "Trawl"
-      packageVersion = "1.0.2"
+      packageVersion = "1.0.3"
       appResourcesRootDir.set(layout.buildDirectory.dir("appres"))   // appres/windows/ lands in the app's resources folder on Windows only
       description = "Search your own files by meaning, on this computer. Nothing leaves it."
       vendor = "Crane AI Labs"
@@ -555,7 +555,7 @@ compose.desktop {
       modules("java.sql", "java.management", "jdk.management", "java.desktop", "java.logging", "java.xml", "java.naming", "jdk.unsupported", "jdk.crypto.ec")
       // The mark, drawn from site/favicon.svg by scripts/make_desktop_icons.py: a PNG for the .deb (its menu entry and .desktop file),
       // an .ico for the .msi (the exe, its shortcuts, Add/Remove Programs) and an .icns for the macOS slot.
-      // A .deb package name is lowercase by convention (trawl_1.0.2_amd64.deb); the menu entry still reads "Trawl" from the .desktop file.
+      // A .deb package name is lowercase by convention (trawl_1.0.3_amd64.deb); the menu entry still reads "Trawl" from the .desktop file.
       linux { packageName = "trawl"; menuGroup = "Utility"; shortcut = true; debMaintainer = "Crane AI Labs"; iconFile.set(project.file("packaging/trawl.png")) }
       windows { menuGroup = "Trawl"; shortcut = true; perUserInstall = true; upgradeUuid = "6f1d1f7e-3c0e-4a5e-9d57-2b1f5e0c7a11"; iconFile.set(project.file("packaging/trawl.ico")) }
       // Apple silicon only (litertlm-jvm and sqlite-bundled ship no Intel Mac natives). Unsigned: signing and notarisation need an Apple

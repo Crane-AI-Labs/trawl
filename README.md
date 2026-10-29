@@ -31,9 +31,9 @@ words in documents and the words in photos and screenshots, but it doesn't searc
 ## Desktop developer preview
 
 A Windows, Mac and Linux version is available as a **developer preview** on the
-[`desktop-preview-1.0.2`](https://github.com/Crane-AI-Labs/trawl/releases/tag/desktop-preview-1.0.2) release. The installers are
+[`desktop-preview-1.0.3`](https://github.com/Crane-AI-Labs/trawl/releases/tag/desktop-preview-1.0.3) release. The installers are
 **unsigned**: on a Mac right-click the app and choose Open; on Windows SmartScreen shows "More info", then "Run anyway"; on Linux run
-`sudo apt install ./trawl_1.0.2_amd64.deb` (video needs `ffmpeg`). The desktop app makes no network connections either; the release
+`sudo apt install ./trawl_1.0.3_amd64.deb` (video needs `ffmpeg`). The desktop app makes no network connections either; the release
 notes say how that was tested.
 
 ## What it reads
