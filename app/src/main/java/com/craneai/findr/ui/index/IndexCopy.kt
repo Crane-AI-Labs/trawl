@@ -19,7 +19,7 @@ import com.craneai.findr.ui.common.formatCount
 fun IndexStatus.headline(): String = when (phase) {
   IndexPhase.NOT_STARTED -> stringResource(R.string.meter_title_not_started)
   IndexPhase.SCANNING -> stringResource(R.string.meter_title_scanning)
-  IndexPhase.INDEXING -> stringResource(R.string.meter_title_indexing)
+  IndexPhase.INDEXING -> stringResource(if (waitingForModels) R.string.meter_title_needs_models else R.string.meter_title_indexing)
   IndexPhase.PAUSED -> pauseReason?.let { stringResource(it.titleRes) } ?: stringResource(R.string.pause_user)
   IndexPhase.UP_TO_DATE -> stringResource(R.string.meter_title_up_to_date)
   IndexPhase.ERROR -> if (openProblem != null) appString(R.string.open_problem_title) else stringResource(R.string.meter_title_error)
@@ -62,6 +62,7 @@ fun IndexStatus.subline(): String {
       val eta = etaLabel(etaSeconds)
       val reembedNow = reembed   // a local copy: the property lives in :core now, so it cannot be smart-cast
       when {
+        waitingForModels -> stringResource(R.string.meter_sub_needs_models)   // before the charger line: charging changes nothing until the models are here
         reembedNow != null -> reembedSubline(reembedNow, eta)
         needsCharger -> chargerSubline()
         filesSearchable < filesKnown -> stringResource(R.string.meter_sub_names_first)

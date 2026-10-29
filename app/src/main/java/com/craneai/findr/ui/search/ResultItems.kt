@@ -49,6 +49,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
@@ -125,6 +126,8 @@ fun MediaCell(
   icons: SharedIcons? = null,
   selecting: Boolean = false,
   selected: Boolean = false,
+  /** A video found at a moment: its time label opens the sheet with the pictures around it (MomentPeekSheet). Null leaves the label a plain label. */
+  onPeek: (() -> Unit)? = null,
 ) {
   SideEffect { UiCounters.cellComposes.incrementAndGet() }
   val file = hit.file
@@ -162,20 +165,33 @@ fun MediaCell(
       .semantics { contentDescription = cellDescription; if (selecting) this.selected = selected },
   ) {
     FileThumbnail(file, Modifier.fillMaxSize(), frameMs = moment, iconSize = 30.dp, iconPainter = icons?.kind(file.kind), hiddenWords = hidden)
+    if (file.kind == FileKind.VIDEO) {
+      val dur = file.durationMs
+      if (atLabel != null) {
+        // The matched moment sits top left, clear of the share badge (bottom right): on a 104 dp tile the ~70 dp label and the badge
+        // overlapped at the bottom. A tile has room for one time, and the moment is the one a search is about; the length stays in the
+        // tile's description. While choosing files the tick mark takes this corner, so the label steps aside.
+        if (!selecting) {
+          if (onPeek != null) {
+            // A 48 dp touch area around the label opens the pictures around the moment.
+            val peekLabel = stringResource(R.string.strip_peek_label)
+            Box(
+              Modifier.align(Alignment.TopStart).heightIn(min = 48.dp).clickable(onClickLabel = peekLabel, role = Role.Button, onClick = onPeek),
+              contentAlignment = Alignment.TopStart,
+            ) { Pill(atLabel, strong = true, modifier = Modifier.padding(6.dp)) }
+          } else {
+            Pill(atLabel, strong = true, modifier = Modifier.align(Alignment.TopStart).padding(6.dp))
+          }
+        }
+      } else if (dur != null) {
+        Pill(formatDuration(dur), modifier = Modifier.align(Alignment.BottomStart).padding(6.dp), scrim = true, leading = true)
+      }
+    }
     if (selecting) {
       if (selected) Box(Modifier.fillMaxSize().background(LocalSunlight.current.marker.copy(alpha = 0.28f)).border(3.dp, LocalSunlight.current.focus, MaterialTheme.shapes.extraSmall))
       SelectMark(selected, Modifier.align(Alignment.TopStart).padding(6.dp))
     } else {
       ShareBadge(onShare, Modifier.align(Alignment.BottomEnd), painter = icons?.share)
-    }
-    if (file.kind == FileKind.VIDEO) {
-      val dur = file.durationMs
-      if (atLabel != null) {
-        Pill(atLabel, strong = true, modifier = Modifier.align(Alignment.BottomStart).padding(6.dp))
-        if (dur != null) Pill(formatDuration(dur), modifier = Modifier.align(Alignment.TopEnd).padding(6.dp), scrim = true)
-      } else if (dur != null) {
-        Pill(formatDuration(dur), modifier = Modifier.align(Alignment.BottomStart).padding(6.dp), scrim = true, leading = true)
-      }
     }
   }
 }
@@ -200,6 +216,11 @@ fun FileRow(
   compact: Boolean = false,
   selecting: Boolean = false,
   selected: Boolean = false,
+  /**
+   * Opens the video at a time (ms). With it, a video row that matched at a moment shows the strip of pictures around that moment
+   * under its text (MomentStrip). Null, [compact] and [selecting] leave the strip out.
+   */
+  onOpenAt: ((Long) -> Unit)? = null,
 ) {
   val file = hit.file
   val haptics = LocalHapticFeedback.current
@@ -301,6 +322,16 @@ fun FileRow(
       }
     }
   }
+  // The strip of pictures around a video's matched moment sits under the whole row (it has taps of its own, so it is outside the
+  // row's merged "open this file" node), aligned with the thumbnail's left edge.
+  val momentMs = (hit.locator as? Locator.Time)?.startMs
+  val stripOn = onOpenAt != null && momentMs != null && file.kind == FileKind.VIDEO && !compact && !selecting
+  val stripFrames = rememberStripFrames(file, momentMs ?: 0L, hidden, stripOn)
+  val strip: @Composable () -> Unit = {
+    if (stripOn && momentMs != null && onOpenAt != null && stripFrames.takesRoom()) {
+      MomentStrip(stripFrames, momentMs, hidden, onOpenAt, { blur.reveal(file) }, Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp))
+    }
+  }
   val rowModifier = modifier
     .fillMaxWidth()
     .heightIn(min = Sun.Row)
@@ -313,11 +344,15 @@ fun FileRow(
     Column(rowModifier) {
       openPart(Modifier.fillMaxWidth())
       RowActions(name = file.name, onShare = onShare, onCopy = onCopy, modifier = Modifier.align(Alignment.End))
+      strip()
     }
   } else {
-    Row(rowModifier, verticalAlignment = Alignment.CenterVertically) {
-      openPart(Modifier.weight(1f))
-      RowActions(name = file.name, onShare = onShare, onCopy = onCopy)
+    Column(rowModifier) {
+      Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        openPart(Modifier.weight(1f))
+        RowActions(name = file.name, onShare = onShare, onCopy = onCopy)
+      }
+      strip()
     }
   }
 }

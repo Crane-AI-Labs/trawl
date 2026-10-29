@@ -39,6 +39,7 @@
   <string name="meter_title_not_started">Bado haijaanza kusoma</string>
   <string name="meter_title_scanning">Inakagua simu yako</string>
   <string name="meter_title_indexing">Kusoma mafaili yako</string>
+  <string name="meter_title_needs_models">Inasubiri modeli za utafutaji</string>
   <string name="meter_title_up_to_date">Yote yamesasishwa</string>
   <string name="meter_title_error">Hitilafu imetokea</string>
   <string name="meter_sub_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> itaanza mara tu itakapoweza kuona mafaili yako.</string>
@@ -47,6 +48,7 @@
   <string name="meter_sub_progress_eta">%1$s kati ya %2$s yamesomwa · imebaki takriban %3$s</string>
   <string name="meter_sub_progress_estimating">%1$s kati ya %2$s yameeleweka · inakadiria muda</string>
   <string name="meter_sub_needs_charger">Majina na maneno sasa. Maana itaanza ukichaji.</string>
+  <string name="meter_sub_needs_models">Majina na maneno yanafanya kazi sasa. Maana itaanza modeli zikiwa kwenye simu.</string>
   <string name="meter_sub_reembed">Inasasisha picha za modeli mpya: %1$s kati ya %2$s. Tafuta inaendelea kufanya kazi.</string>
   <string name="meter_sub_reembed_eta">Inasasisha picha za modeli mpya: %1$s kati ya %2$s · zimesalia kama %3$s</string>
   <string name="meter_sub_reembed_battery">Inasasisha picha za modeli mpya: %1$s kati ya %2$s. Yaliyobaki yataendelea ukichaji.</string>
@@ -85,6 +87,7 @@
   <string name="sheet_detail_scanning"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> inatengeneza orodha ya mafaili yako. Hii inachukua dakika moja au mbili.</string>
   <string name="sheet_detail_light_on_battery">Majina na maneno yanasomwa sasa na picha huangaliwa haraka, kwa hivyo Tafuta tayari inafanya kazi. Ubora kamili, ambao hutoa matokeo bora zaidi, utakamilika simu inapochajiwa.</string>
   <string name="sheet_detail_needs_charger">Majina na maneno yanasomwa sasa, kwa hivyo Tafuta tayari inafanya kazi. Kuelewa picha na hati zinahusu nini kutaanza simu inapochajiwa.</string>
+  <string name="sheet_detail_needs_models">Majina na maneno yanasomwa sasa, kwa hivyo Tafuta tayari inafanya kazi. Kuelewa picha na hati zinahusu nini kutaanza modeli za utafutaji zikiwa kwenye simu. Kuchaji hakubadilishi hilo kabla ya hapo.</string>
   <string name="sheet_detail_indexing">Majina na maneno huanza kwanza, hivyo basi Tafuta hufanya kazi mara moja. Kuelewa picha na hati zinahusu nini huchukua muda mrefu, na hufanyika vizuri usiku ikiwa kwenye chaja.</string>
   <string name="sheet_detail_error">Kusoma kumekatika bila kutarajiwa. Matokeo yako ya awali yapo salama.</string>
   <string name="sheet_detail_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> bado haijaanza kusoma.</string>

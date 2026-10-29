@@ -39,6 +39,7 @@
   <string name="meter_title_not_started">Ayikafundi okwamanje</string>
   <string name="meter_title_scanning">Ihlola ifoni yakho</string>
   <string name="meter_title_indexing">Ifunda amafayela akho</string>
+  <string name="meter_title_needs_models">Kulindwe amamodeli okusesha</string>
   <string name="meter_title_up_to_date">Konke kusesikhathini</string>
   <string name="meter_title_error">Kukhona okungahambanga kahle</string>
   <string name="meter_sub_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> izoqala uma isikwazi ukubona amafayela akho.</string>
@@ -47,6 +48,7 @@
   <string name="meter_sub_progress_eta">%1$s kokungu-%2$s kuqondiwe · cishe kusele %3$s</string>
   <string name="meter_sub_progress_estimating">%1$s kokungu-%2$s kuqondiwe · kubalwa isikhathi esisele</string>
   <string name="meter_sub_needs_charger">Amagama namagama amanje. Incazelo iqala uma ushaja.</string>
+  <string name="meter_sub_needs_models">Amagama namagama sekuyasebenza. Incazelo iqala uma amamodeli esefonini.</string>
   <string name="meter_sub_reembed">Kubuyekezwa izithombe zemodeli entsha: %1$s kokungu-%2$s. Ukusesha kusaqhubeka.</string>
   <string name="meter_sub_reembed_eta">Kubuyekezwa izithombe zemodeli entsha: %1$s kokungu-%2$s · kusele cishe u-%3$s</string>
   <string name="meter_sub_reembed_battery">Kubuyekezwa izithombe zemodeli entsha: %1$s kokungu-%2$s. Okusele kuzoqhubeka uma ushaja.</string>
@@ -85,6 +87,7 @@
   <string name="sheet_detail_scanning">I-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yenza uhlu lwamafayela akho. Lokhu kuthatha umzuzu owodwa noma emibili.</string>
   <string name="sheet_detail_light_on_battery">Amagama afundwa manje futhi izithombe zibhekwa ngokushesha, ngakho ukusesha sekuyasebenza. Ikhwalithi ephelele, enikeza imiphumela engcono kakhulu, iqedelwa uma ifoni ishajwa.</string>
   <string name="sheet_detail_needs_charger">Amagama ayafundwa manje, ngakho ukusesha sekuyasebenza. Ukuqonda ukuthi izithombe namadokhumenti kumayelana nani kuqala uma ifoni ishajwa.</string>
+  <string name="sheet_detail_needs_models">Amagama ayafundwa manje, ngakho ukusesha sekuyasebenza. Ukuqonda ukuthi izithombe namadokhumenti kumayelana nani kuqala uma amamodeli okusesha esefonini. Ukushaja akushintshi lutho ngaphambi kwalokho.</string>
   <string name="sheet_detail_indexing">Amagama aqala kuqala, ngakho ukusesha kusebenza masinyane. Ukuqonda okuqukethwe yizithombe namadokhumenti kuthatha isikhathi, futhi kungcono kwenziwe ebusuku ngenkathi ishajwa.</string>
   <string name="sheet_detail_error">Ukufunda kume ngokungazelelwe. Imiphumela yakho yangaphambilini iphephile.</string>
   <string name="sheet_detail_not_started">I-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ayikaqali ukufunda okwamanje.</string>

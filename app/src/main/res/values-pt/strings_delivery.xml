@@ -22,6 +22,9 @@
   <string name="models_try_again">Tentar de novo</string>
   <string name="models_refused_wrong_class">Este arquivo é para outro tipo de celular. Use Baixar os modelos para baixar o arquivo certo para este celular.</string>
   <string name="models_refused_damaged">O arquivo está danificado ou incompleto. Por isso, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> não o usou. Baixe-o novamente e tente de novo.</string>
+  <string name="models_refused_incomplete">O download parou antes de terminar. Toque em Baixar os modelos para começar de novo.</string>
+  <string name="models_refused_incomplete_progress">%1$d de %2$d MB recebidos.</string>
+  <string name="models_refused_unreadable">Não foi possível abrir o arquivo. Veja se ele ainda está no celular e tente de novo.</string>
   <string name="models_refused_not_signed"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> não conseguiu confirmar que este arquivo é autêntico. Por isso, não o usou. Use Baixar os modelos para baixá-lo novamente.</string>
   <string name="models_refused_older">Este arquivo é mais antigo que os modelos que já estão neste celular. Por isso, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> manteve os mais novos.</string>
   <string name="models_refused_no_space">Não há espaço livre suficiente neste celular. Libere cerca de %1$d MB e tente de novo.</string>

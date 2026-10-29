@@ -23,6 +23,9 @@
   <string name="models_try_again">Try again</string>
   <string name="models_refused_wrong_class">This file is for a different kind of phone. Use Get the models to download the one for this phone.</string>
   <string name="models_refused_damaged">The file is damaged or incomplete, so <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> did not use it. Download it again, then try again.</string>
+  <string name="models_refused_incomplete">The download stopped before it finished. Tap Get the models to start it again.</string>
+  <string name="models_refused_incomplete_progress">%1$d of %2$d MB arrived.</string>
+  <string name="models_refused_unreadable">The file could not be opened. Check that it is still on your phone, then try again.</string>
   <string name="models_refused_not_signed"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> could not confirm that this file is genuine, so it did not use it. Use Get the models to download it again.</string>
   <string name="models_refused_older">This file is older than the models already on this phone, so <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kept the newer ones.</string>
   <string name="models_refused_no_space">There is not enough free space on this phone. Free up about %1$d MB, then try again.</string>

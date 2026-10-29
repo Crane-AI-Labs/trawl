@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="strip_group">Amafoto yo muri videwo hafi ya %1$s</string>
+  <string name="strip_open_at">Gufungura videwo kuri %1$s</string>
+  <string name="strip_open_at_match">Gufungura videwo kuri %1$s, igihe gihuye</string>
+  <string name="strip_peek_label">Garagaza amafoto yegereye aka kanya</string>
+  <string name="strip_peek_around">Hafi ya %1$s</string>
+  <string name="strip_peek_hint">Kanda ku ifoto kugira ngo ufungure videwo kuri ako kanya.</string>
+</resources>

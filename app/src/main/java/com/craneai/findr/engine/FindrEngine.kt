@@ -1266,8 +1266,10 @@ class FindrEngine(private val context: Context) : SearchEngine {
     // Trawl Go reads words only, which needs neither the charger nor a model: the meter never waits for a charger there.
     val decision = policy().let { if (Edition.GO && it.heldBy == PauseReason.NOT_CHARGING) it.copy(heldBy = null) else it }
     val estimate = storageEstimate(store, stats.filesKnown, kinds)
-    val needsCharger = MeterRules.needsCharger(waiting, decision)
-    val pause = MeterRules.pause(hasAllFilesAccess(), paused, w.pauseReason, w.running, waiting, decision)
+    // Without a search model the charger unlocks nothing: Go reads words only and needs none, so it counts as ready.
+    val modelReady = Edition.GO || embedder.modelFile != null
+    val needsCharger = MeterRules.needsCharger(waiting, decision, modelReady)
+    val pause = MeterRules.pause(hasAllFilesAccess(), paused, w.pauseReason, w.running, waiting, decision, modelReady)
     val phase = when {
       w.scanning -> IndexPhase.SCANNING
       w.running && pause == null -> IndexPhase.INDEXING
@@ -1294,6 +1296,7 @@ class FindrEngine(private val context: Context) : SearchEngine {
       searchMemoryBytes = vectors.memoryBytes() + quickVectors.memoryBytes(),
       estimatedSearchMemoryBytes = estimate.ramBytes,
       modelBytes = embedder.modelFile?.length() ?: 0,
+      modelReady = modelReady,
       speechReady = asr.available(),
       currentFile = if (w.running) w.currentFile else null,
       lastError = w.lastError,

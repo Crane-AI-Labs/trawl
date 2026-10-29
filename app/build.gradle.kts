@@ -15,8 +15,8 @@ android {
     applicationId = "com.craneai.findr"
     minSdk = 30   // MediaStore generations (the change journal Findr's crawler relies on) start at Android 11
     targetSdk = 36   // compile against 37, but keep 36 runtime behaviour until it's tested
-    versionCode = 4
-    versionName = "1.0.3"
+    versionCode = 5
+    versionName = "1.0.4"
     // Compose UI tests (src/androidTest): screenshot-free checks of the Sunlight components on a phone.
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     // The ABI is per edition (productFlavors below): the full app is 64-bit only, Trawl Go is 32-bit only.
@@ -184,6 +184,8 @@ android {
   }
   testOptions {
     unitTests.isReturnDefaultValues = true
+    // Screenshot tests (Robolectric + Compose UI test) read the app's resources, strings and themes.
+    unitTests.isIncludeAndroidResources = true
     // The app-path benchmark harness (src/test/.../harness) loads tens of thousands of vectors; the 512 MB default is too small.
     unitTests.all { it.maxHeapSize = "4g" }
   }
@@ -237,6 +239,9 @@ dependencies {
   // Findr dependency; added to a debug build with -PbenchSqlcipher=true.
   if (providers.gradleProperty("benchSqlcipher").orNull == "true") debugImplementation("net.zetetic:sqlcipher-android:4.19.1@aar")
   testImplementation(libs.junit)
+  testImplementation(libs.robolectric)
+  testImplementation(platform(libs.androidx.compose.bom))
+  testImplementation(libs.androidx.ui.test.junit4)
   testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.11.0")
   // Compose UI tests on a phone (connectedDebugAndroidTest, with -PappIdSuffix so the tester's app is never touched).
   androidTestImplementation(platform(libs.androidx.compose.bom))

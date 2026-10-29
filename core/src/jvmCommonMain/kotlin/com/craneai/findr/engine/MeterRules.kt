@@ -12,9 +12,13 @@ import com.craneai.findr.core.PauseReason
  */
 object MeterRules {
 
-  /** Full quality is waiting for the charger: files still wait, and the phone is on battery with the charger the only thing missing. */
-  fun needsCharger(waiting: Int, decision: IndexPolicy.Decision): Boolean =
-    waiting > 0 && decision.heldBy == PauseReason.NOT_CHARGING
+  /**
+   * Full quality is waiting for the charger: files still wait, and the phone is on battery with the charger the only thing missing.
+   * Never without a search model ([modelReady] false): the charger unlocks nothing until the models are on the phone, so the meter
+   * must not promise it (the first-run phone that has not got its models yet).
+   */
+  fun needsCharger(waiting: Int, decision: IndexPolicy.Decision, modelReady: Boolean = true): Boolean =
+    modelReady && waiting > 0 && decision.heldBy == PauseReason.NOT_CHARGING
 
   /**
    * Why indexing is paused, if it is. [workerPause] is the worker's own signal (a warm battery resting it); the charger,
@@ -27,13 +31,14 @@ object MeterRules {
     workerRunning: Boolean,
     waiting: Int,
     decision: IndexPolicy.Decision,
+    modelReady: Boolean = true,
   ): PauseReason? = when {
     !hasAllFilesAccess -> PauseReason.NO_PERMISSION
     userPaused -> PauseReason.USER
     waiting > 0 && decision.tier == IndexPolicy.Tier.WORDS_ONLY &&
       (decision.heldBy == PauseReason.BATTERY_LOW || decision.heldBy == PauseReason.TOO_HOT) -> decision.heldBy
     workerPause != null && workerPause != PauseReason.NOT_CHARGING -> workerPause
-    needsCharger(waiting, decision) && !workerRunning -> PauseReason.NOT_CHARGING
+    needsCharger(waiting, decision, modelReady) && !workerRunning -> PauseReason.NOT_CHARGING
     else -> null
   }
 

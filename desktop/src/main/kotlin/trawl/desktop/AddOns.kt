@@ -324,7 +324,8 @@ class AddOnManager(
         Refusal.NO_SPACE -> AddOnState.Failed(AddOnProblem.NO_SPACE, result.detail)
         Refusal.CANCELLED -> AddOnState.Failed(AddOnProblem.CANCELLED)
         Refusal.BAD_MANIFEST, Refusal.WRONG_CLASS -> AddOnState.Failed(AddOnProblem.NOT_THIS_ADDON, result.detail)
-        Refusal.DAMAGED -> AddOnState.Failed(AddOnProblem.DAMAGED, result.detail)
+        Refusal.DAMAGED, Refusal.INCOMPLETE -> AddOnState.Failed(AddOnProblem.DAMAGED, result.detail)   // a copy that stopped short reads the same: copy it again
+        Refusal.UNREADABLE -> AddOnState.Failed(AddOnProblem.BAD_FILES, result.detail)
       }
     }
   }

@@ -13,7 +13,7 @@ enum class Refusal {
   BAD_MANIFEST,
   /** Built for the other phone class (a 2 GB phone's bundle on a bigger phone, or the reverse). */
   WRONG_CLASS,
-  /** A file is missing, extra, the wrong size or fails its SHA-256; or the zip is truncated or broken. */
+  /** A file is missing, extra, the wrong size or fails its SHA-256; or the zip is broken (one that ends too soon is [INCOMPLETE]). */
   DAMAGED,
   /** The same version is already installed. */
   ALREADY_INSTALLED,
@@ -23,6 +23,13 @@ enum class Refusal {
   NO_SPACE,
   /** Stopped by the person. */
   CANCELLED,
+  /**
+   * The file ends too soon: a download that stopped before it finished (the zip has no end record, or its data runs out).
+   * Not damage: getting the file again fixes it. The card says how much arrived against the full size.
+   */
+  INCOMPLETE,
+  /** The file could not be opened or read at all (access taken away, the file moved or deleted): nothing is known about its contents. */
+  UNREADABLE,
 }
 
 enum class DeliveryPhase {
@@ -82,7 +89,14 @@ data class DeliveryState(
    * model, and the app has to be closed and opened once so it starts the full stack.
    */
   val upgradedToStandard: Boolean = false,
-)
+) {
+  /**
+   * How far a stopped download got, as whole MB (arrived, expected) for "300 of 670 MB", or null when either is not known (a file
+   * chosen from elsewhere, an add-on of unknown size). The arrived part is never shown above the expected one.
+   */
+  val incompleteMb: Pair<Int, Int>?
+    get() = if (doneBytes > 0 && totalBytes > 0) (minOf(doneBytes, totalBytes) / 1_000_000).toInt() to (totalBytes / 1_000_000).toInt() else null
+}
 
 /**
  * Getting the model files onto a phone that has no internet permission: the person downloads one signed bundle with a browser

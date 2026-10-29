@@ -39,6 +39,7 @@
   <string name="meter_title_not_started">ማንበብ አልተጀመረም</string>
   <string name="meter_title_scanning">ስልክህን በመቃኘት ላይ</string>
   <string name="meter_title_indexing">ፋይሎችህን በማጥናት ላይ</string>
+  <string name="meter_title_needs_models">የፍለጋ ሞዴሎቹን በመጠበቅ ላይ</string>
   <string name="meter_title_up_to_date">ሁሉም ተጠናቋል</string>
   <string name="meter_title_error">ችግር ተፈጥሯል</string>
   <string name="meter_sub_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ፋይሎችህን ማግኘት ሲችል ይጀምራል።</string>
@@ -47,6 +48,7 @@
   <string name="meter_sub_progress_eta">ከ%2$s ውስጥ %1$s ተረድቷል · ወደ %3$s ገደማ ይቀራል</string>
   <string name="meter_sub_progress_estimating">ከ%2$s ውስጥ %1$s ተረድቷል · የሚወስደውን ጊዜ በማስላት ላይ</string>
   <string name="meter_sub_needs_charger">አሁን ስሞች እና ቃላት። ትርጉም የሚጀምረው ቻርጅ ሲያደርጉ ነው።</string>
+  <string name="meter_sub_needs_models">አሁን ስሞች እና ቃላት ይሰራሉ። ትርጉም የሚጀምረው ሞዴሎቹ ስልኩ ላይ ሲሆኑ ነው።</string>
   <string name="meter_sub_reembed">ፎቶዎችን ለአዲሱ ሞዴል በማዘመን ላይ፦ %1$s ከ %2$s። ፍለጋ መስራቱን ይቀጥላል።</string>
   <string name="meter_sub_reembed_eta">ፎቶዎችን ለአዲሱ ሞዴል በማዘመን ላይ፦ %1$s ከ %2$s · ወደ %3$s ገደማ ይቀራል</string>
   <string name="meter_sub_reembed_battery">ፎቶዎችን ለአዲሱ ሞዴል በማዘመን ላይ፦ %1$s ከ %2$s። የቀረው ቻርጅ ሲያደርጉ ይቀጥላል።</string>
@@ -85,6 +87,7 @@
   <string name="sheet_detail_scanning"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> የፋይሎችህን ዝርዝር በማዘጋጀት ላይ ነው። ይህ አንድ ወይም ሁለት ደቂቃ ይወስዳል።</string>
   <string name="sheet_detail_light_on_battery">አሁን ስሞች እና ቃላት ይነበባሉ፣ ፎቶዎችም ፈጣን እይታ ያገኛሉ፣ ስለዚህ ፍለጋ አሁኑኑ ይሰራል። ምርጥ ውጤቶችን የሚሰጠው ሙሉ ጥራት ስልኩ ቻርጅ ሲደረግ ይጠናቀቃል።</string>
   <string name="sheet_detail_needs_charger">አሁን ስሞች እና ቃላት እየተነበቡ ነው፣ ስለዚህ ፍለጋ አሁኑኑ ይሰራል። ፎቶዎች እና ሰነዶች ምን እንደሚገልጹ መረዳት የሚጀምረው ስልኩ ቻርጅ ሲደረግ ነው።</string>
+  <string name="sheet_detail_needs_models">አሁን ስሞች እና ቃላት እየተነበቡ ነው፣ ስለዚህ ፍለጋ አሁኑኑ ይሰራል። ፎቶዎች እና ሰነዶች ምን እንደሚገልጹ መረዳት የሚጀምረው የፍለጋ ሞዴሎቹ ስልኩ ላይ ሲሆኑ ነው። ቻርጅ ማድረግ ከዚያ በፊት ምንም አይለውጥም።</string>
   <string name="sheet_detail_indexing">መጀመሪያ ስሞች እና ቃላት ይመጣሉ፣ ስለዚህ ፈልግ ወዲያውኑ ይሠራል። ፎቶዎች እና ሰነዶች ስለ ምን እንደሆኑ መረዳት ረዘም ያለ ጊዜ ስለሚወስድ ማታ ቻርጅ ላይ እያለ ቢሠራ ይመረጣል።</string>
   <string name="sheet_detail_error">ማንበብ ሳይታሰብ ቆሟል። ቀዳሚ ውጤቶችህ ደህንነታቸው የተጠበቀ ነው።</string>
   <string name="sheet_detail_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ማንበብ ገና አልጀመረም።</string>

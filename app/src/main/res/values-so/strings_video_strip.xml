@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="strip_group">Sawirrada muuqaalka agagaarka %1$s</string>
+  <string name="strip_open_at">Fur muuqaalka marka uu marayo %1$s</string>
+  <string name="strip_open_at_match">Fur muuqaalka marka uu marayo %1$s, waqtiga iswaafaqay</string>
+  <string name="strip_peek_label">Muuji sawirrada ku dhow waqtigan</string>
+  <string name="strip_peek_around">Agagaarka %1$s</string>
+  <string name="strip_peek_hint">Taabo sawir si aad muuqaalka uga furto meeshaas.</string>
+</resources>

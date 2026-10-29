@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="strip_group">Cal ki i vidiyo ma cok ki %1$s</string>
+  <string name="strip_open_at">Yab vidiyo i %1$s</string>
+  <string name="strip_open_at_match">Yab vidiyo i %1$s, kare ma rwate</string>
+  <string name="strip_peek_label">Nyut cal ma cok ki kare man</string>
+  <string name="strip_peek_around">Cok ki %1$s</string>
+  <string name="strip_peek_hint">Gud cal wek iyab vidiyo i kabedo meno.</string>
+</resources>

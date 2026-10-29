@@ -53,6 +53,7 @@
   <string name="meter_title_not_started">Not reading yet</string>
   <string name="meter_title_scanning">Looking through your phone</string>
   <string name="meter_title_indexing">Learning your files</string>
+  <string name="meter_title_needs_models">Waiting for the search models</string>
   <string name="meter_title_up_to_date">All caught up</string>
   <string name="meter_title_error">Something went wrong</string>
   <string name="meter_sub_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> will start once it can see your files.</string>
@@ -61,6 +62,7 @@
   <string name="meter_sub_progress_eta">%1$s of %2$s understood · about %3$s left</string>
   <string name="meter_sub_progress_estimating">%1$s of %2$s understood · working out how long</string>
   <string name="meter_sub_needs_charger">Names and words now. Meaning starts when you charge.</string>
+  <string name="meter_sub_needs_models">Names and words work now. Meaning starts once the models are on your phone.</string>
   <string name="meter_sub_reembed">Updating photos for the new model: %1$s of %2$s. Search keeps working.</string>
   <string name="meter_sub_reembed_eta">Updating photos for the new model: %1$s of %2$s · about %3$s left</string>
   <string name="meter_sub_reembed_battery">Updating photos for the new model: %1$s of %2$s. The rest continues when you charge.</string>
@@ -110,6 +112,7 @@
   <string name="sheet_detail_scanning"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> is making a list of your files. This takes a minute or two.</string>
   <string name="sheet_detail_light_on_battery">Names and words are read now and photos get a quick look, so search already works. Full quality, which gives the best matches, finishes when the phone is charging.</string>
   <string name="sheet_detail_needs_charger">Names and words are being read now, so search already works. Understanding what photos and documents are about starts when the phone is charging.</string>
+  <string name="sheet_detail_needs_models">Names and words are being read now, so search already works. Understanding what photos and documents are about starts once the search models are on the phone. Charging will not start it before then.</string>
   <string name="sheet_detail_indexing">Names and words come first, so search works almost at once. Understanding what photos and documents are about takes longer, and is best done overnight on the charger.</string>
   <string name="sheet_detail_error">Reading stopped unexpectedly. Your earlier results are safe.</string>
   <string name="sheet_detail_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> has not started reading yet.</string>

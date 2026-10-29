@@ -39,6 +39,7 @@
   <string name="meter_title_not_started">Pud pe tye ka kwano</string>
   <string name="meter_title_scanning">Tye ka yenyo i cim megi</string>
   <string name="meter_title_indexing">Tye ka kwano fayil megi</string>
+  <string name="meter_title_needs_models">Tye ka kuro model me yenyo</string>
   <string name="meter_title_up_to_date">Weng otum</string>
   <string name="meter_title_error">Bal mo otimme</string>
   <string name="meter_sub_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> bicakke ka twero neno fayil megi.</string>
@@ -47,6 +48,7 @@
   <string name="meter_sub_progress_eta">%1$s i kin %2$s oniang · odong cokki %3$s</string>
   <string name="meter_sub_progress_estimating">%1$s i kin %2$s oniang iye · tye ka poro kare</string>
   <string name="meter_sub_needs_charger">Nying ki lok kombedi. Niang te lok cakke ka icayo cim.</string>
+  <string name="meter_sub_needs_models">Nying ki lok kombedi tiyo. Niang cakke ka model gudoko i cim.</string>
   <string name="meter_sub_reembed">Tye ka yubu cal pi cal manyen: %1$s i kin %2$s. Yenyo medde ki tic.</string>
   <string name="meter_sub_reembed_eta">Tye ka yubu cal pi cal manyen: %1$s i kin %2$s · odong kadi %3$s</string>
   <string name="meter_sub_reembed_battery">Tye ka yubu cal pi cal manyen: %1$s i kin %2$s. Mukene bimedde ka icayo cim.</string>
@@ -85,6 +87,7 @@
   <string name="sheet_detail_scanning"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> tye ka yubu lanyut me fayil megi. Man tero dakika acel nyo aryo.</string>
   <string name="sheet_detail_light_on_battery">Kikwano nying ki lok kombedi dok kineno cal oyot, pi meno yenyo tiyo con. Berne ducu, ma miyo adwogi maber loyo, bitum ka cim tye ka caye.</string>
   <string name="sheet_detail_needs_charger">Kitye ka kwano nying ki lok kombedi, pi meno yenyo tiyo con. Niang te cal ki waraga cakke ka cim tye ka caye.</string>
+  <string name="sheet_detail_needs_models">Kitye ka kwano nying ki lok kombedi, pi meno yenyo tiyo con. Niang te cal ki waraga cakke ka model me yenyo gudoko i cim. Cayo cim pe konyo ka model pud pe tye i cim.</string>
   <string name="sheet_detail_indexing">Nying ki lok kong gikwano mukwongo, wek yenyo oti oyotoyot. Niang gin ma tye i cal ki waraga tero kare malac, dok ber loyo ka gitimo i dye-wor ka tye i caja.</string>
   <string name="sheet_detail_error">Kwano ogik aleya. Adwogi ma ikwongo nongo tye maber.</string>
   <string name="sheet_detail_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> pud pe ocako kwano.</string>

@@ -22,6 +22,9 @@
   <string name="models_try_again">Mar kale isku day</string>
   <string name="models_refused_wrong_class">Faylkan waxaa loogu talagalay nooc kale oo taleefan ah. Isticmaal Soo deji moodooyinka si aad u hesho kan taleefankan.</string>
   <string name="models_refused_damaged">Faylku wuu dhaawacmay ama ma dhammaystirna, sidaas darteed <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ma uusan isticmaalin. Mar kale soo deji, dabadeed mar kale isku day.</string>
+  <string name="models_refused_incomplete">Soo dejintu way istaagtay ka hor inta aysan dhamaan. Taabo Soo deji moodooyinka si aad mar kale u bilowdo.</string>
+  <string name="models_refused_incomplete_progress">%1$d MB oo ka mid ah %2$d MB ayaa soo gaadhay.</string>
+  <string name="models_refused_unreadable">Faylka lama furi karin. Hubi inuu weli ku jiro taleefanka, dabadeed mar kale isku day.</string>
   <string name="models_refused_not_signed"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ma xaqiijin karin in faylkani yahay mid sax ah, sidaas darteed ma uusan isticmaalin. Isticmaal Soo deji moodooyinka si aad mar kale u soo dejiso.</string>
   <string name="models_refused_older">Faylkani wuu ka duuggan yahay moodooyinka taleefankan ku jira, sidaas darteed <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> wuxuu haystay kuwa cusub.</string>
   <string name="models_refused_no_space">Taleefankan kuma filna meel bannaan. Bannayso qiyaastii %1$d MB, dabadeed mar kale isku day.</string>

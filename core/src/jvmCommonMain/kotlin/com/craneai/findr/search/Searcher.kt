@@ -1,6 +1,7 @@
 package com.craneai.findr.search
 
 import com.craneai.findr.core.FileKind
+import com.craneai.findr.core.FrameMoment
 import com.craneai.findr.core.DateParser
 import com.craneai.findr.core.DateRange
 import com.craneai.findr.core.KindFilter
@@ -652,7 +653,9 @@ class Searcher(
 
   private fun locatorOf(s: SegmentFacts, snippet: String?, terms: List<String>): Locator? = when (s.kind) {
     SegmentKind.PAGE -> s.locStart?.let { Locator.Page(it.toInt()) }
-    SegmentKind.FRAME, SegmentKind.AUDIO -> s.locStart?.let { Locator.Time(it, s.locEnd) }
+    // A picture match shows the moment its picture really comes from (the keyframe), not the start of the stretch it stands for.
+    SegmentKind.FRAME -> s.locStart?.let { Locator.Time(FrameMoment.at(it, s.locEnd, s.marks), s.locEnd) }
+    SegmentKind.AUDIO -> s.locStart?.let { Locator.Time(it, s.locEnd) }
     SegmentKind.TRANSCRIPT -> transcriptMoment(s, snippet, terms)
     // The "Sounds:" line lists each label once for the whole file; it stands for no moment.
     else -> null
@@ -661,8 +664,8 @@ class Searcher(
   /**
    * When the matched words of a transcript piece are said. A piece is up to ~400 characters of speech, and a short video is one piece
    * from 0:00, so its own start would read "at 0:00" for a phrase said at 0:40. The matched word's place in the piece (the quoted
-   * stretch's first « », else the first query word in the text) is mapped through the piece's per-segment times
-   * ([com.craneai.findr.core.TranscriptMarks]); a piece from before those existed is placed by character position between its start and
+   * stretch's first « », else the first query word in the text) is mapped through the piece's per-word times, or per-segment times
+   * for a recogniser that gave none ([com.craneai.findr.core.TranscriptMarks]); a piece from before those existed is placed by character position between its start and
    * end. A piece with no time (the language gate's partial English runs) has none to show, and a hit by meaning alone, with no matched
    * word, points at the start of the piece it found.
    */

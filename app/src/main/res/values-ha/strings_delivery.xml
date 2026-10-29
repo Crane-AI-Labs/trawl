@@ -22,6 +22,9 @@
   <string name="models_try_again">Sake gwadawa</string>
   <string name="models_refused_wrong_class">Wannan fayil ɗin na wani nau\'in waya ne. Yi amfani da Sauke samfuran domin sauke wanda ya dace da wannan wayar.</string>
   <string name="models_refused_damaged">Fayil ɗin ya lalace ko bai cika ba, don haka manhajar <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ba ta yi amfani da shi ba. Sake sauke shi, sannan ku sake gwadawa.</string>
+  <string name="models_refused_incomplete">Saukewar ta tsaya kafin ta ƙare. Danna Sauke samfuran don sake farawa.</string>
+  <string name="models_refused_incomplete_progress">%1$d daga cikin %2$d MB sun iso.</string>
+  <string name="models_refused_unreadable">Ba a iya buɗe fayil ɗin ba. Duba cewa yana nan a wayar, sannan ku sake gwadawa.</string>
   <string name="models_refused_not_signed">Manhajar <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ba ta iya tabbatar da cewa wannan fayil ɗin na asali ne ba, don haka ba ta yi amfani da shi ba. Yi amfani da Sauke samfuran domin sake sauke shi.</string>
   <string name="models_refused_older">Wannan fayil ɗin ya girmi samfuran da ke wannan wayar, don haka manhajar <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ta bar sababbin samfuran.</string>
   <string name="models_refused_no_space">Babu isasshen sarari a wannan wayar. Ku samar da kusan %1$d MB na sarari, sannan ku sake gwadawa.</string>

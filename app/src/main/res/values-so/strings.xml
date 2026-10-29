@@ -39,6 +39,7 @@
   <string name="meter_title_not_started">Wali waxba ma akhrinayo</string>
   <string name="meter_title_scanning">Baarista taleefankaaga</string>
   <string name="meter_title_indexing">Barashada faylashada</string>
+  <string name="meter_title_needs_models">Waxaa la sugayaa moodooyinka raadinta</string>
   <string name="meter_title_up_to_date">Wax walba waa diyaar</string>
   <string name="meter_title_error">Wax baa qaldamay</string>
   <string name="meter_sub_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> wuxuu bilaaban doonaa marka uu arko faylashaada.</string>
@@ -47,6 +48,7 @@
   <string name="meter_sub_progress_eta">%1$s oo ka mid ah %2$s ayaa la fahmay · qiyaastii %3$s ayaa hartay</string>
   <string name="meter_sub_progress_estimating">%1$s ka mid ah %2$s la fahmay · xisaabinta wakhtiga</string>
   <string name="meter_sub_needs_charger">Magacyada iyo erayada hadda. Macnaha wuxuu bilaabmayaa markaad dallacdo.</string>
+  <string name="meter_sub_needs_models">Magacyada iyo erayada hadda way shaqeeyaan. Macnuhu wuxuu bilaabmayaa marka moodooyinku taleefanka ku jiraan.</string>
   <string name="meter_sub_reembed">Cusboonaysiinta sawirrada moodeelka cusub: %1$s ka mid ah %2$s. Raadintu way shaqaynaysaa.</string>
   <string name="meter_sub_reembed_eta">Cusboonaysiinta sawirrada moodeelka cusub: %1$s ka mid ah %2$s · ku dhawaad %3$s ayaa hadhay</string>
   <string name="meter_sub_reembed_battery">Cusboonaysiinta sawirrada moodeelka cusub: %1$s ka mid ah %2$s. Inta kale waxay sii soconaysaa markaad dallacdo.</string>
@@ -85,6 +87,7 @@
   <string name="sheet_detail_scanning"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> waxay samaynaysaa liiska faylashaada. Tani waxay qaadanaysaa daqiiqad ama labo.</string>
   <string name="sheet_detail_light_on_battery">Magacyada iyo erayada hadda ayaa la akhriyaa sawirradana si degdeg ah ayaa loo eegaa, markaa raadintu haddaba way shaqaynaysaa. Tayada buuxda, oo bixisa waxyaabaha ugu fiican ee is-waafaqaya, waxay dhammaystirmaysaa marka taleefanku dallacayo.</string>
   <string name="sheet_detail_needs_charger">Magacyada iyo erayada hadda ayaa la akhrinayaa, markaa raadintu haddaba way shaqaynaysaa. Fahamka waxa sawirrada iyo dukumentiyadu ku saabsan yihiin wuxuu bilaabmayaa marka taleefanku dallacayo.</string>
+  <string name="sheet_detail_needs_models">Magacyada iyo erayada hadda ayaa la akhrinayaa, markaa raadintu way shaqaynaysaa. Fahamka waxa sawirrada iyo dukumentiyadu ku saabsan yihiin wuxuu bilaabmayaa marka moodooyinka raadintu taleefanka ku jiraan. Dallacaadu wax ma beddelayso ka hor intaas.</string>
   <string name="sheet_detail_indexing">Magacyada iyo ereyada ayaa soo hor maraya, sidaas darteed raadintu markiiba way shaqaynaysaa. Fahamka waxa ay sawirradu iyo dukumentiyadu ku saabsan yihiin waxay qaadataa waqti dheeraad ah, waxaana fiican in la sameeyo habeenkii inta uu taleefanku ku jiro dallacaadda.</string>
   <string name="sheet_detail_error">Akhrintu si lama filaan ah ayay u joogsatay. Natiijooyinkii hore way badbaadsan yihiin.</string>
   <string name="sheet_detail_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> weli ma bilaabin akhrinta.</string>

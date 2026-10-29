@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="strip_group">Ebishushani bya vidiyo haihi na %1$s</string>
+  <string name="strip_open_at">Igura vidiyo aha %1$s</string>
+  <string name="strip_open_at_match">Igura vidiyo aha %1$s, obwire oburikuhikaana</string>
+  <string name="strip_peek_label">Yoreka ebishushani ebiri haihi n\'obwire obu</string>
+  <string name="strip_peek_around">Haihi na %1$s</string>
+  <string name="strip_peek_hint">Kora aha kishushani kwigura vidiyo aha mwanya ogwo.</string>
+</resources>

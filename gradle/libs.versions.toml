@@ -14,6 +14,7 @@ pdfbox = "2.0.27.0"
 coil = "3.6.3"
 splashscreen = "1.2.0"
 junit = "4.13.2"
+robolectric = "4.17"
 # Android's own fingerprint / face / device-credential prompt. 1.1.0 (Jan 2021) is the latest STABLE; 1.4.0-alpha07 (Apr 2026) is still alpha.
 biometric = "1.1.0"
 # BiometricPrompt needs a FragmentActivity. biometric 1.1.0 pulls fragment 1.2.5 (2020); take the current stable so it matches activity 1.13 and lifecycle 2.11.
@@ -57,6 +58,8 @@ androidx-benchmark-macro-junit4 = { group = "androidx.benchmark", name = "benchm
 androidx-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "uiautomator" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "testExtJunit" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
+# Draws real Compose screens on the JVM (native graphics) for the screenshot tests under app/src/test; not in any shipped build.
+robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 # Screenshot-free Compose UI tests (app/src/androidTest): semantics, touch targets, font scale. Versions from the Compose BOM.
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }

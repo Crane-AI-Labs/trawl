@@ -130,6 +130,7 @@ private fun SheetHeader(status: IndexStatus) {
       status.phase == IndexPhase.PAUSED && pauseReason != null -> appString(pauseReason.detailRes)
       status.phase == IndexPhase.UP_TO_DATE -> appString(R.string.sheet_detail_up_to_date)
       status.phase == IndexPhase.SCANNING -> appString(R.string.sheet_detail_scanning)
+      status.waitingForModels -> stringResource(R.string.sheet_detail_needs_models)
       status.phase == IndexPhase.INDEXING && status.needsCharger ->
         stringResource(if (status.lightOnBattery) R.string.sheet_detail_light_on_battery else R.string.sheet_detail_needs_charger)
       status.phase == IndexPhase.INDEXING -> stringResource(R.string.sheet_detail_indexing)

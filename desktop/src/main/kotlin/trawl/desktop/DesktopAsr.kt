@@ -17,6 +17,8 @@ import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
 import com.craneai.findr.core.SpeechSegment as Spoken
+import com.craneai.findr.core.SpokenWord
+import com.craneai.findr.core.WordTimes
 
 /**
  * 16 kHz mono 16-bit little-endian PCM, arriving in pieces of any size, as floats in [-1, 1). A piece may end in the middle of a sample:
@@ -101,11 +103,9 @@ class DesktopAsr(private val dir: File, private val threads: () -> Int = { 2 }) 
         for (r in SpeechSplit.ranges(samples, samples.size, MediaSchedule.ASR_MAX_SPEECH_S * RATE, RATE)) {
           if (r.last + 1 - r.first < MIN_SPEECH_SAMPLES) continue
           val piece = if (r.first == 0 && r.last + 1 == samples.size) samples else samples.copyOfRange(r.first, r.last + 1)
-          val text = read(rec, piece)
-          if (text.isNotBlank()) {
-            val at = startMs + (seg.start + r.first) * 1000L / RATE
-            speech += Spoken(at, at + piece.size * 1000L / RATE, text)
-          }
+          val at = startMs + (seg.start + r.first) * 1000L / RATE
+          val heard = read(rec, piece, at)
+          if (heard.text.isNotBlank()) speech += Spoken(at, at + piece.size * 1000L / RATE, heard.text, heard.words)
         }
       }
     }
@@ -168,12 +168,18 @@ class DesktopAsr(private val dir: File, private val threads: () -> Int = { 2 }) 
     return recognizer ?: buildRecognizer(want).also { recognizer = it; loadedThreads = want }
   }
 
-  private fun read(rec: OfflineRecognizer, samples: FloatArray): String {
+  /** What the recogniser heard in one stretch: the cleaned text, and (when the model gave times) its words, [baseMs] being where the stretch begins in the file. */
+  private class Heard(val text: String, val words: List<SpokenWord>)
+
+  private fun read(rec: OfflineRecognizer, samples: FloatArray, baseMs: Long): Heard {
     val stream = rec.createStream()
     try {
       stream.acceptWaveform(samples, RATE)
       rec.decode(stream)
-      return clean(rec.getResult(stream).text, samples.size.toDouble() / RATE)
+      val r = rec.getResult(stream)
+      val seconds = samples.size.toDouble() / RATE
+      val text = clean(r.text, seconds)
+      return Heard(text, WordTimes.forText(text, r.tokens.asList(), r.timestamps, seconds, baseMs))
     } finally { stream.release() }
   }
 
@@ -236,16 +242,6 @@ class DesktopAsr(private val dir: File, private val threads: () -> Int = { 2 }) 
      * Small decoders sometimes loop on noise ("the the the the..."). Drops text that is faster than anyone speaks (more than 7 words
      * a second) and cuts a word repeated more than 4 times in a row to 4.
      */
-    fun clean(raw: String, seconds: Double): String {
-      val words = raw.trim().split(Regex("\\s+")).filter { it.isNotEmpty() }
-      if (words.isEmpty() || words.size / maxOf(seconds, 0.5) > 7.0) return ""
-      val out = ArrayList<String>(words.size)
-      var run = 0
-      for (w in words) {
-        run = if (out.isNotEmpty() && out.last().equals(w, ignoreCase = true)) run + 1 else 1
-        if (run <= 4) out += w
-      }
-      return out.joinToString(" ")
-    }
+    fun clean(raw: String, seconds: Double): String = WordTimes.clean(raw, seconds)
   }
 }

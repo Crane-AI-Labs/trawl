@@ -17,6 +17,8 @@ import com.craneai.findr.core.AudioDecoder
 import com.craneai.findr.core.AudioTranscript
 import com.craneai.findr.core.SoundTags
 import com.craneai.findr.core.SpeechSegment
+import com.craneai.findr.core.SpokenWord
+import com.craneai.findr.core.WordTimes
 import com.k2fsa.sherpa.onnx.AudioTagging
 import com.k2fsa.sherpa.onnx.AudioTaggingConfig
 import com.k2fsa.sherpa.onnx.AudioTaggingModelConfig
@@ -149,11 +151,9 @@ class SherpaAsrEngine(
           for (r in SpeechSplit.ranges(seg.samples, seg.samples.size, cap, RATE)) {
             if (r.last + 1 - r.first < MIN_SPEECH_SAMPLES) continue
             val piece = if (r.first == 0 && r.last + 1 == seg.samples.size) seg.samples else seg.samples.copyOfRange(r.first, r.last + 1)
-            val text = read(rec, piece)
-            if (text.isNotBlank()) {
-              val startMs = offsetMs + (seg.start + r.first) * 1000L / RATE
-              speech += SpeechSegment(startMs, startMs + piece.size * 1000L / RATE, text)
-            }
+            val startMs = offsetMs + (seg.start + r.first) * 1000L / RATE
+            val heard = read(rec, piece, startMs)
+            if (heard.text.isNotBlank()) speech += SpeechSegment(startMs, startMs + piece.size * 1000L / RATE, heard.text, heard.words)
           }
         }
       }
@@ -199,12 +199,18 @@ class SherpaAsrEngine(
       AudioTranscript(speech, sounds.filter { it.labels.isNotEmpty() }, seconds)
     }
 
-  private fun read(rec: OfflineRecognizer, samples: FloatArray): String {
+  /** What one piece of audio said: the cleaned text, and when each word of it began where the recogniser gives times (Parakeet; Moonshine gives none). */
+  private class Heard(val text: String, val words: List<SpokenWord>)
+
+  private fun read(rec: OfflineRecognizer, samples: FloatArray, startMs: Long): Heard {
     val stream = rec.createStream()
     try {
       stream.acceptWaveform(samples, RATE)
       rec.decode(stream)
-      return clean(rec.getResult(stream).text, samples.size.toDouble() / RATE)
+      val r = rec.getResult(stream)
+      val seconds = samples.size.toDouble() / RATE
+      val text = clean(r.text, seconds)
+      return Heard(text, WordTimes.forText(text, r.tokens.asList(), r.timestamps, seconds, startMs))
     } finally {
       stream.release()
     }
@@ -305,16 +311,6 @@ class SherpaAsrEngine(
      * Moonshine, like every small decoder, sometimes loops on noise ("the the the the…"). Drops text that is faster than
      * anyone speaks (> 7 words a second) and cuts a word repeated more than 4 times in a row to 4.
      */
-    fun clean(raw: String, seconds: Double): String {
-      val words = raw.trim().split(Regex("\\s+")).filter { it.isNotEmpty() }
-      if (words.isEmpty() || words.size / maxOf(seconds, 0.5) > 7.0) return ""
-      val out = ArrayList<String>(words.size)
-      var run = 0
-      for (w in words) {
-        run = if (out.isNotEmpty() && out.last().equals(w, ignoreCase = true)) run + 1 else 1
-        if (run <= 4) out += w
-      }
-      return out.joinToString(" ")
-    }
+    fun clean(raw: String, seconds: Double): String = WordTimes.clean(raw, seconds)
   }
 }

@@ -38,6 +38,7 @@
   <string name="meter_title_not_started">Kò tíì bẹ̀rẹ̀ kíkà</string>
   <string name="meter_title_scanning">Ń yẹ fóònù rẹ wò</string>
   <string name="meter_title_indexing">Ń kẹ́kọ̀ọ́ àwọn fáìlì rẹ</string>
+  <string name="meter_title_needs_models">Ń dúró de àwọn módẹ́lì ìwárí</string>
   <string name="meter_title_up_to_date">Gbogbo rẹ̀ ti pé</string>
   <string name="meter_title_error">Àṣìṣe kan wáyé</string>
   <string name="meter_sub_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yóò bẹ̀rẹ̀ ní kété tí ó bá lè rí àwọn fáìlì rẹ.</string>
@@ -46,6 +47,7 @@
   <string name="meter_sub_progress_eta">%1$s nínú %2$s ti yé e · ó kù nǹkan bí %3$s</string>
   <string name="meter_sub_progress_estimating">%1$s nínú %2$s ti yé e · ń ṣírò àkókò tó kù</string>
   <string name="meter_sub_needs_charger">Orúkọ àti ọ̀rọ̀ báyìí. Ìtumọ̀ yóò bẹ̀rẹ̀ nígbà tí o bá gba iná.</string>
+  <string name="meter_sub_needs_models">Orúkọ àti ọ̀rọ̀ ń ṣiṣẹ́ báyìí. Ìtumọ̀ yóò bẹ̀rẹ̀ nígbà tí àwọn módẹ́lì bá wà lórí fóònù.</string>
   <string name="meter_sub_reembed">Ń sọ àwọn fọ́tò dọ̀tun fún àwòṣe tuntun: %1$s nínú %2$s. Wá ṣì ń ṣiṣẹ́.</string>
   <string name="meter_sub_reembed_eta">Ń sọ àwọn fọ́tò dọ̀tun fún àwòṣe tuntun: %1$s nínú %2$s · ó kù nǹkan bí %3$s</string>
   <string name="meter_sub_reembed_battery">Ń sọ àwọn fọ́tò dọ̀tun fún àwòṣe tuntun: %1$s nínú %2$s. Ìyókù yóò tẹ̀síwájú nígbà tí o bá gba iná.</string>
@@ -84,6 +86,7 @@
   <string name="sheet_detail_scanning"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ń ṣe àtòjọ àwọn fáìlì rẹ. Èyí yóò gba ìṣẹ́jú kan tàbí méjì.</string>
   <string name="sheet_detail_light_on_battery">A ti ka àwọn orúkọ àti ọ̀rọ̀ báyìí, a sì wo àwọn fọ́tò ní ṣókí, torí náà Wá ti ń ṣiṣẹ́. Dídára pípé, tó ń fúnni ní àbájáde tó dára jùlọ, yóò parí nígbà tí fóònù bá ń gba iná.</string>
   <string name="sheet_detail_needs_charger">A ń ka àwọn orúkọ àti ọ̀rọ̀ báyìí, torí náà Wá ti ń ṣiṣẹ́. Lílóye ohun tí àwọn fọ́tò àti àkọsílẹ̀ dá lé lórí yóò bẹ̀rẹ̀ nígbà tí fóònù bá ń gba iná.</string>
+  <string name="sheet_detail_needs_models">A ń ka àwọn orúkọ àti ọ̀rọ̀ báyìí, torí náà Wá ti ń ṣiṣẹ́. Lílóye ohun tí àwọn fọ́tò àti àkọsílẹ̀ dá lé lórí yóò bẹ̀rẹ̀ nígbà tí àwọn módẹ́lì ìwárí bá wà lórí fóònù. Gbígba iná kò yí èyí padà kí ìgbà náà tó tó.</string>
   <string name="sheet_detail_indexing">Àwọn orúkọ àti ọ̀rọ̀ ló ń kọ́kọ́ wá, kí wíwá lè tètè bẹ̀rẹ̀. Lílóye ohun tí àwọn fọ́tò àti àkọsílẹ̀ dá lé lórí ń gba àkókò púpọ̀, ó sì dára jù láti ṣe lálẹ́ lórí ṣájà.</string>
   <string name="sheet_detail_error">Kíka dáwọ́ dúró lójijì. Àwọn àbájáde rẹ ti tẹ́lẹ̀ wà ní ààbò.</string>
   <string name="sheet_detail_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kò tíì bẹ̀rẹ̀ sí í kà á.</string>

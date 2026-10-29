@@ -39,6 +39,7 @@
   <string name="meter_title_not_started">Tekinnatandika kusoma</string>
   <string name="meter_title_scanning">Enoonya mu ssimu yo</string>
   <string name="meter_title_indexing">Esoma fayiro zo</string>
+  <string name="meter_title_needs_models">Okulinda modeli z\'okunoonya</string>
   <string name="meter_title_up_to_date">Byonna biwedde</string>
   <string name="meter_title_error">Waliwo ekikyamu</string>
   <string name="meter_sub_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ejja kutandika ng\'emaze okulaba fayiro zo.</string>
@@ -47,6 +48,7 @@
   <string name="meter_sub_progress_eta">%1$s ku %2$s bitegeereddwa · kubulayo nga %3$s</string>
   <string name="meter_sub_progress_estimating">%1$s ku %2$s bitegeereddwa · ekyabalirira ebbanga</string>
   <string name="meter_sub_needs_charger">Amannya n\'ebigambo kati. Amakulu gatandika ng\'ossaako chaaja.</string>
+  <string name="meter_sub_needs_models">Amannya n\'ebigambo bikola kati. Amakulu gatandika modeli bwe ziba ku ssimu.</string>
   <string name="meter_sub_reembed">Ebifaananyi bikyusibwa ku nkola empya: %1$s ku %2$s. Okunoonya kukola.</string>
   <string name="meter_sub_reembed_eta">Ebifaananyi bikyusibwa ku nkola empya: %1$s ku %2$s · kubulayo nga %3$s</string>
   <string name="meter_sub_reembed_battery">Ebifaananyi bikyusibwa ku nkola empya: %1$s ku %2$s. Ebisigadde bijja kweyongera ng\'ossaako chaaja.</string>
@@ -85,6 +87,7 @@
   <string name="sheet_detail_scanning"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ekola olukalala lwa fayiro zo. Kino kitwala eddakika emu oba bbiri.</string>
   <string name="sheet_detail_light_on_battery">Amannya n\'ebigambo bisomebwa kati n\'ebifaananyi bikeberebwako mu bwangu, n\'olwekyo okunoonya kukola. Omutindo ogujjuvu gunaggwa ng\'essimu eri ku chaaja.</string>
   <string name="sheet_detail_needs_charger">Amannya n\'ebigambo bisomebwa kati, n\'olwekyo okunoonya kukola. Okutegeera ebiri mu bifaananyi ne mu biwandiiko kutandika ng\'essimu eri ku chaaja.</string>
+  <string name="sheet_detail_needs_models">Amannya n\'ebigambo bisomebwa kati, n\'olwekyo okunoonya kukola. Okutegeera ebiri mu bifaananyi ne mu biwandiiko kutandika modeli z\'okunoonya bwe ziba ku ssimu. Okussaako chaaja tekukyusa kintu nga tezinnaba kujja.</string>
   <string name="sheet_detail_indexing">Amannya n\'ebigambo bye bisooka, Noonya esobole okukola mangu. Okutegeera ebiwandiiko n\'ebifaananyi kye bitegeeza kitwala obudde, era kisinga kukolebwa ekiro ng\'essimu eri ku caaja.</string>
   <string name="sheet_detail_error">Okusoma kuyimiridde mu ngeri etasuubirwa. Ebizuuliddwa ebyasooka bikuumiddwa bulungi.</string>
   <string name="sheet_detail_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> tennatandika kusoma.</string>

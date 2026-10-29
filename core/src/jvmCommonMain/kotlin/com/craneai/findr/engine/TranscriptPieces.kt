@@ -5,7 +5,8 @@ import com.craneai.findr.core.TranscriptMarks
 
 /**
  * A stretch of a transcript sized for the keyword index and the text embedder: ~400 characters, with the time it covers and where
- * each spoken segment sits in it ([marks], see [TranscriptMarks]). Null times: the words can't be placed in the file.
+ * each spoken word (or, for a recogniser that gives no word times, each spoken segment) sits in it ([marks], see [TranscriptMarks]).
+ * Null times: the words can't be placed in the file.
  */
 class TranscriptText(val startMs: Long?, val endMs: Long?, val text: String, val marks: String? = null)
 
@@ -18,6 +19,12 @@ class TranscriptText(val startMs: Long?, val endMs: Long?, val text: String, val
 object TranscriptPieces {
   const val MAX_CHARS = 400
   const val MAX_LABELS = 12
+
+  /**
+   * Words under one time mark. One per word is the most exact but ~890 bytes of marks for a 400-character piece; two halves that
+   * at the same accuracy (Crane, 5 TTS clips: median error within 0.02 s of per-word, p90 within 0.04 s), three is slightly worse.
+   */
+  const val WORDS_PER_MARK = 2
 
   fun speech(t: AudioTranscript, maxChars: Int = MAX_CHARS): List<TranscriptText> {
     val out = ArrayList<TranscriptText>()
@@ -35,7 +42,17 @@ object TranscriptPieces {
       if (text.isEmpty()) continue
       if (buf.isNotEmpty() && buf.length + 1 + text.length > maxChars) flush()
       if (buf.isEmpty()) start = s.startMs else buf.append(' ')
-      marks += TranscriptMarks.Mark(buf.length, s.startMs, s.endMs)
+      // A recogniser that timed its words gets a mark per [WORDS_PER_MARK] words, so a hit lands within a word or so of where it was
+      // said; the rest get one for the whole segment. The words must spell the segment's text, else an offset would point into
+      // different text: then the segment's one mark.
+      val words = s.words.takeIf { w -> w.isNotEmpty() && w.joinToString(" ") { it.text } == text }
+      if (words != null) {
+        var at = buf.length
+        for (group in words.chunked(WORDS_PER_MARK)) {
+          marks += TranscriptMarks.Mark(at, group.first().startMs, group.last().endMs)
+          at += group.sumOf { it.text.length + 1 }
+        }
+      } else marks += TranscriptMarks.Mark(buf.length, s.startMs, s.endMs)
       buf.append(text)
       end = s.endMs
     }

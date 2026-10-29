@@ -22,6 +22,9 @@
   <string name="models_try_again">إعادة المحاولة</string>
   <string name="models_refused_wrong_class">هذا الملف مخصص لنوع مختلف من الهواتف. استخدم تنزيل النماذج لتنزيل الملف المناسب لهذا الهاتف.</string>
   <string name="models_refused_damaged">الملف تالف أو غير مكتمل، لذلك لم يستخدمه <xliff:g id="app_name" example="Trawl">%1$s</xliff:g>. نزّله مرة أخرى، ثم أعد المحاولة.</string>
+  <string name="models_refused_incomplete">توقف التنزيل قبل أن يكتمل. اضغط على «تنزيل النماذج» لبدئه من جديد.</string>
+  <string name="models_refused_incomplete_progress">وصل %1$d من %2$d MB.</string>
+  <string name="models_refused_unreadable">تعذّر فتح الملف. تأكد من أنه ما زال على هاتفك، ثم أعد المحاولة.</string>
   <string name="models_refused_not_signed">تعذّر على <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> التأكد من أن هذا الملف أصلي، لذلك لم يستخدمه. استخدم تنزيل النماذج لتنزيله مرة أخرى.</string>
   <string name="models_refused_older">هذا الملف أقدم من النماذج الموجودة بالفعل على هذا الهاتف، لذلك احتفظ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> بالنماذج الأحدث.</string>
   <string name="models_refused_no_space">لا توجد مساحة خالية كافية على هذا الهاتف. وفّر حوالي %1$d MB، ثم أعد المحاولة.</string>

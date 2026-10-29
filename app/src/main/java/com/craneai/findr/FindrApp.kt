@@ -52,7 +52,7 @@ class FindrApp : Application() {
   @Suppress("DEPRECATION")
   override fun onTrimMemory(level: Int) {
     super.onTrimMemory(level)
-    if (level != TRIM_MEMORY_UI_HIDDEN && ::engine.isInitialized) { engine.clearQueryCache(); engine.noteMemoryTrim(level) }
+    if (level != TRIM_MEMORY_UI_HIDDEN && ::engine.isInitialized) { engine.clearQueryCache(); engine.noteMemoryTrim(level); com.craneai.findr.ui.common.VideoStripLoader.clear() }
   }
 }
 

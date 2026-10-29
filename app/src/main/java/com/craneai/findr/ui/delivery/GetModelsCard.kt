@@ -189,7 +189,17 @@ internal fun refusalText(state: DeliveryState): String = when (state.refusal) {
   Refusal.OLDER_VERSION -> appString(R.string.models_refused_older)
   Refusal.NO_SPACE -> stringResource(R.string.models_refused_no_space, state.sizeMb)
   Refusal.CANCELLED -> stringResource(R.string.models_refused_cancelled)
+  Refusal.INCOMPLETE -> incompleteText(state)
+  Refusal.UNREADABLE -> stringResource(R.string.models_refused_unreadable)
   else -> appString(R.string.models_refused_damaged)
+}
+
+/** A download that stopped: how far it got ("300 of 670 MB arrived."), when known, then what to do. */
+@Composable
+private fun incompleteText(state: DeliveryState): String {
+  val what = stringResource(R.string.models_refused_incomplete)
+  val mb = state.incompleteMb ?: return what
+  return stringResource(R.string.models_refused_incomplete_progress, mb.first, mb.second) + " " + what
 }
 
 @Composable

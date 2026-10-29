@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- The little strip of pictures under a video result that matched at a moment (a few seconds either side of it, like a scrub bar). -->
+  <!-- What TalkBack says for the whole strip: the pictures are from the video, around the moment shown. %1$s is a time like 0:42. -->
+  <string name="strip_group">Pictures from the video around %1$s</string>
+  <!-- Tapping one picture opens the video at that spot. %1$s is the time of the picture, like 0:40. -->
+  <string name="strip_open_at">Open the video at %1$s</string>
+  <!-- The same, for the picture nearest the matched moment. -->
+  <string name="strip_open_at_match">Open the video at %1$s, the matched moment</string>
+  <!-- A video found by what it shows has no room for a strip on its tile: the time label on the tile opens a sheet with the strip. -->
+  <string name="strip_peek_label">Show pictures around this moment</string>
+  <!-- The sheet's line under the file name. %1$s is a time like 0:42. -->
+  <string name="strip_peek_around">Around %1$s</string>
+  <!-- The sheet's hint under the pictures. -->
+  <string name="strip_peek_hint">Tap a picture to open the video at that spot.</string>
+</resources>

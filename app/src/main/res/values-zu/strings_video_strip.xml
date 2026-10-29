@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="strip_group">Izithombe ezivela kuvidiyo eduze kuka-%1$s</string>
+  <string name="strip_open_at">Vula ividiyo ku-%1$s</string>
+  <string name="strip_open_at_match">Vula ividiyo ku-%1$s, ngesikhathi okufanayo okutholakale ngaso</string>
+  <string name="strip_peek_label">Bonisa izithombe eziseduze nalesi sikhathi</string>
+  <string name="strip_peek_around">Eduze kuka-%1$s</string>
+  <string name="strip_peek_hint">Thepha isithombe ukuze uvule ividiyo ngaleso sikhathi.</string>
+</resources>

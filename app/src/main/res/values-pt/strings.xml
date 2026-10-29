@@ -40,6 +40,7 @@
   <string name="meter_title_not_started">Ainda não começou a ler</string>
   <string name="meter_title_scanning">Examinando seu celular</string>
   <string name="meter_title_indexing">Analisando seus arquivos</string>
+  <string name="meter_title_needs_models">Aguardando os modelos de busca</string>
   <string name="meter_title_up_to_date">Tudo em dia</string>
   <string name="meter_title_error">Algo deu errado</string>
   <string name="meter_sub_not_started">O <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> começará assim que puder ver seus arquivos.</string>
@@ -48,6 +49,7 @@
   <string name="meter_sub_progress_eta">%1$s de %2$s analisados · cerca de %3$s restantes</string>
   <string name="meter_sub_progress_estimating">%1$s de %2$s analisados · calculando o tempo</string>
   <string name="meter_sub_needs_charger">Nomes e palavras agora. O significado começa ao carregar.</string>
+  <string name="meter_sub_needs_models">Nomes e palavras já funcionam. O significado começa quando os modelos estiverem no celular.</string>
   <string name="meter_sub_reembed">Atualizando fotos para o novo modelo: %1$s de %2$s. A busca continua funcionando.</string>
   <string name="meter_sub_reembed_eta">Atualizando fotos para o novo modelo: %1$s de %2$s · cerca de %3$s restantes</string>
   <string name="meter_sub_reembed_battery">Atualizando fotos para o novo modelo: %1$s de %2$s. O restante continua ao carregar.</string>
@@ -86,6 +88,7 @@
   <string name="sheet_detail_scanning">O <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> está listando seus arquivos. Isso leva um ou dois minutos.</string>
   <string name="sheet_detail_light_on_battery">Nomes e palavras são lidos agora e fotos recebem uma análise rápida, então a busca já funciona. A qualidade máxima, que traz os melhores resultados, termina ao carregar o celular.</string>
   <string name="sheet_detail_needs_charger">Nomes e palavras estão sendo lidos agora, então a busca já funciona. Analisar o conteúdo de fotos e documentos começa quando o celular estiver carregando.</string>
+  <string name="sheet_detail_needs_models">Nomes e palavras estão sendo lidos agora, então a busca já funciona. Analisar o conteúdo de fotos e documentos começa quando os modelos de busca estiverem no celular. Carregar a bateria não muda isso antes.</string>
   <string name="sheet_detail_indexing">Nomes e palavras vêm primeiro, para buscar quase na hora. Entender o conteúdo de fotos e documentos leva mais tempo e é melhor fazer à noite no carregador.</string>
   <string name="sheet_detail_error">A leitura parou inesperadamente. Seus resultados anteriores estão seguros.</string>
   <string name="sheet_detail_not_started">O <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ainda não começou a ler.</string>

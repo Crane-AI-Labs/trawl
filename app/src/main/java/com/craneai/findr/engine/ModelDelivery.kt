@@ -65,8 +65,29 @@ object ModelsKnown {
 /** One entry of Downloads, as the scan sees it. */
 data class DownloadEntry(val name: String, val length: Long, val modified: Long)
 
-/** What the scan found: bundles that look finished, and a download still under way. Pure JVM. */
-data class DownloadScan(val ready: List<DownloadEntry>, val partial: DownloadEntry?)
+/** What the last look saw of one file: its size and modified time, and since when (clock ms) it has been exactly that. */
+data class Seen(val length: Long, val modified: Long, val since: Long)
+
+/**
+ * What the scan found: bundles that look finished ([ready]: unchanged long enough), a download under way in a browser's temporary
+ * name ([partial]), and a bundle under its final name that is still changing or has only just stopped ([settling]). Pure JVM.
+ */
+data class DownloadScan(val ready: List<DownloadEntry>, val partial: DownloadEntry?, val settling: DownloadEntry? = null)
+
+/** What to do about Downloads after one look. */
+sealed interface DownloadStep {
+  /** Nothing of ours there. */
+  data object Nothing : DownloadStep
+
+  /** A bundle that is still, and whole at its end: check and install it. */
+  data class Install(val entry: DownloadEntry) : DownloadStep
+
+  /** A download is still coming (or has gone quiet for a moment): show the bytes so far, keep watching. Never an error. */
+  data class Downloading(val bytes: Long) : DownloadStep
+
+  /** A bundle with no end that has not changed for [DownloadsWatch.STALLED_MS]: the download stopped. Say so once. */
+  data class Stopped(val entry: DownloadEntry) : DownloadStep
+}
 
 object DownloadsWatch {
   /** A finished bundle: `trawl-models.zip`, `trawl-models-lite.zip`, or either with a browser's " (1)". */
@@ -74,25 +95,83 @@ object DownloadsWatch {
 
   /**
    * A download in progress. Browsers write it under another name until it is done: Chrome `Unconfirmed 123.crdownload`, Firefox
-   * `name.part`, others `.download` or `.tmp`, and Android 11+ a hidden `.pending-<time>-name.zip` that MediaStore renames at the end.
+   * `name.part`, Opera `.opdownload`, others `.download` or `.tmp`, and Android 10+ a hidden `.pending-<time>-name.zip` that
+   * MediaStore renames at the end. Not every browser does this (Samsung Internet and Phoenix document nothing), so a name never
+   * decides alone that a file is finished: [ZipTail] and the file holding still do (internal/research/model-download-incomplete.md).
    */
-  val PARTIAL = Regex("""(?i)(.*\.(crdownload|part|download|tmp))|(\.pending-\d+-.*trawl-models.*\.zip)""")
+  val PARTIAL = Regex("""(?i)(.*\.(crdownload|opdownload|part|download|tmp))|(\.pending-\d+-.*trawl-models.*\.zip)""")
 
   /**
-   * [previous] is the last scan's (length, modified) by name. A file is ready only when it is unchanged since then: a browser
-   * may give the final name before the last bytes are written, and a bundle read half-written would be refused as damaged.
-   * [settledMs] counts a file whose modified time is already older than that as stable on a first look (one that was there
-   * before the app opened), [now] being the clock.
+   * A file under its final name counts as still only after it has held the same size and modified time for this long. 15 s: a
+   * mobile connection stalls for several seconds on a tower hand-over or a weak spot, and the old rule (two looks 1.5 s apart)
+   * took such a pause for the end. A browser that renames at the end never feels the wait; for the others the card says
+   * "Downloading" meanwhile. The zip's end record ([ZipTail]) is the real proof for a file written in order; this window covers
+   * a file written out of order.
    */
-  fun scan(listing: List<DownloadEntry>, previous: Map<String, Pair<Long, Long>>, now: Long, settledMs: Long = 10_000): DownloadScan {
-    val partial = listing.filter { PARTIAL.matches(it.name) && (it.name.contains("trawl-models", true) || it.name.endsWith(".crdownload", true)) }
+  const val STABLE_MS = 15_000L
+
+  /** A file already there, untouched this long, is still on the very first look (one that was there before the app opened). */
+  const val SETTLED_MS = 10_000L
+
+  /** No end record and not a byte of change for this long: the download has stopped (hung or abandoned), not paused. */
+  const val STALLED_MS = 120_000L
+
+  /**
+   * [previous] is the last look's [Seen] by name (see [look]). A file is ready only when it has held the same length and modified
+   * time for [stableMs], or, on a first look, was last modified more than [settledMs] ago; [now] is the clock. A file under its
+   * final name that is not ready yet comes back as [DownloadScan.settling].
+   */
+  fun scan(
+    listing: List<DownloadEntry>,
+    previous: Map<String, Seen>,
+    now: Long,
+    stableMs: Long = STABLE_MS,
+    settledMs: Long = SETTLED_MS,
+  ): DownloadScan {
+    val partial = listing.filter { PARTIAL.matches(it.name) && (it.name.contains("trawl-models", true) || it.name.endsWith(".crdownload", true) || it.name.endsWith(".opdownload", true)) }
       .maxByOrNull { it.modified }
-    val ready = listing.filter { BUNDLE.matches(it.name) && !PARTIAL.matches(it.name) && it.length > 0 }.filter {
+    val finals = listing.filter { BUNDLE.matches(it.name) && !PARTIAL.matches(it.name) && it.length > 0 }
+    val (ready, waiting) = finals.partition {
       val before = previous[it.name]
-      if (before != null) before == (it.length to it.modified) else now - it.modified > settledMs
-    }.sortedByDescending { it.modified }
-    return DownloadScan(ready, partial)
+      if (before != null) before.length == it.length && before.modified == it.modified && now - before.since >= stableMs else now - it.modified > settledMs
+    }
+    return DownloadScan(ready.sortedByDescending { it.modified }, partial, waiting.maxByOrNull { it.modified })
   }
+
+  /** The next look's [previous]: each file with the time it has held its present length and modified time. */
+  fun look(listing: List<DownloadEntry>, previous: Map<String, Seen>, now: Long): Map<String, Seen> =
+    listing.associate { e ->
+      val before = previous[e.name]
+      e.name to if (before != null && before.length == e.length && before.modified == e.modified) before else Seen(e.length, e.modified, now)
+    }
+
+  fun key(e: DownloadEntry) = "${e.name}|${e.length}|${e.modified}"
+
+  /**
+   * What to do after one look. [skip] holds the keys (name|length|modified) already tried or already reported: a changed file has
+   * a new key and is looked at again. [hasEnd] is the zip end-record check ([ZipTail.hasEnd]): it is asked only of a file that has
+   * held still, and only a file that has one is installed.
+   */
+  fun step(listing: List<DownloadEntry>, previous: Map<String, Seen>, now: Long, skip: Set<String>, hasEnd: (DownloadEntry) -> Boolean): DownloadStep {
+    val scan = scan(listing, previous, now)
+    val candidates = scan.ready.filter { key(it) !in skip }
+    candidates.firstOrNull(hasEnd)?.let { return DownloadStep.Install(it) }
+    // Still, but no end record: a stalled connection, until it has been silent so long that the download has stopped.
+    candidates.firstOrNull()?.let { c ->
+      val quietSince = previous[c.name]?.takeIf { it.length == c.length && it.modified == c.modified }?.since ?: c.modified
+      return if (now - quietSince >= STALLED_MS) DownloadStep.Stopped(c) else DownloadStep.Downloading(c.length)
+    }
+    scan.settling?.takeIf { key(it) !in skip }?.let { return DownloadStep.Downloading(it.length) }
+    scan.partial?.let { return DownloadStep.Downloading(it.length) }
+    return DownloadStep.Nothing
+  }
+
+  /**
+   * A file that failed a size or SHA check may still have been written to: it is not the same file now as when the install began.
+   * Then the failure is the download not being done, not damage. A file that is gone is not still being written.
+   */
+  fun changedSince(startedLength: Long, startedModified: Long, nowLength: Long, nowModified: Long, exists: Boolean = true): Boolean =
+    exists && (nowLength != startedLength || nowModified != startedModified)
 }
 
 /**
@@ -128,9 +207,14 @@ class ModelDelivery(
   private var poller: Job? = null
   private var job: Job? = null
   @Volatile private var cancelled = false
-  private var previous = emptyMap<String, Pair<Long, Long>>()
+  private var previous = emptyMap<String, Seen>()
   /** name|length|modified of a file already tried: a refused file is not read again until it changes. */
   private val tried = HashSet<String>()
+  /**
+   * name|length|modified of a download already reported as stopped. Kept when the person taps Get the models again (unlike [tried]):
+   * the stopped file is still there, and it must not be reported again over the new download. A changed file has a new key.
+   */
+  private val stopped = HashSet<String>()
   private var pending: Pending? = null
 
   private class Pending(val file: File?, val uri: Uri?, val bytes: Long, val modified: Long, val key: String, val name: String)
@@ -193,18 +277,26 @@ class ModelDelivery(
     if (job?.isActive == true) return
     val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
     val listing = dir.listFiles().orEmpty().filter { it.isFile }.map { DownloadEntry(it.name, it.length(), it.lastModified()) }
-    val scan = DownloadsWatch.scan(listing, previous, System.currentTimeMillis())
-    previous = listing.associate { it.name to (it.length to it.modified) }
-    val next = scan.ready.firstOrNull { "${it.name}|${it.length}|${it.modified}" !in tried }
+    val now = System.currentTimeMillis()
+    // Never install an unfinished file: one that has held still must also END like a zip (a browser that stalls on a file it already
+    // named holds still without being done). A preallocated one that ends like a zip is caught by the installer's checks below (see finish).
+    val step = DownloadsWatch.step(listing, previous, now, tried + stopped) { ZipTail.hasEnd(File(dir, it.name)) }
+    previous = DownloadsWatch.look(listing, previous, now)
     val phase = flow.value.phase
-    when {
-      next != null -> {
-        tried += "${next.name}|${next.length}|${next.modified}"
-        installFile(File(dir, next.name))
+    val waiting = phase == DeliveryPhase.IDLE || phase == DeliveryPhase.DOWNLOADING ||
+      (phase == DeliveryPhase.REFUSED && flow.value.refusal == Refusal.INCOMPLETE)   // a stopped download that starts moving again
+    when (step) {
+      is DownloadStep.Install -> {
+        tried += DownloadsWatch.key(step.entry)
+        installFile(File(dir, step.entry.name))
       }
-      scan.partial != null && phase in setOf(DeliveryPhase.IDLE, DeliveryPhase.DOWNLOADING) ->
-        flow.value = flow.value.copy(phase = DeliveryPhase.DOWNLOADING, doneBytes = scan.partial.length, totalBytes = flow.value.sizeMb * 1_000_000L, refusal = null)
-      scan.partial == null && phase == DeliveryPhase.DOWNLOADING -> flow.value = flow.value.copy(phase = DeliveryPhase.IDLE, doneBytes = 0)   // the download was cancelled
+      is DownloadStep.Downloading -> if (waiting) flow.value = flow.value.copy(phase = DeliveryPhase.DOWNLOADING, doneBytes = step.bytes, totalBytes = flow.value.sizeMb * 1_000_000L, refusal = null)
+      is DownloadStep.Stopped -> if (phase == DeliveryPhase.IDLE || phase == DeliveryPhase.DOWNLOADING) {
+        stopped += DownloadsWatch.key(step.entry)
+        Log.w(TAG, "download stopped at ${step.entry.length / 1_000_000} MB")   // log-safe: our own bundle
+        flow.value = flow.value.copy(phase = DeliveryPhase.REFUSED, refusal = Refusal.INCOMPLETE, doneBytes = step.entry.length, totalBytes = flow.value.sizeMb * 1_000_000L)
+      }
+      DownloadStep.Nothing -> if (phase == DeliveryPhase.DOWNLOADING) flow.value = flow.value.copy(phase = DeliveryPhase.IDLE, doneBytes = 0)   // the download was cancelled
     }
   }
 
@@ -223,7 +315,15 @@ class ModelDelivery(
       }
     }.getOrNull()
     val rec = Pending(null, u, name?.second ?: 0L, 0L, "uri|$uri", name?.first ?: "models")
-    start(rec) { context.contentResolver.openInputStream(u) ?: throw java.io.IOException("cannot open the chosen file") }
+    start(rec) {
+      // A chosen file that does not end like a zip is a download that stopped: say so, not "damaged". Only where the descriptor can seek;
+      // a provider that streams cannot be asked, and the installer's own read will then hit the end too soon (the same refusal).
+      val whole = runCatching {
+        context.contentResolver.openFileDescriptor(u, "r")?.use { pfd -> java.io.FileInputStream(pfd.fileDescriptor).use { ZipTail.hasEnd(it.channel) } }
+      }.getOrNull()
+      if (whole == false) throw java.io.EOFException("the chosen file has no zip end")
+      context.contentResolver.openInputStream(u) ?: throw java.io.FileNotFoundException("cannot open the chosen file")
+    }
   }
 
   private fun start(rec: Pending, open: () -> InputStream) {
@@ -250,7 +350,8 @@ class ModelDelivery(
           } catch (t: Throwable) {
             Log.w(TAG, "bundle install failed", t)
             com.craneai.findr.diag.Diag.handled(com.craneai.findr.diag.HandledKind.MODEL_INSTALL, t)
-            BundleResult.Refused(Refusal.DAMAGED, "${t.javaClass.simpleName}: ${t.message}")
+            // A full disk, a file that ran out, a file that cannot be opened: each says what it is, not "damaged" for all of them.
+            BundleResult.Refused(FailureKind.of(t), "${t.javaClass.simpleName}: ${t.message}")
           }
           finish(result, rec, before)
         }
@@ -285,7 +386,20 @@ class ModelDelivery(
             pending = rec.takeIf { canRemove(it) }
             flow.value = flow.value.copy(phase = DeliveryPhase.DONE, refusal = Refusal.ALREADY_INSTALLED, removable = offer(rec), doneBytes = 0, totalBytes = 0)
           }
-          else -> flow.value = flow.value.copy(phase = DeliveryPhase.REFUSED, refusal = result.reason, doneBytes = 0, totalBytes = 0)
+          else -> {
+            val file = rec.file
+            val moved = file != null && DownloadsWatch.changedSince(rec.bytes, rec.modified, file.length(), file.lastModified(), file.exists())
+            val total = flow.value.sizeMb * 1_000_000L
+            flow.value = when {
+              // It failed a size or SHA check, or ran out, but it is not the file the install began with: the download is still going.
+              // Not an error. Its new length and modified time make a new key, so the scan installs it when it is done.
+              moved && (result.reason == Refusal.DAMAGED || result.reason == Refusal.INCOMPLETE) ->
+                flow.value.copy(phase = DeliveryPhase.DOWNLOADING, refusal = null, doneBytes = file.length(), totalBytes = total)
+              // Ran out and still the same: the download stopped. Keep how far it got, for the message.
+              result.reason == Refusal.INCOMPLETE -> flow.value.copy(phase = DeliveryPhase.REFUSED, refusal = result.reason, doneBytes = rec.bytes, totalBytes = total)
+              else -> flow.value.copy(phase = DeliveryPhase.REFUSED, refusal = result.reason, doneBytes = 0, totalBytes = 0)
+            }
+          }
         }
       }
     }

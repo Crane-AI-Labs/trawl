@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="strip_group">Picha kutoka kwenye video karibu na %1$s</string>
+  <string name="strip_open_at">Fungua video katika %1$s</string>
+  <string name="strip_open_at_match">Fungua video katika %1$s, wakati uliolingana</string>
+  <string name="strip_peek_label">Onyesha picha za karibu na wakati huu</string>
+  <string name="strip_peek_around">Karibu na %1$s</string>
+  <string name="strip_peek_hint">Gusa picha ili kufungua video katika sehemu hiyo.</string>
+</resources>

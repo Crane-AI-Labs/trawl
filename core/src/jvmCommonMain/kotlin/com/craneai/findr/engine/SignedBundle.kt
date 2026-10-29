@@ -249,9 +249,11 @@ class SignedBundleInstaller(
     try {
       return run(input, progress, cancelled)
     } catch (e: ZipException) {
-      return BundleResult.Refused(Refusal.DAMAGED, "zip: ${e.message}")
+      // "unexpected EOF" is a file that ends too soon (a download that stopped), not a broken one: FailureKind tells them apart.
+      return BundleResult.Refused(FailureKind.of(e), "zip: ${e.message}")
     } catch (e: IOException) {
-      return BundleResult.Refused(Refusal.DAMAGED, "read: ${e.message}")
+      // EOFException (cut short), ENOSPC while staging (no space) or any other read failure.
+      return BundleResult.Refused(FailureKind.of(e), "read: ${e.message}")
     } finally {
       incoming.deleteRecursively()   // success has renamed everything out already; this clears a failure's leftovers
     }

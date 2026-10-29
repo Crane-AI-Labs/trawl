@@ -1,5 +1,8 @@
 package com.craneai.findr.engine
 
+import com.craneai.findr.core.DeliveryState
+import com.craneai.findr.core.IndexPhase
+import com.craneai.findr.core.IndexStatus
 import com.craneai.findr.core.PauseReason
 import com.craneai.findr.engine.IndexPolicy.Decision
 import com.craneai.findr.engine.IndexPolicy.Tier
@@ -63,6 +66,34 @@ class MeterRulesTest {
   @Test fun otherWorkerPausesSurviveAPlugIn() {
     assertEquals(PauseReason.TOO_HOT, pause(worker = PauseReason.TOO_HOT, waiting = 5, decision = onCharger))
     assertEquals(PauseReason.BATTERY_LOW, pause(worker = PauseReason.BATTERY_LOW, waiting = 5, decision = onCharger))
+  }
+
+  @Test fun withoutASearchModelTheChargerIsNeverPromised() {
+    // First run, models not downloaded: charging changes nothing, so "waiting for the charger" would be wrong.
+    assertFalse(MeterRules.needsCharger(5, lightOnBattery, modelReady = false))
+    assertFalse(MeterRules.needsCharger(5, strictOnBattery, modelReady = false))
+    assertNull(MeterRules.pause(true, false, null, false, 5, lightOnBattery, modelReady = false))
+    assertNull(MeterRules.pause(true, false, PauseReason.NOT_CHARGING, false, 5, strictOnBattery, modelReady = false))
+    // The other reasons are still shown: they are true with or without a model.
+    assertEquals(PauseReason.BATTERY_LOW, MeterRules.pause(true, false, null, true, 5, lowBattery, modelReady = false))
+    assertEquals(PauseReason.USER, MeterRules.pause(true, true, null, false, 5, lightOnBattery, modelReady = false))
+    assertEquals(PauseReason.NO_PERMISSION, MeterRules.pause(false, false, null, false, 5, lightOnBattery, modelReady = false))
+  }
+
+  @Test fun theMeterWaitsForModelsOnlyWhileReadingWithoutOne() {
+    val reading = IndexStatus(phase = IndexPhase.INDEXING, modelReady = false)
+    assertTrue(reading.waitingForModels)
+    assertFalse(reading.copy(modelReady = true).waitingForModels)
+    assertFalse(reading.copy(phase = IndexPhase.PAUSED).waitingForModels)   // paused for its own reason: that reason is shown
+    assertFalse(reading.copy(phase = IndexPhase.UP_TO_DATE).waitingForModels)
+    assertFalse(IndexStatus().waitingForModels)   // the default says a model is there
+  }
+
+  @Test fun aStoppedDownloadShowsHowFarItGotWhenBothNumbersAreKnown() {
+    assertEquals(300 to 670, DeliveryState(doneBytes = 300_400_000, totalBytes = 670_000_000).incompleteMb)
+    assertEquals(670 to 670, DeliveryState(doneBytes = 700_000_000, totalBytes = 670_000_000).incompleteMb)   // never above the total
+    assertNull(DeliveryState(doneBytes = 300_000_000, totalBytes = 0).incompleteMb)
+    assertNull(DeliveryState(doneBytes = 0, totalBytes = 670_000_000).incompleteMb)
   }
 
   @Test fun permissionAndUserPauseWinOverEverything() {

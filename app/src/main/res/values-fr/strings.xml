@@ -40,6 +40,7 @@
   <string name="meter_title_not_started">Lecture non commencée</string>
   <string name="meter_title_scanning">Analyse de votre téléphone</string>
   <string name="meter_title_indexing">Analyse de vos fichiers</string>
+  <string name="meter_title_needs_models">En attente des modèles de recherche</string>
   <string name="meter_title_up_to_date">Tout est à jour</string>
   <string name="meter_title_error">Une erreur s\'est produite</string>
   <string name="meter_sub_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> commencera dès qu\'il pourra accéder à vos fichiers.</string>
@@ -48,6 +49,7 @@
   <string name="meter_sub_progress_eta">%1$s sur %2$s analysés · environ %3$s restant</string>
   <string name="meter_sub_progress_estimating">%1$s sur %2$s analysés · calcul du temps restant</string>
   <string name="meter_sub_needs_charger">Noms et mots pour l\'instant. Le sens commencera en charge.</string>
+  <string name="meter_sub_needs_models">Les noms et les mots fonctionnent déjà. Le sens commencera quand les modèles seront sur le téléphone.</string>
   <string name="meter_sub_reembed">Mise à jour des photos pour le nouveau modèle : %1$s sur %2$s. La recherche continue de fonctionner.</string>
   <string name="meter_sub_reembed_eta">Mise à jour des photos pour le nouveau modèle : %1$s sur %2$s · environ %3$s restant</string>
   <string name="meter_sub_reembed_battery">Mise à jour des photos pour le nouveau modèle : %1$s sur %2$s. Le reste reprendra en charge.</string>
@@ -86,6 +88,7 @@
   <string name="sheet_detail_scanning"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> dresse la liste de vos fichiers. Cela prend une minute ou deux.</string>
   <string name="sheet_detail_light_on_battery">Les noms et les mots sont lus et les photos survolées, la recherche fonctionne donc déjà. La qualité maximale, qui offre les meilleurs résultats, se terminera en charge.</string>
   <string name="sheet_detail_needs_charger">Les noms et les mots sont lus en ce moment, la recherche fonctionne donc déjà. La compréhension des photos et des documents commencera quand le téléphone sera en charge.</string>
+  <string name="sheet_detail_needs_models">Les noms et les mots sont lus en ce moment, la recherche fonctionne donc déjà. La compréhension des photos et des documents commencera quand les modèles de recherche seront sur le téléphone. Mettre en charge n\'y changera rien avant.</string>
   <string name="sheet_detail_indexing">Les noms et les mots passent en premier : vous pouvez rechercher presque aussitôt. Comprendre le contenu des photos et des documents prend plus de temps, idéalement la nuit en charge.</string>
   <string name="sheet_detail_error">La lecture s\'est arrêtée de façon inattendue. Vos résultats précédents sont conservés.</string>
   <string name="sheet_detail_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> n\'a pas encore commencé la lecture.</string>

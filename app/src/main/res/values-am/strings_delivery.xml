@@ -22,6 +22,9 @@
   <string name="models_try_again">እንደገና ይሞክሩ</string>
   <string name="models_refused_wrong_class">ይህ ፋይል ለሌላ ዓይነት ስልክ ነው። ለዚህ ስልክ የሚሆነውን ለማውረድ ሞዴሎቹን ያግኙን ይጠቀሙ።</string>
   <string name="models_refused_damaged">ፋይሉ ተበላሽቷል ወይም አልተሟላም። ስለዚህ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> አልተጠቀመበትም። እንደገና ያውርዱትና ይሞክሩ።</string>
+  <string name="models_refused_incomplete">ማውረዱ ሳይጠናቀቅ ቆሟል። እንደገና ለመጀመር ሞዴሎቹን ያግኙ የሚለውን ይንኩ።</string>
+  <string name="models_refused_incomplete_progress">ከ%2$d MB ውስጥ %1$d MB ደርሷል።</string>
+  <string name="models_refused_unreadable">ፋይሉን መክፈት አልተቻለም። አሁንም በስልኩ ላይ መኖሩን ያረጋግጡና እንደገና ይሞክሩ።</string>
   <string name="models_refused_not_signed"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ይህ ፋይል እውነተኛ መሆኑን ማረጋገጥ አልቻለም። ስለዚህ አልተጠቀመበትም። እንደገና ለማውረድ ሞዴሎቹን ያግኙን ይጠቀሙ።</string>
   <string name="models_refused_older">ይህ ፋይል በዚህ ስልክ ላይ ካሉት ሞዴሎች የቆየ ነው። ስለዚህ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> አዲሶቹን አስቀርቷል።</string>
   <string name="models_refused_no_space">በዚህ ስልክ ላይ በቂ ነፃ ቦታ የለም። ወደ %1$d MB የሚጠጋ ቦታ ያስለቅቁና እንደገና ይሞክሩ።</string>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="strip_group">Ebifaananyi okuva mu vidiyo okumpi ne %1$s</string>
+  <string name="strip_open_at">Ggulawo vidiyo ku %1$s</string>
+  <string name="strip_open_at_match">Ggulawo vidiyo ku %1$s, akaseera akwatagana</string>
+  <string name="strip_peek_label">Laga ebifaananyi ebyetoolodde akaseera kano</string>
+  <string name="strip_peek_around">Okumpi ne %1$s</string>
+  <string name="strip_peek_hint">Kona ku kifaananyi okuggulawo vidiyo mu kifo ekyo.</string>
+</resources>

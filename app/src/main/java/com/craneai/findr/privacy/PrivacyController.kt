@@ -13,6 +13,7 @@ import android.os.SystemClock
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import com.craneai.findr.core.SearchEngine
+import com.craneai.findr.ui.common.VideoStripLoader
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -156,6 +157,7 @@ class PrivacyController(private val app: Application, private val engine: Search
   /** Put sensitive results away again. */
   fun hideSensitive() {
     gate.hide()
+    VideoStripLoader.clear()   // pictures of a put-away sensitive video leave memory too
     publish()
   }
 
@@ -206,7 +208,7 @@ class PrivacyController(private val app: Application, private val engine: Search
 
   private fun publish() {
     // The lock just closed: the queries typed while it was open go with it.
-    if (gate.isLocked && !_locked.value) engine.clearQueryCache()
+    if (gate.isLocked && !_locked.value) { engine.clearQueryCache(); VideoStripLoader.clear() }   // and the video strips' pictures
     _locked.value = gate.isLocked
     _revealed.value = gate.isRevealed
     _secureWindow.value = prefs.hideInRecents.value || sensitiveOn.isNotEmpty()

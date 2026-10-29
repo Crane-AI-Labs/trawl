@@ -156,7 +156,18 @@ class SearcherTest {
       Segment(SegmentKind.FRAME, Modality.IMAGE, locStart = 12_000, locEnd = 15_500, vector = about(2)))
     val r = search("waterfall", topic(2))
     assertEquals(listOf("trip.mp4"), names(r))
-    assertEquals(Locator.Time(12_000, 15_500), r.hits[0].locator)
+    // a row from before the keyframe time was kept: the middle of its slot (12_000 + 3_500 / 2), not its start
+    assertEquals(Locator.Time(13_750, 15_500), r.hits[0].locator)
+  }
+
+  @Test fun aVideoFrameHitShowsTheKeyframesOwnTime() {
+    addBackground()
+    // the slot is 12.0 to 15.5 s, but the picture is the keyframe at 14.2 s (marks "@14200"): that is the time shown
+    add("fwd.mp4", FileKind.VIDEO, "Download/", 1_000,
+      Segment(SegmentKind.FRAME, Modality.IMAGE, locStart = 4_000, locEnd = 9_000, vector = background(), marks = "@8333"),
+      Segment(SegmentKind.FRAME, Modality.IMAGE, locStart = 12_000, locEnd = 15_500, vector = about(2), marks = "@14200"))
+    val r = search("waterfall", topic(2))
+    assertEquals(Locator.Time(14_200, 15_500), r.hits[0].locator)
   }
 
   // ---- words -----------------------------------------------------------------------------------------------------

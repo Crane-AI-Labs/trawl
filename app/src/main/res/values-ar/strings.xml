@@ -43,6 +43,7 @@
   <string name="meter_title_not_started">لم تبدأ القراءة بعد</string>
   <string name="meter_title_scanning">جارٍ فحص هاتفك</string>
   <string name="meter_title_indexing">التعرّف على ملفاتك</string>
+  <string name="meter_title_needs_models">في انتظار نماذج البحث</string>
   <string name="meter_title_up_to_date">كل شيء محدّث</string>
   <string name="meter_title_error">حدث خطأ ما</string>
   <string name="meter_sub_not_started">سيبدأ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> بمجرد الوصول إلى ملفاتك.</string>
@@ -51,6 +52,7 @@
   <string name="meter_sub_progress_eta">تم التعرّف على %1$s من %2$s · متبقٍ %3$s تقريباً</string>
   <string name="meter_sub_progress_estimating">تم فهم %1$s من %2$s · جارٍ تقدير الوقت</string>
   <string name="meter_sub_needs_charger">الأسماء والكلمات الآن. ويبدأ فهم المعنى عند الشحن.</string>
+  <string name="meter_sub_needs_models">تعمل الأسماء والكلمات الآن. ويبدأ فهم المعنى عندما تصبح النماذج على الهاتف.</string>
   <string name="meter_sub_reembed">جارٍ تحديث الصور للنموذج الجديد: %1$s من %2$s. البحث لا يزال يعمل.</string>
   <string name="meter_sub_reembed_eta">جارٍ تحديث الصور للنموذج الجديد: %1$s من %2$s · متبقٍّ %3$s تقريبًا</string>
   <string name="meter_sub_reembed_battery">جارٍ تحديث الصور للنموذج الجديد: %1$s من %2$s. يستمر الباقي عند الشحن.</string>
@@ -89,6 +91,7 @@
   <string name="sheet_detail_scanning">ينشئ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> قائمة بملفاتك. يستغرق هذا دقيقة أو دقيقتين.</string>
   <string name="sheet_detail_light_on_battery">تتم قراءة الأسماء والكلمات الآن مع نظرة سريعة على الصور، لذا يعمل البحث بالفعل. وستكتمل الجودة الكاملة، التي تمنح أفضل النتائج، أثناء شحن الهاتف.</string>
   <string name="sheet_detail_needs_charger">تتم قراءة الأسماء والكلمات الآن، لذا يعمل البحث بالفعل. ويبدأ فهم محتوى الصور والمستندات أثناء شحن الهاتف.</string>
+  <string name="sheet_detail_needs_models">تتم قراءة الأسماء والكلمات الآن، لذا يعمل البحث بالفعل. ويبدأ فهم محتوى الصور والمستندات عندما تصبح نماذج البحث على الهاتف. والشحن لا يغيّر شيئًا قبل ذلك.</string>
   <string name="sheet_detail_indexing">تتم فهرسة الأسماء والكلمات أولاً، لذا سيعمل البحث على الفور تقريباً. أما فهم محتوى الصور والمستندات فيستغرق وقتاً أطول، ويُفضَّل تركه أثناء الشحن ليلاً.</string>
   <string name="sheet_detail_error">توقفت القراءة بشكل غير متوقع. النتائج السابقة بأمان.</string>
   <string name="sheet_detail_not_started">لم يبدأ <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> القراءة بعد.</string>

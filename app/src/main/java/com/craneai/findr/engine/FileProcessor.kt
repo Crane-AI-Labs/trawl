@@ -24,6 +24,7 @@ import com.craneai.findr.index.Segment
 import com.craneai.findr.index.Modality
 import java.io.ByteArrayOutputStream
 import com.craneai.findr.core.VideoFrame
+import com.craneai.findr.core.FrameMoment
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
@@ -62,7 +63,7 @@ class Piece(
   val locEnd: Long? = null,
   val text: String? = null,     // goes into FTS and snippets
   val vector: FloatArray? = null,
-  val marks: String? = null,    // transcript pieces: where each spoken segment sits in the text (see core.TranscriptMarks)
+  val marks: String? = null,    // transcript pieces: where each spoken word sits in the text (core.TranscriptMarks); frames: the keyframe's own time (core.FrameMoment)
 )
 
 /** One step of a file's indexing. `nextChunk` set: a long document has more to read in a later pass (DigUp). */
@@ -349,7 +350,7 @@ class FileProcessor(
     // A frame that looks the same as one already embedded (a still meme with a soundtrack, a slide held for a minute)
     // gets no embedding of its own: the earlier frame's time range grows to cover it. Same picture, same vector, so
     // nothing is lost, and each skipped frame saves ~4 s on the A06.
-    class Kept(val hash: Long, val start: Long, var end: Long, val vector: FloatArray?)
+    class Kept(val hash: Long, val start: Long, var end: Long, val at: Long, val vector: FloatArray?)
     val kept = mutableListOf<Kept>()
     val quickReady = lite && quick?.ready == true
     for (f in frames) {
@@ -374,11 +375,12 @@ class FileProcessor(
         finally { bmp.recycle() }
         ocrMs += (System.nanoTime() - to) / 1_000_000
       }
-      kept += Kept(hash ?: 0L, f.shotStartMs, f.shotEndMs, vector.await())
+      kept += Kept(hash ?: 0L, f.shotStartMs, f.shotEndMs, f.timeMs, vector.await())
       embedMs += (System.nanoTime() - te) / 1_000_000
     }
     val frameModality = if (lite) PieceModality.CLIP else PieceModality.IMAGE
-    kept.forEach { k -> k.vector?.let { pieces += Piece(PieceKind.FRAME, frameModality, k.start, k.end, vector = it) } }
+    // The slot is what the picture stands for; its marks say when the picture really is, which is what the result's time shows.
+    kept.forEach { k -> k.vector?.let { pieces += Piece(PieceKind.FRAME, frameModality, k.start, k.end, vector = it, marks = FrameMoment.encode(k.at)) } }
     if (captions.isNotEmpty()) {
       val text = captions.joinToString("\n")
       pieces += if (lite) readText(text) else listOf(Piece(PieceKind.OCR, PieceModality.TEXT, text = text))

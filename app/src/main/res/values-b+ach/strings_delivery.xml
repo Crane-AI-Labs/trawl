@@ -22,6 +22,9 @@
   <string name="models_try_again">Tem doki</string>
   <string name="models_refused_wrong_class">Fayil man obedo pi kit cim mapat. Ti ki Gam model me gamo ma pi cim man.</string>
   <string name="models_refused_damaged">Fayil man obale onyo pe opong, pi meno <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> pe otiyo kwede. Gam odoco, ka item doki.</string>
+  <string name="models_refused_incomplete">Gam otuk ma pe oturu. Dii ayi kom Gam model me cako odoco.</string>
+  <string name="models_refused_incomplete_progress">MB %1$d i kin %2$d dong obino.</string>
+  <string name="models_refused_unreadable">Pe romo yabo fayil. Rub ka pud tye i cim, ka item doki.</string>
   <string name="models_refused_not_signed"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> pe otwero moko ni fayil man obedo me ada, pi meno pe otiyo kwede. Ti ki Gam model me gamo odoco.</string>
   <string name="models_refused_older">Fayil man oti loyo model ma dong tye i cim man, pi meno <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ogwoko ma nyen loyo.</string>
   <string name="models_refused_no_space">Kabedo ma nono pe rom i cim man. Yab kabedo maromo MB %1$d, ka item doki.</string>

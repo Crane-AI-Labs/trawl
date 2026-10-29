@@ -22,6 +22,9 @@
   <string name="models_try_again">Jaribu tena</string>
   <string name="models_refused_wrong_class">Faili hili ni la aina nyingine ya simu. Tumia Pata modeli ili kupakua faili la simu hii.</string>
   <string name="models_refused_damaged">Faili limeharibika au halijakamilika, kwa hivyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> haikulitumia. Lipakue tena, kisha ujaribu tena.</string>
+  <string name="models_refused_incomplete">Upakuaji ulisimama kabla ya kukamilika. Gusa Pata modeli ili uanze tena.</string>
+  <string name="models_refused_incomplete_progress">MB %1$d kati ya %2$d zimefika.</string>
+  <string name="models_refused_unreadable">Faili halikuweza kufunguliwa. Hakikisha bado liko kwenye simu, kisha ujaribu tena.</string>
   <string name="models_refused_not_signed"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> haikuweza kuthibitisha kuwa faili hili ni halisi, kwa hivyo haikulitumia. Tumia Pata modeli ili kulipakua tena.</string>
   <string name="models_refused_older">Faili hili ni la zamani kuliko modeli ambazo tayari ziko kwenye simu hii, kwa hivyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ilibakiza zilizo mpya zaidi.</string>
   <string name="models_refused_no_space">Hakuna nafasi ya kutosha kwenye simu hii. Pata takriban nafasi ya %1$d MB, kisha ujaribu tena.</string>

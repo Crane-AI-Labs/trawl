@@ -154,19 +154,22 @@ class QuickLookPass(
     }
 
     /** A video's first frame (the nearest key frame to 0, which is cheap to fetch), scaled to fit 512 px. */
-    fun firstFrame(context: Context, uri: Uri): Bitmap? = frameAt(context, uri, 0L).first
+    fun firstFrame(context: Context, uri: Uri): Bitmap? = frameAt(context, uri, 0L, timed = false).first
 
     /**
      * A video's picture for quick look, scaled to fit 512 px, and the moment it was taken at (ms): the nearest key frame to [seekMs]
      * but no later than a quarter of the way in (a short clip is not read past its start). [seekMs] 0 is the very first frame, which
-     * in a phone video is often a black or half-faded one that says nothing about the clip.
+     * in a phone video is often a black or half-faded one that says nothing about the clip. With [timed] the moment is the key frame's
+     * own (found in the container's index); without, the one asked for (a caller that only wants the picture).
      */
-    fun frameAt(context: Context, uri: Uri, seekMs: Long): Pair<Bitmap?, Long> {
+    fun frameAt(context: Context, uri: Uri, seekMs: Long, timed: Boolean = true): Pair<Bitmap?, Long> {
       val r = MediaMetadataRetriever()
       try {
         r.setDataSource(context, uri)
         val duration = r.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLongOrNull() ?: 0L
-        val at = seekMsFor(seekMs, duration)
+        val asked = seekMsFor(seekMs, duration)
+        // The picture is the keyframe nearest the moment asked for; the time kept is that keyframe's, so the result's time is its own.
+        val at = if (!timed) asked else com.craneai.findr.extract.KeyframeClock.open(context, uri)?.use { it.nearestMs(asked) } ?: asked
         return r.getScaledFrameAtTime(at * 1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC, FRAME_SIDE, FRAME_SIDE) to at
       } finally {
         r.release()

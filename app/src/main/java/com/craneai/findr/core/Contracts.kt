@@ -17,7 +17,11 @@ interface OcrEngine {
   suspend fun read(bitmap: Bitmap): String
 }
 
-/** One representative frame per shot. `jpeg` is already downscaled to ≤768 px and ready for the embedder. */
+/**
+ * One representative frame per slot of the video. `jpeg` is already downscaled to ≤768 px and ready for the embedder. `timeMs` is when
+ * the picture really is in the video (the keyframe the decoder gave, which can be seconds from the moment asked for); the slot it
+ * stands for runs from `shotStartMs` to `shotEndMs`.
+ */
 class VideoFrame(val timeMs: Long, val shotStartMs: Long, val shotEndMs: Long, val jpeg: ByteArray, val bitmap: Bitmap?)
 
 interface VideoSampler {

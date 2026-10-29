@@ -6,6 +6,7 @@ import com.craneai.findr.core.KindFilter
 import com.craneai.findr.core.Locator
 import com.craneai.findr.core.SoundTags
 import com.craneai.findr.core.SpeechSegment
+import com.craneai.findr.core.SpokenWord
 import com.craneai.findr.core.TranscriptMarks
 import com.craneai.findr.engine.Piece
 import com.craneai.findr.engine.PieceKind
@@ -86,6 +87,24 @@ class TranscriptMomentTest {
     // a word from the first and from the last sentence
     assertTrue(momentOf("welcome") in 400..4_000)
     assertTrue(momentOf("watching") in 50_000..55_000)
+  }
+
+  /**
+   * Parakeet times its words: a word in a long segment is placed at the word, not at its share of the segment's characters. Said here
+   * in a 15 s segment after a long pause, where the share puts it seconds early.
+   */
+  @Test fun aTimedWordIsPlacedAtTheWordNotItsShareOfTheSegment() {
+    val early = listOf("alpha", "bravo", "charlie", "delta", "echo", "foxtrot").mapIndexed { i, t -> SpokenWord(t, 10_000L + i * 400, 10_000L + i * 400 + 300) }
+    val late = listOf(SpokenWord("zulu", 22_000, 22_400), SpokenWord("yankee", 22_500, 22_900), SpokenWord("whiskey", 23_000, 23_500))
+    val words = early + late
+    val text = words.joinToString(" ") { it.text }
+    addFile("timed.mp4", FileKind.VIDEO, transcriptSegments(listOf(SpeechSegment(10_000, 25_000, text, words))))
+    assertEquals(22_000L, momentOf("zulu"))
+    // a pair's second word sits at its share of the pair's span: within a word of where it was said
+    assertTrue(kotlin.math.abs(momentOf("yankee") - 22_500) < 300)
+    addFile("untimed.mp4", FileKind.VIDEO, transcriptSegments(listOf(SpeechSegment(10_000, 25_000, text))))
+    val byShare = searcher.search("yankee", null, KindFilter.ALL, 10).hits.single { it.file.name == "untimed.mp4" }.locator as Locator.Time
+    assertTrue("the segment mark places it by character share, seconds off: ${byShare.startMs}", kotlin.math.abs(byShare.startMs - 22_500) > 1_000)
   }
 
   /** A stemmed match ("meetings" for "meeting") and a word in the middle of a long segment are placed inside it. */

@@ -249,7 +249,8 @@ class SimilarSearchTest {
     val r = similar(seed)
     assertEquals(setOf("beach.jpg", "market.jpg", "other.mp4"), names(r).toSet())
     assertTrue(r.hits.single { it.file.name == "other.mp4" }.locator is Locator.Time)   // it points at the matching frame
-    assertEquals(2000L, (r.hits.single { it.file.name == "other.mp4" }.locator as Locator.Time).startMs)
+    // the frame's slot is 2000..3000 and these rows carry no keyframe time (marks), so the badge is the slot's middle, where the frame was asked for
+    assertEquals(2500L, (r.hits.single { it.file.name == "other.mp4" }.locator as Locator.Time).startMs)
   }
 
   @Test fun aVideoSeedIsCappedAtEightEvenlySpacedFrames() {

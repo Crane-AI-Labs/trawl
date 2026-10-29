@@ -39,6 +39,7 @@
   <string name="meter_title_not_started">Tikikatandikire kushoma</string>
   <string name="meter_title_scanning">Kusherura omu simu yaawe</string>
   <string name="meter_title_indexing">Okushoma fayiro zaawe</string>
+  <string name="meter_title_needs_models">Okurinda modeli z\'okusherura</string>
   <string name="meter_title_up_to_date">Byona bihikire</string>
   <string name="meter_title_error">Enshobi yabaho</string>
   <string name="meter_sub_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> neija kutandika yaaba neebaasa kureeba fayiro zaawe.</string>
@@ -47,6 +48,7 @@
   <string name="meter_sub_progress_eta">%1$s aha %2$s byetegyereziibwe · harikuburaho nka %3$s</string>
   <string name="meter_sub_progress_estimating">%1$s ahari %2$s zyetegyereziibwe · kuteebereza obwire</string>
   <string name="meter_sub_needs_charger">Amaziina n\'ebigambo hati. Amakuru nigatandika waataho chaaji.</string>
+  <string name="meter_sub_needs_models">Amaziina n\'ebigambo nibikora hati. Amakuru nigatandika modeli zimaze kuba aha simu.</string>
   <string name="meter_sub_reembed">Kuhindura ebishushani ahabw\'omuringo omusya: %1$s ahari %2$s. Okusherura nikugumizamu kukora.</string>
   <string name="meter_sub_reembed_eta">Kuhindura ebishushani ahabw\'omuringo omusya: %1$s ahari %2$s · haraburaho nka %3$s</string>
   <string name="meter_sub_reembed_battery">Kuhindura ebishushani ahabw\'omuringo omusya: %1$s ahari %2$s. Ebindi nibigumizamu waataho chaaji.</string>
@@ -85,6 +87,7 @@
   <string name="sheet_detail_scanning"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> neekora orukarra rwa fayiro zaawe. Eki nikitwara omunoti gumwe nari ebiri.</string>
   <string name="sheet_detail_light_on_battery">Amaziina n\'ebigambo nibishomwa hati n\'ebishushani bikareebwaho ahonaaho, n\'ahabw\'ekyo okusherura nikukora. Omuringo gwona ogurikuha ebyazoorwa birungi gukamara waata simu aha chaaji.</string>
   <string name="sheet_detail_needs_charger">Amaziina n\'ebigambo nibishomwa hati, n\'ahabw\'ekyo okusherura nikukora. Okwetegyereza eby\'ebishushani n\'ebyandiikwa kiratandika waata simu aha chaaji.</string>
+  <string name="sheet_detail_needs_models">Amaziina n\'ebigambo nibishomwa hati, n\'ahabw\'ekyo okusherura nikukora. Okwetegyereza eby\'ebishushani n\'ebyandiikwa kiratandika modeli z\'okusherura zimaze kuba aha simu. Okuteeka chaaji tikihindura ekintu modeli zitakahika.</string>
   <string name="sheet_detail_indexing">Amaziina n\'ebigambo nibibanza, n\'ahabw\'ekyo okusherura nikukora ahonaaho. Okwetegyereza ebi ebishushani n\'ebyandiikwa birikworeka nikitwara obwire buraikye, kandi kiba kirungi nyekiro eri aha kachaji.</string>
   <string name="sheet_detail_error">Okushoma kwayemerera kutateekateekirwe. Ebyazoorwa byaawe eby\'enyima birinzirwe.</string>
   <string name="sheet_detail_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> tekatandikire kushoma.</string>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="strip_group">Hotuna daga bidiyon kusa da %1$s</string>
+  <string name="strip_open_at">Buɗe bidiyon a %1$s</string>
+  <string name="strip_open_at_match">Buɗe bidiyon a %1$s, lokacin da aka samu daidaito</string>
+  <string name="strip_peek_label">Nuna hotuna kusa da wannan lokacin</string>
+  <string name="strip_peek_around">Kusa da %1$s</string>
+  <string name="strip_peek_hint">Taɓa hoto don buɗe bidiyon a daidai wannan lokacin.</string>
+</resources>

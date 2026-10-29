@@ -22,6 +22,9 @@
   <string name="models_try_again">Ongera ugerageze</string>
   <string name="models_refused_wrong_class">Iyi fayiro ni iy\'ubundi bwoko bwa telefone. Kanda Fata moderi kugira ngo ukuremo ijyanye n\'iyi telefone.</string>
   <string name="models_refused_damaged">Fayiro yangiritse cyangwa ntiyuzuye, bityo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ntiyayikoresheje. Ongera uyikuremo, hanyuma wongere ugerageze.</string>
+  <string name="models_refused_incomplete">Gukurura byahagaze bitarangiye. Kanda kuri Fata moderi kugira ngo utangire bundi bushya.</string>
+  <string name="models_refused_incomplete_progress">MB %1$d kuri %2$d zamaze kuza.</string>
+  <string name="models_refused_unreadable">Ifayiro ntiyashoboye gufungurwa. Reba ko igihari muri telefone, hanyuma wongere ugerageze.</string>
   <string name="models_refused_not_signed"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ntiyashoboye kwemeza ko iyi fayiro ari nyayo, bityo ntiyayikoresheje. Kanda Fata moderi kugira ngo wongere uyikuremo.</string>
   <string name="models_refused_older">Iyi fayiro irashaje kurusha moderi zisanzwe kuri iyi telefone, bityo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yagumanye izigezweho.</string>
   <string name="models_refused_no_space">Nta mwanya uhagije uri kuri iyi telefone. Shaka umwanya ungana na %1$d MB, hanyuma wongere ugerageze.</string>

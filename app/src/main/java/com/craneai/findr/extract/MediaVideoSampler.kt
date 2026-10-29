@@ -28,6 +28,8 @@ private const val TAG = "FindrVideo"
  * recycle) the bitmaps, at most `maxFrames` of them.
  *
  * Videos under 3 s get one frame, audio-only files get none, and a failure logs and keeps the frames fetched before it.
+ * Each frame's `timeMs` is the keyframe's own time: the picture is fetched at the keyframe nearest the middle of its slot and that
+ * keyframe's time is what the result shows.
  */
 class MediaVideoSampler : VideoSampler {
 
@@ -86,18 +88,30 @@ class MediaVideoSampler : VideoSampler {
           (0 until n).map { i -> ShotSpan(duration * i / n, maxOf(duration * (i + 1) / n, 1)) }
         }
 
-        // 3. Fetch just those frames, at embedder size, handing each one over as soon as it is ready.
-        for (shot in shots) {
-          ctx.ensureActive()
-          val bitmap = fetch(retriever, fromMs + shot.midMs, shown, rotation) ?: continue
-          val jpeg = ByteArrayOutputStream(64 * 1024).also { bitmap.compress(Bitmap.CompressFormat.JPEG, 90, it) }
-          onFrame(VideoFrame(fromMs + shot.midMs, fromMs + shot.startMs, fromMs + shot.endMs, jpeg.toByteArray(), bitmap))
-          kept++
+        // 3. Fetch just those frames, at embedder size, handing each one over as soon as it is ready. The keyframe nearest the middle of a
+        // slot is looked up first (the container's index, nothing decoded) and the picture fetched AT that time, so the frame carries the
+        // time it really comes from, not the time it was asked for ([KeyframeClock]).
+        val clock = if (shots.isNotEmpty()) KeyframeClock.open(context, uri) else null
+        var clockNs = 0L
+        try {
+          for (shot in shots) {
+            ctx.ensureActive()
+            val asked = fromMs + shot.midMs
+            val t0 = System.nanoTime()
+            val at = clock?.nearestMs(asked) ?: asked
+            clockNs += System.nanoTime() - t0
+            val bitmap = fetch(retriever, at, shown, rotation) ?: continue
+            val jpeg = ByteArrayOutputStream(64 * 1024).also { bitmap.compress(Bitmap.CompressFormat.JPEG, 90, it) }
+            onFrame(VideoFrame(at, fromMs + shot.startMs, fromMs + shot.endMs, jpeg.toByteArray(), bitmap))
+            kept++
+          }
+        } finally {
+          clock?.close()
         }
         Log.i(
           TAG,
           "sampled ${duration / 1000.0}s video: ${lumas.size} tiny frames, ${shots.size} shots, " +
-            "$kept kept in ${SystemClock.elapsedRealtime() - started} ms",
+            "$kept kept in ${SystemClock.elapsedRealtime() - started} ms (keyframe times ${clockNs / 1_000_000} ms)",
         )
         // The container opened and says it has pictures, but the phone's decoders gave none: not a video it can read.
         if (kept == 0 && shots.isNotEmpty()) throw FormatNotReadable("no video frame could be decoded")

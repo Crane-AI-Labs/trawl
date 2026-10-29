@@ -22,6 +22,9 @@
   <string name="models_try_again">Réessayer</string>
   <string name="models_refused_wrong_class">Ce fichier est prévu pour un autre type de téléphone. Utilisez Télécharger les modèles pour obtenir celui qui convient à ce téléphone.</string>
   <string name="models_refused_damaged">Le fichier est endommagé ou incomplet. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ne l\'a donc pas utilisé. Téléchargez-le de nouveau, puis réessayez.</string>
+  <string name="models_refused_incomplete">Le téléchargement s\'est arrêté avant la fin. Touchez Télécharger les modèles pour le relancer.</string>
+  <string name="models_refused_incomplete_progress">%1$d MB sur %2$d MB reçus.</string>
+  <string name="models_refused_unreadable">Le fichier n\'a pas pu être ouvert. Vérifiez qu\'il est toujours sur le téléphone, puis réessayez.</string>
   <string name="models_refused_not_signed"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> n\'a pas pu confirmer que ce fichier est authentique. Il n\'a donc pas été utilisé. Utilisez Télécharger les modèles pour le télécharger de nouveau.</string>
   <string name="models_refused_older">Ce fichier est plus ancien que les modèles déjà présents sur ce téléphone. <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> a donc conservé les plus récents.</string>
   <string name="models_refused_no_space">Il n\'y a pas assez d\'espace libre sur ce téléphone. Libérez environ %1$d MB, puis réessayez.</string>

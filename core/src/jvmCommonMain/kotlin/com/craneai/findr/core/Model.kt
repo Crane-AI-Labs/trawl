@@ -142,6 +142,11 @@ data class IndexStatus(
   /** What the matrix will need once every file is read. */
   val estimatedSearchMemoryBytes: Long = 0,
   val modelBytes: Long = 0,        // the embedding model on disk
+  /**
+   * A search model is on the phone. False on a first run before the models are downloaded: files get names and words only, nothing
+   * is understood by meaning yet, and the charger changes nothing. The meter then says so instead of promising meaning "when you charge".
+   */
+  val modelReady: Boolean = true,
   val speechReady: Boolean = true, // the speech models are installed (false: the speech setting is on but has nothing to run yet)
   val currentFile: String? = null,
   val lastError: String? = null,
@@ -156,6 +161,9 @@ data class IndexStatus(
 ) {
   /** The files that can still be understood: [filesKnown] less the ones that ended as unreadable. The denominator of "understood". */
   val filesReadable: Int get() = (filesKnown - filesUnreadable).coerceAtLeast(0)
+
+  /** Reading is under way but meaning cannot start: there is no search model yet. Only names and words are being read. */
+  val waitingForModels: Boolean get() = !modelReady && phase == IndexPhase.INDEXING
 }
 
 /** The progressive re-embed after a model upgrade: files done of files the upgrade queued. Search works throughout. */

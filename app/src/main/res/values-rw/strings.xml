@@ -39,6 +39,7 @@
   <string name="meter_title_not_started">Ntiriratangira gusoma</string>
   <string name="meter_title_scanning">Gushakisha muri telefone yawe</string>
   <string name="meter_title_indexing">Gusoma amafayiro yawe</string>
+  <string name="meter_title_needs_models">Dutegereje moderi zo gushakisha</string>
   <string name="meter_title_up_to_date">Byose biragezweho</string>
   <string name="meter_title_error">Hari ikitagenda neza</string>
   <string name="meter_sub_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> izatangira nimara kubona amafayiro yawe.</string>
@@ -47,6 +48,7 @@
   <string name="meter_sub_progress_eta">%1$s kuri %2$s byasobanutse · hasigaye hafi %3$s</string>
   <string name="meter_sub_progress_estimating">%1$s kuri %2$s byamaze kumvikana · kubara igihe bisaba</string>
   <string name="meter_sub_needs_charger">Amazina n\'amagambo ubu. Ibisobanuro bizatangira nucomeka umuriro.</string>
+  <string name="meter_sub_needs_models">Amazina n\'amagambo birakora ubu. Ibisobanuro bizatangira moderi nizimara kujya muri telefone.</string>
   <string name="meter_sub_reembed">Kuvugurura amafoto kuri moderi nshya: %1$s kuri %2$s. Shakisha iracyakora.</string>
   <string name="meter_sub_reembed_eta">Kuvugurura amafoto kuri moderi nshya: %1$s kuri %2$s · hasigaye nka %3$s</string>
   <string name="meter_sub_reembed_battery">Kuvugurura amafoto kuri moderi nshya: %1$s kuri %2$s. Ibisigaye bizakomeza nucomeka umuriro.</string>
@@ -85,6 +87,7 @@
   <string name="sheet_detail_scanning"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> irimo gukora urutonde rw\'amafayiro yawe. Ibi bifata umunota umwe cyangwa ibiri.</string>
   <string name="sheet_detail_light_on_battery">Amazina n\'amagambo byasomwe ubu kandi amafoto arebwa byihuse, bityo Shakisha irakora ubu. Ubuziranenge bwuzuye, butanga ibisubizo byiza kurushaho, buzarangira telefone iri ku muriro.</string>
   <string name="sheet_detail_needs_charger">Amazina n\'amagambo arimo gusomwa ubu, bityo Shakisha irakora. Gusobanukirwa ibiri mu mafoto n\'inyandiko bizatangira telefone iri ku muriro.</string>
+  <string name="sheet_detail_needs_models">Amazina n\'amagambo arimo gusomwa ubu, bityo Shakisha irakora. Gusobanukirwa ibiri mu mafoto n\'inyandiko bizatangira moderi zo gushakisha nizimara kujya muri telefone. Gucomeka umuriro ntibihindura ikintu mbere yaho.</string>
   <string name="sheet_detail_indexing">Amazina n\'amagambo biheraho, bityo gushakisha bigakora ako kanya. Gusobanukirwa ibiri mu mafoto n\'inyandiko bitwara igihe kirekire, kandi bikorwa neza nijoro telefone iri ku muriro.</string>
   <string name="sheet_detail_error">Gusoma byahagaze bitunguranye. Ibisubizo byawe bya mbere biratekanye.</string>
   <string name="sheet_detail_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ntaratangira gusoma.</string>

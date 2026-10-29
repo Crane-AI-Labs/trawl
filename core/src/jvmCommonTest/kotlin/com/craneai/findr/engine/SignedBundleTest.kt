@@ -231,11 +231,28 @@ class SignedBundleTest {
     assertTrue(File(dir, modelName).isFile)
   }
 
-  @Test fun aTruncatedDownloadIsDamagedAndLeavesNothing() {
+  @Test fun aTruncatedDownloadIsIncompleteNotDamagedAndLeavesNothing() {
     val dir = tmp.newFolder()
     val bytes = bundle()
-    assertEquals(Refusal.DAMAGED, refused(installer(dir).install(ByteArrayInputStream(bytes.copyOf(bytes.size - 50_000)))))
+    // Cut inside the last file, inside a middle file and inside the manifest zone: each is a download that stopped, none is damage.
+    for (cut in listOf(50_000, 200_000, bytes.size - 100)) {
+      assertEquals("cut $cut", Refusal.INCOMPLETE, refused(installer(dir).install(ByteArrayInputStream(bytes.copyOf(bytes.size - cut)))))
+    }
     assertEquals(emptyList<String>(), snapshot(dir))
+  }
+
+  @Test fun aBundleCutShortHasNoZipEndAndAWholeOneHas() {
+    val bytes = bundle()
+    assertTrue(ZipTail.hasEnd(bytes))
+    assertFalse(ZipTail.hasEnd(bytes.copyOf(bytes.size - 1)))
+    assertFalse(ZipTail.hasEnd(bytes.copyOf(bytes.size / 2)))
+  }
+
+  @Test fun aWholeBundleWithAChangedByteIsStillDamagedNotIncomplete() {
+    val bytes = bundle()
+    bytes[bytes.size / 2] = (bytes[bytes.size / 2].toInt() xor 1).toByte()
+    assertTrue(ZipTail.hasEnd(bytes))   // it ends like a zip, so it is not "stopped": the SHA says what it is
+    assertEquals(Refusal.DAMAGED, refused(installer().install(ByteArrayInputStream(bytes))))
   }
 
   @Test fun aFileMissingFromTheZipIsDamaged() {

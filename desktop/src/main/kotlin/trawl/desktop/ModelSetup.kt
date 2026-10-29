@@ -123,6 +123,8 @@ class ModelSetup(
       // The signed code only says "wrong class". A computer takes the standard bundle (the 440m model), the phone-sized lite bundle is
       // refused on purpose, and the person should be told which file to fetch, not that it is "a different kind of device".
       if (r == Refusal.WRONG_CLASS && profile == MemoryProfile.LITE) "refusal_wrong_class_lite"
+      // The computer has no download watcher: a copy that stopped short or cannot be read gets the existing "damaged or incomplete, get it again".
+      else if (r == Refusal.INCOMPLETE || r == Refusal.UNREADABLE) "refusal_damaged"
       else "refusal_" + r.name.lowercase()
   }
 }

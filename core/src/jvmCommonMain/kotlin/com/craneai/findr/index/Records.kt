@@ -91,7 +91,7 @@ class Segment(
   val text: String? = null,
   val vector: FloatArray? = null,
   val late: Boolean = false,
-  val marks: String? = null,        // transcript pieces: where each spoken segment sits in the text (core.TranscriptMarks)
+  val marks: String? = null,        // transcript pieces: where each spoken word or segment sits in the text (core.TranscriptMarks); a video picture: its keyframe time (core.FrameMoment)
 )
 
 /** A row of the work queue: just enough for the engine to open the file and know where it left off. */

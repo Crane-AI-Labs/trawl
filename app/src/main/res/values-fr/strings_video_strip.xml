@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="strip_group">Photos de la vidéo vers %1$s</string>
+  <string name="strip_open_at">Ouvrir la vidéo à %1$s</string>
+  <string name="strip_open_at_match">Ouvrir la vidéo à %1$s, au moment trouvé</string>
+  <string name="strip_peek_label">Afficher les photos autour de ce moment</string>
+  <string name="strip_peek_around">Autour de %1$s</string>
+  <string name="strip_peek_hint">Touchez une photo pour ouvrir la vidéo à ce moment.</string>
+</resources>

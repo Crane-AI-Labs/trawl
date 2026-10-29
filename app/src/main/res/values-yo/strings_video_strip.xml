@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="strip_group">Àwọn fọ́tò láti inú Fídíò ní àyíká %1$s</string>
+  <string name="strip_open_at">Ṣí Fídíò ní %1$s</string>
+  <string name="strip_open_at_match">Ṣí Fídíò ní %1$s, àkókò tí ó bá mu</string>
+  <string name="strip_peek_label">Fi àwọn fọ́tò ní àyíká àkókò yìí hàn</string>
+  <string name="strip_peek_around">Ní àyíká %1$s</string>
+  <string name="strip_peek_hint">Fọwọ́ kan fọ́tò kan láti ṣí Fídíò ní ibi yẹn.</string>
+</resources>

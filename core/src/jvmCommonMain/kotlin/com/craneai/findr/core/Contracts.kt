@@ -148,8 +148,15 @@ class FormatNotReadable(val why: String, cause: Throwable? = null) : java.io.IOE
 /** A window of a soundtrack as 16 kHz mono 16-bit WAV bytes, for the audio encoder. */
 class AudioWindow(val startMs: Long, val endMs: Long, val wav: ByteArray)
 
-/** One stretch of speech: when it starts and ends in the file, and what was said. */
-class SpeechSegment(val startMs: Long, val endMs: Long, val text: String)
+/** One word the speech model heard and when it began, in the file's time. [endMs] is where its last sound ends (never past the next word). */
+class SpokenWord(val text: String, val startMs: Long, val endMs: Long)
+
+/**
+ * One stretch of speech: when it starts and ends in the file, and what was said. [words] says when each word of [text] was said,
+ * for recognisers that report it (Parakeet); empty for the rest (Moonshine), which keep the one time for the whole stretch.
+ * When present, the words' texts joined by single spaces are [text] exactly ([com.craneai.findr.engine.TranscriptPieces.speech] checks).
+ */
+class SpeechSegment(val startMs: Long, val endMs: Long, val text: String, val words: List<SpokenWord> = emptyList())
 
 /** What a soundtrack is made of, in words: the speech, and the AudioSet sound labels heard in each window. */
 class SoundTags(val startMs: Long, val endMs: Long, val labels: List<String>)

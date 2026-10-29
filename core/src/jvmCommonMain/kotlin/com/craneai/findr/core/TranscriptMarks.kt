@@ -1,13 +1,15 @@
 package com.craneai.findr.core
 
 /**
- * Where inside a transcript piece each spoken stretch sits, so a search hit can say WHEN the matched words were said instead of
+ * Where inside a transcript piece each spoken word or stretch sits, so a search hit can say WHEN the matched words were said instead of
  * when the piece began. A piece is up to ~400 characters of speech segments joined by single spaces; a short phone video is one piece
  * from 0:00, so the piece's own start made every match read "at 0:00".
  *
- * The marks are stored with the piece (`segments.marks`) as `offset:startMs:endMs` entries joined by commas, one per speech segment:
- * [Mark.offset] is where the segment's text begins in the piece's text, the times are in the whole file's time (the ASR window offset
- * is already added). A few bytes per segment, read only for the one segment a hit points at.
+ * The marks are stored with the piece (`segments.marks`) as `offset:startMs:endMs` entries joined by commas: [Mark.offset] is where the
+ * marked text begins in the piece's text, the times are in the whole file's time (the ASR window offset is already added). A recogniser
+ * that times its words (Parakeet) gives one mark per WORD, so a hit lands on the word (~19 bytes a word, ~1.3 KB for a full piece); the
+ * rest give one per speech segment, a stretch of up to 15 s that a hit is placed in by character share. Both read the same way; a hit
+ * reads only the one mark it points at.
  *
  * Pieces from before the marks existed have none ([timeAt] with no marks): they are placed by character position between the
  * piece's start and end, which is within a few seconds for speech (a speaker's pace is steady over a ~400-character piece) and far

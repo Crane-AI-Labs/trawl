@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="strip_group">በ%1$s አካባቢ ከቪዲዮው የተወሰዱ ፎቶዎች</string>
+  <string name="strip_open_at">ቪዲዮውን በ%1$s ክፈት</string>
+  <string name="strip_open_at_match">ቪዲዮውን በ%1$s፣ በተዛመደው ቅጽበት ክፈት</string>
+  <string name="strip_peek_label">በዚህ ቅጽበት አካባቢ ያሉ ፎቶዎችን አሳይ</string>
+  <string name="strip_peek_around">በ%1$s አካባቢ</string>
+  <string name="strip_peek_hint">ቪዲዮውን በዚያ ቦታ ለመክፈት ፎቶውን ንካ።</string>
+</resources>

@@ -22,6 +22,9 @@
   <string name="models_try_again">Garukamu</string>
   <string name="models_refused_wrong_class">Fayiro egi n\'eya simu y\'omuringo ogundi. Koresa Tunga modeli kuhanura eya simu egi.</string>
   <string name="models_refused_damaged">Fayiro egi ehendekire nari tehanuurwe yoona, n\'ahabw\'ekyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> teragikoresize. Garuka ogihanuure, reero ogarukemu.</string>
+  <string name="models_refused_incomplete">Okukurura kwayimire kutahwire. Kora aha Tunga modeli kutandika rundi.</string>
+  <string name="models_refused_incomplete_progress">MB %1$d aha %2$d zihikire.</string>
+  <string name="models_refused_unreadable">Fayiro tekabaisire kuguriirwa. Kakasa ngu ekiri aha simu, reero ogarukemu.</string>
   <string name="models_refused_not_signed"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> teyaabaasize kuhamya ngu fayiro egi n\'ey\'amazima, nikyo etaragikoresize. Koresa Tunga modeli kugaruka kugihanura.</string>
   <string name="models_refused_older">Fayiro egi n\'eya ira okukira modeli eziri aha simu egi, n\'ahabw\'ekyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ekagumizamu n\'ezihyaka.</string>
   <string name="models_refused_no_space">Tihariho mwanya gurikumara aha simu egi. Hanga omwanya nka %1$d MB, reero ogarukemu.</string>

@@ -2,7 +2,7 @@
 
 > Trawl by Crane AI Labs is an Android app that finds any photo, screenshot, document, video or voice note on the phone by describing it. It runs entirely on the phone: the app has no internet permission, needs no account and shows no ads.
 
-Status on 2026-10-22: version 1.0.3 is released and free to download. The Android app is at https://github.com/Crane-AI-Labs/trawl/releases/download/v1.0.3/trawl-1.0.3.apk, with Trawl Go beside it at https://github.com/Crane-AI-Labs/trawl/releases/download/v1.0.3/trawl-go-1.0.3.apk. The search models are a separate download: https://github.com/Crane-AI-Labs/trawl/releases/download/models-v1/trawl-models.zip (standard, 670 MB) and https://github.com/Crane-AI-Labs/trawl/releases/download/models-v1/trawl-models-lite.zip (Save data, 304 MB). The source code is at https://github.com/Crane-AI-Labs/trawl under the Apache 2.0 licence.
+Status on 2026-10-30: version 1.0.4 is released and free to download. The Android app is at https://github.com/Crane-AI-Labs/trawl/releases/download/v1.0.4/trawl-1.0.4.apk, with Trawl Go beside it at https://github.com/Crane-AI-Labs/trawl/releases/download/v1.0.4/trawl-go-1.0.4.apk. The search models are a separate download: https://github.com/Crane-AI-Labs/trawl/releases/download/models-v1/trawl-models.zip (standard, 670 MB) and https://github.com/Crane-AI-Labs/trawl/releases/download/models-v1/trawl-models-lite.zip (Save data, 304 MB). The source code is at https://github.com/Crane-AI-Labs/trawl under the Apache 2.0 licence.
 
 "Trawl" here means Trawl by Crane AI Labs, the Android file-search app. It is unrelated to other software or services that share the name.
 

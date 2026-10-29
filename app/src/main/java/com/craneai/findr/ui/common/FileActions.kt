@@ -11,6 +11,7 @@ import android.provider.DocumentsContract
 import android.provider.MediaStore
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
+import com.craneai.findr.core.FileKind
 import com.craneai.findr.core.IndexedFile
 import java.io.File
 
@@ -32,12 +33,32 @@ object FileActions {
 
   private fun isSample(file: IndexedFile) = file.uri.startsWith("fake://")
 
-  fun open(context: Context, file: IndexedFile): OpenResult {
+  /** The extra video players read for where to start: an Int, in ms (MX Player's documented name, also read by VLC, mpv-android and Just Player). */
+  internal const val EXTRA_POSITION = "position"
+
+  /** The player starts this far before the moment, so the first word or the start of the scene isn't clipped. */
+  internal const val OPEN_LEAD_MS = 1_000L
+
+  /**
+   * The start position to pass for a result at [atMs]: [OPEN_LEAD_MS] before it (not before 0), only for a video or recording, and only
+   * when that is past the start and fits the Int the extra carries. The badge keeps the moment's own time; the lead is only where the
+   * player begins. Android has no standard start position for ACTION_VIEW, so a player that doesn't read the extra (the system
+   * Gallery, Google Photos) ignores it and plays from 0; the badge's time is then the only cue. Null: pass nothing.
+   */
+  internal fun startPosition(kind: FileKind, atMs: Long?): Int? {
+    if (kind != FileKind.VIDEO && kind != FileKind.AUDIO) return null
+    val from = (atMs ?: return null) - OPEN_LEAD_MS
+    return if (from > 0 && from <= Int.MAX_VALUE) from.toInt() else null
+  }
+
+  /** [atMs] is the moment of a timed result (a picture match in a video, a spoken phrase); see [startPosition]. */
+  fun open(context: Context, file: IndexedFile, atMs: Long? = null): OpenResult {
     if (isSample(file)) return OpenResult.SAMPLE
     val uri = file.uri.toUri()
     val intent = Intent(Intent.ACTION_VIEW)
       .setDataAndType(uri, file.mimeType ?: "*/*")
       .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    startPosition(file.kind, atMs)?.let { intent.putExtra(EXTRA_POSITION, it) }
     return try {
       context.startActivity(intent)
       OpenResult.OPENED

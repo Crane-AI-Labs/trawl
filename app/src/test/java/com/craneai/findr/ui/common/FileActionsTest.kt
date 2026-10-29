@@ -29,3 +29,27 @@ class FileActionsTest {
     assertEquals("/storage/emulated/0/note.txt", FileActions.pathFromIndex("/storage/emulated/0", "", "note.txt"))
   }
 }
+
+/** [FileActions.startPosition]: when a result's moment is passed to the player as its start position. */
+class StartPositionTest {
+  @Test fun `a video result starts a second before its moment`() {
+    assertEquals(39_000, FileActions.startPosition(com.craneai.findr.core.FileKind.VIDEO, 40_000L))
+  }
+
+  @Test fun `a recording starts a second before its moment too`() {
+    assertEquals(94_500, FileActions.startPosition(com.craneai.findr.core.FileKind.AUDIO, 95_500L))
+  }
+
+  @Test fun `no moment, the start, or a moment past an Int passes nothing`() {
+    assertEquals(null, FileActions.startPosition(com.craneai.findr.core.FileKind.VIDEO, null))
+    assertEquals(null, FileActions.startPosition(com.craneai.findr.core.FileKind.VIDEO, 0L))
+    assertEquals(null, FileActions.startPosition(com.craneai.findr.core.FileKind.VIDEO, 1_000L))   // a second in: the lead reaches 0, so play from the start
+    assertEquals(1, FileActions.startPosition(com.craneai.findr.core.FileKind.VIDEO, 1_001L))
+    assertEquals(null, FileActions.startPosition(com.craneai.findr.core.FileKind.VIDEO, Int.MAX_VALUE + 1_001L))
+  }
+
+  @Test fun `a photo or document never gets a start position`() {
+    assertEquals(null, FileActions.startPosition(com.craneai.findr.core.FileKind.IMAGE, 5_000L))
+    assertEquals(null, FileActions.startPosition(com.craneai.findr.core.FileKind.PDF, 5_000L))
+  }
+}

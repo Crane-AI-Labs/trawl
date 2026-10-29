@@ -39,6 +39,7 @@
   <string name="meter_title_not_started">Ba a fara karantawa ba</string>
   <string name="meter_title_scanning">Ana duba wayarka</string>
   <string name="meter_title_indexing">Nazarin fayilolinku</string>
+  <string name="meter_title_needs_models">Ana jiran samfuran bincike</string>
   <string name="meter_title_up_to_date">An gama komai</string>
   <string name="meter_title_error">Wani abu ya tafi ba daidai ba</string>
   <string name="meter_sub_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> zai fara da zarar ya iya ganin fayilolinku.</string>
@@ -47,6 +48,7 @@
   <string name="meter_sub_progress_eta">An fahimci %1$s cikin %2$s · saura kusan %3$s</string>
   <string name="meter_sub_progress_estimating">An fahimci %1$s cikin %2$s · ana kiyasta lokaci</string>
   <string name="meter_sub_needs_charger">Sunaye da kalmomi a yanzu. Za a fara fahimtar ma\'ana idan an saka caji.</string>
+  <string name="meter_sub_needs_models">Sunaye da kalmomi na aiki yanzu. Ma\'ana za ta fara idan samfuran sun shiga wayar.</string>
   <string name="meter_sub_reembed">Ana sabunta hotuna don sabon tsari: %1$s cikin %2$s. Bincika na ci gaba da aiki.</string>
   <string name="meter_sub_reembed_eta">Ana sabunta hotuna don sabon tsari: %1$s cikin %2$s · ya rage kusan %3$s</string>
   <string name="meter_sub_reembed_battery">Ana sabunta hotuna don sabon tsari: %1$s cikin %2$s. Za a ci gaba da sauran idan an saka caji.</string>
@@ -85,6 +87,7 @@
   <string name="sheet_detail_scanning"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> na haɗa jerin fayilolinku. Wannan zai ɗauki minti ɗaya ko biyu.</string>
   <string name="sheet_detail_light_on_battery">Ana duba sunaye da kalmomi a yanzu kuma ana saurin duba hotuna, don haka bincika na aiki yanzu. Cikakken inganci, wanda ke ba da sakamako mafi kyau, zai kammala idan wayar na caji.</string>
   <string name="sheet_detail_needs_charger">Ana duba sunaye da kalmomi a yanzu, don haka bincika na aiki tuni. Fahimtar abin da hotuna da takardu suka ƙunsa zai fara idan wayar tana caji.</string>
+  <string name="sheet_detail_needs_models">Ana duba sunaye da kalmomi a yanzu, don haka bincika na aiki tuni. Fahimtar abin da hotuna da takardu suka ƙunsa zai fara idan samfuran bincike sun shiga wayar. Caji ba ya canza komai kafin nan.</string>
   <string name="sheet_detail_indexing">Ana fara da sunaye da kalmomi, don a bincika kusan nan take. Fahimtar abin da hotuna da takardu ke nufi yana ɗaukar lokaci, kuma ya fi kyau a yi shi da dare ana caji.</string>
   <string name="sheet_detail_error">Karatun ya tsaya ba zato ba tsammani. Sakamakonku na baya yana nan lafiya.</string>
   <string name="sheet_detail_not_started"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> bai fara karantawa ba tukuna.</string>

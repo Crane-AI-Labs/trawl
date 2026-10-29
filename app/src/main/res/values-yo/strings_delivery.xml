@@ -22,6 +22,9 @@
   <string name="models_try_again">Gbìyànjú lẹ́ẹ̀kan sí i</string>
   <string name="models_refused_wrong_class">Fáìlì yìí jẹ́ ti irú fóònù míì. Lo Gba àwọn módẹ́lì láti gba èyí tó yẹ fún fóònù yìí sílẹ̀.</string>
   <string name="models_refused_damaged">Fáìlì náà ti bàjẹ́ tàbí kò pé, nítorí náà <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kò lò ó. Gba á sílẹ̀ lẹ́ẹ̀kan sí i, lẹ́yìn náà tún gbìyànjú.</string>
+  <string name="models_refused_incomplete">Ìgbàsílẹ̀ dúró kí ó tó parí. Fọwọ́ kan Gba àwọn módẹ́lì láti bẹ̀rẹ̀ rẹ̀ lẹ́ẹ̀kan sí i.</string>
+  <string name="models_refused_incomplete_progress">%1$d lára %2$d MB ti dé.</string>
+  <string name="models_refused_unreadable">A kò lè ṣí fáìlì náà. Rí i dájú pé ó ṣì wà lórí fóònù, lẹ́yìn náà tún gbìyànjú.</string>
   <string name="models_refused_not_signed"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kò lè fìdí rẹ̀ múlẹ̀ pé fáìlì yìí jẹ́ ojúlówó, nítorí náà kò lò ó. Lo Gba àwọn módẹ́lì láti gba á sílẹ̀ lẹ́ẹ̀kan sí i.</string>
   <string name="models_refused_older">Fáìlì yìí ti pẹ́ ju àwọn módẹ́lì tó wà lórí fóònù yìí lọ, nítorí náà <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> fi àwọn tuntun sílẹ̀.</string>
   <string name="models_refused_no_space">Àyè òfìfo tó wà lórí fóònù yìí kò tó. Tú àyè tó tó %1$d MB sílẹ̀, lẹ́yìn náà tún gbìyànjú.</string>

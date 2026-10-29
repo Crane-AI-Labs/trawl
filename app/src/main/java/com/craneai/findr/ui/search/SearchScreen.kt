@@ -36,7 +36,9 @@ import androidx.compose.runtime.DisposableEffect
 import kotlin.math.abs
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import com.craneai.findr.core.Locator
 import com.craneai.findr.ui.common.GridFling
+import com.craneai.findr.ui.common.LocalPreviewBlur
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.text.input.clearText
@@ -209,7 +211,12 @@ fun SearchScreen(
   }
   // Remembered so the grid's cells see the same lambdas on every recomposition and can be skipped.
   val reportState = rememberUpdatedState(::report)
-  val onOpen: (IndexedFile) -> Unit = remember(context) { { reportState.value(FileActions.open(context, it)) } }
+  val onOpen: (IndexedFile, Long?) -> Unit = remember(context) { { file, atMs -> reportState.value(FileActions.open(context, file, atMs)) } }
+  // A tap on a picture of a video's strip: the video opens at the time that picture is from (VideoStrip).
+  val onOpenAt: (IndexedFile, Long) -> Unit = remember(context) { { f, ms -> reportState.value(FileActions.open(context, f, ms)) } }
+  // The video whose "pictures around this moment" sheet is open (null = closed), by uri so it survives a rotation, and the moment (ms).
+  var peekUri by rememberSaveable { mutableStateOf<String?>(null) }
+  var peekMs by rememberSaveable { mutableStateOf(0L) }
   // A sensitive item leaves the phone (Share) or goes on the clipboard (Copy) only after a plain confirmation. The files to hand over are
   // held by their ids (so it survives a rotation); one file from a row or tile, or every ticked file from the selection bar.
   var leaveIds by rememberSaveable { mutableStateOf<List<Long>>(emptyList()) }
@@ -324,7 +331,8 @@ fun SearchScreen(
           onFilter = searchViewModel::setFilter, listCovered = showSheet, onListVisible = searchViewModel::setListVisible,
           fieldFocused = fieldFocused,
           onSort = searchViewModel::setSort, onDatePreset = searchViewModel::setDatePreset, onPickDates = { pickingDates = true }, onClearDate = searchViewModel::clearDate,
-          onClearSimilar = searchViewModel::clearSimilar, shortTop = shortTop)
+          onClearSimilar = searchViewModel::clearSimilar, shortTop = shortTop,
+          onOpenAt = onOpenAt, onPeek = { f, ms -> peekUri = f.uri; peekMs = ms })
       }
     }
 
@@ -372,7 +380,7 @@ fun SearchScreen(
       file = file,
       onShare = { actionUri = null; searchViewModel.clearSelection(); onShare(file) },
       onCopy = { actionUri = null; searchViewModel.clearSelection(); onCopy(file) },
-      onOpen = { actionUri = null; onOpen(file) },
+      onOpen = { actionUri = null; onOpen(file, null) },
       onShowFolder = { actionUri = null; onShowFolder(file) },
       onFindSimilar = if (Edition.FIND_SIMILAR) ({ actionUri = null; searchViewModel.findSimilar(file) }) else null,
       onMarkSensitive = { on ->
@@ -381,6 +389,18 @@ fun SearchScreen(
         scope.launch { snackbar.currentSnackbarData?.dismiss(); snackbar.showSnackbar(if (on) markedMsg else unmarkedMsg) }
       },
       onDismiss = { actionUri = null },
+    )
+  }
+
+  fileByUri(peekUri)?.let { file ->
+    val peekBlur = LocalPreviewBlur.current
+    MomentPeekSheet(
+      file = file,
+      momentMs = peekMs,
+      hidden = peekBlur.hides(file),
+      onOpenAt = { ms -> peekUri = null; onOpenAt(file, ms) },
+      onReveal = { peekBlur.reveal(file) },
+      onDismiss = { peekUri = null },
     )
   }
 
@@ -547,7 +567,7 @@ private fun dockStatus(state: SearchUiState): DockStatus? {
 private fun Results(
   state: SearchUiState,
   indexViewModel: IndexViewModel,
-  onOpen: (IndexedFile) -> Unit,
+  onOpen: (IndexedFile, Long?) -> Unit,
   onShare: (IndexedFile) -> Unit,
   onCopy: (IndexedFile) -> Unit,
   onToggle: (IndexedFile) -> Unit,
@@ -564,6 +584,10 @@ private fun Results(
   onClearSimilar: () -> Unit = {},
   /** A short window (ShortWindow): the header, cards, meter and chips, drawn as the first thing in the list so they scroll away with it. */
   shortTop: (@Composable () -> Unit)? = null,
+  /** Opens a video at a time: the pictures of a video row's strip (MomentStrip). */
+  onOpenAt: ((IndexedFile, Long) -> Unit)? = null,
+  /** Opens the sheet with the pictures around a video tile's matched moment. */
+  onPeek: ((IndexedFile, Long) -> Unit)? = null,
 ) {
   val reduce = LocalReduceMotion.current
   val short = shortTop != null
@@ -745,17 +769,18 @@ private fun Results(
               }, motion)
               is FeedItem.Cell -> MediaCell(
                 item.hit,
-                onOpen = { onOpen(item.hit.file) },
+                onOpen = { onOpen(item.hit.file, (item.hit.locator as? Locator.Time)?.startMs) },
                 onShare = { onShare(item.hit.file) },
                 onToggle = { onToggle(item.hit.file) },
                 modifier = motion,
                 icons = gridIcons,
                 selecting = selecting,
                 selected = item.hit.file.id in state.selected,
+                onPeek = (item.hit.locator as? Locator.Time)?.let { time -> onPeek?.let { peek -> { peek(item.hit.file, time.startMs) } } },
               )
               is FeedItem.Row -> FileRow(
                 item.hit,
-                onOpen = { onOpen(item.hit.file) },
+                onOpen = { onOpen(item.hit.file, (item.hit.locator as? Locator.Time)?.startMs) },
                 onShare = { onShare(item.hit.file) },
                 onCopy = { onCopy(item.hit.file) },
                 onToggle = { onToggle(item.hit.file) },
@@ -763,6 +788,7 @@ private fun Results(
                 compact = compactRows || short,
                 selecting = selecting,
                 selected = item.hit.file.id in state.selected,
+                onOpenAt = onOpenAt?.let { open -> { ms -> open(item.hit.file, ms) } },
               )
               is FeedItem.WeakToggle -> WeakToggle(item, onToggleWeak, motion)
             }

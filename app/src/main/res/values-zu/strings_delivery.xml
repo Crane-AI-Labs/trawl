@@ -22,6 +22,9 @@
   <string name="models_try_again">Zama futhi</string>
   <string name="models_refused_wrong_class">Leli fayela ngelohlobo oluhlukile lwefoni. Sebenzisa okuthi Thola amamodeli ukuze ulande elale foni.</string>
   <string name="models_refused_damaged">Ifayela lonakele noma aliphelele, ngakho <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ayilisebenzisanga. Lilande futhi, bese uzama futhi.</string>
+  <string name="models_refused_incomplete">Ukulanda kuyekile ngaphambi kokuphela. Thinta Thola amamodeli ukuze kuqale futhi.</string>
+  <string name="models_refused_incomplete_progress">%1$d MB kwangu-%2$d MB sekufikile.</string>
+  <string name="models_refused_unreadable">Ifayela alikwazanga ukuvulwa. Qinisekisa ukuthi lisafonini, bese uzama futhi.</string>
   <string name="models_refused_not_signed"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ayikwazanga ukuqinisekisa ukuthi leli fayela ngelangempela, ngakho ayilisebenzisanga. Sebenzisa okuthi Thola amamodeli ukuze ulilande futhi.</string>
   <string name="models_refused_older">Leli fayela lidala kunamamodeli asevele ekule foni, ngakho <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> igcine amasha.</string>
   <string name="models_refused_no_space">Asikho isikhala esanele kule foni. Vula isikhala esingaba ngu-%1$d MB, bese uzama futhi.</string>
