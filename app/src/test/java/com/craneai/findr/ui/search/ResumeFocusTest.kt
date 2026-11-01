@@ -18,4 +18,12 @@ class ResumeFocusTest {
     assertFalse(ResumeFocus.dropOnLeave(fieldFocused = false, keyboardUp = false))
     assertFalse(ResumeFocus.dropOnLeave(fieldFocused = false, keyboardUp = true))
   }
+
+  @Test fun `leaving with the keyboard put away holds the box off focus until the window is back`() {
+    assertTrue(ResumeFocus.holdOnLeave(keyboardUp = false))
+  }
+
+  @Test fun `leaving with the keyboard up never holds the box off focus`() {
+    assertFalse(ResumeFocus.holdOnLeave(keyboardUp = true))
+  }
 }

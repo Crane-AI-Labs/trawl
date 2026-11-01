@@ -60,18 +60,29 @@ object IndexPolicy {
   /** After a capped run, the next batch of new files is asked for this many minutes later; Android runs it in the next window it gives. */
   const val NEXT_BATCH_MIN = 10L
 
+  /**
+   * [batterySaver] is Android's Battery Saver (`PowerManager.isPowerSaveMode`): the person asked the phone to spend less, and the
+   * system restricts background work itself. It narrows only the middle setting, and only on battery:
+   *  - the strict setting (Gentle) is already held to words on battery, so nothing changes for it;
+   *  - Fast ("index everything on battery") ignores it: the person chose that on purpose, and its low-battery and heat limits still apply;
+   *  - Balanced keeps quick look (one core at a lowered priority) and holds the GPU work of new files back, as it does when warm.
+   * On the charger nothing is held: the charger is the one time the work costs the person nothing, and a Battery Saver left on by hand
+   * stays on while the phone charges. The reason stays NOT_CHARGING (plugging in lifts it), so the meter says what is true.
+   */
   fun decide(
     charging: Boolean,
     batteryPercent: Int,
     thermalStatus: Int,
     onlyWhileCharging: Boolean,
     fullOnBattery: Boolean,
+    batterySaver: Boolean = false,
   ): Decision = when {
     charging -> Decision(Tier.BULK, null)
     batteryPercent in 0 until MIN_BATTERY_PCT -> Decision(Tier.WORDS_ONLY, PauseReason.BATTERY_LOW)
     thermalStatus >= HOT_THERMAL_STATUS -> Decision(Tier.WORDS_ONLY, PauseReason.TOO_HOT)
     onlyWhileCharging -> Decision(Tier.WORDS_ONLY, PauseReason.NOT_CHARGING)   // the strict setting: nothing heavier than words on battery
     thermalStatus >= WARM_THERMAL_STATUS -> Decision(Tier.LIGHT, PauseReason.NOT_CHARGING, newFilesFullQuality = false)   // warm: quick look only
+    batterySaver && !fullOnBattery -> Decision(Tier.LIGHT, PauseReason.NOT_CHARGING, newFilesFullQuality = false)   // Battery Saver: the same light share
     fullOnBattery -> Decision(Tier.BULK, null)
     else -> Decision(Tier.LIGHT, PauseReason.NOT_CHARGING)
   }

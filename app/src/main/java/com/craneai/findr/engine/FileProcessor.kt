@@ -8,10 +8,12 @@ import com.craneai.findr.core.FindrLog as Log
 import com.craneai.findr.core.FindrLog.redact
 import com.craneai.findr.core.AsrEngine
 import com.craneai.findr.core.AudioDecoder
+import com.craneai.findr.core.CaptionTimeline
 import com.craneai.findr.core.FileKind
 import com.craneai.findr.core.FormatNotReadable
 import com.craneai.findr.core.IndexedFile
 import com.craneai.findr.core.OcrEngine
+import com.craneai.findr.core.OnScreenText
 import com.craneai.findr.core.TextExtractor
 import com.craneai.findr.core.VideoSampler
 import com.craneai.findr.extract.DocumentTextExtractor
@@ -151,11 +153,12 @@ class FileProcessor(
         val pages = text.extract(context, uri, file.mimeType, file.name).pages.toMutableList()
         // Trawl Go has no slow pass to read a scan later, so its words pass reads the first scanned pages itself (full: the slow pass does).
         if (Edition.GO && file.kind == FileKind.PDF && pages.any { it.isBlank() }) readScannedPages(uri, pages)
-        pages.flatMapIndexed { page, body -> Chunker.chunks(body).map { Piece(PieceKind.CHUNK, PieceModality.TEXT, page + 1L, page + 1L, it) } }
+        val ctx = coroutineContext
+        pages.flatMapIndexed { page, body -> Chunker.chunks(body) { ctx.ensureActive() }.map { Piece(PieceKind.CHUNK, PieceModality.TEXT, page + 1L, page + 1L, it) } }
       }
       FileKind.IMAGE, FileKind.SCREENSHOT -> {
         val bitmap = decode(uri, Edition.ocrMaxSide()) ?: return emptyList()
-        try { listOfNotNull(readable(ocr.read(bitmap))?.let { Piece(PieceKind.OCR, PieceModality.TEXT, text = it) }) }
+        try { listOfNotNull(OnScreenText.keep(ocr.readLines(bitmap))?.let { Piece(PieceKind.OCR, PieceModality.TEXT, text = it.text) }) }
         finally { bitmap.recycle() }
       }
       else -> null
@@ -212,7 +215,8 @@ class FileProcessor(
         }
       }
     }
-    val all = pages.flatMapIndexed { page, body -> Chunker.chunks(body).map { page + 1 to it } }
+    val ctx = coroutineContext
+    val all = pages.flatMapIndexed { page, body -> Chunker.chunks(body) { ctx.ensureActive() }.map { page + 1 to it } }
     val step = all.drop(fromChunk).take(CHUNKS_PER_STEP)
     // The first step replaces everything the file had, so it carries the rest of the text too (words only): a long
     // document stays searchable by all its words while later steps add meaning. Those later steps add vectors only,
@@ -226,6 +230,7 @@ class FileProcessor(
     } else emptyList()
     val next = (fromChunk + step.size).takeIf { it < all.size }
     val detail = (if (all.isEmpty()) "no text" else "chunks ${fromChunk + step.size}/${all.size}") +
+      (extracted.stopped?.let { ", stopped early: $it" } ?: "") +
       (if (unread > 0) ", $unread scanned pages past $OCR_MAX_PAGES not read" else "") +
       (if (extracted.truncated && all.isNotEmpty()) ", long file: first part read" else "")
     return Processed(pieces, next, detail)
@@ -247,12 +252,12 @@ class FileProcessor(
       val tv = System.nanoTime()
       val vector = async { embedder.image(bytes).also { visionMs = (System.nanoTime() - tv) / 1_000_000 } }
       val to = System.nanoTime()
-      val words = readable(ocr.read(bitmap))
+      val words = OnScreenText.keep(ocr.readLines(bitmap))
       val ocrMs = (System.nanoTime() - to) / 1_000_000
       val embedded = vector.await()
       // Numbers only (no names), so it is safe in a release log: where a picture's time goes (OCR runs beside the GPU embed).
       Log.i(TAG, "image stages: decode $decodeMs ms, jpeg $jpegMs ms, ocr $ocrMs ms (beside the embed), vision embed $visionMs ms, wall ${(System.nanoTime() - t0) / 1_000_000} ms")
-      Processed(listOfNotNull(words?.let { Piece(PieceKind.OCR, PieceModality.TEXT, text = it) }) +
+      Processed(listOfNotNull(words?.let { Piece(PieceKind.OCR, PieceModality.TEXT, text = it.text) }) +
         Piece(PieceKind.IMAGE, PieceModality.IMAGE, vector = embedded), null, null)
     } finally {
       bitmap.recycle()
@@ -270,11 +275,12 @@ class FileProcessor(
     val words = try {
       coroutineContext.ensureActive()
       letUserFirst()
-      readable(ocr.read(bitmap))
+      OnScreenText.keep(ocr.readLines(bitmap))
     } finally {
       bitmap.recycle()
     }
-    val pieces = words?.let { readText(it) }.orEmpty().toMutableList()
+    // A short reading (one word on a card or a sign) is words for the keyword index only; a text vector is made from the long rule's.
+    val pieces = words?.let { if (it.long) readText(it.text) else listOf(Piece(PieceKind.OCR, PieceModality.TEXT, text = it.text)) }.orEmpty().toMutableList()
     coroutineContext.ensureActive()
     val ready = quick?.ready == true
     val vector = if (ready && !quick!!.has(file.id)) quick.ofFile(uri) else null
@@ -286,12 +292,14 @@ class FileProcessor(
    * Text read from a picture or video frames, in the lite profile: the words for the keyword index, and EmbeddingGemma's text
    * vectors of its ~400-char pieces (at most [MAX_READ_CHUNKS]) as their own modality. The first piece carries the words.
    */
-  private suspend fun readText(words: String): List<Piece> =
-    Chunker.chunks(words).take(MAX_READ_CHUNKS).mapIndexed { i, chunk ->
+  private suspend fun readText(words: String, locStart: Long? = null, locEnd: Long? = null, marks: String? = null, embedded: String = words): List<Piece> =
+    Chunker.chunks(embedded).take(MAX_READ_CHUNKS).mapIndexed { i, chunk ->
       coroutineContext.ensureActive()
       letUserFirst()
-      Piece(PieceKind.OCR, PieceModality.OCR_TEXT, text = words.takeIf { i == 0 }, vector = embedder.document(chunk))
-    }.ifEmpty { listOf(Piece(PieceKind.OCR, PieceModality.TEXT, text = words)) }
+      // Only the first piece holds the words (the others are their vectors alone), so it alone holds their times.
+      if (i == 0) Piece(PieceKind.OCR, PieceModality.OCR_TEXT, locStart, locEnd, words, embedder.document(chunk), marks)
+      else Piece(PieceKind.OCR, PieceModality.OCR_TEXT, vector = embedder.document(chunk))
+    }.ifEmpty { listOf(Piece(PieceKind.OCR, PieceModality.TEXT, locStart, locEnd, words, marks = marks)) }
 
   private suspend fun video(file: IndexedFile, uri: Uri, withAudio: Boolean, withSpeech: Boolean, window: Int? = null, windows: Int = 1): Processed {
     // past the first half hour: the soundtrack only (see DEEP_WINDOWS), unless Tuning.deepFramesPerMin asks for a few pictures a minute
@@ -346,12 +354,26 @@ class FileProcessor(
     var embedMs = 0L
     var ocrMs = 0L   // where a video's time goes, in its detail line: profile before optimising (the research notes)
     val pieces = mutableListOf<Piece>()
-    val captions = LinkedHashSet<String>()   // a meme's caption repeats in every frame: keep each line once
+    val captions = CaptionTimeline()   // a meme's caption repeats in every frame: each line once, at the frame it first appeared in
+    val longCaptions = CaptionTimeline()   // the same, only the frames that the long rule kept: those are embedded as text, one-word cards are not
+    /** Reads [bmp]'s words into the captions; true when the frame showed any (what [OnScreenText.keep] lets through). */
+    suspend fun readFrame(bmp: Bitmap, atMs: Long): Boolean {
+      val kept = OnScreenText.keep(ocr.readLines(bmp)) ?: return false
+      kept.lines.forEach { captions.add(it, atMs); if (kept.long) longCaptions.add(it, atMs) }
+      return true
+    }
     // A frame that looks the same as one already embedded (a still meme with a soundtrack, a slide held for a minute)
     // gets no embedding of its own: the earlier frame's time range grows to cover it. Same picture, same vector, so
     // nothing is lost, and each skipped frame saves ~4 s on the A06.
     class Kept(val hash: Long, val start: Long, var end: Long, val at: Long, val vector: FloatArray?)
     val kept = mutableListOf<Kept>()
+    // ...but a slide deck keeps one layout and changes its words, and the 9x8 hash calls those slides one picture. A merged frame whose
+    // coarse look differs from every frame already read in its lineage (FrameSignature) is read for words anyway, so the next slide's
+    // title is findable too. Only a lineage whose own frame showed words claims, and only a few reads a minute (MergedFrameReads): a
+    // camera clip with no text costs nothing extra. Its picture still gets no embedding.
+    // (A window of a long video spans up to a minute of this video, the last one less.)
+    val spanSeconds = if (windowed) ((file.durationMs ?: MEDIA_WINDOW_MS) - startMs).coerceIn(0L, MEDIA_WINDOW_MS).div(1000).toInt() else seconds
+    val extraReads = MergedFrameReads(spanSeconds)
     val quickReady = lite && quick?.ready == true
     for (f in frames) {
       frameCount++
@@ -360,7 +382,20 @@ class FileProcessor(
       val same = hash?.let { h -> kept.firstOrNull { java.lang.Long.bitCount(it.hash xor h) <= SAME_FRAME_BITS } }
       if (same != null) {
         same.end = maxOf(same.end, f.shotEndMs)
-        f.bitmap?.recycle()
+        f.bitmap?.let { bmp ->
+          try {
+            val to = System.nanoTime()
+            val lineage = kept.indexOf(same)
+            val relMs = f.timeMs - startMs
+            // The look is only computed when the claim could succeed; a look that fails (memory, a bitmap gone) is no claim.
+            val look = if (extraReads.mayClaim(lineage, relMs)) frameSignatureOrNull(bmp) else null
+            if (look != null && extraReads.claim(lineage, look, relMs)) {
+              coroutineContext.ensureActive()
+              readFrame(bmp, f.timeMs)
+              ocrMs += (System.nanoTime() - to) / 1_000_000
+            }
+          } finally { bmp.recycle() }
+        }
         continue
       }
       letUserFirst(gpu = true)
@@ -369,23 +404,32 @@ class FileProcessor(
       // time of both together, `ocr` the OCR's own time inside it. The lite profile reads the frame with the quick-look model
       // first, on the CPU, before OCR recycles the bitmap.
       val vector = if (lite) CompletableDeferred(if (quickReady) quickFrame(f) else null) else async { embedder.image(f.jpeg) }
+      var look: FrameSignature? = null
       f.bitmap?.let { bmp ->
         val to = System.nanoTime()
-        try { readable(ocr.read(bmp))?.lines()?.map { it.trim() }?.filter { it.isNotEmpty() }?.let { captions += it } }
-        finally { bmp.recycle() }
+        try {
+          // Only a frame that showed words can have merged frames worth a second read, so a text-free frame needs no look.
+          if (readFrame(bmp, f.timeMs) && extraReads.enabled) look = frameSignatureOrNull(bmp)
+        } finally { bmp.recycle() }
         ocrMs += (System.nanoTime() - to) / 1_000_000
       }
       kept += Kept(hash ?: 0L, f.shotStartMs, f.shotEndMs, f.timeMs, vector.await())
+      look?.let { extraReads.covered(kept.lastIndex, it) }
       embedMs += (System.nanoTime() - te) / 1_000_000
     }
     val frameModality = if (lite) PieceModality.CLIP else PieceModality.IMAGE
     // The slot is what the picture stands for; its marks say when the picture really is, which is what the result's time shows.
     kept.forEach { k -> k.vector?.let { pieces += Piece(PieceKind.FRAME, frameModality, k.start, k.end, vector = it, marks = FrameMoment.encode(k.at)) } }
-    if (captions.isNotEmpty()) {
-      val text = captions.joinToString("\n")
-      pieces += if (lite) readText(text) else listOf(Piece(PieceKind.OCR, PieceModality.TEXT, text = text))
+    if (!captions.isEmpty()) {
+      // The words carry the moments their frames are at, so a search on a caption shows when it is on screen (and the strip and
+      // open-at-moment work for it): the piece spans the first to the last line, and its marks place each line.
+      val text = captions.text()
+      val from = captions.startMs; val to = captions.endMs; val marks = captions.marks()
+      pieces += if (lite && !longCaptions.isEmpty()) readText(text, from, to, marks, embedded = longCaptions.text())
+      else listOf(Piece(PieceKind.OCR, PieceModality.TEXT, from, to, text, marks = marks))
     }
     var detail = "$frameCount frames, ${kept.size} distinct (sample ${secs(sampleMs)} embed ${secs(embedMs)} ocr ${secs(ocrMs)})"
+    if (extraReads.used > 0) detail += ", ${extraReads.used} extra reads"   // frames merged by picture whose words were read anyway
     if (lite && !quickReady) detail += ", ${com.craneai.findr.index.IndexStore.QUICK_MISSING}"
     // A soundtrack in a codec this phone lacks (AC3 in an .mkv, say) must not lose the frames that were read.
     val soundtrack = sound?.await() ?: if (wantsSound && !together) trackOrNote() else null
@@ -488,7 +532,6 @@ class FileProcessor(
     return hash
   }
 
-  private fun luma(c: Int) = ((c shr 16 and 0xff) * 299 + (c shr 8 and 0xff) * 587 + (c and 0xff) * 114) / 1000
 
   /**
    * The file this phone cannot open: logged with its extension and type (never its name) so a format that SHOULD decode but
@@ -522,9 +565,6 @@ class FileProcessor(
     return ByteArrayOutputStream().use { scaled.compress(Bitmap.CompressFormat.JPEG, 90, it); it.toByteArray() }
       .also { if (scaled !== bitmap) scaled.recycle() }
   }
-
-  /** Text read from an image counts only with a few letters in it: logos and stray glyphs don't (as in the eval). */
-  private fun readable(s: String): String? = s.trim().takeIf { t -> t.count { it.isLetter() } >= 10 }
 
   companion object {
     /**
@@ -604,6 +644,26 @@ class FileProcessor(
     const val MAX_READ_CHUNKS = 4
   }
 }
+
+private fun luma(c: Int) = ((c shr 16 and 0xff) * 299 + (c shr 8 and 0xff) * 587 + (c and 0xff) * 114) / 1000
+
+/**
+ * [bitmap]'s coarse look (brightness and stroke detail on a 64 x 36 grid): what tells two slides of one layout apart.
+ * Internal so the debug OCR probe can time exactly this call.
+ */
+internal fun frameSignatureOf(bitmap: Bitmap): FrameSignature {
+  val w = bitmap.width; val h = bitmap.height
+  val pixels = IntArray(w * h)
+  bitmap.getPixels(pixels, 0, w, 0, 0, w, h)
+  for (i in pixels.indices) pixels[i] = luma(pixels[i])
+  return FrameSignature.of(pixels, w, h)
+}
+
+/**
+ * [frameSignatureOf], or null when it cannot be had: a 768 px look takes a 1.3 MB pixel array, which a 2 GB phone under pressure may
+ * refuse, and a bitmap recycled early throws. The look is an optimisation, so a failure means "no extra read", never a failed video.
+ */
+internal fun frameSignatureOrNull(bitmap: Bitmap): FrameSignature? = runCatching { frameSignatureOf(bitmap) }.getOrNull()
 
 internal fun Piece.toSegment(late: Boolean) = Segment(
   kind = when (kind) {

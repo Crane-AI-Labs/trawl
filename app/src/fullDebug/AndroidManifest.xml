@@ -8,6 +8,11 @@
       android:name=".bench.BenchActivity"
       android:exported="true"
       android:screenOrientation="portrait" />
+    <!-- Reads a list of pictures with the real ML Kit engine and dumps every line with its confidence, angle and box (bench/OcrProbeActivity). -->
+    <activity
+      android:name=".bench.OcrProbeActivity"
+      android:exported="true"
+      android:screenOrientation="portrait" />
     <activity
       android:name=".bench.VisionBenchActivity"
       android:exported="true"

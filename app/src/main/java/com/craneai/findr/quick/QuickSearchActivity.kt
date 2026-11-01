@@ -155,7 +155,12 @@ class QuickSearchActivity : FragmentActivity() {   // FragmentActivity: the phon
           },
           onUnlock = { privacy.requestUnlock(this, promptTitle, promptSubtitle) },
           onOpenFindr = {
-            startActivity(Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            // A launcher intent (as the icon sends): Android then treats Trawl as the root of its task and Back sends it to the background
+            // instead of ending it. Without the action and category the task's root was not a "launcher activity" and Back finished it.
+            startActivity(
+              Intent(this, MainActivity::class.java).setAction(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+            )
             finish()
           },
           onAddTile = ::requestTile,

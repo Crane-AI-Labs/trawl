@@ -22,6 +22,8 @@ private const val TAG = "FindrExtract"
 class Budget(val max: Int) {
   var used = 0
   var truncated = false
+  /** Why reading stopped early for a reason other than the cap ("took too long"); null while it has not. */
+  var stopped: String? = null
   val full get() = used >= max
 }
 
@@ -225,6 +227,11 @@ fun flattenXml(parser: XmlPullParser, spec: XmlSpec, budget: Budget, tick: () ->
     Log.w(TAG, "XML part ended early: ${Log.brief(e)}")
   } catch (e: IOException) {
     Log.w(TAG, "XML part unreadable: ${Log.brief(e)}")
+  } catch (e: ExtractTimeout) {
+    // The file's time is up: keep the text read so far (partial beats none for search) and say why it stopped.
+    Log.w(TAG, "XML part cut short: ${Log.brief(e)}")
+    budget.truncated = true
+    budget.stopped = e.message
   }
   val last = sink.take()
   if (last.isNotEmpty() || spec.pageElement == null) pages.add(last)
@@ -261,6 +268,18 @@ object OfficeText {
   fun extract(
     format: DocFormat, file: File, maxChars: Int, newParser: () -> XmlPullParser, tick: () -> Unit = {},
   ): ExtractedText {
+    try {
+      return extractParts(format, file, maxChars, newParser, tick)
+    } catch (e: ExtractTimeout) {
+      // Time ran out somewhere that holds no partial text of its own (a spreadsheet's cell loop): nothing kept, and the reason is said.
+      Log.w(TAG, "zip document cut short: ${Log.brief(e)}")
+      return ExtractedText(emptyList(), truncated = true, stopped = e.message)
+    }
+  }
+
+  private fun extractParts(
+    format: DocFormat, file: File, maxChars: Int, newParser: () -> XmlPullParser, tick: () -> Unit,
+  ): ExtractedText {
     ZipFile(file).use { zip ->
       val archive = Archive(zip)
       // A file whose name lies about what it is ("budget.docx" that is really a spreadsheet) is read as what its parts say.
@@ -277,7 +296,7 @@ object OfficeText {
         DocFormat.EPUB -> listOf(reader.epub(budget))
         else -> emptyList()
       }
-      return ExtractedText(pages, budget.truncated || archive.hitLimit)
+      return ExtractedText(pages, budget.truncated || archive.hitLimit, budget.stopped)
     }
   }
 

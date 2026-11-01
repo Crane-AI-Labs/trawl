@@ -135,7 +135,7 @@ fun FindrRoot(appViewModel: AppViewModel, factory: ViewModelProvider.Factory) {
           onOpenFilesSettings = { context.openAllFilesSettings() },
           onFinish = {
             appViewModel.completeOnboarding()
-            navController.navigate(Routes.HOME) { popUpTo(Routes.ONBOARDING) { inclusive = true } }
+            navController.goOnce(Routes.HOME) { popUpTo(Routes.ONBOARDING) { inclusive = true } }
           },
         )
       }
@@ -154,7 +154,7 @@ fun FindrRoot(appViewModel: AppViewModel, factory: ViewModelProvider.Factory) {
             indexViewModel = indexViewModel,
             deliveryViewModel = deliveryViewModel,
             access = access,
-            onOpenSettings = { navController.navigate(Routes.SETTINGS) { launchSingleTop = true } },
+            onOpenSettings = { navController.goOnce(Routes.SETTINGS) },
             onAllowAccess = { context.openAllFilesSettings() },
             // Asked after the first search, when it means something (onboarding v2), not during setup.
             onRequestNotifications = {
@@ -177,12 +177,12 @@ fun FindrRoot(appViewModel: AppViewModel, factory: ViewModelProvider.Factory) {
           onThemeMode = appViewModel::setThemeMode,
           palette = palette,
           onPalette = appViewModel::setPalette,
-          onOpenLicences = { navController.navigate(Routes.LICENCES) { launchSingleTop = true } },
-          onBack = { navController.popBackStack() },
+          onOpenLicences = { navController.goOnce(Routes.LICENCES) },
+          onBack = { navController.backOnce() },
         )
       }
       composable(Routes.LICENCES) {
-        LicencesScreen(onBack = { navController.popBackStack() })
+        LicencesScreen(onBack = { navController.backOnce() })
       }
     }
   }

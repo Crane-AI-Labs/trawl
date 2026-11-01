@@ -39,10 +39,22 @@ mkdir -p "$QUEUE"
 # holds the phone, whichever machine it hangs off. REMOTE_ADB_HOST comes from phones.local.
 if [[ "${FINDR_REMOTE_ADB:-}" == 1 ]]; then
   [[ -n "$REMOTE_ADB_HOST" ]] || { echo "FINDR_REMOTE_ADB=1 needs REMOTE_ADB_HOST in scripts/phones.local." >&2; exit 2; }
-  if ! (exec 3<>/dev/tcp/localhost/$REMOTE_ADB_PORT) 2>/dev/null; then
+  # Only an ssh listener counts as the tunnel. Found 2026-10-30 (twice that morning): when the tunnel dies, the next `adb` call that has
+  # ADB_SERVER_SOCKET set auto-starts a LOCAL server (`adb -L tcp:localhost:5038 fork-server`) on that port. The port then "is open", the
+  # tunnel is never rebuilt, and every call in every window answers an empty device list: a window read nothing, crashed in prep and
+  # reported a clean-up that had not happened. So a local adb server on the port is stopped and the tunnel bound again in the same breath
+  # (the squatter comes back within a second if any other process is still calling adb).
+  tunnel_port_owner() { command -v lsof >/dev/null 2>&1 && lsof -nP -iTCP:"$REMOTE_ADB_PORT" -sTCP:LISTEN -Fc 2>/dev/null | sed -n 's/^c//p' | head -n 1; }
+  tunnel_port_open() { (exec 3<>/dev/tcp/localhost/$REMOTE_ADB_PORT) 2>/dev/null; }
+  owner=$(tunnel_port_owner)
+  if [[ "$owner" == adb ]] || ! tunnel_port_open; then
     ssh -o BatchMode=yes -o ConnectTimeout=10 "$REMOTE_ADB_HOST" 'adb start-server >/dev/null 2>&1; echo ok' >/dev/null 2>&1
-    ssh -f -N -L "$REMOTE_ADB_PORT:localhost:5037" -o ExitOnForwardFailure=yes -o BatchMode=yes -o ConnectTimeout=10 -o ServerAliveInterval=20 "$REMOTE_ADB_HOST" >/dev/null 2>&1
-    for _ in 1 2 3 4 5 6 7 8 9 10; do (exec 3<>/dev/tcp/localhost/$REMOTE_ADB_PORT) 2>/dev/null && break; sleep 0.5; done
+    for _ in 1 2 3 4 5 6; do
+      [[ "$(tunnel_port_owner)" == adb ]] && kill $(lsof -tiTCP:"$REMOTE_ADB_PORT" -sTCP:LISTEN 2>/dev/null) 2>/dev/null
+      ssh -f -N -L "$REMOTE_ADB_PORT:localhost:5037" -o ExitOnForwardFailure=yes -o BatchMode=yes -o ConnectTimeout=10 -o ServerAliveInterval=20 "$REMOTE_ADB_HOST" >/dev/null 2>&1 && break
+      sleep 0.3
+    done
+    for _ in 1 2 3 4 5 6 7 8 9 10; do tunnel_port_open && break; sleep 0.5; done
   fi
   export ADB_SERVER_SOCKET="tcp:localhost:$REMOTE_ADB_PORT"
 fi
@@ -100,6 +112,7 @@ case "$1" in
     # Release on any exit, including being killed (TERM/INT/HUP): a killed job once left a phone locked for 45 min.
     trap 'quiet_side_apps >/dev/null; "$0" release "$who" >/dev/null' EXIT
     trap 'exit 130' INT TERM HUP
+    export FINDR_PHONE_LOCK_HELD="$SERIAL"   # tells a nested spark-phone-hold.sh that the Mac-side lock is already held
     "$@" ;;
   *) sed -n 2,6p "$0"; exit 1 ;;
 esac

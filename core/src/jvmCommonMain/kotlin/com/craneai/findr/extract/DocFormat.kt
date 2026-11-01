@@ -35,6 +35,14 @@ object ExtractLimits {
   /** One EPUB chapter (or a whole book kept in one file) is read to this many bytes. */
   const val MAX_CHAPTER_BYTES = 4 * 1024 * 1024
 
+  /**
+   * The most wall-clock time one file's text may take to read. A file that is still being read after this keeps the text found
+   * so far (a document) or the pages read so far (a PDF) and is marked as cut short, so one corrupt or hostile file can never
+   * hold the queue. Checked between XML events, between PDF pages and between chunks; a single step that does not return
+   * (one enormous PDF page) is bounded by the worker's own per-file timeout instead.
+   */
+  const val EXTRACT_BUDGET_MS = 40_000L
+
   /** Shared-string tables of huge spreadsheets stop growing here; later strings read as empty. */
   const val MAX_SHARED_STRING_CHARS = 8_000_000
 }
@@ -92,5 +100,18 @@ enum class DocFormat {
         else -> PLAIN
       }
     }
+  }
+}
+
+/** Thrown by [ExtractDeadline.check] once a file has used up [ExtractLimits.EXTRACT_BUDGET_MS]. The extractors catch it and keep what they have. */
+class ExtractTimeout : RuntimeException("took too long")
+
+/** A wall-clock budget for reading one file. [now] is injectable so a test needs no real waiting. */
+class ExtractDeadline(budgetMs: Long = ExtractLimits.EXTRACT_BUDGET_MS, private val now: () -> Long = System::nanoTime) {
+  private val end = now() + budgetMs * 1_000_000L
+
+  /** Throws [ExtractTimeout] when the budget is spent. */
+  fun check() {
+    if (now() - end > 0) throw ExtractTimeout()
   }
 }

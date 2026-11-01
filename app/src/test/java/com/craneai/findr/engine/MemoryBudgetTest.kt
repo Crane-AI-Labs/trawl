@@ -80,6 +80,36 @@ class MemoryBudgetTest {
     assertTrue(MemoryBudget.releaseWhenIdle(80))   // COMPLETE
   }
 
+  // ---- Android 14+ sends only trim levels 20 and 40: the phone's own numbers say whether it is short of memory (A6) ----
+
+  @Test fun freeMemoryUnderOneAndAHalfTimesTheSystemsLineIsPressure() {
+    assertTrue(MemoryBudget.pressure(availMb = 400, thresholdMb = 300))    // 400 < 450
+    assertFalse(MemoryBudget.pressure(availMb = 450, thresholdMb = 300))   // the edge is not pressure
+    assertFalse(MemoryBudget.pressure(availMb = 1_700, thresholdMb = 300)) // a 4 GB phone at rest
+  }
+
+  @Test fun theSystemsOwnLowMemoryFlagIsPressureWhateverTheNumbers() {
+    assertTrue(MemoryBudget.pressure(availMb = 1_700, thresholdMb = 300, lowMemory = true))
+  }
+
+  @Test fun unknownNumbersNeverSayPressure() {
+    assertFalse(MemoryBudget.pressure(availMb = 0, thresholdMb = 300))
+    assertFalse(MemoryBudget.pressure(availMb = 200, thresholdMb = 0))
+  }
+
+  @Test fun theMultipleIsTheKnob() {
+    assertFalse(MemoryBudget.pressure(availMb = 400, thresholdMb = 300, multiple = 1.2))
+    assertTrue(MemoryBudget.pressure(availMb = 400, thresholdMb = 300, multiple = 2.0))
+  }
+
+  @Test fun aLevelThatStillArrivesCountsOnlyWhenTheNumbersAgree() {
+    assertTrue(MemoryBudget.releaseWhenIdle(40, pressureNow = true))     // BACKGROUND on Android 14+, with the phone short of memory
+    assertFalse(MemoryBudget.releaseWhenIdle(40, pressureNow = false))   // BACKGROUND alone is still just the cached list
+    assertFalse(MemoryBudget.releaseWhenIdle(20, pressureNow = true))    // UI_HIDDEN fires whenever our last screen goes away
+    assertTrue(MemoryBudget.releaseWhenIdle(15, pressureNow = false))    // the old levels keep working on Android 13 and below
+    assertFalse(MemoryBudget.releaseWhenIdle(5, pressureNow = false))
+  }
+
   @Test fun leavingTheAppOrSittingInTheCacheIsNotPressure() {
     assertFalse(MemoryBudget.releaseWhenIdle(5))    // RUNNING_MODERATE, an early hint
     assertFalse(MemoryBudget.releaseWhenIdle(20))   // UI_HIDDEN: fires every time the last screen goes away

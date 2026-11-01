@@ -17,6 +17,12 @@ object Edition {
   /** True in Trawl Go. A compile-time constant, so R8 removes the other edition's branches. */
   const val GO: Boolean = BuildConfig.EDITION_GO
 
+  /**
+   * The heavy work runs under the mediaProcessing foreground-service type (the full edition, and only in a build made with it on: see
+   * `-PmediaProcessingFgs` in app/build.gradle.kts). Off, every run is data sync: one 6-hour budget on Android 15+, not two.
+   */
+  const val MEDIA_PROCESSING_FGS: Boolean = !GO && BuildConfig.FGS_MEDIA_PROCESSING
+
   /** Search by meaning (EmbeddingGemma). Never in Go: the "meaning is pending" state is permanent and said honestly. */
   const val MEANING: Boolean = !GO
 

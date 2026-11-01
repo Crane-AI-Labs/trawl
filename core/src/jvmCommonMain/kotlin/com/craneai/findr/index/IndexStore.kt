@@ -921,19 +921,20 @@ class IndexStore private constructor(
 
   /**
    * The files of the given kinds, newest first by default (what the home screen shows before anything is typed). [order] reorders
-   * them in SQL ([SortOrder.BEST] means newest) and [dates] keeps only files whose `date_ms` falls in the range, so a few tens of
+   * them in SQL ([SortOrder.BEST] means newest; a junk far-future date sorts after the real ones, see [ClockSense.isJunkFuture]) and [dates] keeps only files whose `date_ms` falls in the range, so a few tens of
    * thousands of files never reach the UI to be filtered there.
    */
   fun recent(
     kinds: Set<FileKind>, limit: Int, includeSensitive: Boolean = false,
-    order: SortOrder = SortOrder.NEWEST, dates: DateRange? = null,
+    order: SortOrder = SortOrder.NEWEST, dates: DateRange? = null, nowMs: Long = System.currentTimeMillis(),
   ): List<IndexedFile> = read { db ->
     val kinds = kinds - FileKind.OTHER   // browsing lists show real kinds only: APKs, zips and the like stay name-searchable but are never featured
     if (kinds.isEmpty()) return@read emptyList()
     val out = ArrayList<IndexedFile>()
     val visible = if (includeSensitive) "" else "AND sensitive = 0 "
     val by = when (order) {
-      SortOrder.BEST, SortOrder.NEWEST -> "date_ms DESC, id DESC"
+      // A date past the clock's ceiling is junk (2099): after every real date, not before them (ClockSense.isJunkFuture). Longs only.
+      SortOrder.BEST, SortOrder.NEWEST -> "(date_ms > ${ClockSense.ceiling(nowMs)}), date_ms DESC, id DESC"
       SortOrder.OLDEST -> "date_ms, id"
       SortOrder.LARGEST -> "size DESC, id DESC"
       SortOrder.NAME -> "name COLLATE NOCASE, id"

@@ -39,6 +39,7 @@ object Diag {
   @Volatile private var platform: DiagPlatform? = null
   @Volatile private var store: ReportStore? = null
   @Volatile private var engine: SearchEngine? = null
+  @Volatile private var runLog: RunLog? = null
   private val ring = LogRing()
 
   private val _pending = MutableStateFlow(0)
@@ -53,6 +54,7 @@ object Diag {
     this.engine = engine
     val s = ReportStore(platform.reportDir)
     store = s
+    runLog = RunLog(File(platform.reportDir, RunLog.FILE))
     FindrLog.tap = { level, tag, line -> ring.add(level, tag, line) }
     CrashHandler.install(s, ring, platform.pid)
     // Reading the system's exit history touches the disk and a system service: not on the main thread.
@@ -74,6 +76,9 @@ object Diag {
     try { store?.recordHandled(kind, t) } catch (_: Throwable) { }
   }
 
+  /** The log of why each background run ended; null before [init]. Its calls never throw. */
+  fun runs(): RunLog? = runLog
+
   /** The person answered the card (Send or Not now). */
   fun acknowledge() {
     try { store?.acknowledge() } catch (_: Throwable) { }
@@ -86,6 +91,7 @@ object Diag {
   /** "Delete everything Trawl knows" reaches the reports too. */
   fun forgetReports() {
     try { store?.wipe() } catch (_: Throwable) { }
+    try { runLog?.wipe() } catch (_: Throwable) { }
     ring.clear()
     try { platform?.cleanupShared() } catch (_: Throwable) { }
     _pending.value = 0
@@ -99,6 +105,11 @@ object Diag {
       return BuiltReport("Trawl problem report\nReporting was not ready.\n", "Trawl problem report", SendPlans.subject("?", "?"), 0)
     }
     s.flushHandled()
+    val background = try {
+      BackgroundReport.lines(runLog?.records().orEmpty(), p.readExits(), System.currentTimeMillis())
+    } catch (t: Throwable) {
+      listOf("could not be read (${Log.brief(t)})")
+    }
     return ReportBuilder.build(
       ReportInput(
         createdAt = System.currentTimeMillis(),
@@ -109,6 +120,7 @@ object Diag {
         handled = s.handledCounts(),
         logLines = ring.tail(40),
         note = note,
+        background = background,
       ),
     )
   }

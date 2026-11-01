@@ -63,6 +63,11 @@ class MeterRulesTest {
     assertEquals(PauseReason.TOO_HOT, pause(running = true, waiting = 5, decision = hot))
   }
 
+  @Test fun aFullDiskIsShownEvenWhenNothingIsRunningAndNothingWaits() {
+    assertEquals(PauseReason.STORAGE_LOW, pause(worker = PauseReason.STORAGE_LOW, running = false, waiting = 0))
+    assertEquals(PauseReason.STORAGE_LOW, pause(worker = PauseReason.STORAGE_LOW, running = false, waiting = 40, decision = lightOnBattery))
+  }
+
   @Test fun otherWorkerPausesSurviveAPlugIn() {
     assertEquals(PauseReason.TOO_HOT, pause(worker = PauseReason.TOO_HOT, waiting = 5, decision = onCharger))
     assertEquals(PauseReason.BATTERY_LOW, pause(worker = PauseReason.BATTERY_LOW, waiting = 5, decision = onCharger))

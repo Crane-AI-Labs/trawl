@@ -57,6 +57,20 @@ class DateIndexTest {
     assertEquals(listOf("b.jpg", "c.jpg"), order(SortOrder.NEWEST, DateRange(t0 + 1 * day, t0 + 3 * day)))
   }
 
+  @Test fun aFarFutureDateIsNotFirstInNewest() {
+    // The itel probe (SCL-05): a text file touched to 2099 came out first in Recent. It now comes after every real file.
+    val now = System.currentTimeMillis()
+    store.upsertFromCrawl(listOf(
+      record(1, "real_new.jpg", now - day), record(2, "stamped_2099.jpg", now + 73L * 366 * day), record(3, "real_old.jpg", now - 400 * day),
+    ))
+    val all = FileKind.entries.toSet()
+    assertEquals(listOf("real_new.jpg", "real_old.jpg", "stamped_2099.jpg"), store.recent(all, 10).map { it.name })
+    assertEquals(listOf("real_new.jpg", "real_old.jpg", "stamped_2099.jpg"), store.recent(all, 10, order = SortOrder.BEST).map { it.name })
+    assertEquals(listOf("real_old.jpg", "real_new.jpg", "stamped_2099.jpg"), store.recent(all, 10, order = SortOrder.OLDEST).map { it.name })
+    // The clock is injectable: on a phone whose clock really is in 2099 the same file is the newest.
+    assertEquals("stamped_2099.jpg", store.recent(all, 10, nowMs = now + 73L * 366 * day).first().name)
+  }
+
   @Test fun browsingUsesTheCaptureDateForOrderAndRange() {
     store.upsertFromCrawl(listOf(record(1, "scanned.jpg", t0 + 500 * day, taken = t0), record(2, "fresh.jpg", t0 + 10 * day)))
     assertEquals(listOf("fresh.jpg", "scanned.jpg"), store.recent(FileKind.entries.toSet(), 10).map { it.name })

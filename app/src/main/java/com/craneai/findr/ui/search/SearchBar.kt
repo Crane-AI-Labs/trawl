@@ -13,6 +13,7 @@ import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.minimumInteractiveComponentSize
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
@@ -98,6 +99,8 @@ fun SearchDock(
   onFocused: () -> Unit = {},
   onFocusLost: () -> Unit = {},
   fieldFocused: State<Boolean> = mutableStateOf(false),
+  /** True from leaving the app with the keyboard down until a moment after it is back: the box refuses focus (see ResumeFocus). */
+  focusHold: MutableState<Boolean> = mutableStateOf(false),
   /** While typing, how far learning has got (the meter folded into this line); draws nothing when there is nothing to say. */
   learning: @Composable () -> Unit = {},
 ) {
@@ -115,7 +118,7 @@ fun SearchDock(
     if (textState.text.isNotEmpty() || typing) {
       StatusLine(if (textState.text.isNotEmpty()) status else null, if (typing) learning else null, Modifier.padding(horizontal = Sun.Gutter, vertical = Sun.S4))
     } else Spacer(Modifier.height(Sun.S8))
-    SearchField(textState, onFocused, onFocusLost, Modifier.padding(horizontal = Sun.Gutter))
+    SearchField(textState, onFocused, onFocusLost, focusHold, Modifier.padding(horizontal = Sun.Gutter))
   }
 }
 
@@ -193,6 +196,7 @@ private fun SearchField(
   textState: TextFieldState,
   onFocused: () -> Unit,
   onFocusLost: () -> Unit,
+  focusHold: MutableState<Boolean>,
   modifier: Modifier = Modifier,
 ) {
   val focus = LocalFocusManager.current
@@ -208,6 +212,7 @@ private fun SearchField(
     modifier = modifier
       .fillMaxWidth()
       .heightIn(min = Sun.Field)
+      .refuseFocusWhile(focusHold)
       // Prefetch on intent: the person tapped the box, so load the text model now and the first query does not wait for it.
       .onFocusChanged { focused = it.isFocused; if (it.isFocused) onFocused() else onFocusLost() }
       .semantics { contentDescription = hintA11y },

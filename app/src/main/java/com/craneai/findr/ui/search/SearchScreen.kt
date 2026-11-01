@@ -52,6 +52,7 @@ import com.craneai.findr.core.KindFilter
 import com.craneai.findr.core.SortOrder
 import androidx.activity.compose.BackHandler
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import com.craneai.findr.ui.common.Wordmark
 import com.craneai.findr.ui.theme.Sun
 import com.craneai.findr.ui.theme.SunIconAction
@@ -72,6 +73,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
@@ -83,6 +85,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -254,6 +257,8 @@ fun SearchScreen(
   val unmarkedManyMsg = stringResource(R.string.snack_unmarked_sensitive_many)
   // Whether the search box has focus. Held here, read only inside Results, so a focus change recomposes the list and not the screen.
   val fieldFocused = remember { mutableStateOf(false) }
+  // Leaving with the keyboard put away: let go of focus, and keep the box from being handed focus again while the window comes back.
+  val focusHold = ReleaseFocusWhenLeaving(fieldFocused)
 
   // A short window (a phone or tablet on its side): the header, cards, meter and chips are the first thing in the list, not fixed
   // above it, so they scroll away and the results get the screen (ShortWindow). A tall window keeps the stacked layout as it was.
@@ -358,13 +363,13 @@ fun SearchScreen(
       textState = textState,
       status = dockStatus(state),
       fieldFocused = fieldFocused,
+      focusHold = focusHold,
       onFocused = { fieldFocused.value = true; searchViewModel.prewarm(); searchViewModel.setSearchFocus(true) },
       onFocusLost = { fieldFocused.value = false; searchViewModel.setSearchFocus(false) },
       learning = { LiveLearningLine(indexViewModel) },
     )
   }
 
-  ReleaseFocusWhenLeaving(fieldFocused)
   // Choosing files: Back leaves selection first. Choosing starts with the keyboard put away and the search box not in use.
   BackHandler(enabled = selecting) { searchViewModel.clearSelection() }
   LaunchedEffect(selecting) {
@@ -601,10 +606,15 @@ private fun Results(
   // The filters lead the list: big tiles above the newest files, one compact line above search results. Inside the grid, so
   // they scroll away with it and the grid keeps the whole screen between the meter and the search box.
   // The sort and date chips sit under the kind filters. A date typed in the box ("last week") is a chip here too (never inside the box).
-  val searching = (state.query.isNotBlank() || state.similar != null) && state.mode == SearchMode.RESULTS
+  // B1: "searching" is a property of the LIST on screen (its own query), not of the box: the box empties at once, the list a moment later.
+  val searching = state.mode == SearchMode.RESULTS && (state.resultsQuery.isNotBlank() || state.similar != null)
   // A short window that is also wider than the reading column (a tablet on its side): one line of chips would run past the column and
   // hide Sort and Date off the right edge, so the chips take the two lines of the tall layout, compact kind chips over sort and date.
-  val wideShort = short && !ContentWidth.chipsOnOneLine(short, LocalConfiguration.current.screenWidthDp)
+  // A phone on its side is wide too but only ~360 dp tall: two chip lines would take a third of it (UI audit item 3), so it keeps the one scrolling line.
+  val cfg = LocalConfiguration.current
+  val wideShort = short && !ContentWidth.chipsOnOneLine(short, cfg.screenWidthDp) && cfg.screenHeightDp >= ShortWindow.TWO_CHIP_LINES_MIN_HEIGHT_DP
+  // The six big tiles are three rows of a tall tile: at large text or on a narrow phone they push every file below the fold (D3, D24).
+  val tilesFit = LocalDensity.current.fontScale < 1.3f && cfg.screenWidthDp >= ShortWindow.TILES_MIN_WIDTH_DP
   val filters: @Composable () -> Unit = if (short && !wideShort) ({
     // Short window: the kind, sort and date chips share one line (the tiles of the home screen are too tall for it too).
     FilterSortRow(
@@ -613,7 +623,7 @@ private fun Results(
     )
   }) else ({
     Column {
-      if (state.mode == SearchMode.RESULTS || wideShort) FilterRow(state.filter, onFilter, Modifier.padding(horizontal = Sun.S4, vertical = Sun.S4))
+      if (state.mode == SearchMode.RESULTS || wideShort || !tilesFit) FilterRow(state.filter, onFilter, Modifier.padding(horizontal = Sun.S4, vertical = Sun.S4))
       else FilterTiles(state.filter, onFilter, Modifier.padding(horizontal = Sun.S4, vertical = Sun.S4))
       SortDateRow(
         state.sort, searching, state.date, onSort, onDatePreset, onPickDates, onClearDate, Modifier.padding(horizontal = Sun.S4, vertical = Sun.S4),
@@ -633,7 +643,16 @@ private fun Results(
   }
   // A new question or a different chip starts at the top, where the best match is.
   val userScrolled = remember { mutableStateOf(false) }
-  LaunchedEffect(state.resultsQuery, state.filter, state.similar?.id) {
+  // Going between the answers and the home list (the X in the box, or the first letter typed) is a new list too, not an edit of the old one.
+  // Turning the phone or switching dark mode builds this screen again with the same list: that is not a new question, and the place the
+  // person had scrolled to (kept by the grid state) stays. Only a list that differs from the one last shown goes back to the top.
+  val shownList = rememberSaveable { mutableStateOf<String?>(null) }
+  // True when this screen was built again over a list that was already showing: the two "back to the top" effects below skip their first run.
+  val rebuilt = remember { mutableStateOf(shownList.value != null) }
+  LaunchedEffect(state.resultsQuery, state.filter, state.similar?.id, state.mode) {
+    val now = "${state.resultsQuery}|${state.filter}|${state.similar?.id}|${state.mode}"
+    if (shownList.value == now) return@LaunchedEffect
+    shownList.value = now
     userScrolled.value = false
     gridState.scrollToItem(0)
   }
@@ -647,12 +666,15 @@ private fun Results(
   val leadKey = state.feed.firstOrNull { it !is FeedItem.Header }?.key
   // Never while a finger is on the list or it is still gliding (the suspected cause of a reported "freezing at the top"): only a list
   // the user has not touched since the last question or chip is moved back to the top.
+  // A refresh (app back in front, files arriving) asks the same question again: it never moves the list the person is looking at.
   LaunchedEffect(leadKey) {
-    if (!userScrolled.value && !gridState.isScrollInProgress && gridState.firstVisibleItemIndex > 0) gridState.requestScrollToItem(0)
+    if (rebuilt.value) return@LaunchedEffect
+    if (!state.quietRefresh && !userScrolled.value && !gridState.isScrollInProgress && gridState.firstVisibleItemIndex > 0) gridState.requestScrollToItem(0)
   }
   // The keyboard going down puts the filters row (sort, date, kind) back above the first file. The grid keeps its anchor on
   // that file, so the row would sit above the screen where nobody finds it: bring the top back when the list was not scrolled.
   LaunchedEffect(compactRows) {
+    if (rebuilt.value) { rebuilt.value = false; return@LaunchedEffect }
     if (!compactRows && !userScrolled.value && !gridState.isScrollInProgress && gridState.firstVisibleItemIndex > 0) gridState.requestScrollToItem(0)
   }
 
@@ -730,6 +752,10 @@ private fun Results(
         // A wide window caps the lists at a reading width and centres them (ContentWidth). A grid of photos, screenshots or videos has
         // no long rows to stretch, so it keeps the whole width and the Adaptive columns simply add more of themselves.
         val listInset = if (state.filter in MEDIA_ONLY_FILTERS) 12.dp else sunSideInset(12.dp)
+        // B1: the answers and the home list are different lists, so each gets its own grid. One grid carried across the switch kept
+        // what the answers had laid out (cells with a placement animation in flight, the retiring cells of an exit animation, a node
+        // sized for the one-line filter row reused for the tiles) in the middle of the home list. A new grid starts clean.
+        key(state.mode) {
         LazyVerticalGrid(
           columns = GridCells.Adaptive(104.dp),
           state = gridState,
@@ -745,8 +771,10 @@ private fun Results(
             item(key = "short-top", span = { GridItemSpan(maxLineSpan) }, contentType = "short-top") { Column { shortLead() } }
           }
           if (!compactRows || state.mode == SearchMode.RESULTS) {
-            item(key = if (state.mode == SearchMode.RESULTS) "filters-row" else "filters-tiles", span = { GridItemSpan(maxLineSpan) }, contentType = "filters") {
-              filters()
+            // One header, one key at index 0 for both lists: it never changes key between frames. The grid itself is replaced when the
+            // mode flips (key(state.mode) above) and the view model flips the mode and the feed in the same state update.
+            item(key = "filters", span = { GridItemSpan(maxLineSpan) }, contentType = "filters") {
+              Box(Modifier.testTag("filters-header")) { filters() }
             }
           }
           items(
@@ -757,7 +785,7 @@ private fun Results(
           ) { item ->
             // Placement animation is for search answers re-ordering as the meaning step lands; on the recent grid (thousands
             // of cells) it is a per-cell cost on every scroll frame for a move that almost never happens.
-            val motion = if (reduce || state.mode != SearchMode.RESULTS) Modifier else Modifier.animateItem()
+            val motion = (if (reduce || state.mode != SearchMode.RESULTS) Modifier else Modifier.animateItem()).testTag("feed-item")
             when (item) {
               is FeedItem.Header -> SectionHeader(stringResource(item.title), motion)
               is FeedItem.PhotosPeek -> PhotosPeekHeader(item, onOpen = {
@@ -793,6 +821,7 @@ private fun Results(
               is FeedItem.WeakToggle -> WeakToggle(item, onToggleWeak, motion)
             }
           }
+        }
         }
       }
     }

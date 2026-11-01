@@ -7,6 +7,9 @@ plugins {
 // See BATTERY_EXEMPTION_REQUEST below. Default ON (sideload); a Play build sets -PbatteryExemptionRequest=false.
 val batteryExemptionRequest = providers.gradleProperty("batteryExemptionRequest").orNull != "false"
 
+// See FGS_MEDIA_PROCESSING below. Default ON (sideload); a Play build sets -PmediaProcessingFgs=false until Play accepts the type.
+val mediaProcessingFgs = providers.gradleProperty("mediaProcessingFgs").orNull != "false"
+
 android {
   namespace = "com.craneai.findr"
   compileSdk = 37
@@ -15,8 +18,8 @@ android {
     applicationId = "com.craneai.findr"
     minSdk = 30   // MediaStore generations (the change journal Findr's crawler relies on) start at Android 11
     targetSdk = 36   // compile against 37, but keep 36 runtime behaviour until it's tested
-    versionCode = 5
-    versionName = "1.0.4"
+    versionCode = 6
+    versionName = "1.0.5"
     // Compose UI tests (src/androidTest): screenshot-free checks of the Sunlight components on a phone.
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     // The ABI is per edition (productFlavors below): the full app is 64-bit only, Trawl Go is 32-bit only.
@@ -51,6 +54,11 @@ android {
     // `-PbatteryExemptionRequest=false`: the permission is then NOT declared (see the sourceSets block below) and the button opens the
     // app's battery page instead (Play restricts the permission to a short list of use cases; internal/research/setup-background-step.md).
     buildConfigField("boolean", "BATTERY_EXEMPTION_REQUEST", batteryExemptionRequest.toString())
+    // Whether the full edition's heavy picture, video and recording work runs under the mediaProcessing foreground-service type (its own
+    // 6 hours in 24 on Android 15+, beside dataSync's). Google Play's acceptance of that type for a file-search app is not established, so
+    // a Play build passes `-PmediaProcessingFgs=false` and everything runs under dataSync. The manifest half (the type and its
+    // permission) is added only when this is on, from src/mediaProcessing, so the flag and the manifest cannot disagree.
+    buildConfigField("boolean", "FGS_MEDIA_PROCESSING", mediaProcessingFgs.toString())
   }
 
   // The publishing key is the maintainers' and never enters the repo: a release build is signed with it only
@@ -81,6 +89,10 @@ android {
   if (batteryExemptionRequest) {
     sourceSets.getByName("debug").manifest.srcFile("src/batteryRequest/AndroidManifest.xml")
     sourceSets.getByName("release").manifest.srcFile("src/batteryRequest/AndroidManifest.xml")
+  }
+  if (mediaProcessingFgs) {
+    sourceSets.maybeCreate("fullDebug").manifest.srcFile("src/mediaProcessing/AndroidManifest.xml")
+    sourceSets.maybeCreate("fullRelease").manifest.srcFile("src/mediaProcessing/AndroidManifest.xml")
   }
   flavorDimensions += "edition"
   productFlavors {

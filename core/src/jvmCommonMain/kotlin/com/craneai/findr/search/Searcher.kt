@@ -191,7 +191,11 @@ class Searcher(
         byWords -> MatchReason.WORDS
         else -> MatchReason.MEANING
       }
-      hits += SearchHit(info, score, reason, snippet, locatorOf(here, keyword?.takeIf { it.segment == segment }?.snippet, terms))
+      // When the segment pointed at has no moment (a meaning hit on the "Sounds:" line, which stands for none), the words that matched
+      // may still have one: a caption or a spoken phrase. Display only: the score, the order and the reason are decided above.
+      val locator = locatorOf(here, keyword?.takeIf { it.segment == segment }?.snippet, terms)
+        ?: keyword?.takeIf { it.segment != segment }?.let { k -> facts[k.segment]?.takeIf { it.kind == SegmentKind.OCR || it.kind == SegmentKind.TRANSCRIPT }?.let { locatorOf(it, k.snippet, terms) } }
+      hits += SearchHit(info, score, reason, snippet, locator)
     }
     // The strong ones are the first [strongCount] of the full ranking (within the ratio of the top score, plus the literal hits promoted
     // behind them), sorted among themselves by any other sort: that is exactly the hits whose files are in [strongIds].
@@ -657,6 +661,8 @@ class Searcher(
     SegmentKind.FRAME -> s.locStart?.let { Locator.Time(FrameMoment.at(it, s.locEnd, s.marks), s.locEnd) }
     SegmentKind.AUDIO -> s.locStart?.let { Locator.Time(it, s.locEnd) }
     SegmentKind.TRANSCRIPT -> transcriptMoment(s, snippet, terms)
+    // The words read off a video's frames are timed line by line, like speech (see CaptionTimeline); a picture's or a scan's OCR text has no time.
+    SegmentKind.OCR -> transcriptMoment(s, snippet, terms)
     // The "Sounds:" line lists each label once for the whole file; it stands for no moment.
     else -> null
   }

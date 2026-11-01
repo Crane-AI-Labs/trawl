@@ -38,6 +38,8 @@ class MainActivity : FragmentActivity() {   // FragmentActivity because the phon
     installSplashScreen()
     super.onCreate(savedInstanceState)
     enableEdgeToEdge()
+    // Back on the first screen goes to the background, never ends the app (see RootBack). Registered before any screen's own handler.
+    rootBack = RootBack.install(this, intent = { intent }, isTaskRoot = { isTaskRoot }, moveToBack = { moveTaskToBack(true) })
 
     // Thumbnails of videos come from a frame of the file itself. Nothing is downloaded: Findr has no network.
     SingletonImageLoader.setSafe { context ->
@@ -69,6 +71,15 @@ class MainActivity : FragmentActivity() {   // FragmentActivity because the phon
         }
       }
     }
+  }
+
+  private var rootBack: androidx.activity.OnBackPressedCallback? = null
+
+  // singleTask: another start of Trawl (the quick panel's "Open Findr", the icon) arrives here, and decides what Back does from now on.
+  override fun onNewIntent(intent: android.content.Intent) {
+    super.onNewIntent(intent)
+    setIntent(intent)
+    rootBack?.let { RootBack.refresh(it, isTaskRoot, intent) }
   }
 
   override fun onResume() {

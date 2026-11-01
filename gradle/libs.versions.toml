@@ -9,6 +9,8 @@ lifecycle = "2.11.0"
 navigation = "2.10.2"
 work = "2.12.0"
 sqlite = "2.7.1"
+# OnScreenText.MIN_LINE_CONFIDENCE (0.75, the short-word rule) was calibrated on this exact version: ML Kit confidences are model
+# outputs, so on ANY upgrade rerun the OCR probe (app/src/debug .../bench/OcrProbeActivity) and recalibrate before shipping.
 mlkitText = "16.0.1"
 pdfbox = "2.0.27.0"
 coil = "3.6.3"

@@ -78,7 +78,11 @@ internal object HomeCards {
   const val SHORT_DP = 480
 
   /** Landscape (wider than tall), a short window (split screen, phone on its side), or large text: a full card would crowd the results. */
-  fun compact(widthDp: Int, heightDp: Int, fontScale: Float): Boolean = widthDp > heightDp || heightDp < SHORT_DP || fontScale >= LARGE_FONT_SCALE
+  fun compact(widthDp: Int, heightDp: Int, fontScale: Float): Boolean =
+    widthDp > heightDp || heightDp < SMALL_PORTRAIT_DP || fontScale >= LARGE_FONT_SCALE
+
+  /** A portrait window under this height (a 360x640 phone) is small: a full card plus its button would cover the files (UI audit item 4). */
+  const val SMALL_PORTRAIT_DP = 700
 
   /**
    * The one card to show. [wants] says which cards want the slot. [typing] (keyboard up on the search box) puts every card away, so
@@ -193,10 +197,9 @@ internal fun HomeCardSlot(
   if (strip) {
     Box(slot) { body() }
   } else {
-    // A full card on a tall window. Even so it never takes more than its share: past that it scrolls inside itself, and the
-    // results keep the rest.
-    val cap = (LocalConfiguration.current.screenHeightDp * HomeCards.FULL_CARD_MAX_SHARE).dp
-    Box(slot.heightIn(max = cap).verticalScroll(rememberScrollState())) { body() }
+    // A full card is only drawn on a tall window at normal text (HomeCards.compact), so it fits whole. It never scrolls inside itself:
+    // a button inside a sub-scroller was cut off on small phones (UI audit item 4), so its action is always in plain view.
+    Box(slot) { body() }
   }
 }
 

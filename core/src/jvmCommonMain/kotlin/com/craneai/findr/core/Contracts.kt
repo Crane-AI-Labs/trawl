@@ -136,7 +136,12 @@ private val NOT_REPAIRING: StateFlow<Boolean> = kotlinx.coroutines.flow.MutableS
 // ---- Extraction data (package `extract` reads and writes these; the Android-typed seams that return them stay in :app) ----
 
 /** Text from a file, page by page (a PDF's pages; a single page for plain documents). */
-data class ExtractedText(val pages: List<String>, val truncated: Boolean = false)
+data class ExtractedText(
+  val pages: List<String>,
+  val truncated: Boolean = false,
+  /** Why reading stopped before the end, in plain words, when a limit other than the character cap ended it ("took too long"); null otherwise. */
+  val stopped: String? = null,
+)
 
 /**
  * A picture, video or sound the phone's own decoders could not open (no codec for the format, or damaged beyond reading).

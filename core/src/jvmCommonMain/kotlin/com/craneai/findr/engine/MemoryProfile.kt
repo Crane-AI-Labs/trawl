@@ -88,4 +88,30 @@ object MemoryBudget {
    * (40): that only says the app has moved into the cached list, which happens every time the person leaves it. Not UI_HIDDEN (20).
    */
   fun releaseWhenIdle(trimLevel: Int): Boolean = trimLevel == 10 || trimLevel == 15 || trimLevel >= 60
+
+  /**
+   * [releaseWhenIdle], for Android 14 and later. There the system no longer sends RUNNING_MODERATE/LOW/CRITICAL (5, 10, 15) or the
+   * cached levels 60 and 80 ("Apps are not notified of this level since API level 34", ComponentCallbacks2): only UI_HIDDEN (20) and
+   * BACKGROUND (40) arrive, and BACKGROUND alone says nothing about memory. So a level that does arrive counts when the phone's own
+   * numbers agree ([pressureNow], from [pressure]): an idle app on a phone that is short of memory gives its models back.
+   */
+  fun releaseWhenIdle(trimLevel: Int, pressureNow: Boolean): Boolean = releaseWhenIdle(trimLevel) || (trimLevel >= 40 && pressureNow)
+
+  /**
+   * How close to Android's low-memory line is "short of memory": free memory under this many times the line's own size
+   * ([pressure]). Replaces the trim levels that no longer arrive (see [releaseWhenIdle]). Hill-climbed with a memory ballast on the
+   * 4 GB phones (internal/research/bg-consistency.md).
+   */
+  const val PRESSURE_MULTIPLE = 1.5
+
+  /** How often a worker that is waiting looks at the numbers again: one binder call, so cheap, but it has no reason to run every second. */
+  const val PRESSURE_POLL_MS = 15_000L
+
+  /**
+   * ActivityManager.MemoryInfo says the phone is short of memory: [lowMemory] is the system's own flag (already at its line), or
+   * [availMb] has fallen under [multiple] times the line ([thresholdMb]), early enough to give the models back before the
+   * low-memory killer picks a process. Unknown numbers (0) never say pressure.
+   */
+  fun pressure(availMb: Long, thresholdMb: Long, lowMemory: Boolean = false, multiple: Double = PRESSURE_MULTIPLE): Boolean =
+    lowMemory || (availMb > 0 && thresholdMb > 0 && availMb < thresholdMb * multiple)
 }

@@ -278,6 +278,8 @@ fun SunIconAction(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
   tint: Color = MaterialTheme.colorScheme.onSurface,
+  /** False: the icon alone (a top bar, where a long word would eat the room of the title). [description] still names it for TalkBack. */
+  showWord: Boolean = true,
 ) {
   Column(
     modifier
@@ -291,7 +293,7 @@ fun SunIconAction(
   ) {
     Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(Sun.Icon))
     // The word is for the eye; TalkBack already hears [description], which names the file too.
-    Text(word, style = SunType.CaptionBold, color = tint, maxLines = 1, modifier = Modifier.clearAndSetSemantics { })
+    if (showWord) Text(word, style = SunType.CaptionBold, color = tint, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis, modifier = Modifier.clearAndSetSemantics { })
   }
 }
 

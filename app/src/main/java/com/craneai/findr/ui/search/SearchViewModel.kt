@@ -57,6 +57,8 @@ data class SearchUiState(
   val indexIncomplete: Boolean = false,
   /** Results are for `query`; false while the box has moved on and the debounce has not fired yet. */
   val resultsQuery: String = "",
+  /** This list is the same question asked again by a refresh (app back in front, files arriving), not a new one: it never moves by itself. */
+  val quietRefresh: Boolean = false,
   /** The first list (recent files, for a fresh start) has been built. Drives reportFullyDrawn. */
   val loaded: Boolean = false,
   /** Sensitive files kept out of this list: only counted ("3 hidden"), never named. */
@@ -153,9 +155,41 @@ class SearchViewModel(
   }
 
   /** Brings the chips in the state up to date at once (the list itself follows when its search lands). */
-  private fun showDerived(query: String) {
+  private fun showDerived(query: String, withSort: Boolean = true) {
     val d = derive(query)
-    _state.update { it.copy(sort = d.sort, date = d.date) }
+    // The sort belongs to the list on screen (its chip must never name an order its own menu lacks), so a change of KIND of list
+    // (home <-> answers) brings its sort in with the list itself, not with the keystroke. A sort the person picks applies at once.
+    _state.update { if (withSort) it.copy(sort = d.sort, date = d.date) else it.copy(date = d.date) }
+  }
+
+  /**
+   * The home list as it was last built, kept so that clearing the box can put it back in ONE state change. Without it the box was empty
+   * for the 0.1 to 1 s the reload takes while the list, header and chips were still the answers' (B1: a frame with the old list under the
+   * new header). Only valid for the same chips and while nothing has asked for a reload since ([nonce]).
+   */
+  private class HomeSnapshot(
+    val filter: KindFilter, val sort: SortOrder, val date: ActiveDate?, val nonce: Int,
+    val feed: List<FeedItem>, val hidden: Int, val showsSensitive: Boolean,
+  )
+  private var home: HomeSnapshot? = null
+
+  /** Puts the cached home list back with the box empty, in one state update. False (nothing changed) when there is no valid one. */
+  private fun publishCachedHome(): Boolean {
+    if (similarTo != null) return false
+    val h = home ?: return false
+    val r = request.value
+    val d = derive("")
+    if (h.filter != r.filter || h.nonce != r.nonce || h.sort != d.sort || h.date != d.date) return false
+    lastResults = null
+    _state.update {
+      it.copy(
+        query = "", sort = h.sort, date = h.date, mode = SearchMode.RECENT, feed = h.feed, selected = it.selected.keepIn(h.feed),
+        loaded = true, searching = false, nothingFound = false, indexIncomplete = false, resultsQuery = "", similar = null,
+        hiddenCount = h.hidden, showsSensitive = h.showsSensitive,
+        revealedForNow = engine.sensitiveRevealed.value && !engine.settings.value.showSensitive,
+      )
+    }
+    return true
   }
 
   private val request = MutableStateFlow(Request("", KindFilter.ALL, immediate = true))
@@ -248,8 +282,13 @@ class SearchViewModel(
     // A dismissed date phrase stays dismissed only while it is still in the box.
     val lower = text.lowercase()
     ignored.retainAll { lower.contains(it) }
+    // Clearing the box swaps the whole list at once (cached home). Otherwise only the date chip follows the keystroke; the sort comes with the list.
+    if (text.isBlank() && publishCachedHome()) {
+      request.update { it.copy(query = text, immediate = true) }
+      return
+    }
     _state.update { it.copy(query = text, searching = text.isNotBlank()) }
-    showDerived(text)
+    showDerived(text, withSort = false)
     request.update { it.copy(query = text, immediate = false) }
   }
 
@@ -271,7 +310,7 @@ class SearchViewModel(
     typedAtNs = 0L
     ignored.clear()
     _state.update { it.copy(query = "", similar = SimilarTo(file.id, file.name), searching = true, selected = emptySet()) }
-    showDerived("")
+    showDerived("", withSort = false)
     request.update { it.copy(query = "", immediate = true, nonce = it.nonce + 1) }
   }
 
@@ -280,7 +319,10 @@ class SearchViewModel(
     if (similarTo == null) return
     similarTo = null
     _state.update { it.copy(similar = null) }
-    rerun()
+    if (publishCachedHome()) { request.update { it.copy(immediate = true) }; return }
+    showDerived(request.value.query, withSort = false)
+    weakExpanded = false
+    request.update { it.copy(immediate = true, nonce = it.nonce + 1) }
   }
 
   // ---- sort and date -------------------------------------------------------------------------------------------------
@@ -388,13 +430,25 @@ class SearchViewModel(
     }
   }
 
+  private var lastAsked: List<Any?>? = null
+  private var lastNonce = 0
+
+  /** Keeps the list on screen when a refresh found the same files in the same order: nothing is recomposed, nothing can move. */
+  private fun sameOrNew(old: List<FeedItem>, new: List<FeedItem>, quiet: Boolean): List<FeedItem> =
+    if (quiet && old.size == new.size && old.indices.all { old[it].key == new[it].key }) old else new
+
   private suspend fun load(r: Request) {
     senseClock()
     val d = derive(r.query)
     val q = d.text
+    // The same question, chips, sort and date as the last time, only the nonce moved: a refresh. The person is looking at this list.
+    val asked = listOf(r.query, r.filter, d.sort, d.date, similarTo?.id)
+    val quiet = _state.value.loaded && asked == lastAsked && r.nonce != lastNonce
+    lastAsked = asked
+    lastNonce = r.nonce
     val seed = similarTo.takeIf { q.isEmpty() }
     if (seed != null) {
-      _state.update { it.copy(searching = true, sort = d.sort, date = d.date) }
+      _state.update { it.copy(searching = true, date = d.date) }
       val results = engine.similar(seed, r.filter, SIMILAR_LIMIT, d.view)
       if (similarTo?.id != seed.id) return   // left "Find similar" while it ran: the list that follows is not this one
       lastResults = results
@@ -402,6 +456,7 @@ class SearchViewModel(
       _state.update {
         it.copy(
           mode = SearchMode.RESULTS,
+          sort = d.sort,
           feed = feed,
           selected = it.selected.keepIn(feed),
           searching = false,
@@ -424,13 +479,15 @@ class SearchViewModel(
       // The grouped "recent documents, then photos" list is the start screen; a chosen sort or date, or a date typed alone, is one list.
       val grouped = d.sort == SortOrder.NEWEST && d.date == null
       val feed = withContext(feedDispatcher) { if (grouped) buildRecentFeed(recent) else buildSortedFeed(recent) } // thousands of items: not on the UI thread
+      home = HomeSnapshot(r.filter, d.sort, d.date, r.nonce, feed, hidden, recent.any { f -> f.sensitive })
       _state.update {
         it.copy(
           sort = d.sort,
           date = d.date,
           selected = it.selected.keepIn(feed),
           mode = SearchMode.RECENT,
-          feed = feed,
+          feed = sameOrNew(it.feed, feed, quiet),
+          quietRefresh = quiet,
           loaded = true,
           searching = false,
           nothingFound = false,
@@ -443,7 +500,7 @@ class SearchViewModel(
       }
       return
     }
-    _state.update { it.copy(searching = true, sort = d.sort, date = d.date) }
+    _state.update { it.copy(searching = true, date = d.date) }
     // Word matches arrive at once, meaning matches when the model is free (it may be busy indexing): show each step.
     var phraseWasContent = false
     engine.searchProgressive(q, r.filter, meaningDelayMs = if (r.immediate) 0L else DEBOUNCE_MS, view = d.view).collect { results ->
@@ -467,7 +524,9 @@ class SearchViewModel(
       _state.update {
         it.copy(
           mode = SearchMode.RESULTS,
-          feed = feed,
+          sort = d.sort,
+          feed = sameOrNew(it.feed, feed, quiet),
+          quietRefresh = quiet,
           selected = it.selected.keepIn(feed),
           searching = !results.complete,
           nothingFound = results.complete && results.hits.isEmpty(),

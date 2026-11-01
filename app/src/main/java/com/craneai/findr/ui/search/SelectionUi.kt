@@ -13,7 +13,9 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ContentCopy
+import androidx.compose.material.icons.outlined.Deselect
 import androidx.compose.material.icons.outlined.MoreHoriz
+import androidx.compose.material.icons.outlined.SelectAll
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
@@ -32,6 +34,8 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.craneai.findr.R
 import com.craneai.findr.ui.theme.LocalSunlight
@@ -51,14 +55,23 @@ fun SelectionTopBar(count: Int, allSelected: Boolean, onSelectAll: () -> Unit, o
     modifier.fillMaxWidth().statusBarsPadding().padding(start = Sun.S4, end = Sun.S8, top = Sun.S4),
     verticalAlignment = Alignment.CenterVertically,
   ) {
-    SunIconAction(Icons.Rounded.Close, exit, exit, onExit)
+    // One row at any font size (UI audit item 2): the cross is the icon alone (its description names it), the count takes the room that
+    // is left on one line, and Select all becomes an icon at large text instead of a word that squeezes the count to a letter a line.
+    SunIconAction(Icons.Rounded.Close, exit, exit, onExit, showWord = false)
     Text(
       pluralStringResource(R.plurals.select_count, count, count),
       style = SunType.Heading,
       color = MaterialTheme.colorScheme.onBackground,
+      maxLines = 1,
+      overflow = TextOverflow.Ellipsis,
       modifier = Modifier.weight(1f).padding(start = Sun.S8).semantics { heading(); liveRegion = LiveRegionMode.Polite },
     )
-    SunTextButton(onClick = onSelectAll) { Text(stringResource(if (allSelected) R.string.select_none else R.string.select_all), style = SunType.Label) }
+    val toggle = stringResource(if (allSelected) R.string.select_none else R.string.select_all)
+    if (LocalDensity.current.fontScale >= 1.3f) {
+      SunIconAction(if (allSelected) Icons.Outlined.Deselect else Icons.Outlined.SelectAll, toggle, toggle, onSelectAll, showWord = false)
+    } else {
+      SunTextButton(onClick = onSelectAll) { Text(toggle, style = SunType.Label, maxLines = 1) }
+    }
   }
 }
 
@@ -83,16 +96,16 @@ fun SelectionActionBar(
       .drawBehind { drawLine(line, androidx.compose.ui.geometry.Offset(0f, 0f), androidx.compose.ui.geometry.Offset(size.width, 0f), strokeWidth = 1.dp.toPx()) }
       .navigationBarsPadding()
       .padding(horizontal = Sun.S8, vertical = Sun.S4),
-    horizontalArrangement = Arrangement.SpaceEvenly,
+    // Equal shares of the width (UI audit item 10): SpaceEvenly let the last action, More, run off the edge at large text.
     verticalAlignment = Alignment.CenterVertically,
   ) {
     val share = stringResource(R.string.action_share)
     val copy = stringResource(R.string.action_copy)
-    SunIconAction(Icons.Outlined.Share, share, share, onShare)
-    SunIconAction(Icons.Outlined.ContentCopy, copy, copy, onCopy)
-    if (onMark != null) stringResource(R.string.action_mark_sensitive).let { SunIconAction(Icons.Outlined.VisibilityOff, it, it, onMark) }
-    if (onUnmark != null) stringResource(R.string.action_unmark_sensitive).let { SunIconAction(Icons.Outlined.Visibility, it, it, onUnmark) }
-    if (onMore != null) stringResource(R.string.action_more).let { SunIconAction(Icons.Outlined.MoreHoriz, it, it, onMore) }
+    SunIconAction(Icons.Outlined.Share, share, share, onShare, Modifier.weight(1f))
+    SunIconAction(Icons.Outlined.ContentCopy, copy, copy, onCopy, Modifier.weight(1f))
+    if (onMark != null) stringResource(R.string.action_mark_sensitive).let { SunIconAction(Icons.Outlined.VisibilityOff, it, it, onMark, Modifier.weight(1f)) }
+    if (onUnmark != null) stringResource(R.string.action_unmark_sensitive).let { SunIconAction(Icons.Outlined.Visibility, it, it, onUnmark, Modifier.weight(1f)) }
+    if (onMore != null) stringResource(R.string.action_more).let { SunIconAction(Icons.Outlined.MoreHoriz, it, it, onMore, Modifier.weight(1f)) }
   }
 }
 

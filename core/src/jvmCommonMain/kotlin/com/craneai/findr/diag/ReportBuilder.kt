@@ -35,6 +35,8 @@ data class ReportInput(
   val logLines: List<String>,
   /** What the person typed under "Report a problem", if anything. */
   val note: String?,
+  /** The "Background runs" block, one preformatted line each ([BackgroundReport.lines]): counts and times only. Empty on the desktop. */
+  val background: List<String> = emptyList(),
 )
 
 /** A finished report: the [text] shown by View report and attached to the email, and the short [summary] for a body or a chat. */
@@ -44,6 +46,8 @@ object ReportBuilder {
   /** The whole report stays under this, so an attachment is small enough for any mail app or chat. */
   const val MAX_CHARS = 60_000
   const val NOTE_MAX = 1_000
+  /** The background block never crowds out the events and the log. */
+  const val BACKGROUND_MAX = 8_000
   private val STAMP: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm 'UTC'").withZone(ZoneOffset.UTC)
 
   fun build(input: ReportInput): BuiltReport {
@@ -73,6 +77,16 @@ object ReportBuilder {
         appendLine("${k.label}: ${s.count}, last ${s.lastClass}")
       }
     }
+    val backgroundBlock = if (input.background.isEmpty()) "" else buildString {
+      appendLine()
+      appendLine("== Background runs (why indexing stopped; counts and times only) ==")
+      var used = 0
+      for (line in input.background) {
+        if (used + line.length > BACKGROUND_MAX) { appendLine("(more lines not shown)"); break }
+        appendLine(line)
+        used += line.length + 1
+      }
+    }
     val logBlock = buildString {
       appendLine()
       appendLine("== Recent log from this launch (redacted) ==")
@@ -81,7 +95,7 @@ object ReportBuilder {
 
     val events = StringBuilder()
     var shown = 0
-    val budget = MAX_CHARS - head.length - handledBlock.length - logBlock.length
+    val budget = MAX_CHARS - head.length - handledBlock.length - backgroundBlock.length - logBlock.length
     for (e in input.events) {
       val block = "\n== Event ${shown + 1} ==\n${e.body.trimEnd()}\n"
       if (shown > 0 && events.length + block.length > budget) break
@@ -90,7 +104,7 @@ object ReportBuilder {
     }
     val eventsText = if (shown == 0) "\n== Events ==\nnone recorded\n" else events.toString()
     val omitted = input.events.size - shown
-    val text = head + eventsText + (if (omitted > 0) "\n($omitted older events not shown)\n" else "") + handledBlock + logBlock
+    val text = head + eventsText + (if (omitted > 0) "\n($omitted older events not shown)\n" else "") + handledBlock + backgroundBlock + logBlock
 
     return BuiltReport(
       text = text.take(MAX_CHARS),

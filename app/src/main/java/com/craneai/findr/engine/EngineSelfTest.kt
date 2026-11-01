@@ -170,3 +170,6 @@ object EngineCache {
     return files.count { it.delete() }
   }
 }
+
+/** The index could not be written because the phone's storage is full (see [com.craneai.findr.index.StorageFull]); not any file's fault. */
+class StorageFullException(cause: Throwable) : RuntimeException("storage is full", cause)

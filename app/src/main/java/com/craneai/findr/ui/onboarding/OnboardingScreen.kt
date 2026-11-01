@@ -128,13 +128,15 @@ fun OnboardingScreen(
   onFinish: () -> Unit,
 ) {
   // Quick look and speech are installed without a question; the extras page is only for the opt-in packs not on the phone yet.
-  val offerIds = remember { idsToOfferAtOnboarding(addOns.rows.value) }
+  // The three decisions that shape the page list are saved with the screen (UI audit item 5): after a rotation, or once the model finished
+  // installing, they must not be read again, or the list shrinks under the saved page and the pager lands one page off (or throws).
+  val offerIds: List<String> = rememberSaveable { ArrayList(idsToOfferAtOnboarding(addOns.rows.value)) }
   // The models page is there when the phone has no model yet (read once, so the page does not vanish the moment it is installed).
-  val needsModels = remember { delivery.noModel.value }
+  val needsModels = rememberSaveable { delivery.noModel.value }
   // The background page is only for a phone that is still optimised (read once, so it does not vanish when the person says yes).
   val context = LocalContext.current
-  val showBackground = remember { BatteryExemption.stepShown(exemptAtStart = BatteryExemption.isExempt(context)) }
-  val pages = remember {
+  val showBackground = rememberSaveable { BatteryExemption.stepShown(exemptAtStart = BatteryExemption.isExempt(context)) }
+  val pages = remember(offerIds, needsModels, showBackground) {
     Page.entries.filter {
       (it != Page.MODELS || needsModels) && (it != Page.EXTRAS || offerIds.isNotEmpty()) && (it != Page.BACKGROUND || showBackground)
     }
@@ -142,9 +144,10 @@ fun OnboardingScreen(
   val battery = rememberBatteryExemption()
   val pager = rememberPagerState(pageCount = { pages.size })
   val scope = rememberCoroutineScope()
-  val last = pager.currentPage == pages.size - 1
-  val onFiles = pages[pager.currentPage] == Page.FILES
-  val onBackground = pages[pager.currentPage] == Page.BACKGROUND
+  val current = pager.currentPage.coerceIn(0, pages.lastIndex)
+  val last = current == pages.size - 1
+  val onFiles = pages[current] == Page.FILES
+  val onBackground = pages[current] == Page.BACKGROUND
   var choosingFolders by rememberSaveable { mutableStateOf(false) }
 
   // Access that was already on when setup opened (a phone that kept it) does not skip the page behind the person's back.
@@ -176,10 +179,10 @@ fun OnboardingScreen(
           .verticalScroll(rememberScrollState())
           .padding(horizontal = sunSideInset(Sun.S24), vertical = Sun.S8),
       ) {
-        when (pages[page]) {
+        when (pages[page.coerceIn(0, pages.lastIndex)]) {
           Page.LANGUAGE -> PageLanguage()
           Page.WELCOME -> PageWelcome()
-          Page.FILES -> PageFiles(access, onChooseFolders = { choosingFolders = true })
+          Page.FILES -> PageFiles(access)
           Page.BACKGROUND -> PageBackground(battery)
           Page.MODELS -> PageModels(delivery, access)
           Page.EXTRAS -> PageExtras(addOns, offerIds)
@@ -235,6 +238,10 @@ fun OnboardingScreen(
           onClick = { scope.launch { pager.animateScrollToPage(pager.currentPage + 1) } },
           modifier = Modifier.fillMaxWidth(),
         ) { Text(stringResource(R.string.onb_next), style = SunType.Label) }
+      }
+      // "Choose folders" lives in the footer, where large text cannot push it under the fold of a scrolling page (UI audit item 5, D7).
+      if (onFiles) {
+        SunTextButton(onClick = { choosingFolders = true }, modifier = Modifier.align(Alignment.CenterHorizontally)) { Text(stringResource(R.string.onb_choose_folders)) }
       }
       if (pager.currentPage > 0) {
         SunTextButton(
@@ -320,7 +327,7 @@ private fun PageWelcome() {
  * itself once access is on. Folders are not part of this flow: "Choose folders" is a small link for the careful.
  */
 @Composable
-private fun PageFiles(access: AccessState, onChooseFolders: () -> Unit) {
+private fun PageFiles(access: AccessState) {
   PageTitle(appString(R.string.onb3_title))
   Point(Icons.Rounded.FolderOpen, stringResource(R.string.onb3_files_title), appString(R.string.onb3_files_body))
   Spacer(Modifier.height(Sun.S8))
@@ -334,8 +341,6 @@ private fun PageFiles(access: AccessState, onChooseFolders: () -> Unit) {
   } else {
     Text(stringResource(R.string.onb3_files_hint), style = SunType.Body, color = MaterialTheme.colorScheme.onSurface)
   }
-  Spacer(Modifier.height(Sun.S16))
-  SunTextButton(onClick = onChooseFolders) { Text(stringResource(R.string.onb_choose_folders)) }
 }
 
 /**

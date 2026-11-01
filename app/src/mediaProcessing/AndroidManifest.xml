@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The full edition only. Android 15 gives each of the dataSync and mediaProcessing foreground-service types 6 hours in 24, counted
+  separately, so the heavy picture, video and recording work runs under mediaProcessing and the words, documents and waiting stay under
+  dataSync (IndexWorker, FgsPolicy). Trawl Go has no models and never uses mediaProcessing, so it neither declares the permission nor the type.
+  The type is never combined in one ForegroundInfo; the manifest only has to allow both.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROCESSING" />
+  <application>
+    <service
+      android:name="androidx.work.impl.foreground.SystemForegroundService"
+      android:foregroundServiceType="dataSync|mediaProcessing"
+      tools:node="merge"
+      tools:replace="android:foregroundServiceType" />
+  </application>
+</manifest>

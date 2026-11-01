@@ -19,6 +19,10 @@ import com.craneai.findr.core.FindrLog as Log
 import com.craneai.findr.core.FindrLog.redact
 import com.craneai.findr.extract.DocumentTextExtractor
 import com.craneai.findr.core.PauseReason
+import com.craneai.findr.diag.BackgroundReport
+import com.craneai.findr.diag.Diag
+import com.craneai.findr.diag.RunEnd
+import com.craneai.findr.diag.StopReasons
 import com.craneai.findr.index.FileState
 import com.craneai.findr.index.IndexStore
 import com.craneai.findr.index.Modality
@@ -57,21 +61,132 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
   /** Expedited work needs this before Android 12; on 12+ the worker calls setForeground itself once it is running. */
   override suspend fun getForegroundInfo(): ForegroundInfo = foregroundInfo(R.string.notif_getting_ready)
 
+  // ---- this run's record (Diag.runs): why it ended, in counts and times only ---------------------------------------------------
+
+  private var host: FindrEngine? = null
+  private var runId = 0L
+  private var runEnd: RunEnd? = null
+  private var runFiles = 0
+  private var politeMs = 0L
+  private var coolDowns = 0
+  private var coolMs = 0L
+  private val fgsMs = HashMap<String, Long>()
+  @Volatile private var fgsType: FgsType? = null
+  private var fgsSince = 0L
+
+  /** Set when the ledger has no foreground-service type with room left: the loop ends the run in an orderly way before the system does. */
+  private var fgsBudgetSpent = false
+
+  private var protection: ProtectionGate? = null
+
+  /** Set when the process was found with no protection ([RunHandoff.unprotected]): every loop ends at its next file boundary. */
+  @Volatile private var unprotectedStop = false
+
+  /**
+   * The one stop test for heavy work: the system stopped the run ([isStopped]), or the process has neither a foreground service nor a
+   * running job while it is cached. Work that has no screen and no protection must not run (Android kills such a process for its CPU use).
+   */
+  private fun mustStop(): Boolean {
+    if (isStopped || unprotectedStop) return true
+    if (protection?.lost(holdsForegroundService = fgsType != null) == true) unprotectedStop = true
+    return unprotectedStop
+  }
+
+  /** The run ends here because nothing protects it; whatever is left waits for a protected start (a job, a foreground service, Trawl opening). */
+  private suspend fun endUnprotected(engine: FindrEngine) {
+    runEnd = RunEnd.UNPROTECTED
+    val waiting = engine.workWaiting()
+    Log.i(TAG, "not protected: no foreground service and no running job (importance ${engine.processImportance()}), so heavy work ends here; " +
+      if (waiting) "a protected start picks it up" else "nothing is waiting")
+    if (waiting) withContext(NonCancellable) { engine.scheduleResume(RunHandoff.RESUME_DELAY_MIN) }
+  }
+
   override suspend fun doWork(): Result {
     val engine = (applicationContext as FindrApp).engine as? FindrEngine ?: return Result.success()
-    if (engine.paused || !engine.hasAllFilesAccess()) return Result.success()
+    host = engine
+    protection = engine.protectionGate()
+    runId = Diag.runs()?.begin(runKind(tags), android.os.Process.myPid(), engine.isCharging(), engine.batteryPercent()) ?: 0L
+    // The first line of every run, so a probe (scripts/bg-probe.py) can time "plugged in -> work started" from the log alone. Counts only.
+    Log.i(TAG, "run began: ${runKind(tags)} charging=${engine.isCharging()} battery=${engine.batteryPercent()}% bucket=${engine.standbyBucket()} saver=${engine.batterySaver()} attempt=$runAttemptCount importance=${engine.processImportance()}")
+    try {
+      return work(engine)
+    } catch (e: CancellationException) {
+      throw e
+    } catch (t: Throwable) {
+      runEnd = RunEnd.FAILED
+      throw t
+    } finally {
+      finishRun(engine)
+      // Whatever ended this run, a phone on battery with work left keeps a request that waits for the charger (RunHandoff.chargerNetWanted).
+      withContext(NonCancellable) { engine.keepChargerNet() }
+    }
+  }
+
+  /**
+   * Takes the worker lock, or, when this run is a started job that has lost it, waits for it ([RunHandoff.lendsProtection]) so the job
+   * keeps the process out of the cached class for the run that holds the lock. Does no work while it waits.
+   */
+  private suspend fun lockOrLend(engine: FindrEngine): Boolean {
+    if (engine.workerLock.tryLock()) return true
+    val importance = engine.processImportance()
+    if (!RunHandoff.lendsProtection(importance, holdsForegroundService = false)) return false
+    Log.i(TAG, "another run holds the lock: this job waits for it (importance $importance), so the process stays protected")
+    return withTimeoutOrNull(RunHandoff.LEND_WAIT_MS) { engine.workerLock.lock(); true } ?: false
+  }
+
+  /** The run is over, for whatever reason: closes the foreground stretch in the ledger and writes the run's record and log line. */
+  private fun finishRun(engine: FindrEngine) {
+    val now = System.currentTimeMillis()
+    closeFgsStretch()
+    runCatching { engine.fgsBudget.leave(now); engine.saveFgsBudget() }
+    val code = if (isStopped) stopReason else null
+    val end = if (code != null) StopReasons.runEnd(code) else runEnd ?: RunEnd.FINISHED
+    syncRun()
+    val log = Diag.runs() ?: return
+    log.end(runId, end, code)
+    val rec = log.records().firstOrNull { it.id == runId } ?: return
+    Log.i(TAG, "run ended: " + BackgroundReport.line(rec))
+  }
+
+  /** Copies the in-memory counts into the record (the heartbeat and the end do this; the record reaches the disk with them). */
+  @Synchronized private fun syncRun() {
+    val polite = politeMs; val cools = coolDowns; val coolTime = coolMs; val files = runFiles; val denied = foregroundDenied
+    val ms = HashMap(fgsMs).also { m -> fgsType?.let { m[it.key] = (m[it.key] ?: 0L) + (android.os.SystemClock.elapsedRealtime() - fgsSince) } }
+    Diag.runs()?.update(runId) { it.copy(fgsMs = ms, foregroundDenied = denied, files = files, politeMs = polite, coolDowns = cools, coolMs = coolTime) }
+  }
+
+  /** Adds the time of the foreground stretch in progress to its type's total, and starts the next stretch now. */
+  @Synchronized private fun closeFgsStretch() {
+    val t = fgsType ?: return
+    val now = android.os.SystemClock.elapsedRealtime()
+    fgsMs[t.key] = (fgsMs[t.key] ?: 0L) + (now - fgsSince)
+    fgsSince = now
+    fgsType = null
+  }
+
+  /** Once a minute, with the screen-off tick: the run's record is stamped alive (a death can then be dated) and the ledger is saved. */
+  private fun heartbeat(engine: FindrEngine) {
+    syncRun()
+    Diag.runs()?.beat(runId)
+    runCatching { engine.saveFgsBudget() }   // the ledger settles its open stretch up to now when it is encoded
+  }
+
+  private suspend fun work(engine: FindrEngine): Result {
+    if (engine.paused || !engine.hasAllFilesAccess()) { runEnd = RunEnd.PAUSED; return Result.success() }
     // The index is not open (busy, or the disk is full): the engine keeps trying and redoes what it missed when the index opens. This run
     // does nothing, takes no lock and no foreground service, and asks WorkManager for another later; it never crashes.
     if (engine.awaitStore() == null) {
       Log.i(TAG, "the index is not open yet: this run is skipped and asked again later")
+      runEnd = RunEnd.INDEX_NOT_OPEN
       return Result.retry()
     }
     // Another run is already at it. A resume request comes right after a run the system stopped, which may still be winding down
     // (a file in the middle of a model call), so it waits for that run's turn instead of giving up.
     val resuming = RESUME in tags
-    val locked = if (resuming) withTimeoutOrNull(RESUME_LOCK_WAIT_MS) { engine.workerLock.lock(); true } ?: false else engine.workerLock.tryLock()
+    val locked = if (resuming) withTimeoutOrNull(RESUME_LOCK_WAIT_MS) { engine.workerLock.lock(); true } ?: false else lockOrLend(engine)
     if (!locked) {
       if (resuming) Log.i(TAG, "resume: the earlier run is still winding down; the next scheduled run picks up")
+      runEnd = RunEnd.BUSY
       return Result.success()
     }
     if (resuming) Log.i(TAG, "resume: running as plain work")
@@ -79,7 +194,7 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
     // matters on phones that freeze a background app a second after its service ends (Transsion Hiber): the resume request has to
     // be queued before that, or nothing ever runs again (the research notes).
     val guard = CoroutineScope(currentCoroutineContext()).launch(Dispatchers.IO) {
-      try { awaitCancellation() } finally { if (isStopped) resumeIfForegroundLimit(engine) }
+      try { awaitCancellation() } finally { if (isStopped) afterSystemStop(engine) }
     }
     // Does this phone let us work with the screen off? A one-second tick, kept while the run lives; a late tick is a freeze.
     val meter = ScreenOffMeter()
@@ -88,7 +203,7 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
       try {
         while (true) {
           meter.tick(android.os.SystemClock.elapsedRealtime(), engine.screenOff())
-          if (++ticks % SCREEN_OFF_SAVE_TICKS == 0) saveScreenOff(engine, meter)
+          if (++ticks % SCREEN_OFF_SAVE_TICKS == 0) { saveScreenOff(engine, meter); heartbeat(engine) }
           delay(ScreenOffMeter.TICK_MS)
         }
       } finally {
@@ -110,12 +225,12 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
    * ([MidRunWords]). Skipped while the phone is polite, hot or the run is stopping: those rules hold the words pass back too.
    */
   private suspend fun wordsForNewFiles(engine: FindrEngine, processor: FileProcessor, watch: MidRunWords) {
-    if (isStopped || engine.paused || engine.polite() || batteryTemperature() >= Tuning.current.hotStopC) return
+    if (mustStop() || engine.paused || engine.polite() || batteryTemperature() >= Tuning.current.hotStopC) return
     val n = watch.between(
       crawl = { engine.crawl(forceFull = false) },
       wordsWaiting = { engine.wordsWaiting() },
       // wait = false: ChangeWorker's or the in-app pass is already at it (and takes these files); look again in a few seconds.
-      words = { limit -> engine.wordsPass(processor, limit = limit, stop = { isStopped || engine.polite() }, wait = false) },
+      words = { limit -> engine.wordsPass(processor, limit = limit, stop = { mustStop() || engine.polite() }, wait = false) },
     )
     if (n > 0) Log.i(TAG, "mid-run words: $n files that landed during the run are searchable by their words")
   }
@@ -135,6 +250,7 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
    */
   private suspend fun runGo(engine: FindrEngine): Result {
     startForeground(R.string.notif_getting_ready)
+    if (mustStop() && unprotectedStop) { endUnprotected(engine); return Result.success() }
     engine.workerState = engine.workerState.copy(running = true, pauseReason = null, lastError = null)
     try {
       engine.crawl(forceFull = false)
@@ -149,11 +265,13 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
       val held = engine.policy().heldBy
       if (held == PauseReason.BATTERY_LOW || held == PauseReason.TOO_HOT) {
         Log.i(TAG, "go: held by $held (battery ${engine.batteryPercent()}%, thermal ${engine.thermalStatus()})")
+        runEnd = heldEnd(held)
         engine.scheduleRetryLater()
         return Result.success()
       }
-      engine.wordsPass(processor, stop = { isStopped })
+      engine.wordsPass(processor, stop = { mustStop() })
       engine.store.trimWal(WAL_TRIM_BYTES)
+      if (unprotectedStop) endUnprotected(engine)
       return Result.success()
     } finally {
       if (isStopped) {
@@ -171,6 +289,7 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
    */
   private suspend fun runWithoutModel(engine: FindrEngine): Result {
     startForeground(R.string.notif_getting_ready)
+    if (mustStop() && unprotectedStop) { endUnprotected(engine); return Result.success() }
     engine.workerState = engine.workerState.copy(running = true, pauseReason = null, lastError = null)
     val quickScope = CoroutineScope(currentCoroutineContext() + SupervisorJob(currentCoroutineContext()[Job]))
     var quickJob: Job? = null
@@ -186,12 +305,13 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
       val held = engine.policy().heldBy
       if (held == PauseReason.BATTERY_LOW || held == PauseReason.TOO_HOT) {
         Log.i(TAG, "no model: held by $held (battery ${engine.batteryPercent()}%, thermal ${engine.thermalStatus()})")
+        runEnd = heldEnd(held)
         engine.scheduleRetryLater()
         return Result.success()
       }
       if (engine.quickLookShouldRun()) quickJob = quickScope.launch {
         try {
-          QuickLookPass(applicationContext, engine) { isStopped }.run()
+          QuickLookPass(applicationContext, engine) { mustStop() }.run()
         } catch (e: CancellationException) {
           throw e
         } catch (t: Throwable) {
@@ -199,8 +319,12 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
         }
       }
       Log.i(TAG, "no model: reading names and words" + if (quickJob != null) " and pictures (quick look)" else "")
-      engine.wordsPass(processor, stop = { isStopped }, holdWhilePolite = true,
+      engine.wordsPass(processor, stop = { mustStop() }, holdWhilePolite = true,
         onPoliteHold = { startForeground(R.string.notif_waiting_polite) })
+      if (unprotectedStop) {
+        endUnprotected(engine)
+        return Result.success()
+      }
       if (!isStopped && engine.polite()) {
         handOff(engine, "the words pass waited out a polite phone")
         return Result.success()
@@ -214,34 +338,80 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
     }
   }
 
-  /** Set once the system has refused this run a foreground service; the run then goes on as plain work. */
+  /** Set once the system (or the ledger) has refused this run a foreground service; the run then goes on as plain work. */
   private var foregroundDenied = false
 
   /**
-   * The foreground service itself, if the system lets us have one. It can refuse (the 6-hour data-sync budget is spent and the app is
-   * not in front: ForegroundServiceStartNotAllowedException), and then the run goes on as plain work. Asked again only by a later
-   * run: after a refusal the per-file notification updates are skipped too.
+   * The foreground service itself, if the system lets us have one, under the type that has room ([FgsBudget.choose]): [preferred]
+   * first, the other type if that one is spent. Calling it again switches the type and updates the notice. Returns true when the
+   * service is running now.
+   *
+   * It can refuse: a budget spent and the app not in front throws ForegroundServiceStartNotAllowedException from a first start, and
+   * the run then goes on as plain work. But WorkManager swallows that exception on a type switch (SystemForegroundDispatcher), so the
+   * ledger is what keeps a switch honest. When no type has room and a service is already running, [fgsBudgetSpent] is set: the loop
+   * ends the run in an orderly way instead of waiting for the system's timeout. Asked again only by a later run.
    */
-  private suspend fun startForeground(@StringRes line: Int) {
-    if (foregroundDenied) return
+  private suspend fun startForeground(@StringRes line: Int, preferred: FgsType = FgsType.DATA_SYNC): Boolean {
+    if (foregroundDenied) return false
+    val ledger = host?.fgsBudget
+    val type = if (ledger == null) FgsType.DATA_SYNC else ledger.choose(preferred, System.currentTimeMillis())
+    if (type == null) {
+      if (fgsType != null) {
+        fgsBudgetSpent = true
+        Log.i(TAG, "no foreground-service type has room left (${ledger?.describe(System.currentTimeMillis())}): ending this run in an orderly way")
+      } else {
+        foregroundDenied = true
+        Log.i(TAG, "no foreground-service type has room left (${ledger?.describe(System.currentTimeMillis())}): running as plain work")
+      }
+      return false
+    }
     try {
       val t0 = android.os.SystemClock.elapsedRealtime()
-      setForeground(foregroundInfo(line))
+      setForeground(foregroundInfo(line, type))
       val took = android.os.SystemClock.elapsedRealtime() - t0
       if (took >= 1_000) Log.i(TAG, "the foreground notice took $took ms to post")   // a slow one here delays a polite wait's own clock
+      noteForeground(type)
+      return true
     } catch (e: CancellationException) {
       throw e
     } catch (t: Throwable) {
+      ledger?.markExhausted(type, System.currentTimeMillis())   // the system said no: that type is spent until its window ends or Trawl opens
+      host?.saveFgsBudget()
       foregroundDenied = true
-      Log.w(TAG, "no foreground service; running as plain work", t)   // the data-sync budget is spent, or started from the background on 12+
+      Log.w(TAG, "no foreground service; running as plain work", t)   // a budget is spent, or started from the background on 12+
+      return false
     }
   }
 
-  /** Android 15's data-sync limit ended this run: nothing else starts it again until the app is opened, so ask for a plain rerun (RunHandoff). */
-  private suspend fun resumeIfForegroundLimit(engine: FindrEngine) {
-    if (!RunHandoff.resumeAfterStop(stopReason)) return
-    Log.i(TAG, "the foreground-service limit ended this run: asking for a plain rerun, expedited")
-    withContext(NonCancellable) { engine.scheduleResume(0) }
+  /** The foreground service now runs under [type]: the run's totals and the ledger follow. */
+  @Synchronized private fun noteForeground(type: FgsType) {
+    val now = android.os.SystemClock.elapsedRealtime()
+    if (fgsType != type) {
+      fgsType?.let { fgsMs[it.key] = (fgsMs[it.key] ?: 0L) + (now - fgsSince) }
+      if (fgsType != null) Log.i(TAG, "foreground service type: ${fgsType?.key} -> ${type.key}")
+      fgsType = type
+      fgsSince = now
+    }
+    host?.fgsBudget?.enter(type, System.currentTimeMillis())
+  }
+
+  /**
+   * The system stopped this run (the worker was cancelled with a stop reason). The foreground-service limit marks the running type
+   * spent and asks for a plain rerun at once (RunHandoff.resumeAfterStop); another system stop (quota, standby, ...) asks for one
+   * delayed, constraint-light rerun (RunHandoff.followUpAfterStop). WorkManager re-queues a stopped request by itself, but not
+   * after a process kill, and only under the system's own quota rules.
+   */
+  private suspend fun afterSystemStop(engine: FindrEngine) {
+    val code = stopReason
+    if (RunHandoff.resumeAfterStop(code)) {
+      fgsType?.let { engine.fgsBudget.markExhausted(it, System.currentTimeMillis()) }
+      engine.saveFgsBudget()
+      Log.i(TAG, "the foreground-service limit ended this run: asking for a plain rerun, expedited")
+      withContext(NonCancellable) { engine.scheduleResume(0) }
+    } else if (RunHandoff.followUpAfterStop(code)) {
+      Log.i(TAG, "the system stopped this run (${StopReasons.name(code)}): asking for a rerun in ${RunHandoff.RESUME_DELAY_MIN} min")   // log-safe: a stop-reason constant's name, not a file name
+      withContext(NonCancellable) { engine.scheduleResume(RunHandoff.RESUME_DELAY_MIN) }
+    }
   }
 
   /**
@@ -249,6 +419,7 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
    * screen goes off (the process watches for it) or Trawl opens, with a timer behind that. Only when something is left to do.
    */
   private suspend fun handOff(engine: FindrEngine, why: String) {
+    runEnd = RunEnd.POLITE_HANDOFF
     val waiting = engine.workWaiting()
     Log.i(TAG, "polite: ending this run ($why); " + if (waiting) "it resumes when the screen goes off or Trawl opens" else "nothing is waiting")
     if (waiting) withContext(NonCancellable) { engine.scheduleResume(RunHandoff.RESUME_DELAY_MIN) }
@@ -270,6 +441,8 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
     // files already searchable and only adds meaning (lean first download, the research notes).
     if (engine.embedder.modelFile == null && !modelInPlace) return runWithoutModel(engine)
     startForeground(R.string.notif_getting_ready)
+    // No foreground service and a cached process (a worker WorkManager started in-process): nothing heavy may run, see RunHandoff.unprotected.
+    if (mustStop() && unprotectedStop) { endUnprotected(engine); return Result.success() }
     engine.workerState = engine.workerState.copy(running = true, pauseReason = null, lastError = null)
     // The quick-look pass (D2) runs beside the words pass and the embedding loop, on its own thread (QuickLookPass).
     val quickScope = CoroutineScope(currentCoroutineContext() + SupervisorJob(currentCoroutineContext()[Job]))
@@ -279,7 +452,7 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
       if (quickJob?.isActive == true || System.currentTimeMillis() - quickEndedAt < QUICK_RECHECK_MS || !engine.quickLookShouldRun()) return
       quickJob = quickScope.launch {
         try {
-          QuickLookPass(applicationContext, engine) { isStopped }.run()
+          QuickLookPass(applicationContext, engine) { mustStop() }.run()
         } catch (e: CancellationException) {
           throw e
         } catch (t: Throwable) {
@@ -297,7 +470,7 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
       if (privacyJob?.isActive == true || System.currentTimeMillis() - privacyEndedAt < QUICK_RECHECK_MS || !engine.privacyShouldRun()) return
       privacyJob = quickScope.launch {
         try {
-          PrivacyPass(applicationContext, engine) { isStopped }.run()
+          PrivacyPass(applicationContext, engine) { mustStop() }.run()
         } catch (e: CancellationException) {
           throw e
         } catch (t: Throwable) {
@@ -361,8 +534,12 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
       }, userBusy = { gpu -> userBusy(engine, gpu) })
       startQuickLook()
       startPrivacy()
-      engine.wordsPass(processor, stop = { isStopped }, holdWhilePolite = true,   // gives up after a polite wait (RunHandoff.HAND_OFF_AFTER_MS)
+      engine.wordsPass(processor, stop = { mustStop() }, holdWhilePolite = true,   // gives up after a polite wait (RunHandoff.HAND_OFF_AFTER_MS)
         onPoliteHold = { startForeground(R.string.notif_waiting_polite) })
+      if (unprotectedStop) {
+        endUnprotected(engine)
+        return Result.success()
+      }
       if (!isStopped && engine.polite()) {
         handOff(engine, "the words pass waited out a polite phone")
         return Result.success()
@@ -373,11 +550,12 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
       val mediaShare = MediaShare(Tuning.current.mediaShare)
       var lastTierLine = ""
       val midRun = MidRunWords(clock = { android.os.SystemClock.elapsedRealtime() })
-      while (!isStopped) {
+      while (!mustStop()) {
+        if (fgsBudgetSpent) return endForBudget(engine)
         startPrivacy()
         startQuickLook()   // new photos since it finished, or quick look just turned on: back within a minute
         val settings = engine.settings.value
-        if (engine.paused) return Result.success()
+        if (engine.paused) { runEnd = RunEnd.PAUSED; return Result.success() }
         wordsForNewFiles(engine, processor, midRun)   // a file that landed since the last look is searchable by its words now
         val decision = engine.policy()
         engine.embeddingNow = false
@@ -392,12 +570,15 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
           // phone to recover (looked at again in a few minutes).
           Log.i(TAG, "words only: ${decision.heldBy} (battery ${engine.batteryPercent()}%, thermal ${engine.thermalStatus()})")
           if (decision.heldBy == PauseReason.BATTERY_LOW || decision.heldBy == PauseReason.TOO_HOT) engine.scheduleRetryLater()
+          runEnd = heldEnd(decision.heldBy)
           return Result.success()
         }
         val temp = batteryTemperature()
         if (temp >= Tuning.current.hotStopC) {
           engine.workerState = engine.workerState.copy(pauseReason = PauseReason.TOO_HOT, currentFile = null)
           Log.i(TAG, "battery at $temp °C: cooling down")
+          coolDowns++
+          coolMs += Tuning.current.coolDownMs
           delay(Tuning.current.coolDownMs)
           continue
         }
@@ -418,7 +599,7 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
             if (fresh.isNotEmpty()) {
               engine.embeddingNow = true
               for ((i, p) in fresh.withIndex()) {
-                if (isStopped || engine.polite() || engine.policy().let { it.tier != IndexPolicy.Tier.LIGHT || !it.newFilesFullQuality }) break
+                if (mustStop() || fgsBudgetSpent || engine.polite() || engine.policy().let { it.tier != IndexPolicy.Tier.LIGHT || !it.newFilesFullQuality }) break
                 while (engine.userInteracting && !isStopped) delay(250)
                 val t0 = System.nanoTime()
                 understand(engine, processor, p, settings.indexAudio, settings.speechToText)
@@ -459,7 +640,7 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
         if (batch.isEmpty()) break
         Log.i(TAG, "pick: ${batch.size} ${kindCounts(batch.map { it.file.kind })} left ${kindCounts(null, engine)}")   // log-safe: counts per kind, no names
         for ((i, p) in batch.withIndex()) {
-          if (isStopped || engine.polite()) break   // polite: the loop above waits it out
+          if (mustStop() || fgsBudgetSpent || engine.polite()) break   // polite: the loop above waits it out; a spent budget ends the run at the top
           while (engine.userInteracting && !isStopped) delay(250)   // the user is scrolling: let the UI have the CPU
           val t0 = System.nanoTime()
           understand(engine, processor, p, settings.indexAudio, settings.speechToText)
@@ -474,11 +655,18 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
       }
       if (mediaShare.achieved > 0.0) Log.i(TAG, "bulk turns: videos and recordings took ${(mediaShare.achieved * 100).toInt()}% of the busy time (share ${Tuning.current.mediaShare})")
       // Ended at the cap with new files still waiting, on battery: ask for the next batch (D12), not only the charger.
+      if (unprotectedStop) { endUnprotected(engine); return Result.success() }
       if (!isStopped) engine.followUpNewFiles()
+      return Result.success()
+    } catch (e: StorageFullException) {
+      // The index cannot be written: no file is marked failed. The meter says the phone's storage is almost full (with the button to
+      // the storage settings) and the next try is in RETRY_LATER_MIN minutes, not at once, so a full disk is never a tight loop.
+      engine.noteIfStorageFull(e.cause ?: e)
       return Result.success()
     } catch (e: EngineUnhealthyException) {
       // The embedding engine failed its self-test twice: no file is marked failed (it is not their fault); look again later.
       engine.workerState = engine.workerState.copy(lastError = "Search is repairing itself")
+      runEnd = RunEnd.ENGINE_UNHEALTHY
       Log.w(TAG, "the embedding engine is unusable: ending this run, trying again later")
       engine.scheduleRetryLater()
       return Result.success()
@@ -536,6 +724,7 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
     var judged = false
     Log.i(TAG, "polite: the screen is on and Trawl is not in front, so heavy work waits")
     startForeground(R.string.notif_waiting_polite)   // asked again each wait: only the text changes while the service runs
+    try {
     while (!isStopped && !engine.paused && engine.polite()) {
       val waited = android.os.SystemClock.elapsedRealtime() - since
       if (!judged && waited >= PolitePolicy.RELEASE_AFTER_MS) {
@@ -554,6 +743,9 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
     }
     Log.i(TAG, "polite is over after ${(android.os.SystemClock.elapsedRealtime() - since) / 1000} s")
     return false
+    } finally {
+      politeMs += android.os.SystemClock.elapsedRealtime() - since
+    }
   }
 
   /**
@@ -630,13 +822,13 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
     while (true) {
       val done = understandStep(engine, processor, step, withAudio, withSpeech, windowed)
       total += done.seconds
-      if (done.next == null || !windowed || isStopped) {
+      if (done.next == null || !windowed || mustStop()) {
         // A windowed file's pace is the whole file's time, once, not each minute of it as if it were a file.
         if (windowed && done.finished && startedAtZero) Pace.record(p.file.kind, total)
         return
       }
       while (engine.userInteracting && !isStopped) delay(250)
-      if (isStopped) return
+      if (mustStop()) return
       // A recording can take hours: the charger coming out, a low battery or a hot phone ends the run between two windows (D12). The
       // windows saved so far stay, and the file goes on from the next one in the next bulk run.
       if (engine.paused || !engine.policy().bulkAllowed) return
@@ -675,7 +867,9 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
     val from = p.detail?.let { NEXT_CHUNK.find(it)?.groupValues?.get(1)?.toIntOrNull() } ?: 0   // "words" → 0
     val carry = p.detail?.let { SKIPPED_WINDOWS.find(it)?.value }   // a window left out after two kills stays noted in the file's detail
     engine.workerState = engine.workerState.copy(currentFile = if (engine.store.isSensitive(file.id)) null else file.name)
-    if (!foregroundDenied) runCatching { setForeground(foregroundInfo(notificationLine(file.kind))) }   // never the name: it can show on the lock screen
+    // Never the name: it can show on the lock screen. Pictures, videos and recordings run under media processing, the rest under data
+    // sync (FgsPolicy), each type with its own 6 hours on Android 15+.
+    if (!foregroundDenied) startForeground(notificationLine(file.kind), FgsPolicy.preferred(file.kind, android.os.Build.VERSION.SDK_INT, Edition.MEDIA_PROCESSING_FGS))
     val started = System.nanoTime()
     engine.store.markInflight(file.id, from, windowed)   // a process death inside this step is counted at the next start (kill-loop breaker)
     try {
@@ -687,6 +881,7 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
       engine.store.saveSegments(file.id, segments, state, detail, replace = from == 0,
         keepQuick = keepsQuick(segments, engine.embedder.imagesByEmbeddingGemma))
       engine.onFileIndexed(file.id)
+      runFiles++
       val dbMs = (System.nanoTime() - tdb) / 1_000_000
       val waited = processor.waitedMs / 1e3   // time spent letting the user scroll isn't indexing time
       val seconds = (System.nanoTime() - started) / 1e9 - waited
@@ -710,6 +905,8 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
       Log.i(TAG, "can't open $kind .$ext: ${e.why}")
       engine.store.setState(file.id, FileState.FAILED, com.craneai.findr.index.IndexStore.CANT_OPEN)
     } catch (t: Throwable) {
+      // A full disk is not the file's fault and the next file would fail the same way: leave it as it was and end the run (run() says so).
+      if (com.craneai.findr.index.StorageFull.isFull(t)) throw StorageFullException(t)
       Log.w(TAG, "failed: ${redact(file.relativePath + file.name)}", t)
       com.craneai.findr.diag.Diag.handled(com.craneai.findr.diag.HandledKind.FILE_FAILED, t)
       engine.store.setState(file.id, FileState.FAILED, t.javaClass.simpleName + (t.message?.let { ": $it" } ?: ""))
@@ -756,7 +953,7 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
     return intent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, 0) / 10.0
   }
 
-  private fun foregroundInfo(@StringRes text: Int): ForegroundInfo {
+  private fun foregroundInfo(@StringRes text: Int, type: FgsType = FgsType.DATA_SYNC): ForegroundInfo {
     val nm = applicationContext.getSystemService(NotificationManager::class.java)
     if (nm.getNotificationChannel(CHANNEL) == null) {
       nm.createNotificationChannel(NotificationChannel(CHANNEL, applicationContext.getString(R.string.notif_channel_name), NotificationManager.IMPORTANCE_LOW))
@@ -769,7 +966,15 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
       .setSilent(true)
       .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)   // details hidden on a locked screen
       .build()
-    return ForegroundInfo(NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
+    return ForegroundInfo(NOTIFICATION_ID, notification, serviceType(type))
+  }
+
+  /** The ending of a run because no foreground-service type has room: a plain rerun finishes the day's work (the ledger sends it plain). */
+  private suspend fun endForBudget(engine: FindrEngine): Result {
+    runEnd = RunEnd.FGS_BUDGET_SPENT
+    Log.i(TAG, "foreground-service time is spent (${engine.fgsBudget.describe(System.currentTimeMillis())}): this run ends here and a plain rerun is asked for")
+    if (engine.workWaiting()) withContext(NonCancellable) { engine.scheduleResume(0) }
+    return Result.success()
   }
 
   companion object {
@@ -786,10 +991,35 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
      */
     internal const val TIGHT_MEDIA_BURST = 4
 
+    /**
+     * The ServiceInfo constant of one pure type (never both: WorkManager's onTimeout stops a worker only when its latest type equals
+     * the one that timed out). Media processing exists from API 35; the caller only asks for it there ([FgsPolicy]).
+     */
+    internal fun serviceType(type: FgsType): Int =
+      if (type == FgsType.MEDIA_PROCESSING && Edition.MEDIA_PROCESSING_FGS && android.os.Build.VERSION.SDK_INT >= FgsPolicy.MEDIA_PROCESSING_SDK) ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROCESSING
+      else ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+
+    /** Which request started a run, from the tag it was enqueued with (a request from before tags came in reads as "index"). */
+    internal fun runKind(tags: Set<String>): String = when {
+      RESUME in tags -> "resume"
+      NOW in tags -> "now"
+      BULK in tags -> "bulk"
+      CHARGER in tags -> "charger"
+      LATER in tags -> "later"
+      NEXT in tags -> "next"
+      PERIODIC in tags -> "periodic"
+      NAME in tags -> "index"
+      else -> "index"
+    }
+
+    /** A hold by the policy, as the run's end: heat, or the battery (a low battery, or no charger yet). */
+    internal fun heldEnd(held: PauseReason?): RunEnd = if (held == PauseReason.TOO_HOT) RunEnd.HELD_HEAT else RunEnd.HELD_BATTERY
+
     const val NAME = "findr-index"
     const val NOW = "findr-index-now"   // expedited start when the app is open and conditions hold
     const val BULK = "findr-index-bulk"   // the whole backlog: needs the charger (unless full indexing on battery is on)
-    const val LATER = "findr-index-later"   // a look again after low battery or heat held the light work back
+    const val CHARGER = "findr-index-charger"   // the charger net: waits for CHARGING so a plug-in starts a dead app (RunHandoff.chargerNetWanted)
+    const val LATER = "findr-index-later"  // a look again after low battery or heat held the light work back
     const val NEXT = "findr-index-next"   // the next capped batch of new files on battery (IndexPolicy.followUp)
     const val RESUME = "findr-index-resume"   // a run that left its foreground service (polite wait, 6-hour limit) asks to be run again (RunHandoff)
     /** After the system ended a run for the foreground-service limit: how soon the plain rerun is asked for. */

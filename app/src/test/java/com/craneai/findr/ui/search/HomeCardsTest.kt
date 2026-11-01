@@ -62,6 +62,11 @@ class HomeCardsTest {
     assertTrue(HomeCards.compact(widthDp = 360, heightDp = 420, fontScale = 1f)) // split screen
   }
 
+  @Test fun `a small portrait phone is compact`() {
+    assertTrue(HomeCards.compact(widthDp = 360, heightDp = 640, fontScale = 1f))
+    assertFalse(HomeCards.compact(widthDp = 411, heightDp = 891, fontScale = 1f))
+  }
+
   @Test fun `searching always uses the strip`() {
     assertTrue(HomeCards.asStrip(compact = false, searching = true))
     assertTrue(HomeCards.asStrip(compact = true, searching = false))

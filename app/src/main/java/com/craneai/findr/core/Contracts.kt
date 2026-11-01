@@ -15,6 +15,14 @@ interface TextExtractor {
 /** On-device text recognition (screenshots, memes, scanned pages, video frames). */
 interface OcrEngine {
   suspend fun read(bitmap: Bitmap): String
+
+  /**
+   * The same reading, one entry per line with what the recogniser said about it (see [OcrLine]); the keep-or-drop rule for short
+   * on-screen text needs that. An engine that reports nothing beyond the text gets this default: its lines with an unknown
+   * confidence, which the rule treats as "no evidence", so only the plain length rule applies to them.
+   */
+  suspend fun readLines(bitmap: Bitmap): List<OcrLine> =
+    read(bitmap).lines().map { it.trim() }.filter { it.isNotEmpty() }.map { OcrLine(it, OcrLine.UNKNOWN, 0f, 0f, 0f, null) }
 }
 
 /**

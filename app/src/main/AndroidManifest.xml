@@ -20,7 +20,8 @@
   <uses-permission android:name="android.permission.USE_BIOMETRIC" />
   <!-- minSdk is 30, so the library's legacy fingerprint permission is never used. -->
   <uses-permission android:name="android.permission.USE_FINGERPRINT" tools:node="remove" />
-  <!-- The overnight indexing run shows an ongoing notification (WorkManager long-running worker, data-sync type). -->
+  <!-- The overnight indexing run shows an ongoing notification (WorkManager long-running worker, data-sync type; the full edition adds
+       media processing for pictures, videos and recordings in src/full/AndroidManifest.xml). -->
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
 

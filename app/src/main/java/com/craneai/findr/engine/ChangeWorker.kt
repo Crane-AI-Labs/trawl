@@ -23,11 +23,19 @@ class ChangeWorker(context: Context, params: WorkerParameters) : CoroutineWorker
       }
       // The index is not open: nothing to crawl into. The engine crawls once it opens, and the hourly heartbeat is the net under that.
       if (engine.awaitStore() == null) return Result.success()
+      // A run WorkManager started inside a cached process (the hourly heartbeat; a content-trigger job is hosted by the system and is
+      // protected) has no foreground service and no job: Android kills such a process for its CPU. Heavy work ends here, and the
+      // next protected start (a job, the charger, Trawl opening) crawls everything the media store reported meanwhile.
+      val protection = engine.protectionGate()
+      if (protection.lost(holdsForegroundService = false)) {
+        Log.i("FindrChange", "not protected: no foreground service and no running job (importance ${engine.processImportance()}), so this run does nothing now")
+        return Result.success()
+      }
       val started = System.nanoTime()
       val changed = engine.crawl(forceFull = false)
       // Polite mode: someone is using another app, so no OCR now. The names are in (the crawl); the words come when the screen goes
       // off or Findr opens (the in-app pass and IndexWorker both start with the words pass).
-      val words = if (engine.polite()) 0 else engine.wordsPass(FileProcessor(applicationContext, engine.embedder), limit = WORDS_LIMIT, stop = { isStopped })
+      val words = if (engine.polite()) 0 else engine.wordsPass(FileProcessor(applicationContext, engine.embedder), limit = WORDS_LIMIT, stop = { isStopped || protection.lost(holdsForegroundService = false) })
       // The slow pass, under its charging constraint; only when this run found something (a MediaStore notification with nothing
       // new, e.g. a thumbnail being made, used to enqueue the index work again every time: the first-run storm).
       if (Edition.GO) {   // Trawl Go has no slow pass: only a burst bigger than this run's limit needs the main worker to finish it

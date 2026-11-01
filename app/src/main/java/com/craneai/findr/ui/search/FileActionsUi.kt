@@ -74,11 +74,13 @@ fun RowActions(name: String, onShare: () -> Unit, onCopy: () -> Unit, modifier: 
 
 /**
  * The one visible action on a photo, screenshot, meme or video tile. A dark disc keeps the white icon readable on any
- * picture, and the touch area is the full 48 dp even though the disc is smaller.
+ * picture, and the touch area is the full 56 dp ([Sun.Target], over the 48 dp minimum) even though the disc is 30 dp. [fileName]
+ * is spoken with the action.
  */
 @Composable
-fun ShareBadge(onClick: () -> Unit, modifier: Modifier = Modifier, painter: Painter? = null) {
-  val label = stringResource(R.string.action_share)
+fun ShareBadge(onClick: () -> Unit, modifier: Modifier = Modifier, painter: Painter? = null, fileName: String? = null) {
+  // With the file's name, so a screen of badges is not "Share, Share, Share" to TalkBack: "Share meme_1.jpg".
+  val label = if (fileName != null) stringResource(R.string.action_share_file, fileName) else stringResource(R.string.action_share)
   if (painter != null) {
     // In the grid: one node that draws its disc and icon, instead of three nested ones per cell. 56 dp to touch, 30 dp to see.
     Box(

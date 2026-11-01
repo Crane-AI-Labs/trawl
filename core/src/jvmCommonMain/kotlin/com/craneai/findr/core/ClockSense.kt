@@ -33,6 +33,9 @@ object ClockSense {
   /** The latest date that may count as evidence against a clock reading [clockMs]: ask the store for newest dates not after it. */
   fun ceiling(clockMs: Long): Long = clockMs + MAX_AHEAD_MS
 
+  /** A date that cannot be real for a clock reading [clockMs]: more than [MAX_AHEAD_MS] past it (a 2099 stamp). Sorting puts these after every real date. */
+  fun isJunkFuture(dateMs: Long, clockMs: Long): Boolean = dateMs > ceiling(clockMs)
+
   /**
    * "Now" in epoch milliseconds: [clockMs], or the date of the [EVIDENCE_FILES]-th newest of [newestDates] when that is more than
    * [TOLERANCE_MS] after it. [newestDates] may hold any dates in any order (more than [EVIDENCE_FILES] are fine, dates past the

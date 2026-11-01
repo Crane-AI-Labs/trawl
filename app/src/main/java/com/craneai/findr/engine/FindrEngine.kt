@@ -104,6 +104,16 @@ class FindrEngine(private val context: Context) : SearchEngine {
   private val indexDir = File(context.noBackupFilesDir, "index")
 
   /**
+   * Android 15+ gives data sync and media processing 6 hours each per 24 (the budget fix, [FgsBudget]). The ledger of what this app has
+   * used lives here, in the one place both the worker and the screen see, and is kept in the preferences so a process death
+   * (the moment a Samsung or OS kill happens) does not forget it.
+   */
+  val fgsBudget: FgsBudget = FgsBudget.forSdk(android.os.Build.VERSION.SDK_INT, Edition.MEDIA_PROCESSING_FGS)
+    .also { it.restore(prefs.getString(KEY_FGS_BUDGET, null), System.currentTimeMillis()) }
+
+  fun saveFgsBudget() { prefs.edit().putString(KEY_FGS_BUDGET, fgsBudget.encode(System.currentTimeMillis())).apply() }
+
+  /**
    * The index is opened off the main thread and kept trying until it opens ([StoreOpener]): a busy or unreadable file used to freeze
    * the app on its first line and then crash it on every launch. Until it is open there is no [store]; callers use [storeOrNull] or
    * [awaitStore], and the meter says what is happening ([refreshStatus]).
@@ -158,7 +168,8 @@ class FindrEngine(private val context: Context) : SearchEngine {
     // (Never for an empty index otherwise: reading must not start before the person taps Start on the first-run screen.)
     if (startNow || (recovered && runCatching { opened.stats().filesKnown }.getOrDefault(0) > 0)) {
       Log.i(TAG, "the index is open again: catching up")
-      scope.launch { crawl(forceFull = false); schedule() }
+      // Nobody is looking and nothing protects the process: the crawl is left to the next worker (every run starts with one).
+      scope.launch { if (!RunHandoff.unprotected(processImportance(), holdsForegroundService = false)) crawl(forceFull = false); schedule() }
     }
   }
 
@@ -315,7 +326,7 @@ class FindrEngine(private val context: Context) : SearchEngine {
   private suspend fun releaseForRemoval(def: PackDef) {
     if (def.id != PackCatalog.SPEECH && def.id != PackCatalog.QUICK_LOOK && def.id != PackCatalog.PRIVACY) return
     val wm = WorkManager.getInstance(context)
-    listOf(IndexWorker.NAME, IndexWorker.NOW, IndexWorker.BULK, IndexWorker.LATER, IndexWorker.NEXT, IndexWorker.RESUME, IndexWorker.PERIODIC).forEach { wm.cancelUniqueWork(it) }
+    listOf(IndexWorker.NAME, IndexWorker.NOW, IndexWorker.BULK, IndexWorker.CHARGER, IndexWorker.LATER, IndexWorker.NEXT, IndexWorker.RESUME, IndexWorker.PERIODIC).forEach { wm.cancelUniqueWork(it) }
     withTimeoutOrNull(20_000) { while (workerState.running) delay(250) }
     if (def.id == PackCatalog.PRIVACY) {
       // Without the pack nothing is blurred: forget the marks, so no stale one lingers (adding the pack scores the library afresh).
@@ -357,6 +368,9 @@ class FindrEngine(private val context: Context) : SearchEngine {
   /** True while Findr's UI is on screen. Screen off or another app in front stops the activities and makes it false. */
   val uiVisible: Boolean get() = visibleActivities > 0
 
+  /** Wakes the meter loop when a screen comes on show (it sleeps, with no timer, while none is). Conflated: a stale token costs one extra look. */
+  private val meterWake = kotlinx.coroutines.channels.Channel<Unit>(kotlinx.coroutines.channels.Channel.CONFLATED)
+
   private val powerManager = context.getSystemService(PowerManager::class.java)
   private val keyguardManager = context.getSystemService(android.app.KeyguardManager::class.java)
 
@@ -369,6 +383,20 @@ class FindrEngine(private val context: Context) : SearchEngine {
     keyguardLocked = Tuning.current.politeOnLockScreen.not() && keyguardManager?.isKeyguardLocked == true,
     politeOnLockScreen = Tuning.current.politeOnLockScreen,
   )
+
+  /**
+   * How important Android thinks this process is right now (`RunningAppProcessInfo.importance`: 100 in front, 125 holding a foreground
+   * service, 200-300 visible or serving a job, 400 and up cached). 0 when the system will not say, which reads as protected: an unknown
+   * state never stops the work. [RunHandoff.unprotected] is the rule built on it.
+   */
+  fun processImportance(): Int = runCatching {
+    val info = android.app.ActivityManager.RunningAppProcessInfo()
+    android.app.ActivityManager.getMyMemoryState(info)
+    info.importance
+  }.getOrDefault(0)
+
+  /** A gate over [processImportance] for one run (a worker keeps its own). */
+  fun protectionGate() = ProtectionGate(importance = { processImportance() }, now = { android.os.SystemClock.elapsedRealtime() })
 
   /** True while the screen is off (a phone without a power manager reads as on, so nothing is measured). */
   fun screenOff(): Boolean = powerManager?.isInteractive == false
@@ -392,6 +420,10 @@ class FindrEngine(private val context: Context) : SearchEngine {
   private var foregroundRun: Job? = null
 
   private fun onUiVisible() {
+    meterWake.trySend(Unit)   // the meter loop sleeps while no screen is on show
+    // Android restarts both foreground-service meters when the app comes to the front; the ledger does the same.
+    fgsBudget.uiForeground(System.currentTimeMillis())
+    saveFgsBudget()
     Log.i(TAG, "Findr on screen: watching MediaStore in-app")
     val observer = object : android.database.ContentObserver(android.os.Handler(android.os.Looper.getMainLooper())) {
       override fun onChange(selfChange: Boolean) = foregroundRefresh(debounceMs = FOREGROUND_DEBOUNCE_MS)
@@ -456,11 +488,19 @@ class FindrEngine(private val context: Context) : SearchEngine {
       },
     )
     if (Edition.MODELS) scope.launch { modelInstaller().installDefaultsFromDownloads(); modelDelivery.pollOnce() }
+    // The meter: counts for the screens, refreshed every couple of seconds. ONLY a screen reads it, so it ticks only while a Findr screen
+    // is on show. A process nobody is looking at (cached, or running a job) used to re-count the whole index every 2 s: on a phone with
+    // a big library that is a third of a core, which Android's cached-process CPU check ("excessive cpu ... limit=25", later 2%) kills,
+    // taking the charger receiver with it. Work that has no screen runs only inside a worker; see [meterWake].
     scope.launch {
-      while (isActive) {   // the meter: cheap counts, refreshed every couple of seconds
-        refreshStatus()
-        if (Edition.MODELS) packManager.refresh()
-        delay(2_000)
+      while (isActive) {
+        if (uiVisible) {
+          refreshStatus()
+          if (Edition.MODELS) packManager.refresh()
+          delay(METER_TICK_MS)
+        } else {
+          meterWake.receive()   // asleep (no timer, no CPU) until a screen comes on show
+        }
       }
     }
     watchPower()
@@ -475,14 +515,16 @@ class FindrEngine(private val context: Context) : SearchEngine {
   private fun watchPower() {
     val receiver = object : BroadcastReceiver() {
       override fun onReceive(c: Context, intent: Intent) {
-        Log.i(TAG, "power: ${intent.action?.substringAfterLast('.')}")
+        Log.i(TAG, "power: ${intent.action?.substringAfterLast('.')}" + if (intent.action == PowerManager.ACTION_POWER_SAVE_MODE_CHANGED) " saver=${batterySaver()}" else "")
         refreshStatus()
-        if (intent.action == Intent.ACTION_POWER_CONNECTED) schedule()
+        // Battery Saver switched off: the light share is lifted, so ask for the work again (on battery only: the charger never held it).
+        if (intent.action == Intent.ACTION_POWER_CONNECTED || (intent.action == PowerManager.ACTION_POWER_SAVE_MODE_CHANGED && !batterySaver())) schedule()
       }
     }
     val filter = IntentFilter().apply {
       addAction(Intent.ACTION_POWER_CONNECTED)
       addAction(Intent.ACTION_POWER_DISCONNECTED)
+      addAction(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED)
     }
     runCatching { ContextCompat.registerReceiver(context, receiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED) }
   }
@@ -705,16 +747,46 @@ class FindrEngine(private val context: Context) : SearchEngine {
 
   override fun noteMemoryTrim(level: Int) {
     if (PolitePolicy.pressure(level)) memoryPressureAt = android.os.SystemClock.elapsedRealtime()
+    // Android 14+ sends only levels 20 and 40, so the phone's own numbers decide whether a level that does arrive means pressure.
+    val pressureNow = pollMemory(force = true)
     // An idle app on a roomy phone keeps its models for the next search or run, until the system really asks for the memory back.
-    if (MemoryBudget.releaseWhenIdle(level) && !workerState.running) scope.launch {
-      Log.i(TAG, "the system is short of memory (trim level $level) and nothing is running: models released")
+    if (MemoryBudget.releaseWhenIdle(level, pressureNow) && !workerState.running) scope.launch {
+      Log.i(TAG, "the system is short of memory (trim level $level, pressure $pressureNow) and nothing is running: models released")
       releaseModels()
       privacy.release()
     }
   }
 
-  /** The system signalled memory pressure since [since] (elapsedRealtime): a polite wait then gives the models back at once. */
-  fun memoryPressureSince(since: Long): Boolean = memoryPressureAt >= since
+  /** The last time [pollMemory] read ActivityManager.MemoryInfo (elapsedRealtime), so a 1 s wait loop reads it every [MemoryBudget.PRESSURE_POLL_MS] only. */
+  @Volatile private var memoryPolledAt = 0L
+  @Volatile private var memoryShort = false
+
+  /**
+   * Reads ActivityManager.MemoryInfo (availMem against the low-memory line) and, when the phone is short of memory
+   * ([MemoryBudget.pressure]), stamps [memoryPressureAt] as the trim levels used to. This replaces the levels 5, 10, 15, 60 and 80 that
+   * Android 14 and later no longer send. No timer: it runs only when something asks (a polite worker's wait loop, a trim callback), so a
+   * process with nothing to do spends nothing. Returns whether the phone is short of memory now.
+   */
+  private fun pollMemory(force: Boolean = false): Boolean {
+    val now = android.os.SystemClock.elapsedRealtime()
+    if (!force && memoryPolledAt != 0L && now - memoryPolledAt < MemoryBudget.PRESSURE_POLL_MS) return memoryShort
+    memoryPolledAt = now
+    val mi = android.app.ActivityManager.MemoryInfo()
+    (context.getSystemService(Context.ACTIVITY_SERVICE) as android.app.ActivityManager).getMemoryInfo(mi)
+    val availMb = mi.availMem / (1024 * 1024)
+    val lineMb = mi.threshold / (1024 * 1024)
+    val short = MemoryBudget.pressure(availMb, lineMb, mi.lowMemory)
+    memoryShort = short
+    if (short) memoryPressureAt = now
+    Log.i(TAG, "memory poll: free $availMb MB, line $lineMb MB, system low flag ${mi.lowMemory} -> ${if (short) "pressure" else "roomy"}")
+    return short
+  }
+
+  /** The phone was short of memory since [since] (elapsedRealtime), by a trim level or by the numbers: a polite wait then gives the models back at once. */
+  fun memoryPressureSince(since: Long): Boolean {
+    pollMemory()
+    return memoryPressureAt >= since
+  }
 
   override fun clearQueryCache() {
     queryCache.clear()
@@ -807,7 +879,7 @@ class FindrEngine(private val context: Context) : SearchEngine {
 
   override fun pauseIndexing() {
     setPaused(IndexPause.after(IndexPause.Event.PAUSE, paused))
-    WorkManager.getInstance(context).let { wm -> listOf(IndexWorker.NAME, IndexWorker.BULK, IndexWorker.LATER, IndexWorker.NEXT, IndexWorker.RESUME).forEach(wm::cancelUniqueWork) }
+    WorkManager.getInstance(context).let { wm -> listOf(IndexWorker.NAME, IndexWorker.BULK, IndexWorker.CHARGER, IndexWorker.LATER, IndexWorker.NEXT, IndexWorker.RESUME).forEach(wm::cancelUniqueWork) }
     scope.launch { refreshStatus() }
   }
 
@@ -824,8 +896,21 @@ class FindrEngine(private val context: Context) : SearchEngine {
 
   /** The power policy right now (IndexPolicy): what may run on this charger, battery level and heat. */
   fun policy(): IndexPolicy.Decision = settingsFlow.value.let { s ->
-    IndexPolicy.decide(isCharging(), batteryPercent(), thermalStatus(), s.onlyWhileCharging, s.fullOnBattery)
+    IndexPolicy.decide(isCharging(), batteryPercent(), thermalStatus(), s.onlyWhileCharging, s.fullOnBattery, batterySaver())
   }
+
+  /** Android's Battery Saver is on (a plain read: no receiver state to lose when the process dies). */
+  fun batterySaver(): Boolean = runCatching { context.getSystemService(PowerManager::class.java).isPowerSaveMode }.getOrDefault(false)
+
+  /**
+   * Which App Standby bucket Android has put Trawl in (active, working_set, frequent, rare, restricted). The bucket sets how often
+   * background jobs may run, so it is logged at the start of every run: "the charger did nothing for an hour" can then be read as
+   * "rare bucket", not guessed. Own package only (no permission); a read, so there is no state to lose when the process dies.
+   */
+  fun standbyBucket(): String = runCatching {
+    val b = context.getSystemService(android.app.usage.UsageStatsManager::class.java).appStandbyBucket
+    when (b) { 5 -> "exempted"; 10 -> "active"; 20 -> "working_set"; 30 -> "frequent"; 40 -> "rare"; 45 -> "restricted"; 50 -> "never"; else -> "b$b" }
+  }.getOrDefault("unknown")
 
   /** WorkManager's own battery-not-low is about 15%; the policy's 30% is checked by [policy], in the worker too. */
   private fun lightConstraints(s: FindrSettings) =
@@ -871,21 +956,24 @@ class FindrEngine(private val context: Context) : SearchEngine {
       if (mayRunNow) {
         wm.enqueueUniqueWork(
           IndexWorker.NOW, policyFor(IndexWorker.NOW),
-          OneTimeWorkRequestBuilder<IndexWorker>().setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+          OneTimeWorkRequestBuilder<IndexWorker>().addTag(IndexWorker.NOW).setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
             .setBackoffCriteria(BackoffPolicy.LINEAR, BACKOFF_S, TimeUnit.SECONDS).build(),
         )
       }
       // The light work (words, quick look, new files) may start on battery; the bulk backlog waits for the charger.
       wm.enqueueUniqueWork(
         IndexWorker.NAME, policyFor(IndexWorker.NAME),
-        OneTimeWorkRequestBuilder<IndexWorker>().setConstraints(lightConstraints(s))
+        OneTimeWorkRequestBuilder<IndexWorker>().addTag(IndexWorker.NAME).setConstraints(lightConstraints(s))
           .setBackoffCriteria(BackoffPolicy.LINEAR, BACKOFF_S, TimeUnit.SECONDS).build(),
       )
       wm.enqueueUniqueWork(
         IndexWorker.BULK, policyFor(IndexWorker.BULK),
-        OneTimeWorkRequestBuilder<IndexWorker>().setConstraints(bulkConstraints(s))
+        OneTimeWorkRequestBuilder<IndexWorker>().addTag(IndexWorker.BULK).setConstraints(bulkConstraints(s))
           .setBackoffCriteria(BackoffPolicy.LINEAR, BACKOFF_S, TimeUnit.SECONDS).build(),
       )
+      // Whoever asked for index work on battery also leaves the request that a plug-in can start (not only a run that ended: a run the
+      // system killed, or that never began, ends nothing). A no-op on the charger, with nothing left to do, or when one already waits.
+      keepChargerNet()
     }
     watchForChanges()
     // An hourly light crawl (names + words, battery-safe), in case a content trigger is missed (the research notes).
@@ -896,7 +984,7 @@ class FindrEngine(private val context: Context) : SearchEngine {
     // A safety net that picks up new photos and downloads even if nobody opens the app.
     wm.enqueueUniquePeriodicWork(
       IndexWorker.PERIODIC, ExistingPeriodicWorkPolicy.UPDATE,
-      PeriodicWorkRequestBuilder<IndexWorker>(6, TimeUnit.HOURS).setConstraints(lightConstraints(s)).build(),
+      PeriodicWorkRequestBuilder<IndexWorker>(6, TimeUnit.HOURS).addTag(IndexWorker.PERIODIC).setConstraints(lightConstraints(s)).build(),
     )
   }
 
@@ -904,11 +992,33 @@ class FindrEngine(private val context: Context) : SearchEngine {
    * Low battery or heat held the light work back: look again in a few minutes (IndexPolicy.RETRY_LATER_MIN), so it resumes by
    * itself. Its own unique name, because the run that asks is usually the one holding NAME.
    */
+  /**
+   * A write failed. If the phone's storage is full, say so (the meter shows "Phone storage is almost full" with a button to the
+   * storage settings), ask for another try later and answer true: the caller leaves the file as it was and ends its pass, because
+   * the next file would fail the same way. Anything else answers false and is handled as before.
+   */
+  fun noteIfStorageFull(t: Throwable): Boolean {
+    if (!com.craneai.findr.index.StorageFull.isFull(t)) return false
+    if (workerState.pauseReason != PauseReason.STORAGE_LOW) Log.w(TAG, "storage is full: indexing pauses until there is room (${t.javaClass.simpleName})")
+    workerState = workerState.copy(pauseReason = PauseReason.STORAGE_LOW, currentFile = null)
+    scheduleRetryLater()
+    refreshStatus()
+    return true
+  }
+
+  /** A write went through, so there is room again: take the storage pause off the meter. */
+  fun noteStorageHasRoom() {
+    if (workerState.pauseReason == PauseReason.STORAGE_LOW) {
+      workerState = workerState.copy(pauseReason = null)
+      refreshStatus()
+    }
+  }
+
   fun scheduleRetryLater() {
     if (paused) return
     WorkManager.getInstance(context).enqueueUniqueWork(
       IndexWorker.LATER, ExistingWorkPolicy.REPLACE,
-      OneTimeWorkRequestBuilder<IndexWorker>().setConstraints(lightConstraints(settingsFlow.value))
+      OneTimeWorkRequestBuilder<IndexWorker>().addTag(IndexWorker.LATER).setConstraints(lightConstraints(settingsFlow.value))
         .setInitialDelay(IndexPolicy.RETRY_LATER_MIN, TimeUnit.MINUTES).build(),
     )
   }
@@ -922,7 +1032,7 @@ class FindrEngine(private val context: Context) : SearchEngine {
     if (paused) return
     WorkManager.getInstance(context).enqueueUniqueWork(
       IndexWorker.NEXT, ExistingWorkPolicy.APPEND_OR_REPLACE,
-      OneTimeWorkRequestBuilder<IndexWorker>().setConstraints(lightConstraints(settingsFlow.value))
+      OneTimeWorkRequestBuilder<IndexWorker>().addTag(IndexWorker.NEXT).setConstraints(lightConstraints(settingsFlow.value))
         .setInitialDelay(IndexPolicy.NEXT_BATCH_MIN, TimeUnit.MINUTES).build(),
     )
   }
@@ -953,6 +1063,29 @@ class FindrEngine(private val context: Context) : SearchEngine {
       runCatching { wm.enqueueUniqueWork(IndexWorker.RESUME, policy, request) }
         .onFailure { Log.w("FindrEngine", "resume request failed", it) }
     }
+  }
+
+  /**
+   * Keeps a request that waits for the charger pending whenever work is left and the phone is on battery ([RunHandoff.chargerNetWanted]).
+   * Android starts a dead app for a job constraint, not for a plug-in broadcast, and the BULK request enqueueWork makes is spent by
+   * the run that uses it (a polite hand-off, a hold or a stop leaves only delayed jobs). It carries CHARGING and BATTERY_NOT_LOW and
+   * no delay, so it can only start at the plug-in. Appended behind a run that is still winding down. Own package, no network, no alarm.
+   */
+  suspend fun keepChargerNet() = withContext(Dispatchers.IO) {
+    runCatching {
+      val wm = WorkManager.getInstance(context)
+      val waiting = wm.getWorkInfosForUniqueWork(IndexWorker.CHARGER).get().any { it.state == WorkInfo.State.ENQUEUED || it.state == WorkInfo.State.BLOCKED }
+      if (!RunHandoff.chargerNetWanted(isCharging(), paused, workWaiting(), waiting)) return@runCatching
+      wm.enqueueUniqueWork(
+        IndexWorker.CHARGER, ExistingWorkPolicy.APPEND_OR_REPLACE,
+        OneTimeWorkRequestBuilder<IndexWorker>().addTag(IndexWorker.CHARGER)
+          .setConstraints(Constraints.Builder().setRequiresBatteryNotLow(true).setRequiresCharging(true).build())
+          .setInitialDelay(RunHandoff.NET_ARM_DELAY_S, TimeUnit.SECONDS)
+          .setBackoffCriteria(BackoffPolicy.LINEAR, BACKOFF_S, TimeUnit.SECONDS).build(),
+      )
+      Log.i(TAG, "charger net: work is left and the phone is on battery, so a request now waits for the charger")
+    }.onFailure { Log.w(TAG, "charger net failed", it) }
+    Unit
   }
 
   /** A run handed itself off and the screen has not gone off yet ([scheduleResume], [watchScreen]). */
@@ -1051,7 +1184,7 @@ class FindrEngine(private val context: Context) : SearchEngine {
         store.backlogMark()   // the first finished crawl draws the line between the backlog and new files (IndexPolicy)
         report.added + report.changed + gone.size > 0
       } catch (t: Throwable) {
-        Log.w(TAG, "crawl failed", t)
+        if (!noteIfStorageFull(t)) Log.w(TAG, "crawl failed", t)   // a full disk is said on the meter and retried later, not just logged
         false
       } finally {
         workerState = workerState.copy(scanning = false)
@@ -1073,7 +1206,7 @@ class FindrEngine(private val context: Context) : SearchEngine {
     val wm = WorkManager.getInstance(context)
     // BULK (waiting for the charger) and LATER (waiting for the battery or heat to recover) are battery-policy requests: a pending
     // one must not outlive the delete and start reading again when the phone is plugged in. The worker also checks `paused`.
-    val names = listOf(IndexWorker.NAME, IndexWorker.NOW, IndexWorker.BULK, IndexWorker.LATER, IndexWorker.NEXT, IndexWorker.RESUME, IndexWorker.PERIODIC, ChangeWorker.NAME, ChangeWorker.HEARTBEAT)
+    val names = listOf(IndexWorker.NAME, IndexWorker.NOW, IndexWorker.BULK, IndexWorker.CHARGER, IndexWorker.LATER, IndexWorker.NEXT, IndexWorker.RESUME, IndexWorker.PERIODIC, ChangeWorker.NAME, ChangeWorker.HEARTBEAT)
     names.forEach { wm.cancelUniqueWork(it) }
     withTimeoutOrNull(WIPE_WAIT_MS) {
       while (workerState.running || names.any { n ->
@@ -1190,11 +1323,15 @@ class FindrEngine(private val context: Context) : SearchEngine {
           // keepQuick: the words pass adds no vectors, so a quick-look vector saved meanwhile stays.
           store.saveSegments(p.file.id, pieces.map { it.toSegment(late = false) }, finished, IndexStore.WORDS_DONE, keepQuick = true)
           Log.i(TAG, "words ${redact(p.file.name)}: ${p.file.kind}, ${pieces.size} pieces")   // log-safe: redacted name, enum kind
+          noteStorageHasRoom()
         } catch (e: TimeoutCancellationException) {
           store.setState(p.file.id, finished, IndexStore.WORDS_DONE)   // the slow pass still tries (Go: the name stays searchable)
         } catch (e: CancellationException) {
           throw e
         } catch (t: Throwable) {
+          // A full disk is not this file's fault: leave it as it was (marking it done would write too, and would hide it for good),
+          // tell the person, and end the pass instead of failing every file after it.
+          if (noteIfStorageFull(t)) return@run false
           Log.w(TAG, "words pass failed: ${redact(p.file.name)}", t)
           store.setState(p.file.id, finished, IndexStore.WORDS_DONE)
         }
@@ -1392,6 +1529,7 @@ class FindrEngine(private val context: Context) : SearchEngine {
     private const val VECTORS_FILE = "vectors.bin"
     private const val QUICK_VECTORS_FILE = "vectors-quick.bin"
     private const val KEY_PAUSED = "paused"
+    private const val KEY_FGS_BUDGET = "fgs_budget"
     /** Debug builds only: "lite" or "standard" forces that memory profile at the next start; absent or "auto" chooses by RAM. */
     const val KEY_PROFILE_OVERRIDE = "memory_profile_override"
     /** A profiling build ([BuildConfig.FINDR_KNOBS]) reads Tuning overrides from here. */
@@ -1405,6 +1543,8 @@ class FindrEngine(private val context: Context) : SearchEngine {
     /** While Findr is visible: how long MediaStore may stay busy before the in-process crawl, and how often to look for stalled work. */
     private const val FOREGROUND_DEBOUNCE_MS = 3_000L
     private const val FOREGROUND_CHECK_MS = 10_000L
+    /** How often the meter recounts while a screen is on show. */
+    private const val METER_TICK_MS = 2_000L
     /** How long "Delete everything" waits for running work to stop before it deletes anyway. */
     private const val WIPE_WAIT_MS = 15_000L
   }

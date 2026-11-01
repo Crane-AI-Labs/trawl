@@ -26,6 +26,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.foundation.layout.Box
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -119,12 +121,21 @@ fun AddOnCard(
 /** Icon, name and a small status tag. */
 @Composable
 fun PackHeader(row: PackRow) {
+  // At large text the tag goes under the title (UI audit item 13): beside it, the tag kept its width and the title was squeezed to a
+  // column that broke in the middle of a word.
+  val stacked = androidx.compose.ui.platform.LocalDensity.current.fontScale >= 1.3f
   Row(verticalAlignment = Alignment.CenterVertically) {
     Icon(packIcon(row.def.id), contentDescription = null, tint = MaterialTheme.colorScheme.onSurface, modifier = Modifier.size(Sun.Icon))
     Spacer(Modifier.width(Sun.S12))
-    Text(row.def.title(), style = SunType.Heading, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.weight(1f))
-    Spacer(Modifier.width(Sun.S8))
-    StatusTag(row.status)
+    Text(row.def.title(), style = SunType.Heading, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.weight(1f).testTag("pack-title"))
+    if (!stacked) {
+      Spacer(Modifier.width(Sun.S8))
+      Box(Modifier.testTag("pack-tag")) { StatusTag(row.status) }
+    }
+  }
+  if (stacked) {
+    Spacer(Modifier.height(Sun.S8))
+    Box(Modifier.padding(start = Sun.Icon + Sun.S12).testTag("pack-tag")) { StatusTag(row.status) }
   }
   Spacer(Modifier.height(Sun.S8))
 }

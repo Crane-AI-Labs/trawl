@@ -8,6 +8,7 @@ import android.content.Intent
 import androidx.core.net.toUri
 import com.craneai.findr.core.IndexedFile
 import com.craneai.findr.ui.common.FileActions
+import com.craneai.findr.ui.common.LaunchGate
 
 /** What an action did, so the panel can say so in plain words. */
 internal enum class ActionResult { DONE, NO_APP, FAILED }
@@ -21,6 +22,7 @@ internal object QuickActions {
   /** The system share sheet, so Direct Share can list recent chats. The file travels as a one-file read grant. */
   fun share(context: Context, file: IndexedFile): ActionResult {
     if (file.uri.startsWith("fake://")) return ActionResult.FAILED
+    if (!LaunchGate.allowNow()) return ActionResult.DONE   // a double tap: the first chooser is already on its way
     val uri = file.uri.toUri()
     val send = Intent(Intent.ACTION_SEND)
       .setType(file.mimeType ?: "*/*")
@@ -32,6 +34,7 @@ internal object QuickActions {
 
   fun open(context: Context, file: IndexedFile): ActionResult {
     if (file.uri.startsWith("fake://")) return ActionResult.FAILED
+    if (!LaunchGate.allowNow()) return ActionResult.DONE
     val view = Intent(Intent.ACTION_VIEW)
       .setDataAndType(file.uri.toUri(), file.mimeType ?: "*/*")
       .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)

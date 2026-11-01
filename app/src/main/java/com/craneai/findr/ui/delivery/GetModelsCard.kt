@@ -128,7 +128,7 @@ private fun Idle(
   onChoose: () -> Unit,
   onChoice: (ModelChoice) -> Unit,
 ) {
-  if (showBody) {
+  if (showBody && state.sizeMb > 0) {
     Text(appString(R.string.models_body, state.sizeMb), style = SunType.Body, color = MaterialTheme.colorScheme.onSurfaceVariant)
     Spacer(Modifier.height(Sun.S12))
   }
@@ -136,7 +136,7 @@ private fun Idle(
     ModelChoicePicker(state, onChoice)
     Spacer(Modifier.height(Sun.S12))
   }
-  SunButton(onClick = onGet, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.models_get, state.sizeMb), style = SunType.Label) }
+  SunButton(onClick = onGet, modifier = Modifier.fillMaxWidth()) { Text(modelsGetLabel(stringResource(R.string.models_get, state.sizeMb), state.sizeMb), style = SunType.Label) }
   if (noBrowser) {
     Spacer(Modifier.height(Sun.S8))
     SunErrorText(stringResource(R.string.models_no_browser))
@@ -206,7 +206,7 @@ private fun incompleteText(state: DeliveryState): String {
 private fun Refused(state: DeliveryState, onGet: () -> Unit, onChoose: () -> Unit, onAcknowledge: () -> Unit) {
   SunErrorText(refusalText(state))
   Spacer(Modifier.height(Sun.S12))
-  SunButton(onClick = onGet, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.models_get, state.sizeMb), style = SunType.Label) }
+  SunButton(onClick = onGet, modifier = Modifier.fillMaxWidth()) { Text(modelsGetLabel(stringResource(R.string.models_get, state.sizeMb), state.sizeMb), style = SunType.Label) }
   Spacer(Modifier.height(Sun.S8))
   SunOutlinedButton(onClick = onChoose, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.models_choose), style = SunType.Label) }
   SunTextButton(onClick = onAcknowledge) { Text(stringResource(R.string.models_ok)) }
@@ -252,7 +252,7 @@ private fun ModelsBanner(
   modifier: Modifier,
 ) {
   val close = stringResource(R.string.report_close)
-  val get: @Composable () -> Unit = { SunButton(onClick = onGet) { Text(stringResource(R.string.models_get, state.sizeMb), style = SunType.Label) } }
+  val get: @Composable () -> Unit = { SunButton(onClick = onGet) { Text(modelsGetLabel(stringResource(R.string.models_get, state.sizeMb), state.sizeMb), style = SunType.Label) } }
   val choose: @Composable () -> Unit = { SunTextButton(onClick = onChoose) { Text(stringResource(R.string.models_choose), style = SunType.Label) } }
   // The strip has no room for two rows: one text button switches to the other pack, naming its size.
   val switch: @Composable () -> Unit = {
@@ -375,3 +375,10 @@ fun modelsHideKey(viewModel: DeliveryViewModel): String {
   }.collectAsStateWithLifecycle("")
   return key
 }
+
+/**
+ * "Get the models (670 MB)" with the size when it is known. When it is not (0 MB: the manifest is not read yet) the bracket goes, in
+ * every language alike, rather than a button that promises a file of nothing (UI audit item 15). Pure, so it is unit-tested.
+ */
+internal fun modelsGetLabel(formatted: String, sizeMb: Int): String =
+  if (sizeMb > 0) formatted else formatted.replace(Regex("\\s*[(\\uFF08][^)\\uFF09]*[)\\uFF09]"), "").trim()

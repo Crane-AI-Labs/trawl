@@ -39,6 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -184,14 +185,15 @@ fun MediaCell(
           }
         }
       } else if (dur != null) {
-        Pill(formatDuration(dur), modifier = Modifier.align(Alignment.BottomStart).padding(6.dp), scrim = true, leading = true)
+        // Top end: the share badge owns the bottom end and the tick of selecting the top start, so the length never meets either (UI audit item 14).
+        Pill(formatDuration(dur), modifier = Modifier.align(Alignment.TopEnd).padding(6.dp).testTag("video-pill"), scrim = true, leading = true)
       }
     }
     if (selecting) {
       if (selected) Box(Modifier.fillMaxSize().background(LocalSunlight.current.marker.copy(alpha = 0.28f)).border(3.dp, LocalSunlight.current.focus, MaterialTheme.shapes.extraSmall))
       SelectMark(selected, Modifier.align(Alignment.TopStart).padding(6.dp))
     } else {
-      ShareBadge(onShare, Modifier.align(Alignment.BottomEnd), painter = icons?.share)
+      ShareBadge(onShare, Modifier.align(Alignment.BottomEnd).testTag("share-badge"), painter = icons?.share, fileName = file.name)
     }
   }
 }
@@ -244,7 +246,7 @@ fun FileRow(
   val showLabel = stringResource(R.string.action_show_picture)
   val hiddenNote = stringResource(R.string.preview_hidden)
   val description = buildString {
-    append(file.name).append(", ").append(kindLabel)
+    append(file.name).append(", ").append(kindLabel).append(", ").append(age)   // the date, as the subtitle shows it
     badge?.let { append(", ").append(it) }
     if (hidden) append(", ").append(hiddenNote)
     hit.snippet?.let { append(". ").append(plainSnippet(it)) }
@@ -254,8 +256,8 @@ fun FileRow(
   val divider = t.line2
 
   // Share and Copy sit beside the clickable part, not inside it: the merged "open this file" node must not swallow them.
-  // At a large font size (150% and up) they move under it, so the name keeps the width it needs instead of wrapping per word.
-  val stacked = LocalDensity.current.fontScale >= 1.5f
+  // At a large font size (130% and up, UI audit item 12) they move under it, so the name keeps the width it needs instead of wrapping per word.
+  val stacked = LocalDensity.current.fontScale >= 1.3f
   val openPart: @Composable (Modifier) -> Unit = { partModifier ->
     Row(
       partModifier
@@ -315,7 +317,7 @@ fun FileRow(
             highlightedSnippet(snippet, highlight),
             style = SunType.Body,
             color = MaterialTheme.colorScheme.onSurface,
-            maxLines = if (compact) 1 else 3,
+            maxLines = if (compact) 2 else 3,
             overflow = TextOverflow.Ellipsis,
           )
         }
@@ -388,6 +390,6 @@ fun Pill(
     if (leading) {
       Icon(Icons.Rounded.PlayArrow, contentDescription = null, tint = fg, modifier = Modifier.size(14.dp))
     }
-    Text(text, style = SunType.CaptionBold, color = fg, maxLines = 1, modifier = Modifier.widthIn(max = 120.dp))
+    Text(text, style = SunType.CaptionBold, color = fg, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis, modifier = Modifier.widthIn(max = 120.dp))
   }
 }

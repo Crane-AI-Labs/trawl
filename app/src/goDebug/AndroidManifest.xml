@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Debug builds of Trawl Go only. Never in a release APK. (The shared debug source set takes its manifest from batteryRequest, so each edition declares the probe itself.) -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <application>
+    <!-- Reads a list of pictures with the real ML Kit engine and dumps every line with its confidence, angle and box (bench/OcrProbeActivity),
+         so the 32-bit Trawl Go phones can be probed too. -->
+    <activity
+      android:name=".bench.OcrProbeActivity"
+      android:exported="true"
+      android:screenOrientation="portrait" />
+  </application>
+</manifest>

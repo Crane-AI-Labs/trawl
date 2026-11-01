@@ -42,7 +42,9 @@ class DocumentTextExtractor(
       var temp: File? = null
       try {
         val ctx = currentCoroutineContext()
-        val tick = { ctx.ensureActive() }
+        // Cancellation, and the file's own time limit: both are checked at every step the readers already take.
+        val deadline = ExtractDeadline()
+        val tick = { ctx.ensureActive(); deadline.check() }
         val known = sizeOf(context, uri)
         if (known > ExtractLimits.MAX_FILE_BYTES) {
           Log.w(TAG, "${redact(name)}: ${known / 1_048_576} MB is over the ${ExtractLimits.MAX_FILE_BYTES / 1_048_576} MB limit")
@@ -116,12 +118,14 @@ class DocumentTextExtractor(
         Log.w(TAG, "${redact(name)}: PDF does not allow text extraction")
         return EMPTY
       }
+      var timedOut = false
       val stripper = PDFTextStripper()
       val trace = com.craneai.findr.BuildConfig.FINDR_HEAPLOG
       val t0 = System.nanoTime()
       val before = com.craneai.findr.diag.HeapProbe.liveMb(trace)
-      return collectPdfPages(d.numberOfPages, maxChars, heapHeadroom, pdfPageHeapMargin(Runtime.getRuntime().maxMemory() - com.craneai.findr.diag.HeapProbe.ballastBytes())) { page ->
-        tick()
+      val read = collectPdfPages(d.numberOfPages, maxChars, heapHeadroom, pdfPageHeapMargin(Runtime.getRuntime().maxMemory() - com.craneai.findr.diag.HeapProbe.ballastBytes())) { page ->
+        // Out of time: stop here and keep the pages already read (null ends the walk, as for a page that ran out of memory).
+        try { tick() } catch (e: ExtractTimeout) { timedOut = true; return@collectPdfPages null }
         if (trace && page % 50 == 0) {
           Log.i(TAG, "pdf trace ${file.length() / 1_048_576} MB: page $page of ${d.numberOfPages}, ${(System.nanoTime() - t0) / 1_000_000} ms, alive ${com.craneai.findr.diag.HeapProbe.liveMb(true)} MB (before this file $before)")
         }
@@ -140,6 +144,7 @@ class DocumentTextExtractor(
           null
         }
       }
+      return if (timedOut) read.copy(truncated = true, stopped = ExtractTimeout().message) else read
     }
   }
 

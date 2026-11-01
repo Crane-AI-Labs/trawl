@@ -19,6 +19,35 @@ import java.io.File
 enum class OpenResult { OPENED, COPIED, NO_APP, SAMPLE }
 
 /**
+ * Lets one launch of another app through per [windowMs]. A double tap on Open, Share or Show folder would otherwise call
+ * startActivity twice before the first app has taken the screen, and the person gets two "Open with" choosers stacked (the second
+ * appears when they dismiss the first). Only a launch that goes through uses the window; the clock is passed in so the rule is testable.
+ */
+class LaunchGate(private val windowMs: Long = WINDOW_MS) {
+  private var last = Long.MIN_VALUE
+
+  @Synchronized
+  fun allow(nowMs: Long): Boolean {
+    if (last != Long.MIN_VALUE && nowMs - last in 0 until windowMs) return false
+    last = nowMs
+    return true
+  }
+
+  /** For tests, which restart the clock under the one shared gate. */
+  @Synchronized internal fun reset() { last = Long.MIN_VALUE }
+
+  companion object {
+    /** Long enough for a slow phone to put the first chooser up, short enough that a person who changed their mind is not kept waiting. */
+    const val WINDOW_MS = 1_200L
+
+    /** The one gate shared by the app's screens and the quick panel (they live in one process; only one app can be in front at a time). */
+    val shared = LaunchGate()
+
+    fun allowNow(): Boolean = shared.allow(android.os.SystemClock.elapsedRealtime())
+  }
+}
+
+/**
  * Opening and sharing go through the file's content URI with a read grant, so no storage permission leaks to other apps.
  *
  * Copy is different: a MediaStore content URI set on the clipboard is not reliably grantable to the app that pastes it
@@ -54,6 +83,7 @@ object FileActions {
   /** [atMs] is the moment of a timed result (a picture match in a video, a spoken phrase); see [startPosition]. */
   fun open(context: Context, file: IndexedFile, atMs: Long? = null): OpenResult {
     if (isSample(file)) return OpenResult.SAMPLE
+    if (!LaunchGate.allowNow()) return OpenResult.OPENED   // the same tap again: the first launch is on its way
     val uri = file.uri.toUri()
     val intent = Intent(Intent.ACTION_VIEW)
       .setDataAndType(uri, file.mimeType ?: "*/*")
@@ -71,6 +101,7 @@ object FileActions {
 
   fun share(context: Context, file: IndexedFile): OpenResult {
     if (isSample(file)) return OpenResult.SAMPLE
+    if (!LaunchGate.allowNow()) return OpenResult.OPENED
     val uri = file.uri.toUri()
     val send = Intent(Intent.ACTION_SEND)
       .setType(file.mimeType ?: "*/*")
@@ -96,6 +127,7 @@ object FileActions {
     if (files.isEmpty()) return OpenResult.NO_APP
     if (files.size == 1) return share(context, files.single())
     if (files.any(::isSample)) return OpenResult.SAMPLE
+    if (!LaunchGate.allowNow()) return OpenResult.OPENED
     val uris = ArrayList(files.map { it.uri.toUri() })
     val send = Intent(Intent.ACTION_SEND_MULTIPLE)
       .setType(commonMimeType(files.map { it.mimeType }))
@@ -164,6 +196,7 @@ object FileActions {
   /** Opens the folder the file lives in, in the phone's Files app. */
   fun showInFolder(context: Context, file: IndexedFile): OpenResult {
     if (isSample(file)) return OpenResult.SAMPLE
+    if (!LaunchGate.allowNow()) return OpenResult.OPENED
     val dir = file.relativePath.trim('/')
     val folder = DocumentsContract.buildDocumentUri("com.android.externalstorage.documents", "primary:$dir")
     val intent = Intent(Intent.ACTION_VIEW).setDataAndType(folder, DocumentsContract.Document.MIME_TYPE_DIR)

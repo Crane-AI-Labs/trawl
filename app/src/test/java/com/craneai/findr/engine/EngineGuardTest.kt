@@ -115,7 +115,8 @@ class EngineGuardTest {
     val e = g.serial { FakeEngine().also { g.install(EngineHandle(it, gpu = true)) } }
     g.serial { g.current!!.engine.inference() }
     g.serial { assertTrue(g.unload("idle")) }
-    assertEquals("test-engine", e.thread.name)
+    // The debug agent appends " @coroutine#N" while a coroutine runs and restores the name after it resumes us, so this read can race it.
+    assertEquals("test-engine", e.thread.name.substringBefore(" @coroutine"))
     assertSame("close runs on the creating thread", e.thread, e.closedOnThread)
   }
 

@@ -51,17 +51,21 @@ fun HomeBanner(
   val config = LocalConfiguration.current
   val wide = config.screenWidthDp >= 600
   val showBody = body != null && config.screenHeightDp >= 500
+  // At large text the words wrap in full: a clipped sentence lost the number a person needs ("Free up about 1.2 GB") and its second half.
+  val large = config.fontScale >= 1.29f
+  val titleLines = if (large) Int.MAX_VALUE else 3
+  val bodyLines = Int.MAX_VALUE   // the body only shows on a window 500 dp tall, which has the room; Luganda runs longer than English
   val text: @Composable (Modifier) -> Unit = { m ->
     Column(m) {
       Text(
         title,
         style = SunType.Body.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Bold),
         color = MaterialTheme.colorScheme.onSurface,
-        maxLines = 3,
+        maxLines = titleLines,
         overflow = TextOverflow.Ellipsis,
         modifier = Modifier.semantics { heading() },
       )
-      if (showBody) Text(body.orEmpty(), style = SunType.Caption, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2, overflow = TextOverflow.Ellipsis)
+      if (showBody) Text(body.orEmpty(), style = SunType.Caption, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = bodyLines, overflow = TextOverflow.Ellipsis)
     }
   }
   val dismiss: @Composable () -> Unit = {

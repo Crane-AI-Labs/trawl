@@ -23,6 +23,12 @@ internal object ShortWindow {
   /** Wide enough to hold the wordmark, the meter and Settings on one line; narrower than this the meter drops below the header. */
   const val MERGED_HEADER_MIN_WIDTH_DP = 600
 
+  /** A short window at least this tall (a tablet on its side) has room for the chips on two lines; a phone on its side does not. */
+  const val TWO_CHIP_LINES_MIN_HEIGHT_DP = 480
+
+  /** Under this width, or at large text, the home screen's big filter tiles give way to the compact chip line. */
+  const val TILES_MIN_WIDTH_DP = 400
+
   fun isShort(widthDp: Int, heightDp: Int): Boolean = heightDp < SHORT_DP || (widthDp > heightDp && heightDp < LANDSCAPE_TALL_DP)
 
   fun mergedHeader(widthDp: Int): Boolean = widthDp >= MERGED_HEADER_MIN_WIDTH_DP

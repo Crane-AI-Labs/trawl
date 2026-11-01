@@ -48,6 +48,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
@@ -194,7 +195,7 @@ private fun ChipFace(
       Icon(icon, contentDescription = null, tint = fg, modifier = Modifier.size(20.dp))
       if (text != null) {
         Spacer(Modifier.width(Sun.S4))
-        Text(text, style = SunType.CaptionBold, color = fg, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.widthIn(max = maxTextWidth.dp))
+        Text(text, style = SunType.CaptionBold, color = fg, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.widthIn(max = (maxTextWidth * maxOf(1f, LocalDensity.current.fontScale)).dp))
       }
       if (arrow) Icon(Icons.Rounded.ArrowDropDown, contentDescription = null, tint = fg, modifier = Modifier.size(20.dp))
     }
@@ -249,6 +250,9 @@ private fun ChipMenu(open: Boolean, onOpen: (Boolean) -> Unit, focusable: Boolea
   ) { content() }
 }
 
+/** The sort chip names the order in full (UI audit item 11): its row scrolls, so it never needs to cut the word. */
+private const val SORT_CHIP_NEVER_CUT = 1000
+
 /** "Sort: Newest" as one chip with a menu. Browsing has no Best match (nothing to be best for). */
 @Composable
 fun SortChip(sort: SortOrder, searching: Boolean, onSort: (SortOrder) -> Unit, modifier: Modifier = Modifier) {
@@ -258,7 +262,7 @@ fun SortChip(sort: SortOrder, searching: Boolean, onSort: (SortOrder) -> Unit, m
   // Anything but the default order is a choice the person made, so the chip says so with the marker.
   val chosen = sort != (if (searching) SortOrder.BEST else SortOrder.NEWEST)
   Box(modifier) {
-    ChipFace(Icons.Rounded.SwapVert, word, chosen, stringResource(R.string.a11y_description_note, group, word), { open = true })
+    ChipFace(Icons.Rounded.SwapVert, word, chosen, stringResource(R.string.a11y_description_note, group, word), { open = true }, maxTextWidth = SORT_CHIP_NEVER_CUT)
     ChipMenu(open, { open = it }, focusable = true) {
       sortChoices(searching).forEach { s -> ChoiceItem(stringResource(s.labelRes()), s == sort, { open = false; onSort(s) }) }
     }

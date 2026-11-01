@@ -11,8 +11,50 @@ import org.junit.Test
 
 class IndexPolicyTest {
   private fun decide(
-    charging: Boolean = false, pct: Int = 80, thermal: Int = 0, strict: Boolean = false, full: Boolean = false,
-  ) = IndexPolicy.decide(charging, pct, thermal, strict, full)
+    charging: Boolean = false, pct: Int = 80, thermal: Int = 0, strict: Boolean = false, full: Boolean = false, saver: Boolean = false,
+  ) = IndexPolicy.decide(charging, pct, thermal, strict, full, saver)
+
+  // ---- Android's Battery Saver (A2): Gentle already holds on battery, Balanced keeps the light share, Fast ignores it ----
+
+  @Test fun batterySaverNarrowsBalancedToTheLightShareOnBattery() {
+    val d = decide(saver = true)
+    assertEquals(Tier.LIGHT, d.tier)
+    assertTrue("quick look still runs", d.lightAllowed)
+    assertFalse("the GPU work of new files waits", d.newFilesFullQuality)
+    assertFalse(d.bulkAllowed)
+    assertEquals(PauseReason.NOT_CHARGING, d.heldBy)   // plugging in lifts it, so the meter may say so
+  }
+
+  @Test fun batterySaverChangesNothingForGentleWhichIsAlreadyHeldToWordsOnBattery() {
+    assertEquals(decide(strict = true), decide(strict = true, saver = true))
+    assertEquals(Tier.WORDS_ONLY, decide(strict = true, saver = true).tier)
+  }
+
+  @Test fun fastIgnoresBatterySaver() {
+    assertEquals(decide(full = true), decide(full = true, saver = true))
+    assertEquals(Tier.BULK, decide(full = true, saver = true).tier)
+    // its own limits still apply
+    assertEquals(PauseReason.BATTERY_LOW, decide(full = true, saver = true, pct = 25).heldBy)
+    assertEquals(PauseReason.TOO_HOT, decide(full = true, saver = true, thermal = 3).heldBy)
+  }
+
+  @Test fun theChargerWinsOverBatterySaverForEveryPreset() {
+    for ((strict, full) in listOf(false to false, true to false, false to true)) {
+      val d = decide(charging = true, strict = strict, full = full, saver = true)
+      assertEquals(Tier.BULK, d.tier)
+      assertNull(d.heldBy)
+    }
+  }
+
+  @Test fun batterySaverIsTheSameLightShareAsAWarmPhone() {
+    assertEquals(decide(thermal = IndexPolicy.WARM_THERMAL_STATUS), decide(thermal = IndexPolicy.WARM_THERMAL_STATUS, saver = true))
+    assertEquals(decide(thermal = IndexPolicy.WARM_THERMAL_STATUS), decide(saver = true))
+  }
+
+  @Test fun lowBatteryAndHeatStillReportFirstUnderBatterySaver() {
+    assertEquals(PauseReason.BATTERY_LOW, decide(saver = true, pct = 29).heldBy)
+    assertEquals(PauseReason.TOO_HOT, decide(saver = true, thermal = 3).heldBy)
+  }
 
   @Test fun onTheChargerEverythingRunsAtAnyLevelOrHeat() {
     for (pct in listOf(-1, 1, 29, 30, 100)) for (thermal in 0..6) {
