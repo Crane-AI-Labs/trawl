@@ -13,6 +13,10 @@ import androidx.compose.ui.platform.LocalDensity
 import com.craneai.findr.ui.theme.LocalSunlight
 import com.craneai.findr.ui.theme.Sun
 import com.craneai.findr.ui.theme.SunType
+import com.craneai.findr.ui.theme.LocalReduceMotion
+import com.craneai.findr.ui.theme.Motion
+import com.craneai.findr.ui.theme.motionTween
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -145,7 +149,7 @@ fun MediaCell(
   val hidden = blur.hides(file)
   val openLabel = stringResource(if (hidden) R.string.action_show_picture else R.string.action_open)
   val selectLabel = stringResource(R.string.action_select)
-  val hiddenNote = stringResource(R.string.preview_hidden)
+  val hiddenNote = stringResource(if (blur.checking(file)) R.string.preview_checking else R.string.preview_hidden)
   val cellDescription = if (hidden) stringResource(R.string.a11y_description_note, description, hiddenNote) else description
 
   Box(
@@ -244,7 +248,7 @@ fun FileRow(
   val blur = LocalPreviewBlur.current
   val hidden = blur.hides(file)
   val showLabel = stringResource(R.string.action_show_picture)
-  val hiddenNote = stringResource(R.string.preview_hidden)
+  val hiddenNote = stringResource(if (blur.checking(file)) R.string.preview_checking else R.string.preview_hidden)
   val description = buildString {
     append(file.name).append(", ").append(kindLabel).append(", ").append(age)   // the date, as the subtitle shows it
     badge?.let { append(", ").append(it) }
@@ -327,15 +331,19 @@ fun FileRow(
   // The strip of pictures around a video's matched moment sits under the whole row (it has taps of its own, so it is outside the
   // row's merged "open this file" node), aligned with the thumbnail's left edge.
   val momentMs = (hit.locator as? Locator.Time)?.startMs
-  val stripOn = onOpenAt != null && momentMs != null && file.kind == FileKind.VIDEO && !compact && !selecting
+  val stripOn = onOpenAt != null && momentMs != null && file.kind == FileKind.VIDEO && !compact && !selecting && stripMayShow(momentMs, file.durationMs)
   val stripFrames = rememberStripFrames(file, momentMs ?: 0L, hidden, stripOn)
   val strip: @Composable () -> Unit = {
     if (stripOn && momentMs != null && onOpenAt != null && stripFrames.takesRoom()) {
       MomentStrip(stripFrames, momentMs, hidden, onOpenAt, { blur.reveal(file) }, Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp))
     }
   }
+  // A plan that still finds a single picture (a video with very few key frames) takes the strip away: the row eases closed then,
+  // instead of the rows below jumping (UI audit P7). Only rows that may have a strip carry the animation.
+  val reduce = LocalReduceMotion.current
   val rowModifier = modifier
     .fillMaxWidth()
+    .then(if (stripOn) Modifier.animateContentSize(motionTween(reduce, Motion.Standard)) else Modifier)
     .heightIn(min = Sun.Row)
     .then(if (selecting && selected) Modifier.background(t.marker.copy(alpha = 0.22f)) else Modifier)
     .drawBehind { drawLine(divider, Offset(0f, size.height - 0.5f), Offset(size.width, size.height - 0.5f), strokeWidth = 1.dp.toPx()) }

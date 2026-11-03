@@ -33,7 +33,8 @@ class NoIndexingOutsideAWorkerTest {
 
   @Test fun onlyWorkersAndTheForegroundRefreshCallTheIndexingEntryPoints() {
     // Call sites of the work itself. FileProcessor / the passes are constructed only by the code that is about to run them.
-    val entry = Regex("""(\bwordsPass\(|\bFileProcessor\(|\bQuickLookPass\(|\bPrivacyPass\(|\bcrawl\(|\bunderstand\()""")
+    // videoWords: the catch-up of videos an earlier build read (VideoCatchUp) reads frames and runs OCR, so it is heavy work too.
+    val entry = Regex("""(\bwordsPass\(|\bFileProcessor\(|\bQuickLookPass\(|\bPrivacyPass\(|\bcrawl\(|\bunderstand\(|\bvideoWords\(|\bcatchUpOldVideo\()""")
     val allowed = setOf(
       "IndexWorker.kt", "ChangeWorker.kt",                         // the workers
       "FindrEngine.kt",                                            // the in-app refresh (UI visible only), checked below
@@ -64,6 +65,10 @@ class NoIndexingOutsideAWorkerTest {
       assertTrue("IndexWorker lost: $needle", text.contains(needle))
     }
     assertTrue("no pass may be handed a bare isStopped", !Regex("""(QuickLookPass|PrivacyPass)\(applicationContext, engine\) \{ isStopped \}""").containsMatchIn(text))
+    // The catch-up of old videos (VideoCatchUp) is one video per turn of the bulk loop, so the loop's stop, polite, heat and charger checks run between videos.
+    val catchUps = Regex("""\bcatchUpOldVideo\(engine, processor""").findAll(text).map { it.range.first }.toList()
+    assertEquals("one call of the old-video catch-up: $catchUps", 1, catchUps.size)
+    assertTrue("it runs inside the bulk loop", text.indexOf("while (!mustStop())") in 0 until catchUps.single())
     assertTrue("no words pass may stop on a bare isStopped", !Regex("""wordsPass\(processor, stop = \{ isStopped""").containsMatchIn(text))
   }
 }

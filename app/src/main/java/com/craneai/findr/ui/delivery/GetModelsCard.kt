@@ -40,6 +40,7 @@ import com.craneai.findr.core.ModelChoice
 import com.craneai.findr.core.Refusal
 import com.craneai.findr.ui.app.AccessState
 import com.craneai.findr.ui.common.HomeBanner
+import com.craneai.findr.ui.common.HomeBannerLine
 import com.craneai.findr.ui.common.appString
 import com.craneai.findr.ui.common.formatBytes
 import com.craneai.findr.ui.settings.SunErrorText
@@ -75,6 +76,9 @@ fun GetModelsCard(
   confirmDone: Boolean = true,
   compact: Boolean = false,
   onHide: (() -> Unit)? = null,
+  /** Home while searching: the strip folds to its title and a chevron ([HomeBannerLine]); [onOpen] unfolds it. Progress is never folded. */
+  folded: Boolean = false,
+  onOpen: () -> Unit = {},
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
   // Watch Downloads only while a card that asks for the file is on screen.
@@ -91,7 +95,9 @@ fun GetModelsCard(
   val onChoose = { picker.launch(chooseFileIntent()) }
 
   if (compact) {
-    ModelsBanner(state, access, noBrowser, viewModel, confirmDone, onGet, onChoose, onHide, modifier)
+    val line = if (folded) foldedTitle(state, confirmDone) else null
+    if (line != null) HomeBannerLine(line, onOpen, modifier)
+    else ModelsBanner(state, access, noBrowser, viewModel, confirmDone, onGet, onChoose, onHide, modifier)
     return
   }
 
@@ -236,6 +242,18 @@ internal fun Done(state: DeliveryState, viewModel: DeliveryViewModel, confirmDon
   } else if (confirmDone) {
     SunTextButton(onClick = viewModel::acknowledge) { Text(stringResource(R.string.models_ok)) }
   }
+}
+
+/**
+ * The strip's title when it is folded while searching, or null to draw the strip as it is: a download or install in progress is two
+ * short lines already and says something worth seeing, and a finished install with nothing left to ask shows nothing.
+ */
+@Composable
+private fun foldedTitle(state: DeliveryState, confirmDone: Boolean): String? = when (state.phase) {
+  DeliveryPhase.IDLE -> stringResource(R.string.models_title)
+  DeliveryPhase.REFUSED -> refusalText(state)
+  DeliveryPhase.DOWNLOADING, DeliveryPhase.INSTALLING -> null
+  DeliveryPhase.DONE -> state.removable?.let { stringResource(R.string.models_free_question, formatBytes(it.bytes)) }
 }
 
 /** The compact form: the same phases as the card, as a strip. */

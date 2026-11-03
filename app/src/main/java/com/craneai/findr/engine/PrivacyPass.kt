@@ -18,6 +18,8 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.yield
+import com.craneai.findr.index.IndexStore
 import kotlin.coroutines.coroutineContext
 
 private const val TAG = "FindrPrivacy"
@@ -42,7 +44,8 @@ class PrivacyPass(
 
   suspend fun run() = withContext(dispatcher) {
     val store = engine.store
-    store.ensurePrivateModel(PrivateLook.MODEL)
+    if (store.ensurePrivateModel(PrivateLook.MODEL)) engine.privacyOnDemand.forget()
+    engine.privacyPassRunning = true
     val started = System.nanoTime()
     var batchStart = started
     var prepMs = 0L; var modelMs = 0L; var decodeMs = 0L; var inBatch = 0
@@ -54,17 +57,21 @@ class PrivacyPass(
         if (batch.isEmpty()) break
         for (file in batch) {
           if (stopped()) break
+          // A thumbnail on screen asked for its score (blur until scored): it goes first, and is not scored twice.
+          yield()
+          if (engine.privacyOnDemand.known(file.id)) continue
           while (engine.userInteracting && !stopped()) delay(250)
           while (engine.speechActive.get() > 0 && !stopped()) delay(250)
           coroutineContext.ensureActive()
           val t0 = System.nanoTime()
-          val ok = one(file)
-          if (!ok) return@withContext   // the model itself won't run: stop, don't mark every file unreadable
+          if (scoreAndSave(context, engine, file, "pass") == null) return@withContext   // the model itself won't run: stop, don't mark every file unreadable
           val workMs = (System.nanoTime() - t0) / 1_000_000
           decodeMs += workMs - engine.privacy.lastPrepMs - engine.privacy.lastModelMs
           prepMs += engine.privacy.lastPrepMs; modelMs += engine.privacy.lastModelMs
           done++; inBatch++
           if (engine.embeddingNow) delay((workMs * (1 / Tuning.current.privacyDuty - 1)).toLong())
+          // Heat pacing (a study knob, off in every shipped build): once the phone is warm, a further rest in proportion to the work.
+          if (Tuning.current.paces) HeatPace.restMs(workMs, engine.heatPaced(), Tuning.current.pacePrivacyDuty).let { if (it > 0) delay(it) }
         }
         val now = System.nanoTime()
         Log.i(TAG, "privacy scores: $inBatch files in ${(now - batchStart) / 1_000_000} ms (per file: decode " +
@@ -72,40 +79,49 @@ class PrivacyPass(
         batchStart = now; prepMs = 0; modelMs = 0; decodeMs = 0; inBatch = 0
       }
     } finally {
-      if (!engine.keepModelsResident()) engine.privacy.release()   // a roomy phone keeps the small scorer for the next run
+      engine.privacyPassRunning = false
+      // A roomy phone keeps the small scorer for the next run; so does a phone still scoring thumbnails on screen.
+      if (!engine.keepModelsResident() && !engine.privacyOnDemand.busy) engine.privacy.release()
       if (done > 0) Log.i(TAG, "privacy scores done: $done files in ${(System.nanoTime() - started) / 1_000_000_000} s")
     }
   }
 
-  /** True: saved (a score, or a mark that the file can't be read). False: the model failed to run, so the pass stops. */
-  private fun one(file: IndexedFile): Boolean {
-    val uri = Uri.parse(file.uri)
-    val scores = ArrayList<Float>(3)
-    try {
-      for (bitmap in pictures(file, uri)) {
-        try {
-          scores += engine.privacy.score(bitmap)
-        } finally {
-          bitmap.recycle()
-        }
-      }
-    } catch (e: CancellationException) {
-      throw e
-    } catch (t: Throwable) {
-      if (scores.isEmpty() && isModelRuntimeError(t)) {
-        Log.w(TAG, "the privacy model failed on ${redact(file.name)}; stopping the pass", t)
-        return false
-      }
-      Log.w(TAG, "can't read ${redact(file.name)}: ${t.javaClass.simpleName}")
-    }
-    engine.store.saveLooksPrivate(file.id, PrivateLook.ofFrames(scores))
-    return true
-  }
-
-  private fun pictures(file: IndexedFile, uri: Uri): Sequence<Bitmap> =
-    if (file.kind == FileKind.VIDEO) frames(context, uri, file.durationMs) else listOfNotNull(decode(context, uri)).asSequence()
-
   companion object {
+    /**
+     * Scores one picture and saves it, and tells the thumbnails waiting for it ([PrivacyOnDemand.saved]). The score, or
+     * [IndexStore.UNREADABLE_SCORE] when the file can't be read (saved too, so it isn't retried every run); null when the model itself
+     * failed to run (nothing saved). Blocking: call it on [dispatcher]. [via] names the caller in the detail log ("pass", "demand").
+     */
+    internal fun scoreAndSave(context: Context, engine: FindrEngine, file: IndexedFile, via: String): Float? {
+      val uri = Uri.parse(file.uri)
+      val scores = ArrayList<Float>(3)
+      try {
+        for (bitmap in pictures(context, file, uri)) {
+          try {
+            scores += engine.privacy.score(bitmap)
+          } finally {
+            bitmap.recycle()
+          }
+        }
+      } catch (e: CancellationException) {
+        throw e
+      } catch (t: Throwable) {
+        if (scores.isEmpty() && isModelRuntimeError(t)) {
+          Log.w(TAG, "the privacy model failed on ${redact(file.name)} ($via)", t)
+          return null
+        }
+        Log.w(TAG, "can't read ${redact(file.name)}: ${t.javaClass.simpleName}")
+      }
+      val score = PrivateLook.ofFrames(scores)
+      engine.store.saveLooksPrivate(file.id, score)
+      val saved = score ?: IndexStore.UNREADABLE_SCORE
+      engine.privacyOnDemand.saved(file.id, saved, via)
+      return saved
+    }
+
+    private fun pictures(context: Context, file: IndexedFile, uri: Uri): Sequence<Bitmap> =
+      if (file.kind == FileKind.VIDEO) frames(context, uri, file.durationMs) else listOfNotNull(decode(context, uri)).asSequence()
+
     private const val BATCH = 16
     /**
      * Share of the time the pass works while EmbeddingGemma is embedding (it runs flat out when EmbeddingGemma is idle). 0.6, the

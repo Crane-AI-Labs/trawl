@@ -14,12 +14,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.HourglassTop
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,7 +47,10 @@ import coil3.request.crossfade
 import coil3.request.transformations
 import coil3.video.videoFrameMillis
 import com.craneai.findr.core.FileKind
+import com.craneai.findr.core.FindrLog
 import com.craneai.findr.core.IndexedFile
+import com.craneai.findr.core.PrivateLook
+import com.craneai.findr.index.IndexStore
 import com.craneai.findr.ui.theme.LocalReduceMotion
 
 /**
@@ -67,7 +73,13 @@ fun FileThumbnail(
   val context = LocalContext.current
   val reduceMotion = LocalReduceMotion.current
   val blur = LocalPreviewBlur.current
+  val look = blur.look(file)
   val hidden = blur.hides(file)
+  // Not scored yet (blur until scored): blurred like a private-looking picture, and scored now because it is on screen. The effect
+  // is this thumbnail's ask: it is cancelled, and the ask dropped, when the thumbnail leaves the screen.
+  val checking = look == PrivateLook.Look.CHECKING
+  if (checking) LaunchedEffect(file.id) { blur.check(file) }
+  if (FindrLog.detail && file.kind in IndexStore.QUICK_KINDS) GateTrace(blur, file, if (hidden) look else PrivateLook.Look.CLEAR)
   val loadable = file.kind.isVisual() && !file.uri.startsWith("fake://")
   var failed by remember(file.uri) { mutableStateOf(false) }
   // First choice is the system's small thumbnail (cheap); if MediaProvider cannot make one, decode the file itself.
@@ -117,16 +129,18 @@ fun FileThumbnail(
       )
     }
     if (hidden) {
-      LaunchedEffect(Unit) { blur.blurShown() }   // the first blurred picture explains itself, once (blurHintOnce)
-      // A lock says "hidden, tap to show", and on a grid tile the words say it too (never a symbol alone). The tap itself is
-      // wired by the cell or row that holds this thumbnail.
+      // The first private-looking picture explains itself, once (blurHintOnce). One still being checked does not: it is not "private".
+      if (!checking) LaunchedEffect(Unit) { blur.blurShown() }
+      // A lock says "hidden, tap to show", and on a grid tile the words say it too (never a symbol alone). A picture still being
+      // checked shows an hourglass and "Checking" instead, so a blurred new photo reads as "in a moment", not as private or broken.
+      // The tap itself is wired by the cell or row that holds this thumbnail.
       Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Box(Modifier.size(iconSize + 10.dp).clip(CircleShape).background(Color(0xB3000000)), contentAlignment = Alignment.Center) {
-          Icon(Icons.Rounded.Lock, contentDescription = null, tint = Color.White, modifier = Modifier.size(iconSize - 8.dp))
+          Icon(if (checking) Icons.Rounded.HourglassTop else Icons.Rounded.Lock, contentDescription = null, tint = Color.White, modifier = Modifier.size(iconSize - 8.dp))
         }
         if (hiddenWords) {
           Text(
-            stringResource(R.string.preview_hidden_words),
+            stringResource(if (checking) R.string.preview_checking_words else R.string.preview_hidden_words),
             style = SunType.CaptionBold,
             color = Color.White,
             textAlign = TextAlign.Center,
@@ -137,4 +151,17 @@ fun FileThumbnail(
       }
     }
   }
+}
+
+/**
+ * Detail logging only (test phones; blur until scored, internal/research/blur-until-scored.md): one "shown" line each time a picture's
+ * thumbnail comes on screen and each time what it shows changes, and this thumbnail's look in [PreviewBlur.onScreen] for the
+ * on-screen sampler. [shownAs] is what is drawn: CLEAR for a revealed picture.
+ */
+@Composable
+private fun GateTrace(blur: PreviewBlur, file: IndexedFile, shownAs: PrivateLook.Look) {
+  val token = remember(file.id) { Any() }
+  LaunchedEffect(file.id, shownAs) { blur.shown(file, shownAs) }
+  SideEffect { blur.onScreen[token] = shownAs }
+  DisposableEffect(token) { onDispose { blur.onScreen.remove(token) } }
 }

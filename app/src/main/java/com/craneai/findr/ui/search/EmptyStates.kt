@@ -23,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -31,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.craneai.findr.R
 import com.craneai.findr.ui.common.BrandMark
+import com.craneai.findr.ui.common.FileNames
 import com.craneai.findr.ui.common.HomeBanner
 import com.craneai.findr.ui.common.appString
 import com.craneai.findr.ui.theme.Sun
@@ -44,9 +46,11 @@ fun NothingFound(
   query: String, indexIncomplete: Boolean, modifier: Modifier = Modifier, date: com.craneai.findr.core.DateLabel? = null,
   /** "Find similar" found nothing: the name of the file it started from (the words below are about it, not a query). */
   similarTo: String? = null,
+  /** False inside a list that scrolls already (a short window): the body is then as tall as its words. */
+  scrolls: Boolean = true,
 ) {
   Column(
-    modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = Sun.S32, vertical = Sun.S24),
+    modifier.fillMaxWidth().then(if (scrolls) Modifier.verticalScroll(rememberScrollState()) else Modifier).padding(horizontal = Sun.S32, vertical = Sun.S24),
     horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.Center,
   ) {
@@ -61,7 +65,10 @@ fun NothingFound(
     )
     Spacer(Modifier.height(Sun.S8))
     Text(
-      if (similarTo != null) stringResource(R.string.similar_nothing_body, similarTo) else stringResource(R.string.search_nothing_body, query.trim()),
+      // A photo's name is one long word: inside a sentence it broke wherever the line ended, even inside ".jpg" (UI audit P5, D18).
+      // It is shortened in the middle instead, keeping its start and its end with the extension ("IMG_2…1502.jpg").
+      if (similarTo != null) stringResource(R.string.similar_nothing_body, FileNames.middle(similarTo, large = LocalDensity.current.fontScale >= 1.29f))
+      else stringResource(R.string.search_nothing_body, query.trim()),
       style = SunType.BodyLarge,
       color = MaterialTheme.colorScheme.onBackground,
       textAlign = TextAlign.Center,
@@ -94,11 +101,11 @@ fun NothingFound(
   }
 }
 
-/** Shown before the app has found any file at all. */
+/** Shown before the app has found any file at all. [scrolls] false inside a list that scrolls already (a short window). */
 @Composable
-fun FreshPhone(modifier: Modifier = Modifier) {
+fun FreshPhone(modifier: Modifier = Modifier, scrolls: Boolean = true) {
   Column(
-    modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = Sun.S32, vertical = Sun.S24),
+    modifier.fillMaxWidth().then(if (scrolls) Modifier.verticalScroll(rememberScrollState()) else Modifier).padding(horizontal = Sun.S32, vertical = Sun.S24),
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     BrandMark(size = 48.dp)

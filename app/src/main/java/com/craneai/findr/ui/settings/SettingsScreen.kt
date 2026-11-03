@@ -53,6 +53,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -477,17 +479,33 @@ private fun KindSwitches(settings: FindrSettings, vm: IndexViewModel) {
 @Composable
 private fun StorageRow(label: String, value: String, hint: String? = null, onRemove: (() -> Unit)? = null) {
   val removeDescription = if (onRemove != null) stringResource(R.string.settings_storage_remove_named, label) else ""
-  Row(Modifier.fillMaxWidth().heightIn(min = Sun.SettingsRow), verticalAlignment = Alignment.CenterVertically) {
-    Column(Modifier.weight(1f).padding(vertical = Sun.S8)) {
-      Text(label, style = SunType.BodyLarge, color = MaterialTheme.colorScheme.onSurface)
-      if (hint != null) Text(hint, style = SunType.Body, color = MaterialTheme.colorScheme.onSurfaceVariant)
-    }
-    Text(value, style = SunType.Label, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.padding(start = Sun.S12))
+  val remove: @Composable () -> Unit = {
     if (onRemove != null) {
       SunTextButton(onClick = onRemove, modifier = Modifier.semantics { contentDescription = removeDescription }) {
         Text(stringResource(R.string.settings_storage_remove), style = SunType.Label)
       }
     }
+  }
+  // Large text: the label and its hint wrap, and a value beside them floated in the middle of the wrapped lines ("The database and
+  // its   96 MB   log."). The value then goes under its label, where it reads as that label's answer (UI audit P2).
+  if (LocalDensity.current.fontScale >= 1.29f) {
+    Column(Modifier.fillMaxWidth().heightIn(min = Sun.SettingsRow).padding(vertical = Sun.S8)) {
+      Text(label, style = SunType.BodyLarge, color = MaterialTheme.colorScheme.onSurface)
+      if (hint != null) Text(hint, style = SunType.Body, color = MaterialTheme.colorScheme.onSurfaceVariant)
+      Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Text(value, style = SunType.Label, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.weight(1f).padding(top = Sun.S4).testTag("storage-value"))
+        remove()
+      }
+    }
+    return
+  }
+  Row(Modifier.fillMaxWidth().heightIn(min = Sun.SettingsRow), verticalAlignment = Alignment.CenterVertically) {
+    Column(Modifier.weight(1f).padding(vertical = Sun.S8)) {
+      Text(label, style = SunType.BodyLarge, color = MaterialTheme.colorScheme.onSurface)
+      if (hint != null) Text(hint, style = SunType.Body, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+    Text(value, style = SunType.Label, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.padding(start = Sun.S12).testTag("storage-value"))
+    remove()
   }
 }
 

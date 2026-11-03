@@ -119,17 +119,19 @@ fun SunOutlinedButton(
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
   danger: Boolean = false,
+  /** Edge and words in one colour, for a button on a surface of its own (the black Keep learning screen); null follows the theme. */
+  ink: Color? = null,
   content: @Composable RowScope.() -> Unit,
 ) {
   val scheme = MaterialTheme.colorScheme
-  val edge = if (danger) scheme.error else scheme.outline
+  val edge = ink ?: if (danger) scheme.error else scheme.outline
   OutlinedButton(
     onClick = onClick,
     modifier = modifier.heightIn(min = Sun.Button),
     enabled = enabled,
     shape = MaterialTheme.shapes.small,
     border = BorderStroke(Sun.Border, if (enabled) edge else edge.copy(alpha = 0.38f)),
-    colors = ButtonDefaults.outlinedButtonColors(contentColor = if (danger) scheme.error else scheme.onSurface),
+    colors = ButtonDefaults.outlinedButtonColors(contentColor = ink ?: if (danger) scheme.error else scheme.onSurface),
     contentPadding = PaddingValues(horizontal = 18.dp, vertical = 10.dp),
     content = content,
   )
@@ -280,6 +282,8 @@ fun SunIconAction(
   tint: Color = MaterialTheme.colorScheme.onSurface,
   /** False: the icon alone (a top bar, where a long word would eat the room of the title). [description] still names it for TalkBack. */
   showWord: Boolean = true,
+  /** Lines the word may take: 2 in a bar of equal shares, where a long translation ("Kifuule eky'ekyama") was cut to "Kifuule ek…". */
+  wordLines: Int = 1,
 ) {
   Column(
     modifier
@@ -293,7 +297,10 @@ fun SunIconAction(
   ) {
     Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(Sun.Icon))
     // The word is for the eye; TalkBack already hears [description], which names the file too.
-    if (showWord) Text(word, style = SunType.CaptionBold, color = tint, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis, modifier = Modifier.clearAndSetSemantics { })
+    if (showWord) Text(
+      word, style = SunType.CaptionBold, color = tint, maxLines = wordLines, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+      textAlign = androidx.compose.ui.text.style.TextAlign.Center, modifier = Modifier.clearAndSetSemantics { },
+    )
   }
 }
 

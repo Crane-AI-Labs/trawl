@@ -100,6 +100,9 @@ internal object HomeCards {
   /** While searching a card is always the short form. */
   fun asStrip(compact: Boolean, searching: Boolean): Boolean = compact || searching
 
+  /** While searching, the models strip is folded to its title until the person opens it (UI audit P3). */
+  fun foldWhileSearching(searching: Boolean, opened: Boolean): Boolean = searching && !opened
+
   /** A full card never takes more than this share of the window's height; past it, the card scrolls inside itself. */
   const val FULL_CARD_MAX_SHARE = 0.4f
 }
@@ -143,6 +146,8 @@ internal fun HomeCardSlot(
   // Put away for now, per card; the models strip is remembered against its phase (see modelsHideKey), the access one for the session.
   var accessHidden by rememberSaveable { mutableStateOf(false) }
   var modelsHiddenFor by rememberSaveable { mutableStateOf<String?>(null) }
+  // While searching the models strip folds to one line (UI audit P3); a tap opens it for the rest of that search.
+  var modelsOpened by rememberSaveable(searching) { mutableStateOf(false) }
 
   val crash by Diag.pending.collectAsStateWithLifecycle()
   val modelsWanted = modelsCardWanted(deliveryViewModel)
@@ -171,7 +176,10 @@ internal fun HomeCardSlot(
     when (card) {
       HomeCard.CRASH -> CrashReportCard(Modifier, compact = strip)
       HomeCard.ACCESS -> AccessBanner(onAllow = onAllowAccess, compact = strip, onHide = { accessHidden = true })
-      HomeCard.MODELS -> GetModelsCard(deliveryViewModel, access, confirmDone = false, compact = strip, onHide = { modelsHiddenFor = modelsKey })
+      HomeCard.MODELS -> GetModelsCard(
+        deliveryViewModel, access, confirmDone = false, compact = strip, onHide = { modelsHiddenFor = modelsKey },
+        folded = HomeCards.foldWhileSearching(searching, modelsOpened), onOpen = { modelsOpened = true },
+      )
       HomeCard.PAUSE -> BackgroundPauseCard(
         onKeepLearning = {
           prefs.pauseCardDismissed = true

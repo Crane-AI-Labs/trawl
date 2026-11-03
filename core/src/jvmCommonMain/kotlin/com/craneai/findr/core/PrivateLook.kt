@@ -39,6 +39,24 @@ object PrivateLook {
   /** True when [score] (null: not scored, or unreadable) is high enough to blur the thumbnail. */
   fun blurs(score: Float?, threshold: Float = THRESHOLD): Boolean = score != null && score >= threshold
 
+  /**
+   * How a thumbnail is drawn. [CHECKING] is a picture with no score yet while a scorer can give it one: it is blurred like
+   * [PRIVATE] (it may be exactly the picture the blur is for) until its score arrives, and it is scored first because it is on
+   * screen (internal/research/blur-until-scored.md).
+   */
+  enum class Look { CLEAR, PRIVATE, CHECKING }
+
+  /**
+   * The look of a picture: [unscored] with no [fresh] score while [canCheck] (the scorer is in and switched on) is [Look.CHECKING];
+   * otherwise the score (the fresh one first; null or negative: unreadable or not a picture) decides, as [blurs] does.
+   * Without a scorer nothing can be scored, so nothing waits blurred for a score that cannot come.
+   */
+  fun look(score: Float?, unscored: Boolean, fresh: Float?, canCheck: Boolean, threshold: Float = THRESHOLD): Look = when {
+    unscored && fresh == null -> if (canCheck) Look.CHECKING else Look.CLEAR
+    blurs(fresh ?: score, threshold) -> Look.PRIVATE
+    else -> Look.CLEAR
+  }
+
   /** P(NSFW) from the classifier's two logits (index 0 NSFW, index 1 SFW). */
   fun probability(nsfwLogit: Float, sfwLogit: Float): Float {
     val m = max(nsfwLogit, sfwLogit)

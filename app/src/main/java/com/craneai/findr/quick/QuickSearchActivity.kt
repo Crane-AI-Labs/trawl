@@ -5,9 +5,10 @@ import android.content.Context
 import com.craneai.findr.ui.common.appString
 import android.app.KeyguardManager
 import android.app.StatusBarManager
-import android.view.WindowManager
+import com.craneai.findr.privacy.followSecureWindow
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Lifecycle
@@ -92,6 +93,8 @@ class QuickSearchActivity : FragmentActivity() {   // FragmentActivity: the phon
     enableEdgeToEdge()
     installImageLoader()
     logStartup()
+    // The window's FLAG_SECURE follows the privacy controller from here, not from the composition (UI audit P10).
+    followSecureWindow(privacy.secureWindow)
 
     val ui = UiPrefs(this)
     setContent {
@@ -107,19 +110,18 @@ class QuickSearchActivity : FragmentActivity() {   // FragmentActivity: the phon
             allowReveal = { !(getSystemService(KEYGUARD_SERVICE) as KeyguardManager).isKeyguardLocked },
             onFirstBlur = blurHintOnce(this@QuickSearchActivity),
             onDenied = { Toast.makeText(this@QuickSearchActivity, R.string.quick_unlock_to_show, Toast.LENGTH_SHORT).show() },
+            // A picture not scored yet is blurred until it is, and scored first while it is on screen (blur until scored).
+            check = engine.privacyCheck,
           )
         }
         val appLocked by privacy.locked.collectAsStateWithLifecycle()
-        val secure by privacy.secureWindow.collectAsStateWithLifecycle()
         val mode = quickMode(deviceLocked, appLocked)
         // Locked: stop searching and drop what was on screen, before anything can be drawn.
         LaunchedEffect(mode) { viewModel.setBlocked(mode != QuickMode.SEARCH) }
-        // No screenshots and a blank card in recents while a sensitive result is on screen, or when the person asked for it.
-        LaunchedEffect(secure) {
-          if (secure) window.addFlags(WindowManager.LayoutParams.FLAG_SECURE) else window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
-        }
+        // No screenshots and a blank card in recents while a sensitive result is on screen, or when the person asked for it: told as
+        // this composition is applied, before its frame is drawn (the window follows it, see followSecureWindow; UI audit P10).
         val showing = mode == QuickMode.SEARCH && state.showsSensitive
-        LaunchedEffect(showing) { privacy.setSensitiveOnScreen("quick", showing) }
+        SideEffect { privacy.setSensitiveOnScreen("quick", showing) }
         DisposableEffect(Unit) { onDispose { privacy.setSensitiveOnScreen("quick", false) } }
         // With the lock on, ask for the unlock by itself each time the panel comes to the front.
         val owner = LocalLifecycleOwner.current

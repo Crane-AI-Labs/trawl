@@ -72,6 +72,28 @@ class Piece(
 class Processed(val pieces: List<Piece>, val nextChunk: Int?, val detail: String?)
 
 /**
+ * A video's pictures read again for their words only (the catch-up of a video an earlier build read, index.VideoCatchUp): handed to
+ * [FileProcessor]'s frame loop, it means nothing is embedded and the soundtrack is not opened, and it collects what the catch-up
+ * needs besides the words: when each sampled picture really is, and the counts for the log line.
+ */
+class WordsOnly {
+  /** Slot start to the keyframe time its picture was fetched at (ms, whole video), for every frame the sampler fetched. */
+  val frameTimes = HashMap<Long, Long>()
+  var frames = 0
+  var distinct = 0
+  var extraReads = 0
+  var sampleMs = 0L
+  var ocrMs = 0L
+  /** Windows (or the whole short video) whose pictures could not be opened this time. */
+  var unreadable = 0
+  /** Time spent waiting for the user (not reading time). */
+  var waitedMs = 0L
+}
+
+/** What [FileProcessor.videoWords] read: the words pieces, each with the window it came from (0 for a short video), and the counts. */
+class VideoWords(val pieces: List<Pair<Int, Piece>>, val stats: WordsOnly)
+
+/**
  * Turns one file into searchable pieces. The rules come from the M2 eval (the build notes):
  * documents → ~400-char chunks, embedded and in FTS; scanned PDF pages → OCR, which *is* their text, so embedded too;
  * images, screenshots, memes → the image embedded, OCR text into FTS only (embedding it hurt documents, 0.95 → 0.88);
@@ -310,7 +332,33 @@ class FileProcessor(
     return videoFrames(file, uri, withAudio, withSpeech, window, windows)
   }
 
-  private suspend fun videoFrames(file: IndexedFile, uri: Uri, withAudio: Boolean, withSpeech: Boolean, window: Int?, windows: Int): Processed = coroutineScope {
+  /**
+   * A video an earlier build read, read again for the words on its pictures only (index.VideoCatchUp): every window a fresh read takes
+   * pictures from, through the same frame loop, sampler and rules, with nothing embedded and no soundtrack. A window whose pictures
+   * cannot be opened this time is counted in [WordsOnly.unreadable] and left out.
+   */
+  suspend fun videoWords(file: IndexedFile): VideoWords {
+    val uri = Uri.parse(file.uri)
+    val stats = WordsOnly()
+    val out = ArrayList<Pair<Int, Piece>>()
+    val windows = windowCount(file.durationMs)
+    for (w in 0 until windows) {
+      // video(): past the first half hour a window has no pictures unless Tuning.deepFramesPerMin asks for some, and then none after it either
+      if (windows > 1 && !isDeepWindow(w) && Tuning.current.deepFramesPerMin <= 0) break
+      coroutineContext.ensureActive()
+      yieldToUser.reset()   // a fresh read's budget for the user is per step, and each window is a step
+      try {
+        out += videoFrames(file, uri, false, false, if (windows > 1) w else null, windows, stats).pieces.map { w to it }
+      } catch (e: FormatNotReadable) {
+        stats.unreadable++
+      } finally {
+        stats.waitedMs += yieldToUser.waitedMs
+      }
+    }
+    return VideoWords(out, stats)
+  }
+
+  private suspend fun videoFrames(file: IndexedFile, uri: Uri, withAudio: Boolean, withSpeech: Boolean, window: Int?, windows: Int, wordsOnly: WordsOnly? = null): Processed = coroutineScope {
     // The soundtrack (decode, speech, labels) runs alongside the frames instead of after them: the platform's audio
     // decoder mostly waits, and frames mostly use the GPU path, so a video costs nearer the longer of the two.
     val windowed = window != null
@@ -321,7 +369,7 @@ class FileProcessor(
     // Past two minutes the soundtrack waits until the frames are done.
     // (A window of a long video is a one-minute video as far as memory goes, so its frames and soundtrack do overlap.)
     val together = windowed || shouldOverlapSoundtrack(seconds)
-    val wantsSound = withAudio || withSpeech
+    val wantsSound = wordsOnly == null && (withAudio || withSpeech)
     // (An async child that throws cancels the whole scope, so the codec-missing case is turned into a note inside it.)
     suspend fun trackOrNote() = try {
       if (windowed) soundtrack(uri, withAudio, withSpeech, startMs, MEDIA_WINDOW_MS) else soundtrack(uri, withAudio, withSpeech)
@@ -378,6 +426,7 @@ class FileProcessor(
     for (f in frames) {
       frameCount++
       coroutineContext.ensureActive()
+      wordsOnly?.frameTimes?.put(f.shotStartMs, f.timeMs)
       val hash = f.bitmap?.let(::differenceHash)
       val same = hash?.let { h -> kept.firstOrNull { java.lang.Long.bitCount(it.hash xor h) <= SAME_FRAME_BITS } }
       if (same != null) {
@@ -398,12 +447,15 @@ class FileProcessor(
         }
         continue
       }
-      letUserFirst(gpu = true)
+      letUserFirst(gpu = wordsOnly == null)
       val te = System.nanoTime()
       // The frame's OCR runs while the GPU embeds it (the CPU is idle for ~85% of an embedding): `embed` is the wall
       // time of both together, `ocr` the OCR's own time inside it. The lite profile reads the frame with the quick-look model
-      // first, on the CPU, before OCR recycles the bitmap.
-      val vector = if (lite) CompletableDeferred(if (quickReady) quickFrame(f) else null) else async { embedder.image(f.jpeg) }
+      // first, on the CPU, before OCR recycles the bitmap. Words only: the picture already has its vector, nothing is embedded.
+      // (Not CompletableDeferred<FloatArray?>(null): with a bare null that call picks the constructor taking a parent Job, and the
+      // deferred never completes. VideoWordsTest caught it.)
+      val vector = if (wordsOnly != null) CompletableDeferred<FloatArray?>().apply { complete(null) }
+      else if (lite) CompletableDeferred(if (quickReady) quickFrame(f) else null) else async { embedder.image(f.jpeg) }
       var look: FrameSignature? = null
       f.bitmap?.let { bmp ->
         val to = System.nanoTime()
@@ -430,7 +482,10 @@ class FileProcessor(
     }
     var detail = "$frameCount frames, ${kept.size} distinct (sample ${secs(sampleMs)} embed ${secs(embedMs)} ocr ${secs(ocrMs)})"
     if (extraReads.used > 0) detail += ", ${extraReads.used} extra reads"   // frames merged by picture whose words were read anyway
-    if (lite && !quickReady) detail += ", ${com.craneai.findr.index.IndexStore.QUICK_MISSING}"
+    if (lite && !quickReady && wordsOnly == null) detail += ", ${com.craneai.findr.index.IndexStore.QUICK_MISSING}"
+    wordsOnly?.let { w ->
+      w.frames += frameCount; w.distinct += kept.size; w.extraReads += extraReads.used; w.sampleMs += sampleMs; w.ocrMs += ocrMs
+    }
     // A soundtrack in a codec this phone lacks (AC3 in an .mkv, say) must not lose the frames that were read.
     val soundtrack = sound?.await() ?: if (wantsSound && !together) trackOrNote() else null
     soundtrack?.let { track ->

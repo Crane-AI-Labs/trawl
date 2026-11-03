@@ -58,6 +58,19 @@ CED-mini model weights, nsfw-image-detection-384 model weights. The Apache Licen
 Components under other licences (attribution, full list and licence texts: THIRD_PARTY_NOTICES.md)
 - Parakeet-TDT-CTC-110M, by NVIDIA, CC BY 4.0 (https://creativecommons.org/licenses/by/4.0). Converted to ONNX and quantised to 8-bit
   integers for sherpa-onnx. NVIDIA does not endorse Trawl.
+- The Luganda and Swahili keyword table (assets/local_keywords.txt.gz) partly comes from aligning the words of the Makerere MT Corpus and
+  the Makerere Gendered Corpus (English-Luganda, by Jonathan Mukiibi, Claire Babirye, Joyce Nakatumba-Nabende, Eric Peter Wairagala and
+  Andrew Katumba, Makerere University AI Lab; https://zenodo.org/records/5089560, https://zenodo.org/records/5864560) and of TICO-19 rows
+  translated from CC BY 4.0 sources (https://tico-19.github.io), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0). Only word pairs
+  are kept, no sentence. Its word list comes from Mozilla Common Voice sentences (CC0); most English words were written by DeepSeek-V4-Pro
+  (MIT). Makerere University and the TICO-19 authors do not endorse Trawl.
+- The Runyankole, Kinyarwanda and Acholi rows of the same table take their word lists from the Multilingual Parallel Text Corpora for
+  East African Languages (Babirye, Tusubira, Nakatumba-Nabende, Katumba, Ssentanda, Nabende, Mukiibi, Wairagala, Bateesa; Makerere
+  University; https://doi.org/10.7910/DVN/BEROE0), the BUAIR Uganda Multilingual Q&A (BUAIR Voice, Busitema University;
+  https://huggingface.co/datasets/BUAIR/Uganda-Multilingual-QA) and TICO-19 rows translated from CC BY 4.0 sources, CC BY 4.0
+  (https://creativecommons.org/licenses/by/4.0), and Mozilla Common Voice Kinyarwanda sentences (CC0). Only single words and their
+  counts are kept, no sentence; the English words were written by DeepSeek-V4-Pro (MIT). Makerere University, Busitema University and
+  the TICO-19 authors do not endorse Trawl.
 - ONNX Runtime and TinyCLIP, by Microsoft Corporation, MIT. Silero VAD, by the Silero Team, MIT. Moonshine tiny, by Useful Sensors, MIT.
   CLIP tokenizer vocabulary, by OpenAI, MIT. Bouncy Castle, by the Legion of the Bouncy Castle Inc., MIT.
 - Atkinson Hyperlegible, by the Braille Institute of America, Inc., SIL Open Font License 1.1.

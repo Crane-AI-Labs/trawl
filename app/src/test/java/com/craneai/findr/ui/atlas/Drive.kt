@@ -3,6 +3,7 @@ package com.craneai.findr.ui.atlas
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTextClearance
 import androidx.lifecycle.viewmodel.initializer
@@ -57,6 +58,19 @@ fun Atlas.type(text: String) {
 
 /** The keyboard goes down (the person pressed Back once or tapped a result) while the field keeps its text. */
 fun Atlas.keyboardDown() { applyBars(bars.copy(imeDp = 0)); settle(300) }
+
+/**
+ * Settings: scrolls the Storage used section into view by its last row that this edition has (the AI model row in the full edition;
+ * Trawl Go has no model, so its memory row or the index hint), so the rows above it are whole on screen.
+ */
+fun Atlas.scrollToStorage() {
+  val ids = listOf(R.string.settings_storage_model, R.string.settings_storage_memory, R.string.settings_storage_index_hint)
+  for (id in ids) {
+    val n = rule.onAllNodes(androidx.compose.ui.test.hasText(str(id), substring = id == R.string.settings_storage_memory), useUnmergedTree = true)
+    if (n.fetchSemanticsNodes().isNotEmpty()) { n[0].performScrollTo(); settle(300); return }
+  }
+  error("no storage row in Settings")
+}
 
 fun Atlas.pressClear() {
   rule.onNodeWithContentDescription(str(R.string.search_clear)).performClick()

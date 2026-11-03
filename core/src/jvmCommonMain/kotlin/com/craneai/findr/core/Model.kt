@@ -42,6 +42,12 @@ data class IndexedFile(
    * only ever used to blur a preview, never to rank a result or hide a file: the classifier is biased and can be wrong.
    */
   val looksPrivate: Float? = null,
+  /**
+   * A photo, screenshot or video the privacy pass has not scored yet (`looks_private` IS NULL). Set only by the queries that feed
+   * the UI's lists; while the blur is on, such a thumbnail is drawn blurred until it is scored (PrivateLook.Look.CHECKING). Like
+   * [looksPrivate] it never ranks, filters or hides anything.
+   */
+  val privacyUnscored: Boolean = false,
   /** The date a person would give this file: the capture date of a photo or video when it has one, else [modifiedMillis]. What the date filter and the age label use. */
   val dateMillis: Long = modifiedMillis,
 ) {

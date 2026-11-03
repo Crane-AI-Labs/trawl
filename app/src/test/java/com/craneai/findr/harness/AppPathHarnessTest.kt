@@ -5,6 +5,7 @@ import com.craneai.findr.engine.LanguageCentroids
 import com.craneai.findr.engine.WordWeightPolicy
 import com.craneai.findr.engine.QueryLanguage
 import com.craneai.findr.engine.SpeechLanguageGate
+import com.craneai.findr.search.LocalKeywords
 import org.junit.Assume.assumeTrue
 import org.junit.Test
 import java.io.File
@@ -25,6 +26,9 @@ import java.io.File
  * pass has not (AppPathHarness.Policy.dropVectors). FINDR_DROP_VECTORS_EVERY=<n> does the same by file id (id % n == 0),
  * regardless of kind, for a world of one kind only (D17's, all DOCUMENT) where dropVectors has nothing to bite on.
  * FINDR_DATES=on|fallback reads date phrases in the queries the way SearchViewModel does (see AppPathHarness.DateMode); off (default) never does.
+ * FINDR_KW=off|<file> the Luganda/Swahili -> English keyword table (unset: the app's asset, as the app); FINDR_KW_MODE=append appends
+ * its English words to the query text instead (an experiment arm, languages-keywords-1.0.6.md). FINDR_MODE=embedtext writes the text
+ * the app embeds for each query that differs from the query (LocalKeywords.embedText), for building a world's query vectors.
  */
 class AppPathHarnessTest {
   @Test fun benchmark() {
@@ -72,6 +76,12 @@ class AppPathHarnessTest {
         "fallback" -> AppPathHarness.DateMode(fallback = true)
         else -> error("FINDR_DATES must be off, on or fallback")
       },
+      keywords = when (val kw = System.getenv("FINDR_KW")) {
+        "off" -> null
+        null, "" -> lazy { File("src/main/assets/${LocalKeywords.ASSET}").inputStream().use { LocalKeywords.parse(it) } }
+        else -> lazy { File(kw).inputStream().use { LocalKeywords.parse(it) } }
+      },
+      appendKeywords = System.getenv("FINDR_KW_MODE") == "append",
     )
     policyD19c?.let { println("d19c policy: uses centroids ${it.usesCentroids}") }
     when (System.getenv("FINDR_MODE") ?: "rank") {
@@ -86,7 +96,8 @@ class AppPathHarnessTest {
         } else AppPathHarness.run(dir, out, policy = policy)
       }
       "datescan" -> AppPathHarness.dateScan(dir, File(out, "datescan.jsonl"))
-      else -> error("FINDR_MODE must be rank, chunk or datescan")
+      "embedtext" -> AppPathHarness.embedTexts(dir, File(out, "embedtext.jsonl"), policy.keywords)
+      else -> error("FINDR_MODE must be rank, chunk, datescan or embedtext")
     }
     policyD19c?.let { println("d19c policy counts: ${it.counts}") }
   }

@@ -51,15 +51,55 @@ object Fusion {
 
   /**
    * The query's content words: lower-cased, split on anything that is not a letter or digit, words of two letters
-   * or more, no stopwords, no repeats, in order. (Unlike Python's `\w`, an underscore splits: file names such as
-   * `IMG_2026_receipt` are indexed that way by FTS5's unicode61 tokenizer, so queries must split the same way.)
+   * or more, no stopwords (English ones and the Luganda and Swahili grammar words of [LocalStopwords]), no repeats, in order.
+   * (Unlike Python's `\w`, an underscore splits: file names such as `IMG_2026_receipt` are indexed that way by FTS5's unicode61
+   * tokenizer, so queries must split the same way.)
    */
-  fun terms(query: String): List<String> {
+  fun terms(query: String): List<String> = termsOf(words(query))
+
+  /** [terms] of a query already split into [words] (a Luganda or Swahili query split by [LocalKeywords.words]). */
+  internal fun termsOf(words: List<String>): List<String> {
     val seen = HashSet<String>()
-    return words(query).filter { it.length >= 2 && it !in STOPWORDS && seen.add(it) }
+    return words.filter {
+      it.length >= 2 && it !in STOPWORDS && it !in LocalStopwords.WORDS && it !in LocalStopwords.PICTURE_WORDS && seen.add(it)
+    }
   }
 
-  private fun words(text: String): List<String> {
+  /**
+   * Whether the query holds a Luganda or Swahili grammar word ([LocalStopwords]): then its other words may come in other noun-class
+   * forms ([nounClassForms]). The list leaves out every common English word, so an English query never says yes.
+   */
+  fun isLocal(query: String): Boolean = words(query).any { it in LocalStopwords.WORDS }
+
+  /**
+   * Luganda noun-class prefixes that alternate for one stem: singular and plural, with and without the initial vowel (the augment).
+   * "ekifaananyi" (picture), "ebifaananyi" (pictures), "kifaananyi"; "omuntu" (person), "abantu" (people), "bantu"; "omuggo" (stick),
+   * "emiggo" (sticks); "okukola" (to work), "kukola".
+   */
+  private val NOUN_CLASSES = listOf(
+    listOf("eki", "ebi", "ki", "bi"), listOf("eky", "eby", "ky", "by"), listOf("omu", "aba", "emi", "mu", "ba", "mi"), listOf("oku", "ku"),
+  )
+  private const val MIN_STEM = 3
+
+  /**
+   * [term] first, then the same stem with the other prefixes of its Luganda noun class ([NOUN_CLASSES]; a stem of at least [MIN_STEM]
+   * letters), so "ekifaananyi" also finds a file that says "ebifaananyi". FTS5 matches word endings by stemming but never word starts,
+   * and Bantu languages inflect at the start. Only for a query [isLocal] says is Luganda or Swahili: in English "music" would find "basic".
+   */
+  fun nounClassForms(term: String): List<String> {
+    val out = LinkedHashSet<String>()
+    out += term
+    for (group in NOUN_CLASSES) for (prefix in group) {
+      if (term.length - prefix.length >= MIN_STEM && term.startsWith(prefix)) {
+        val stem = term.substring(prefix.length)
+        for (other in group) out += other + stem
+      }
+    }
+    return out.toList()
+  }
+
+  /** [text] lower-cased and split on anything that is not a letter or digit: every word, stopwords included, in order. */
+  internal fun words(text: String): List<String> {
     val out = ArrayList<String>()
     val sb = StringBuilder()
     for (ch in text.lowercase()) {
@@ -72,7 +112,7 @@ object Fusion {
 
   /**
    * The FTS5 phrase for the query's [terms], or null when there are fewer than two (one word is no phrase). The terms are
-   * letters and digits only, so quoting is safe. With [prefixLast] the last word is unfinished, as in the word patterns:
+   * letters and digits only (a Swahili word the keyword table holds whole may carry a `'`, [LocalKeywords.words]), so quoting is safe. With [prefixLast] the last word is unfinished, as in the word patterns:
    * FTS5 spells that `"one two thr" *`.
    */
   fun phraseQuery(terms: List<String>, prefixLast: Boolean): String? {
@@ -97,6 +137,8 @@ object Fusion {
     for (w in listOf("note", "notes")) put(w, setOf(FileKind.DOCUMENT))
     for (w in listOf("video", "videos", "clip", "clips", "movie", "movies")) put(w, setOf(FileKind.VIDEO))
     for (w in listOf("audio", "song", "songs", "podcast", "voice", "sound", "recording", "recordings")) put(w, setOf(FileKind.AUDIO))
+    for (w in LocalStopwords.PICTURE_WORDS) put(w, setOf(FileKind.IMAGE))
+    for (w in LocalStopwords.MESSAGE_WORDS) put(w, setOf(FileKind.SCREENSHOT))
   }
 
   /** Kinds the query asks for ("screenshot of…", "…in a video"): a soft +1, not a filter. */

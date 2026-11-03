@@ -78,6 +78,8 @@ class QuickLookPass(
             else -> 1.0
           }
           if (duty < 1.0) delay((workMs * (1 / duty - 1)).toLong())
+          // Heat pacing (a study knob, off in every shipped build): once the phone is warm, a further rest in proportion to the work.
+          if (Tuning.current.paces) HeatPace.restMs(workMs, engine.heatPaced(), Tuning.current.paceQuickDuty).let { if (it > 0) delay(it) }
         }
         val now = System.nanoTime()
         Log.i(TAG, "quick look: $inBatch files in ${ms(now - batchStart)} ms (per file: decode ${decodeMs / maxOf(inBatch, 1)}, " +

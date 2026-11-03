@@ -72,6 +72,18 @@ Copyright 2017 Unicode, Inc."""
       link = "huggingface.co/nvidia/parakeet-tdt_ctc-110m",
     ),
     Notice(
+      "Luganda and Swahili keyword table, with the Makerere University AI Lab corpora",
+      "CC BY 4.0",
+      "A Luganda or Swahili search also finds English files through a table of Luganda and Swahili words with the English words they stand for. Part of the table comes from aligning the words of the Makerere MT Corpus and the Makerere Gendered Corpus (English-Luganda, by Jonathan Mukiibi, Claire Babirye, Joyce Nakatumba-Nabende, Eric Peter Wairagala and Andrew Katumba, Makerere University AI Lab; zenodo.org/records/5089560, zenodo.org/records/5864560) and of TICO-19 translation benchmark rows translated from CC BY 4.0 sources (tico-19.github.io), licensed under the Creative Commons Attribution 4.0 International licence (CC BY 4.0, creativecommons.org/licenses/by/4.0). Changes: only word pairs were kept, found by aligning the English and Luganda or Swahili sentences; no sentence is included. The word list comes from Mozilla Common Voice sentences (CC0) and most English words were written by the DeepSeek-V4-Pro model (MIT). Makerere University and the TICO-19 authors do not endorse this app.",
+      link = "zenodo.org/records/5089560",
+    ),
+    Notice(
+      "Runyankole, Kinyarwanda and Acholi keyword table, with the Makerere MPTC corpus and the BUAIR Q&A",
+      "CC BY 4.0",
+      "A Runyankole, Kinyarwanda or Acholi search also finds English files through a table of words in those languages with the English words they stand for. Which words are in it was counted from: the Multilingual Parallel Text Corpora for East African Languages (MPTC; Acholi and Runyankore, by Claire Babirye, Francis Jeremy Tusubira, Joyce Nakatumba-Nabende, Andrew Katumba, Medadi Ssentanda, Peter Nabende, Jonathan Mukiibi, Eric Peter Wairagala and Tobius Bateesa, Makerere University; doi.org/10.7910/DVN/BEROE0), the BUAIR Uganda Multilingual Q&A (Runyankore, by BUAIR Voice, Busitema University; huggingface.co/datasets/BUAIR/Uganda-Multilingual-QA) and TICO-19 rows translated from CC BY 4.0 sources (Kinyarwanda; tico-19.github.io), all licensed under the Creative Commons Attribution 4.0 International licence (CC BY 4.0, creativecommons.org/licenses/by/4.0), and Mozilla Common Voice Kinyarwanda sentences (CC0). Changes: only single words and how often they occur were kept; no sentence is included. The English words were written by the DeepSeek-V4-Pro model (MIT). Makerere University, Busitema University and the TICO-19 authors do not endorse this app.",
+      link = "doi.org/10.7910/DVN/BEROE0",
+    ),
+    Notice(
       "ML Kit Text Recognition, by Google",
       "ML Kit Terms of Service",
       "This app reads the text in photos and screenshots with Google ML Kit Text Recognition, used under the ML Kit Terms of Service " +

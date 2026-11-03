@@ -4,7 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -51,29 +53,41 @@ const val MAX_SHARE = 200
 @Composable
 fun SelectionTopBar(count: Int, allSelected: Boolean, onSelectAll: () -> Unit, onExit: () -> Unit, modifier: Modifier = Modifier) {
   val exit = stringResource(R.string.select_exit)
-  Row(
-    modifier.fillMaxWidth().statusBarsPadding().padding(start = Sun.S4, end = Sun.S8, top = Sun.S4),
-    verticalAlignment = Alignment.CenterVertically,
-  ) {
-    // One row at any font size (UI audit item 2): the cross is the icon alone (its description names it), the count takes the room that
-    // is left on one line, and Select all becomes an icon at large text instead of a word that squeezes the count to a letter a line.
-    SunIconAction(Icons.Rounded.Close, exit, exit, onExit, showWord = false)
-    Text(
-      pluralStringResource(R.plurals.select_count, count, count),
-      style = SunType.Heading,
-      color = MaterialTheme.colorScheme.onBackground,
-      maxLines = 1,
-      overflow = TextOverflow.Ellipsis,
-      modifier = Modifier.weight(1f).padding(start = Sun.S8).semantics { heading(); liveRegion = LiveRegionMode.Polite },
-    )
-    val toggle = stringResource(if (allSelected) R.string.select_none else R.string.select_all)
-    if (LocalDensity.current.fontScale >= 1.3f) {
-      SunIconAction(if (allSelected) Icons.Outlined.Deselect else Icons.Outlined.SelectAll, toggle, toggle, onSelectAll, showWord = false)
-    } else {
-      SunTextButton(onClick = onSelectAll) { Text(toggle, style = SunType.Label, maxLines = 1) }
+  val countText = pluralStringResource(R.plurals.select_count, count, count)
+  val toggle = stringResource(if (allSelected) R.string.select_none else R.string.select_all)
+  val measurer = rememberTextMeasurer()
+  val density = LocalDensity.current
+  BoxWithConstraints(modifier.fillMaxWidth().statusBarsPadding().padding(start = Sun.S4, end = Sun.S8, top = Sun.S4)) {
+    // The word goes when it would not fit beside the whole count: in Luganda at normal text "Ggyawo byonna ebirondeddwa" (Select none)
+    // cut the count to "Fa…" (1.0.6 polish). Measured, so a short translation keeps its word.
+    val wordFits = with(density) {
+      val countPx = measurer.measure(countText, SunType.Heading, maxLines = 1).size.width
+      val wordPx = measurer.measure(toggle, SunType.Label, maxLines = 1).size.width + TEXT_BUTTON_PADDING.roundToPx()
+      countPx + wordPx <= (maxWidth - Sun.Target - Sun.S8).roundToPx()
+    }
+    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+      // One row at any font size (UI audit item 2): the cross is the icon alone (its description names it), the count takes the room
+      // that is left on one line, and Select all becomes an icon at large text instead of a word that squeezes the count.
+      SunIconAction(Icons.Rounded.Close, exit, exit, onExit, showWord = false)
+      Text(
+        countText,
+        style = SunType.Heading,
+        color = MaterialTheme.colorScheme.onBackground,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        modifier = Modifier.weight(1f).padding(start = Sun.S8).semantics { heading(); liveRegion = LiveRegionMode.Polite },
+      )
+      if (density.fontScale >= 1.3f || !wordFits) {
+        SunIconAction(if (allSelected) Icons.Outlined.Deselect else Icons.Outlined.SelectAll, toggle, toggle, onSelectAll, showWord = false)
+      } else {
+        SunTextButton(onClick = onSelectAll) { Text(toggle, style = SunType.Label, maxLines = 1) }
+      }
     }
   }
 }
+
+/** SunTextButton's own side padding (16 dp each side), plus a little air so the count is never cut by a pixel. */
+private val TEXT_BUTTON_PADDING = 40.dp
 
 /**
  * The bottom of the screen while files are ticked, where the search box usually is: Share, Copy, and (when they apply) Mark sensitive,
@@ -101,11 +115,11 @@ fun SelectionActionBar(
   ) {
     val share = stringResource(R.string.action_share)
     val copy = stringResource(R.string.action_copy)
-    SunIconAction(Icons.Outlined.Share, share, share, onShare, Modifier.weight(1f))
-    SunIconAction(Icons.Outlined.ContentCopy, copy, copy, onCopy, Modifier.weight(1f))
-    if (onMark != null) stringResource(R.string.action_mark_sensitive).let { SunIconAction(Icons.Outlined.VisibilityOff, it, it, onMark, Modifier.weight(1f)) }
-    if (onUnmark != null) stringResource(R.string.action_unmark_sensitive).let { SunIconAction(Icons.Outlined.Visibility, it, it, onUnmark, Modifier.weight(1f)) }
-    if (onMore != null) stringResource(R.string.action_more).let { SunIconAction(Icons.Outlined.MoreHoriz, it, it, onMore, Modifier.weight(1f)) }
+    SunIconAction(Icons.Outlined.Share, share, share, onShare, Modifier.weight(1f), wordLines = 2)
+    SunIconAction(Icons.Outlined.ContentCopy, copy, copy, onCopy, Modifier.weight(1f), wordLines = 2)
+    if (onMark != null) stringResource(R.string.action_mark_sensitive).let { SunIconAction(Icons.Outlined.VisibilityOff, it, it, onMark, Modifier.weight(1f), wordLines = 2) }
+    if (onUnmark != null) stringResource(R.string.action_unmark_sensitive).let { SunIconAction(Icons.Outlined.Visibility, it, it, onUnmark, Modifier.weight(1f), wordLines = 2) }
+    if (onMore != null) stringResource(R.string.action_more).let { SunIconAction(Icons.Outlined.MoreHoriz, it, it, onMore, Modifier.weight(1f), wordLines = 2) }
   }
 }
 

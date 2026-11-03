@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -147,7 +148,11 @@ fun FindrRoot(appViewModel: AppViewModel, factory: ViewModelProvider.Factory) {
         // Off unless the person turned it on in Settings; it only ever blurs a thumbnail (see PrivateLook).
         // It also needs the add-on's pack switched on (privateScoring): no pack, no scores, no blur.
         val blurOn = settings.blurPrivatePreviews && settings.privateScoring
-        val blur = remember(blurOn) { PreviewBlur(enabled = blurOn, threshold = PrivateLook.MAIN_APP_THRESHOLD, onFirstBlur = blurHintOnce(context)) }
+        // A picture not scored yet is blurred until it is, and scored first while it is on screen (blur until scored).
+        val blur = remember(blurOn) {
+          PreviewBlur(enabled = blurOn, threshold = PrivateLook.MAIN_APP_THRESHOLD, onFirstBlur = blurHintOnce(context), check = searchViewModel.privacyCheck)
+        }
+        if (com.craneai.findr.core.FindrLog.detail) LaunchedEffect(blur) { blur.logOnScreen() }
         CompositionLocalProvider(LocalPreviewBlur provides blur) {
           SearchScreen(
             searchViewModel = searchViewModel,

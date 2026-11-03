@@ -115,7 +115,10 @@ class QuickSearchViewModel(private val engine: SearchEngine) : ViewModel() {
   /** The search box gained focus: load the text model while the keyboard comes up (cheap if already warm). */
   fun prewarm() = engine.prewarm()
 
-  fun setInteracting(active: Boolean) = engine.setUserInteracting(active)
+  fun setInteracting(active: Boolean) {
+    engine.setUserInteracting(active)
+    engine.setUserScrolling(active)
+  }
 
   /** The UI calls this one frame after new hits were composed: that is when their pixels are on screen. */
   fun hitsDrawn() {

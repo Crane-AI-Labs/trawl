@@ -16,6 +16,8 @@ import com.craneai.findr.index.IndexStore
 import com.craneai.findr.index.Modality
 import com.craneai.findr.index.Segment
 import com.craneai.findr.index.SegmentKind
+import com.craneai.findr.search.Fusion
+import com.craneai.findr.search.LocalKeywords
 import com.craneai.findr.search.Searcher
 import com.craneai.findr.search.VectorIndex
 import java.io.File
@@ -95,6 +97,30 @@ object AppPathHarness {
     println("datescan: $n queries, $dated read a date -> ${out.path}")
   }
 
+  /**
+   * mode "embedtext": for every query of <world>/queries.jsonl (a world dir or a set's first world), the text the app embeds for it
+   * ([LocalKeywords.embedText]: a Luganda or Swahili query with its English gloss after it) when that is not the query itself. One line
+   * per such query, {"qv": row, "q": query, "text": text}, then a count line. The vectors of these texts replace the query's row.
+   */
+  fun embedTexts(dir: File, out: File, keywords: Lazy<LocalKeywords?>?) {
+    out.parentFile?.mkdirs()
+    val world = File(dir, "worlds.txt").takeIf { it.exists() }?.readLines()?.firstOrNull { it.isNotBlank() }?.let { File(dir, it) } ?: dir
+    var n = 0; var changed = 0
+    out.bufferedWriter().use { w ->
+      for (m in jsonl(File(world, "queries.jsonl"))) {
+        n++
+        val q = m["q"] as String
+        val qv = ((m["qv"] as? Double) ?: -1.0).toInt()
+        val text = LocalKeywords.embedText(q, keywords)
+        if (qv < 0 || text == q) continue
+        changed++
+        w.write("{\"qv\":$qv,\"q\":${MiniJson.quote(q)},\"text\":${MiniJson.quote(text)}}\n")
+      }
+      w.write("{\"queries\":$n,\"changed\":$changed}\n")
+    }
+    println("embedtext: $n queries, $changed embed another text -> ${out.path}")
+  }
+
   /** mode "chunk":docs.jsonl {"id","text"} -> chunks.jsonl {"id","chunks":[...]} with the app's own [Chunker]. */
   fun chunkMode(world: File, out: File) {
     out.parentFile?.mkdirs()
@@ -131,9 +157,24 @@ object AppPathHarness {
      * Null (the default) is the plain search, which never reads dates.
      */
     val dates: DateMode? = null,
+    /**
+     * The Luganda/Swahili -> English keyword table the app's [Searcher] gets (FINDR_KW: unset is the app's asset, `off` none, else a
+     * table file). With [appendKeywords] the table is not given to the Searcher; its English words are appended to a Luganda or
+     * Swahili query's text instead, as the oracle of languages-text-1.0.6.md appended the true English query (an experiment arm).
+     */
+    val keywords: Lazy<LocalKeywords?>? = null,
+    val appendKeywords: Boolean = false,
   )
 
   class DateMode(val fallback: Boolean, val now: ZonedDateTime = ZonedDateTime.of(2026, 10, 16, 12, 0, 0, 0, ZoneId.of("Africa/Kampala")))
+
+  /** [Policy.appendKeywords]: a Luganda or Swahili query with the English words of its terms after it; any other query as it is. */
+  private fun appended(q: String, policy: Policy): String {
+    if (!policy.appendKeywords || !Fusion.isLocal(q)) return q
+    val table = policy.keywords?.value ?: return q
+    val extra = table.english(Fusion.terms(q).map { Fusion.nounClassForms(it) }).flatten().distinct()
+    return if (extra.isEmpty()) q else q + " " + extra.joinToString(" ")
+  }
 
   /** The D17 split of scripts/bench/ww_gate.py: DEV when md5(str(min relevant id)) is even, TEST otherwise. */
   fun testHalf(minRel: Long): Boolean =
@@ -152,7 +193,7 @@ object AppPathHarness {
       ?.let { com.craneai.findr.search.TwoStage(it[0], it[1], it[2], it.getOrElse(3) { 2048 }) }
     if (twoStage != null) log("two-stage scan: $twoStage")
     val vectors = VectorIndex(parallelism = 4, twoStage = twoStage)
-    val searcher = Searcher(store, vectors)
+    val searcher = Searcher(store, vectors, keywords = if (policy.appendKeywords) null else policy.keywords)
     val docs = Matrix(File(world, "vectors.f32"), dim)
     val qvecs = File(world, "qvecs.f32").takeIf { it.exists() }?.let { Matrix(it, dim) }
     try {
@@ -217,7 +258,7 @@ object AppPathHarness {
               ?: searcher.search(text, qv, q.filter, LIMIT, prefixLast = true, view = view)
           var datedNote = ""
           val dm = policy.dates
-          val res = if (dm == null) run(q.q, ResultView.DEFAULT) else {
+          val res = if (dm == null) run(appended(q.q, policy), ResultView.DEFAULT) else {
             val parsed = DateParser.parse(q.q, dm.now, DayOfWeek.MONDAY, emptySet())
             val text = parsed.text.trim()
             val date = parsed.date

@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -36,6 +37,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -66,6 +69,8 @@ fun IndexMeterCard(
   compact: Boolean,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
+  /** A query is active: one line at any text size, so the answers keep the room (the sentence is whole again on Home). */
+  searching: Boolean = false,
 ) {
   val reduce = LocalReduceMotion.current
   val t = LocalSunlight.current
@@ -74,6 +79,9 @@ fun IndexMeterCard(
   val percent = status.percentUnderstood()
   val done = status.phase == IndexPhase.UP_TO_DATE
   val showBar = status.phase != IndexPhase.NOT_STARTED && !done
+  val showPercent = showBar && status.filesKnown > 0
+  val large = LocalDensity.current.fontScale >= MeterLayout.LARGE_FONT_SCALE
+  val percentBelow = MeterLayout.percentBelowTitle(large, searching)
   val quick = status.quickLookLine()
   val description = stringResource(R.string.meter_a11y, title, sub, percent).let { base -> quick?.let { stringResource(R.string.meter_a11y_extra, base, it) } ?: base }
   val openLabel = stringResource(R.string.meter_open_details)
@@ -100,11 +108,11 @@ fun IndexMeterCard(
         title,
         style = SunType.BodyLarge.copy(fontWeight = FontWeight.Bold),
         color = t.ink,
-        maxLines = if (compact) 1 else 2,
+        maxLines = MeterLayout.titleLines(compact, large, searching),
         overflow = TextOverflow.Ellipsis,
-        modifier = Modifier.weight(1f),
+        modifier = Modifier.weight(1f).testTag("meter-title"),
       )
-      if (showBar && status.filesKnown > 0) {
+      if (showPercent && !percentBelow) {
         Text("$percent%", style = SunType.Label, color = t.ink, modifier = Modifier.padding(start = Sun.S8))
       }
       Icon(
@@ -116,11 +124,21 @@ fun IndexMeterCard(
     }
     if (showBar) {
       Spacer(Modifier.height(if (compact) Sun.S4 else Sun.S8))
-      TwoLevelBar(
-        searchable = status.searchableFraction,
-        understood = status.understoodFraction,
-        height = if (compact) 6.dp else 12.dp,
-      )
+      val bar: @Composable (Modifier) -> Unit = { m ->
+        TwoLevelBar(
+          searchable = status.searchableFraction,
+          understood = status.understoodFraction,
+          modifier = m,
+          height = if (compact) 6.dp else 12.dp,
+        )
+      }
+      // Large text: the percent leaves the title's line for the bar's, so the sentence keeps the width it needs (UI audit P1).
+      if (showPercent && percentBelow) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+          Box(Modifier.weight(1f)) { bar(Modifier) }
+          Text("$percent%", style = SunType.Label, color = t.ink, modifier = Modifier.padding(start = Sun.S8))
+        }
+      } else bar(Modifier)
     }
     if (!compact) {
       Spacer(Modifier.height(Sun.S4))
@@ -128,6 +146,19 @@ fun IndexMeterCard(
       if (quick != null) Text(quick, style = SunType.Caption, color = t.ink2, maxLines = 2, overflow = TextOverflow.Ellipsis)
     }
   }
+}
+
+/**
+ * How the meter's first line is laid out. On Home at large text (Settings' "Large", 1.3, and up) the sentence may take up to three
+ * lines (a 360 dp phone at 2.0) even in the short form, and the percent moves down beside the bar: on one line with the percent,
+ * "Learning your files" was cut to "Learning your…" at 2.0 and Luganda lost its verb at 1.3 (UI audit P1, D14). While a query is
+ * active it stays one line at any size: the answers need the room (a 360 dp phone at 2.0 with no model yet showed none, P3).
+ * Pure, so it is unit-tested.
+ */
+internal object MeterLayout {
+  const val LARGE_FONT_SCALE = 1.29f
+  fun titleLines(compact: Boolean, large: Boolean, searching: Boolean = false): Int = when { searching -> 1; large -> 3; compact -> 1; else -> 2 }
+  fun percentBelowTitle(large: Boolean, searching: Boolean = false): Boolean = large && !searching
 }
 
 /** One icon per state, beside the sentence: never colour alone. */

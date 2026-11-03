@@ -50,6 +50,8 @@
   <string name="notif_reading_recording">Reading a recording</string>
   <string name="notif_reading_file">Reading a file</string>
   <string name="notif_waiting_polite">Waiting while you use your phone</string>
+  <!-- The same wait, when the phone is unlocked: the person is in another app, and heavy work waits until the screen goes off or Trawl opens. -->
+  <string name="notif_waiting_other_app">Waiting while you use another app</string>
 
   <!-- Joins two spoken or visible parts. Keep the separators; adapt them to your language's punctuation. -->
   <!-- Small chip: a label, a dot, then the action. %1$s is the label, %2$s the action word (Show or Hide). -->

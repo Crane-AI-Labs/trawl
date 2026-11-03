@@ -3,12 +3,16 @@ package com.craneai.findr.ui.common
 import android.graphics.Bitmap
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.staticCompositionLocalOf
 import coil3.size.Size
 import coil3.transform.Transformation
+import com.craneai.findr.core.FindrLog
 import com.craneai.findr.core.IndexedFile
+import com.craneai.findr.core.PrivacyCheck
 import com.craneai.findr.R
 import com.craneai.findr.core.PrivateLook
 import com.craneai.findr.ui.app.UiPrefs
@@ -35,9 +39,30 @@ class PreviewBlur(
   private val onDenied: () -> Unit = {},
   private val threshold: Float = PrivateLook.THRESHOLD,
   private val onFirstBlur: () -> Unit = {},
+  /**
+   * Scores an unscored picture on screen (blur until scored, internal/research/blur-until-scored.md). While it is
+   * [PrivacyCheck.available], a picture with no score yet is blurred ([PrivateLook.Look.CHECKING]) until its score arrives.
+   * [PrivacyCheck.None]: no scorer, so an unscored picture is drawn as it is (nothing could ever score it).
+   */
+  private val check: PrivacyCheck = PrivacyCheck.None,
 ) {
   private val revealed = mutableStateListOf<Long>()
   private var announced = false
+  /** Scores that arrived while this screen is up, one state per picture, so an arriving score redraws only that picture. Main thread. */
+  private val fresh = HashMap<Long, MutableState<Float?>>()
+  /** Detail logging only (test phones): when each picture was first shown while being checked, for the time-to-unblur line. */
+  private val firstChecking = HashMap<Long, Long>()
+  /** Detail logging only: the look of each thumbnail on screen now (key: one token per thumbnail), for the on-screen sampler. */
+  internal val onScreen = HashMap<Any, PrivateLook.Look>()
+
+  private fun freshState(id: Long): MutableState<Float?> = fresh.getOrPut(id) { mutableStateOf(null) }
+
+  /** How the picture is drawn now, before any reveal. Only an unscored picture reads its fresh-score state, so only it redraws when that arrives. */
+  fun look(file: IndexedFile): PrivateLook.Look {
+    if (!enabled) return PrivateLook.Look.CLEAR
+    val freshScore = if (file.privacyUnscored) freshState(file.id).value else null
+    return PrivateLook.look(file.looksPrivate, file.privacyUnscored, freshScore, check.available(), threshold)
+  }
 
   /** A blurred thumbnail has just been drawn: the first one per screen triggers [onFirstBlur] (which itself shows the note only once ever). */
   fun blurShown() {
@@ -47,10 +72,34 @@ class PreviewBlur(
   }
 
   /** The file's score is high enough for a blur, and the setting is on (whether or not it has been revealed). */
-  fun looksPrivate(file: IndexedFile): Boolean = enabled && PrivateLook.blurs(file.looksPrivate, threshold)
+  fun looksPrivate(file: IndexedFile): Boolean = look(file) == PrivateLook.Look.PRIVATE
 
-  /** The thumbnail is blurred right now. */
-  fun hides(file: IndexedFile): Boolean = looksPrivate(file) && file.id !in revealed
+  /** The picture has no score yet, so it is blurred until it has one (whether or not it has been revealed). */
+  fun checking(file: IndexedFile): Boolean = look(file) == PrivateLook.Look.CHECKING
+
+  /** The thumbnail is blurred right now: it looks private or is still being checked, and the person has not revealed it. */
+  fun hides(file: IndexedFile): Boolean = look(file) != PrivateLook.Look.CLEAR && file.id !in revealed
+
+  /**
+   * Scores a picture shown while [checking] it, ahead of the background pass. Call it from an effect tied to the thumbnail, so it is
+   * cancelled (and the ask dropped) when the thumbnail leaves the screen. When the score arrives, the picture's thumbnails redraw.
+   */
+  suspend fun check(file: IndexedFile) {
+    if (!checking(file)) return
+    val score = check.score(file) ?: return   // could not be scored now: it stays blurred (a tap still shows it)
+    freshState(file.id).value = score
+    if (FindrLog.detail) {
+      val since = firstChecking.remove(file.id)?.let { "${(System.nanoTime() - it) / 1_000_000}" } ?: "?"
+      FindrLog.i(GATE_TAG, "checked id=${file.id} -> ${look(file)} after $since ms")
+    }
+  }
+
+  /** Detail logging only: a thumbnail of [file] came on screen as [look] (one line per showing; the A06 exposure count reads it). */
+  internal fun shown(file: IndexedFile, look: PrivateLook.Look) {
+    if (!FindrLog.detail) return
+    if (look == PrivateLook.Look.CHECKING) firstChecking.putIfAbsent(file.id, System.nanoTime())
+    FindrLog.i(GATE_TAG, "shown id=${file.id} look=$look unscored=${file.privacyUnscored} revealed=${file.id in revealed} gate=${check.available()}")
+  }
 
   /** Tap on the eye: shows the picture if the gate allows it. */
   fun reveal(file: IndexedFile): Boolean {
@@ -62,8 +111,23 @@ class PreviewBlur(
     return true
   }
 
+  /** Detail logging only: every [SAMPLE_MS], how many picture thumbnails are on screen and how many are blurred while being checked. */
+  internal suspend fun logOnScreen() {
+    if (!FindrLog.detail) return
+    while (true) {
+      kotlinx.coroutines.delay(SAMPLE_MS)
+      if (onScreen.isEmpty()) continue
+      val n = onScreen.size
+      val checking = onScreen.values.count { it == PrivateLook.Look.CHECKING }
+      val private = onScreen.values.count { it == PrivateLook.Look.PRIVATE }
+      FindrLog.i(GATE_TAG, "on screen n=$n checking=$checking private=$private clear=${n - checking - private}")
+    }
+  }
+
   companion object {
     val Off = PreviewBlur(enabled = false)
+    const val GATE_TAG = "FindrBlurGate"
+    const val SAMPLE_MS = 5_000L
   }
 }
 

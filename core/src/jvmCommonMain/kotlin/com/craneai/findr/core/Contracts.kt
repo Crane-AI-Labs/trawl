@@ -12,6 +12,9 @@ interface SearchEngine {
   /** Optional model packs (Settings → Add-ons, and the onboarding step). The fake engine has none. */
   val packs: PackManager get() = NoPacks
 
+  /** Scores a picture on screen ahead of the background pass, so an unscored picture is blurred only for a moment. The fake engine has none. */
+  val privacyCheck: PrivacyCheck get() = PrivacyCheck.None
+
   /** Getting the model files onto the phone: the signed bundle, its first-run card and the update notice (core/Delivery.kt). */
   val delivery: DeliveryService get() = NoDelivery
 
@@ -70,6 +73,13 @@ interface SearchEngine {
    * grid gets the CPU (Google AI Edge Gallery's SmartAlbumIndexingCoordinator does the same; the research notes).
    */
   fun setUserInteracting(active: Boolean) {}
+
+  /**
+   * A list is being scrolled (true) or has stopped (false). Narrower than [setUserInteracting], which also covers the search box's
+   * focus hold: the on-demand privacy score of the pictures on screen (blur until scored) waits only for this, so the results a
+   * person is looking at unblur while the box still has focus.
+   */
+  fun setUserScrolling(active: Boolean) {}
 
   /**
    * A scrollable grid or result list is on screen (true) or gone or covered (false), balanced per list. While one is, the

@@ -347,7 +347,7 @@
   <string name="lock_title"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> esibiddwa</string>
   <string name="lock_body">Sumulula n\'ekinkumu, ffeesi, PIN oba patani ey\'essimu yo.</string>
   <string name="lock_button">Sumulula</string>
-  <string name="quick_device_locked">Sumulula essimu yo okuNoonya.</string>
+  <string name="quick_device_locked">Sumulula essimu yo okunoonya.</string>
   <string name="lock_prompt_title">Sumulula <xliff:g id="app_name" example="Trawl">%1$s</xliff:g></string>
   <string name="lock_prompt_subtitle">Kozesa kkufulu ya sskuriini ey\'essimu yo</string>
   <string name="settings_section_privacy">Eby\'ekyama</string>

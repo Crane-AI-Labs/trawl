@@ -85,5 +85,30 @@ class PrivateScoreSearchTest {
     // The score does arrive with the hit, so the thumbnail code can blur it.
     assertTrue(after.hits.all { it.file.looksPrivate == 0.95f })
     assertTrue(before.hits.all { it.file.looksPrivate == null })
+    // Blur until scored: "not scored yet" arrives with the hit too (so the thumbnail waits blurred), and changes nothing either.
+    assertTrue(before.hits.all { it.file.privacyUnscored })
+    assertTrue(after.hits.none { it.file.privacyUnscored })
+  }
+
+  @Test fun notScoredYetIsMarkedOnlyForPicturesWithNoScore() {
+    val scored = addPicture("a.jpg", unit(noise()))
+    val unreadable = addPicture("b.jpg", unit(noise()))
+    val waiting = addPicture("c.jpg", unit(noise()))
+    store.upsertFromCrawl(listOf(CrawlRecord("external_primary", 900, "content://media/external/file/900", "Documents/", "fees.pdf", FileKind.PDF, null, 5_000, 1_000)))
+    val doc = store.knownMediaStoreIds("external_primary").getValue(900)
+    store.saveLooksPrivate(scored, 0.2f)
+    store.saveLooksPrivate(unreadable, null)
+    val byId = store.filesByIds(listOf(scored, unreadable, waiting, doc))
+    assertEquals(false, byId.getValue(scored).privacyUnscored)
+    assertEquals("an unreadable picture was tried: it is not waiting", false, byId.getValue(unreadable).privacyUnscored)
+    assertEquals(true, byId.getValue(waiting).privacyUnscored)
+    assertEquals("a document is never scored, so never waits", false, byId.getValue(doc).privacyUnscored)
+    // The home grid's list carries it the same way.
+    val recent = store.recent(setOf(FileKind.IMAGE, FileKind.PDF), 10).associateBy { it.id }
+    assertEquals(true, recent.getValue(waiting).privacyUnscored)
+    assertEquals(false, recent.getValue(scored).privacyUnscored)
+    assertEquals(false, recent.getValue(doc).privacyUnscored)
+    // The work queues never set it (they don't read the score).
+    assertTrue(store.nextForPrivateScore(10, setOf(FileKind.IMAGE)).none { it.privacyUnscored })
   }
 }

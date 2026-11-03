@@ -1,7 +1,13 @@
 package com.craneai.findr.ui.common
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.material.icons.rounded.ExpandMore
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import com.craneai.findr.R
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -49,10 +55,12 @@ fun HomeBanner(
   actions: @Composable () -> Unit = {},
 ) {
   val config = LocalConfiguration.current
-  val wide = config.screenWidthDp >= 600
-  val showBody = body != null && config.screenHeightDp >= 500
   // At large text the words wrap in full: a clipped sentence lost the number a person needs ("Free up about 1.2 GB") and its second half.
   val large = config.fontScale >= 1.29f
+  // One row only on a wide window at normal text: at large text the buttons took the whole row and left the title a letter a line
+  // ("G / e / t" on a phone on its side at 2.0, 1.0.6 polish), so the actions go under the title there too.
+  val wide = config.screenWidthDp >= 600 && !large
+  val showBody = body != null && config.screenHeightDp >= 500
   val titleLines = if (large) Int.MAX_VALUE else 3
   val bodyLines = Int.MAX_VALUE   // the body only shows on a window 500 dp tall, which has the room; Luganda runs longer than English
   val text: @Composable (Modifier) -> Unit = { m ->
@@ -95,6 +103,36 @@ fun HomeBanner(
         ) { actions() }
       }
       below?.let { Column(Modifier.padding(top = Sun.S4, end = if (onDismiss != null) Sun.S12 else 0.dp)) { it() } }
+    }
+  }
+}
+
+/**
+ * A Home strip folded to its title while the person is searching: one line (two at large text) and a chevron; a tap opens the strip
+ * where it stands. At large text the full strip (title, sentence, two buttons) above the meter, the note and the chips pushed every
+ * answer below the fold (UI audit P3, D16).
+ */
+@Composable
+fun HomeBannerLine(title: String, onOpen: () -> Unit, modifier: Modifier = Modifier, color: Color = MaterialTheme.colorScheme.surfaceVariant) {
+  val large = LocalConfiguration.current.fontScale >= 1.29f
+  SunCard(modifier.fillMaxWidth(), color = color) {
+    Row(
+      Modifier
+        .fillMaxWidth()
+        .clickable(onClickLabel = stringResource(R.string.action_open), role = Role.Button, onClick = onOpen)
+        .defaultMinSize(minHeight = Sun.Target)
+        .padding(start = Sun.S16, end = Sun.S8, top = Sun.S4, bottom = Sun.S4),
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      Text(
+        title,
+        style = SunType.Body.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Bold),
+        color = MaterialTheme.colorScheme.onSurface,
+        maxLines = if (large) 2 else 1,
+        overflow = TextOverflow.Ellipsis,
+        modifier = Modifier.weight(1f).semantics { heading() },
+      )
+      Icon(Icons.Rounded.ExpandMore, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface, modifier = Modifier.padding(start = Sun.S8).size(Sun.Icon))
     }
   }
 }

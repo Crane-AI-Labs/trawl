@@ -92,6 +92,22 @@ class TuningTest {
       assertEquals(Tuning.DEFAULT, Tuning.forClass(DeviceClass(ram, soc, oem)))
   }
 
+  @Test fun heatPacingIsOffUnlessAKnobFileTurnsItOn() {
+    val d = Tuning.DEFAULT
+    assertEquals(false, d.paces)
+    assertEquals(Tuning.PACE_OFF_C, d.paceFromC, 0.0); assertEquals(0L, d.paceCapBelowKhz)
+    assertEquals(1.0, d.paceWordsDuty, 0.0); assertEquals(1.0, d.paceQuickDuty, 0.0); assertEquals(1.0, d.pacePrivacyDuty, 0.0)
+    // Every speed setting keeps it off: GENTLE and FAST change threads and duty, never heat pacing.
+    for (s in com.craneai.findr.core.LearningSpeed.entries) for (roomy in listOf(false, true))
+      assertEquals(false, LearningProfile.tuning(d, s, roomy).paces)
+    val t = Tuning.apply(d, Tuning.parse("paceFromC=38\npaceWordsDuty=0.6\npaceQuickDuty=0.8"))
+    assertEquals(true, t.paces); assertEquals(38.0, t.paceFromC, 0.0); assertEquals(0.6, t.paceWordsDuty, 0.0); assertEquals(0.8, t.paceQuickDuty, 0.0)
+    assertEquals(true, Tuning.apply(d, mapOf("paceCapBelowKhz" to "2000000", "pacePrivacyDuty" to "0.5")).paces)
+    assertEquals("a threshold with no duty below 1 paces nothing", false, Tuning.apply(d, mapOf("paceFromC" to "38")).paces)
+    assertEquals("a duty with no threshold paces nothing", false, Tuning.apply(d, mapOf("paceWordsDuty" to "0.5")).paces)
+    assertEquals(d, Tuning.apply(d, mapOf("paceFromC" to "10", "paceWordsDuty" to "0", "paceCapBelowKhz" to "-1", "paceQuickDuty" to "x")))
+  }
+
   @Test fun knobFileParses() {
     val m = Tuning.parse("# a comment\n\ntextThreadsOff = 8\nwarmC=42.5\nnot a setting\n")
     assertEquals(mapOf("textThreadsOff" to "8", "warmC" to "42.5"), m)

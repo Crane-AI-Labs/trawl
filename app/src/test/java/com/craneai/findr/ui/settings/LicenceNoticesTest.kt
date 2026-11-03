@@ -50,6 +50,26 @@ class LicenceNoticesTest {
     assertTrue("CC BY asks that changes are indicated", n.text.contains("Changes:"))
   }
 
+  /** CC BY 4.0 for the corpora the keyword table aligns: creators, licence and links, the changes (languages-keywords-clean.md). No SALT. */
+  @Test fun keywordTableNamesItsSourcesLicenceAndChanges() {
+    val n = LicenceNotices.required.single { it.name.startsWith("Luganda and Swahili keyword table") }
+    assertTrue(n.licence == "CC BY 4.0")
+    for (s in listOf("Makerere MT Corpus", "Makerere Gendered Corpus", "Jonathan Mukiibi", "Makerere University AI Lab", "zenodo.org/records/5089560",
+      "zenodo.org/records/5864560", "TICO-19", "creativecommons.org/licenses/by/4.0", "Changes:", "Common Voice", "DeepSeek-V4-Pro",
+      "do not endorse")) assertTrue("missing: $s", n.text.contains(s))
+    assertTrue(n.link == "zenodo.org/records/5089560")
+    assertTrue("no ShareAlike source", LicenceNotices.required.none { it.licence.contains("SA") || it.text.contains("Sunbird") })
+  }
+
+  @Test fun moreLanguagesKeywordTableNamesItsSourcesLicenceAndChanges() {
+    val n = LicenceNotices.required.single { it.name.startsWith("Runyankole, Kinyarwanda and Acholi keyword table") }
+    assertTrue(n.licence == "CC BY 4.0")
+    for (s in listOf("Multilingual Parallel Text Corpora for East African Languages", "Claire Babirye", "Makerere University",
+      "doi.org/10.7910/DVN/BEROE0", "BUAIR", "Busitema University", "TICO-19", "creativecommons.org/licenses/by/4.0", "Changes:",
+      "Common Voice", "DeepSeek-V4-Pro", "do not endorse")) assertTrue("missing: $s", n.text.contains(s))
+    assertTrue(n.link == "doi.org/10.7910/DVN/BEROE0")
+  }
+
   @Test fun mlKitTermsAreLinked() {
     val t = LicenceNotices.required.single { it.name.startsWith("ML Kit") }.text
     assertTrue(t.contains("developers.google.com/ml-kit/terms"))

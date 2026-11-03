@@ -5,6 +5,7 @@ import com.craneai.findr.core.SearchResults
 import com.craneai.findr.engine.QueryLanguage
 import com.craneai.findr.engine.WordWeightPolicy
 import com.craneai.findr.index.IndexStore
+import com.craneai.findr.search.LocalKeywords
 import com.craneai.findr.search.Searcher
 import com.craneai.findr.search.VectorIndex
 import java.io.File
@@ -29,7 +30,8 @@ fun rssMb(): Long {
 class Engine(val indexDir: File, ocrKind: String) : AutoCloseable {
   val store = IndexStore.open(indexDir, log = {})
   val vectors = VectorIndex(parallelism = 4)
-  val searcher = Searcher(store, vectors)
+  private val keywords = LocalKeywords.fromAssets(ClasspathAssets)
+  val searcher = Searcher(store, vectors, keywords = keywords)
   val embedder = DesktopEmbedder(MODEL, File(indexDir, "engine-cache"))
   val ocr: Ocr? = when (ocrKind) {
     "none" -> null
@@ -45,7 +47,7 @@ class Engine(val indexDir: File, ocrKind: String) : AutoCloseable {
   /** What the phone's engine does for a typed query: embed it, pick the language's word weight, run the shared Searcher. */
   fun search(q: String, filter: KindFilter = KindFilter.ALL, limit: Int = 50): Triple<SearchResults, Long, Long> {
     val t = System.nanoTime()
-    val qv = embedder.query(q)
+    val qv = embedder.query(LocalKeywords.embedText(q, keywords))
     val embedMs = (System.nanoTime() - t) / 1_000_000
     val t2 = System.nanoTime()
     val r = searcher.search(q, qv, filter, limit, prefixLast = true, wordWeight = weights.meaningWeight(q, qv))

@@ -19,6 +19,7 @@ import com.craneai.findr.index.FileState
 import com.craneai.findr.index.IndexOpenProblems
 import com.craneai.findr.index.IndexStore
 import com.craneai.findr.index.PendingFile
+import com.craneai.findr.search.LocalKeywords
 import com.craneai.findr.search.Searcher
 import com.craneai.findr.search.VectorIndex
 import java.io.File
@@ -167,6 +168,8 @@ class IndexService(
   private val ctx = ClasspathAssets
   private val speechGate = SpeechLanguageGate.fromAssets(ctx)
   private val weights = WordWeightPolicy.fromAssets(ctx, QueryLanguage(speechGate.words)) { modelName }
+  /** The Luganda/Swahili -> English keyword table, read on the first Luganda or Swahili query, as on the phone. */
+  private val localKeywords = LocalKeywords.fromAssets(ctx)
 
   @Volatile private var embedder: DesktopEmbedder? = null
   @Volatile private var modelName: String? = null
@@ -228,7 +231,7 @@ class IndexService(
     st.recoverInflight()?.let { log("recovered from a stop inside a file: step ${it.step}${if (it.skippedWindow) ", window skipped" else ""}") }
     IndexAdmin.rereadNewFormats(st, log)   // files the first build knew by name only go back in the queue, once
     IndexAdmin.dropFalseTransportStreams(st, log, onDropped = { vectors.removeFiles(it) })   // TypeScript an older build took for videos leaves the index, once
-    searcher = Searcher(st, vectors, indexedKinds = { kinds })
+    searcher = Searcher(st, vectors, indexedKinds = { kinds }, keywords = localKeywords)
     wordsReader = WordsReader(st) { ensureOcr() }
     onStoreOpened(st)
   }
@@ -294,7 +297,7 @@ class IndexService(
     if (asked != lastAsked) { lastAsked = asked; searchYield.touch() }
     val searcher = searcher ?: return SearchResults(query, emptyList(), 0, 0L, indexIncomplete = true)   // the index is still opening
     val e = embedder
-    val qv = if (e != null && query.isNotBlank()) e.query(query) else null
+    val qv = if (e != null && query.isNotBlank()) e.query(LocalKeywords.embedText(query, localKeywords)) else null
     val on = kinds
     // A kind that is switched off is out of results even though its files stay in the index (so switching it on again is instant).
     // Ask for more than [limit] when something is off, so the hits that are dropped do not leave the list short.
@@ -311,7 +314,7 @@ class IndexService(
   val searchHooks: SearchHooks by lazy {
     SearchHooks(
       store = { opener.current }, searcher = { searcher }, modelReady = { embedder != null }, vectorCount = { vectors.size },
-      embed = { q -> embedder?.query(q) }, wordsWeight = { q -> weights.wordsWeight(q) }, meaningWeight = { q, v -> weights.meaningWeight(q, v) },
+      embed = { q -> embedder?.query(LocalKeywords.embedText(q, localKeywords)) }, wordsWeight = { q -> weights.wordsWeight(q) }, meaningWeight = { q, v -> weights.meaningWeight(q, v) },
       kinds = { kinds }, includeSensitive = includeSensitive,
       touch ={ q, f -> val asked = q to f; if (asked != lastAsked) { lastAsked = asked; searchYield.touch() } },
     )

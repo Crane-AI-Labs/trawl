@@ -73,5 +73,10 @@ class PrivateLookTest {
     assertEquals("the score is read outside the blur code: $offenders", emptyList<String>(), offenders)
     val searchSide = roots.flatMap { r -> File(r, "search").walkTopDown().filter { it.isFile }.filter { "looksPrivate" in it.readText() }.toList() }
     assertEquals(emptyList<File>(), searchSide)
+    // Blur until scored: "not scored yet" is the same kind of fact. It may blur a thumbnail (and ask for a score), nothing else.
+    val unscoredReaders = roots.flatMap { r ->
+      r.walkTopDown().filter { it.isFile && it.extension == "kt" }.filter { "privacyUnscored" in it.readText() }.map { it.relativeTo(r).path }.toList()
+    }.filter { it !in setOf("core/Model.kt", "index/IndexStore.kt", "ui/common/PreviewBlur.kt", "ui/common/Thumbnail.kt") }
+    assertEquals("\"not scored yet\" is read outside the blur code: $unscoredReaders", emptyList<String>(), unscoredReaders)
   }
 }

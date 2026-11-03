@@ -83,12 +83,31 @@ data class Tuning(
    * half an hour. Measured on a tablet over 5 h of video: +5% total time, no memory or heat change (internal/research/long-video.md).
    */
   val deepFramesPerMin: Int = 1,
+  /**
+   * Heat pacing ([HeatPace]), a study knob that is off here (internal/research/a06-thermal-pace.md): from [paceFromC] battery °C, or
+   * once the fast cores' clock cap is under [paceCapBelowKhz], the words pass, quick look and privacy lanes work only their duty of
+   * the time. 99 °C, 0 and 1.0 are off, so every phone runs flat out while it is allowed to run, as before.
+   */
+  val paceFromC: Double = PACE_OFF_C,
+  val paceCapBelowKhz: Long = 0,
+  val paceWordsDuty: Double = 1.0,
+  val paceQuickDuty: Double = 1.0,
+  val pacePrivacyDuty: Double = 1.0,
+  /**
+   * Blur until scored (internal/research/blur-until-scored.md): an unscored picture is drawn blurred and scored on demand while the
+   * blur is on. On in every build; a knob file can turn it off (the 1.0.6 behaviour) only for the A06 baseline arm.
+   */
+  val blurGate: Boolean = true,
 ) {
+  /** Is any lane paced by heat at all (a knob file asked for it)? */
+  val paces: Boolean get() = (paceFromC < PACE_OFF_C || paceCapBelowKhz > 0) && minOf(paceWordsDuty, paceQuickDuty, pacePrivacyDuty) < 1.0
+
   companion object {
     const val MEDIA_SHARE = 0.2
     const val QUICK_VIDEO_SHARE = 0.2
     const val QUICK_VIDEO_SEEK_MS = 1_500L
     const val NEW_MEDIA_ON_BATTERY = true
+    const val PACE_OFF_C = 99.0
 
     val DEFAULT = Tuning()
 
@@ -178,6 +197,12 @@ data class Tuning(
         newAudioMaxMb = int("newAudioMaxMb")?.takeIf { it in 0..2_000 } ?: base.newAudioMaxMb,
         politeOnLockScreen = o["politeOnLockScreen"]?.let { it == "true" } ?: base.politeOnLockScreen,
         deepFramesPerMin = int("deepFramesPerMin")?.takeIf { it in 0..6 } ?: base.deepFramesPerMin,
+        paceFromC = dbl("paceFromC")?.takeIf { it in 25.0..PACE_OFF_C } ?: base.paceFromC,
+        paceCapBelowKhz = lng("paceCapBelowKhz")?.takeIf { it in 0..5_000_000 } ?: base.paceCapBelowKhz,
+        paceWordsDuty = dbl("paceWordsDuty")?.takeIf { it in 0.1..1.0 } ?: base.paceWordsDuty,
+        paceQuickDuty = dbl("paceQuickDuty")?.takeIf { it in 0.1..1.0 } ?: base.paceQuickDuty,
+        pacePrivacyDuty = dbl("pacePrivacyDuty")?.takeIf { it in 0.1..1.0 } ?: base.pacePrivacyDuty,
+        blurGate = o["blurGate"]?.let { it == "true" } ?: base.blurGate,
       )
     }
   }

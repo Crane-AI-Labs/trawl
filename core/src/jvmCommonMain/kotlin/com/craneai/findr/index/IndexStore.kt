@@ -731,20 +731,7 @@ class IndexStore private constructor(
       // Turned off while this file was being read: save nothing (see setState).
       if (FileState.of(db.text("SELECT state FROM files WHERE id = ?", fileId)) == FileState.SKIPPED) return@transaction
       if (replace) db.run("DELETE FROM segments WHERE file = ? AND kind != 'name'" + if (keepQuick) " AND modality != 'clip'" else "", fileId)
-      segments.forEachIndexed { i, s ->
-        val vector = s.vector
-        val modality = if (vector == null) Modality.NONE else s.modality.takeIf { it != Modality.NONE } ?: Modality.TEXT
-        require(vector == null || vector.size == dimOf(modality)) { "vector has ${vector?.size} dimensions, $modality uses ${dimOf(modality)}" }
-        db.run(
-          "INSERT INTO segments(file, kind, modality, loc_start, loc_end, late, vec, marks) VALUES(?, ?, ?, ?, ?, ?, ?, ?)",
-          fileId, s.kind.db, modality.db, s.locStart, s.locEnd, s.late, vector?.let(Fp16::toBlob), s.marks,
-        )
-        ids[i] = db.lastInsertId()
-        if (!s.text.isNullOrBlank()) {
-          if (s.kind == SegmentKind.NAME) db.run("INSERT INTO fts(rowid, name, body) VALUES(?, ?, '')", ids[i], s.text)
-          else db.run("INSERT INTO fts(rowid, name, body) VALUES(?, '', ?)", ids[i], s.text)
-        }
-      }
+      segments.forEachIndexed { i, s -> ids[i] = insertSegment(db, fileId, s) }
       db.run(
         "UPDATE files SET state = ?, detail = ?, indexed_at = ?, info = COALESCE(?, info), pages = COALESCE(?, pages) WHERE id = ?",
         newState.db, detail, System.currentTimeMillis(), info, pageCount, fileId,
@@ -752,6 +739,98 @@ class IndexStore private constructor(
     }
     ids
   }
+
+  /** One segment row and its keyword row, inside the caller's transaction. Returns the segment id. */
+  private fun insertSegment(db: Db, fileId: Long, s: Segment): Long {
+    val vector = s.vector
+    val modality = if (vector == null) Modality.NONE else s.modality.takeIf { it != Modality.NONE } ?: Modality.TEXT
+    require(vector == null || vector.size == dimOf(modality)) { "vector has ${vector?.size} dimensions, $modality uses ${dimOf(modality)}" }
+    db.run(
+      "INSERT INTO segments(file, kind, modality, loc_start, loc_end, late, vec, marks) VALUES(?, ?, ?, ?, ?, ?, ?, ?)",
+      fileId, s.kind.db, modality.db, s.locStart, s.locEnd, s.late, vector?.let(Fp16::toBlob), s.marks,
+    )
+    val id = db.lastInsertId()
+    if (!s.text.isNullOrBlank()) {
+      if (s.kind == SegmentKind.NAME) db.run("INSERT INTO fts(rowid, name, body) VALUES(?, ?, '')", id, s.text)
+      else db.run("INSERT INTO fts(rowid, name, body) VALUES(?, '', ?)", id, s.text)
+    }
+    return id
+  }
+
+  // ---- older videos (VideoCatchUp) ----------------------------------------------------------------------------
+
+  /** Understood videos an earlier build read ([VideoCatchUp]: no stamp), newest first: the catch-up's queue. */
+  fun nextOldVideos(limit: Int): List<PendingFile> = read { db ->
+    val out = ArrayList<PendingFile>()
+    db.query("SELECT $FILE_COLUMNS, state, detail FROM files WHERE $OLD_VIDEO ORDER BY date_ms DESC, id LIMIT ?", limit) {
+      out += PendingFile(fileOf(it), FileState.of(it.getText(12)), it.textOrNull(13))
+    }
+    out
+  }
+
+  /** How many videos the catch-up has left, and their length in ms (a video with no known length counts 0). */
+  fun oldVideosLeft(): Pair<Int, Long> = read { db ->
+    var n = 0; var ms = 0L
+    db.query("SELECT COUNT(*), COALESCE(SUM(duration_ms), 0) FROM files WHERE $OLD_VIDEO") { n = it.getLong(0).toInt(); ms = it.getLong(1) }
+    n to ms
+  }
+
+  /** What a video holds before its catch-up: its picture rows, its words, line by line, and whether those words carry vectors. */
+  fun videoRows(fileId: Long): VideoCatchUp.OldRows = read { db ->
+    val frames = ArrayList<VideoCatchUp.FrameRow>()
+    db.query("SELECT id, loc_start, loc_end, marks FROM segments WHERE file = ? AND kind = 'frame' AND loc_start IS NOT NULL ORDER BY id", fileId) {
+      frames += VideoCatchUp.FrameRow(it.getLong(0), it.getLong(1), it.longOrNull(2), it.textOrNull(3))
+    }
+    val lines = ArrayList<String>()
+    var vectors = false
+    db.query("SELECT x.body, s.vec IS NOT NULL FROM segments s LEFT JOIN fts x ON x.rowid = s.id WHERE s.file = ? AND s.kind = 'ocr' ORDER BY s.id", fileId) {
+      it.textOrNull(0)?.let { body -> lines += body.lines() }
+      if (it.getLong(1) != 0L) vectors = true
+    }
+    VideoCatchUp.OldRows(frames, lines, vectors)
+  }
+
+  /**
+   * Saves one video's catch-up in one transaction: the keyframe [marks] (segment id to mark) onto picture rows that have none, the
+   * video's words as read today ([ocr]) in place of its old ones (beside them when [keepOld]), and the stamp. Nothing else of the file
+   * is touched: not its picture vectors, speech, sounds or name, nor its state, detail or dates. False, with nothing written, when the
+   * file was changed, switched off or read again since it was picked (that new read is today's already).
+   */
+  fun saveVideoCatchUp(fileId: Long, marks: Map<Long, String>, ocr: List<Segment>, keepOld: Boolean): Boolean = write { db ->
+    require(ocr.all { it.kind == SegmentKind.OCR }) { "a catch-up writes words only" }
+    db.transaction {
+      if ((db.long("SELECT COUNT(*) FROM files WHERE id = ? AND $OLD_VIDEO", fileId) ?: 0L) == 0L) return@transaction false
+      for ((id, mark) in marks) db.run("UPDATE segments SET marks = ? WHERE id = ? AND file = ? AND kind = 'frame' AND marks IS NULL", mark, id, fileId)
+      if (!keepOld) db.run("DELETE FROM segments WHERE file = ? AND kind = 'ocr'", fileId)
+      for (s in ocr) insertSegment(db, fileId, s)
+      db.run("UPDATE files SET info = ? WHERE id = ?", VideoCatchUp.STAMP, fileId)
+      true
+    }
+  }
+
+  /** The catch-up gives up on a video (it could not be read again, or took too long): it keeps the reading it has and leaves the queue. */
+  fun stampVideo(fileId: Long) = write { db -> db.run("UPDATE files SET info = ? WHERE id = ? AND $OLD_VIDEO", VideoCatchUp.STAMP, fileId) }
+
+  /**
+   * Before a video's catch-up: notes it as in flight. False when the process already died inside this same video's catch-up
+   * [maxDeaths] times; the video is then stamped as it is (it keeps its reading) so it can never hold the queue in a kill loop.
+   */
+  fun beginVideoCatchUp(fileId: Long, maxDeaths: Int = 2): Boolean = write { db ->
+    val was = db.text("SELECT value FROM meta WHERE key = ?", CATCHUP_INFLIGHT)?.split(':')
+    val deaths = if (was?.getOrNull(0)?.toLongOrNull() == fileId) (was.getOrNull(1)?.toIntOrNull() ?: 0) + 1 else 0
+    if (deaths >= maxDeaths) {
+      db.transaction {
+        db.run("UPDATE files SET info = ? WHERE id = ? AND $OLD_VIDEO", VideoCatchUp.STAMP, fileId)
+        db.run("DELETE FROM meta WHERE key = ?", CATCHUP_INFLIGHT)
+      }
+      return@write false
+    }
+    setMetaIn(db, CATCHUP_INFLIGHT, "$fileId:$deaths")
+    true
+  }
+
+  /** The video's catch-up is over, however it went: no process death happened inside it. */
+  fun endVideoCatchUp() = setMeta(CATCHUP_INFLIGHT, null)
 
   // ---- looks private (blur a preview; never rank or hide) -----------------------------------------------------
 
@@ -1142,6 +1221,10 @@ class IndexStore private constructor(
     /** The reason stored on a file that took the process down twice in a row (shown as "too large for this phone's memory"). */
     const val TOO_LARGE_DETAIL = "too large for this phone's memory"
     private const val INFLIGHT_KEY = "inflight_file"
+    /** "fileId:deaths": the video whose catch-up is running ([beginVideoCatchUp]). */
+    private const val CATCHUP_INFLIGHT = "video_catchup_inflight"
+    /** An understood video an earlier build read: the catch-up's queue ([VideoCatchUp]). */
+    private const val OLD_VIDEO = "kind = 'VIDEO' AND state = 'understood' AND (info IS NULL OR info != '${VideoCatchUp.STAMP}')"
     private val SKIPPED = Regex("skipped=(\\d+)")
 
     private val QUICK_STATES = setOf(FileState.NEW, FileState.SEARCHABLE, FileState.FAILED)
@@ -1169,6 +1252,7 @@ class IndexStore private constructor(
       pageCount = s.intOrNull(11),
       sensitiveFlags = if (sensitiveAt >= 0) s.getLong(sensitiveAt).toInt() else 0,
       looksPrivate = if (scoredAt >= 0 && !s.isNull(scoredAt)) s.getDouble(scoredAt).toFloat().takeIf { it >= 0f } else null,
+      privacyUnscored = scoredAt >= 0 && s.isNull(scoredAt) && runCatching { FileKind.valueOf(s.getText(4)) }.getOrNull() in QUICK_KINDS,
       dateMillis = if (dateAt >= 0) s.getLong(dateAt).takeIf { it > 0 } ?: s.getLong(7) else s.getLong(7),
     )
 

@@ -9,5 +9,6 @@
   <string name="settings_blur_needs_pack">Needs the \"Blur private-looking previews\" add-on, below. Until it is added, nothing is blurred.</string>
   <string name="action_show_picture">Show picture</string>
   <string name="preview_hidden">preview hidden, it may be private</string>
+  <string name="preview_checking">preview hidden until it is checked</string>
   <string name="quick_unlock_to_show">Unlock your phone to show this picture.</string>
 </resources>

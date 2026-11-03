@@ -62,11 +62,14 @@ private val SIMILAR_KINDS = setOf(FileKind.IMAGE, FileKind.SCREENSHOT, FileKind.
 
 /**
  * Share and Copy at the end of a document or audio row: 56 dp each, the word under the icon, and TalkBack hears the file's name
- * with the action ("Share school_fees_term2.pdf").
+ * with the action ("Share school_fees_term2.pdf"). One component on the phone, the tablet and the quick panel. The pair stands
+ * apart: at large text the two words touched and read as one phrase, "Share Copy" (UI audit P8, D19).
  */
 @Composable
 fun RowActions(name: String, onShare: () -> Unit, onCopy: () -> Unit, modifier: Modifier = Modifier) {
-  Row(modifier, verticalAlignment = Alignment.CenterVertically) {
+  // 8 dp at normal text, 16 dp at large text, where the words are twice as tall and 8 dp still read as one space.
+  val gap = if (androidx.compose.ui.platform.LocalDensity.current.fontScale >= 1.29f) Sun.S16 else Sun.S8
+  Row(modifier, horizontalArrangement = Arrangement.spacedBy(gap), verticalAlignment = Alignment.CenterVertically) {
     SunIconAction(Icons.Outlined.Share, stringResource(R.string.action_share), stringResource(R.string.action_share_file, name), onShare)
     SunIconAction(Icons.Outlined.ContentCopy, stringResource(R.string.action_copy), stringResource(R.string.action_copy_file, name), onCopy)
   }

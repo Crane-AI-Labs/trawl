@@ -53,6 +53,7 @@ import com.craneai.findr.index.MediaStoreSource
 import com.craneai.findr.index.PrivacyRules
 import com.craneai.findr.index.Schema
 import com.craneai.findr.index.quickLookProgress
+import com.craneai.findr.search.LocalKeywords
 import com.craneai.findr.search.Searcher
 import com.craneai.findr.search.VectorIndex
 import java.io.File
@@ -138,6 +139,9 @@ class FindrEngine(private val context: Context) : SearchEngine {
 
   /** The open index; waits while it is still opening, and returns null at once when it cannot be opened right now (it is being retried). */
   suspend fun awaitStore(): IndexStore? = opener.await()
+
+  /** The index for the on-demand privacy scorer: null while it can't be opened (the picture then stays as it is). */
+  internal suspend fun awaitStoreForPrivacy(): IndexStore? = opener.current ?: awaitStore()
 
   /**
    * Debug switch for a profiling build ([BuildConfig.FINDR_KNOBS]) only: the knob file's `openFail=N` makes the first N SQLite opens
@@ -265,6 +269,13 @@ class FindrEngine(private val context: Context) : SearchEngine {
   )
   /** The "looks private" scorer (PrivateLook): its model ships in the APK. */
   val privacy = PrivateScorer(context)
+
+  /** Scores the unscored pictures on screen ahead of the pass, so they are blurred only for a moment (blur until scored). */
+  val privacyOnDemand = PrivacyOnDemand(context, this)
+  override val privacyCheck: com.craneai.findr.core.PrivacyCheck get() = privacyOnDemand
+
+  /** The background privacy pass is running (the on-demand scorer then leaves the model loaded for it). */
+  @Volatile var privacyPassRunning: Boolean = false
   private val queryGate = SpeechLanguageGate.fromAssets(ContextAssets(context))
   /** The D19 word-list rule (the research notes 10e); separate from [queryGate]'s quick-look rule. Now the fallback of [wordWeights]. */
   private val queryLanguage = QueryLanguage(queryGate.words)
@@ -332,6 +343,7 @@ class FindrEngine(private val context: Context) : SearchEngine {
       // Without the pack nothing is blurred: forget the marks, so no stale one lingers (adding the pack scores the library afresh).
       // Done even if the worker is still winding down: the pass stops by itself once the model file is gone.
       privacy.release()
+      privacyOnDemand.forget()
       Log.i(TAG, "privacy pack removed: ${awaitStore()?.clearLooksPrivate() ?: 0} scores cleared")
       return
     }
@@ -339,7 +351,10 @@ class FindrEngine(private val context: Context) : SearchEngine {
     if (def.id == PackCatalog.SPEECH) asr.release() else clip.release()
   }
 
-  private val searcher get() = Searcher(store, vectors, { enabledKinds() }, quick = quickVectors)
+  /** The Luganda/Swahili -> English keyword table, read on the first Luganda or Swahili query (languages-keywords-1.0.6.md). */
+  private val localKeywords = LocalKeywords.fromAssets(ContextAssets(context))
+
+  private val searcher get() = Searcher(store, vectors, { enabledKinds() }, quick = quickVectors, keywords = localKeywords)
 
   /** Only one worker indexes at a time (the one-off and the periodic job can both be started by WorkManager). */
   val workerLock = Mutex()
@@ -378,6 +393,9 @@ class FindrEngine(private val context: Context) : SearchEngine {
    * Polite mode ([PolitePolicy]): the screen is on and Findr is not in front, so the person is using something else. Heavy
    * stages wait, the models are given back, and everything runs again the moment Findr opens or the screen goes off.
    */
+  /** The lock screen is up (a plain read, for the words of the polite-wait notification only; [polite] decides the waiting). */
+  fun keyguardLocked(): Boolean = keyguardManager?.isKeyguardLocked == true
+
   fun polite(): Boolean = PolitePolicy.polite(
     powerManager?.isInteractive ?: false, uiVisible,
     keyguardLocked = Tuning.current.politeOnLockScreen.not() && keyguardManager?.isKeyguardLocked == true,
@@ -709,6 +727,15 @@ class FindrEngine(private val context: Context) : SearchEngine {
   /** True while the user scrolls, and for a moment after: the worker waits between files. */
   val userInteracting: Boolean get() = System.currentTimeMillis() < interactingUntil
 
+  @Volatile private var scrollingUntil = 0L
+
+  override fun setUserScrolling(active: Boolean) {
+    scrollingUntil = if (active) Long.MAX_VALUE else System.currentTimeMillis() + SCROLL_SETTLE_MS
+  }
+
+  /** True while a list is scrolled, and for a short moment after (not the search box's focus hold): the on-demand privacy score waits. */
+  val userScrolling: Boolean get() = System.currentTimeMillis() < scrollingUntil
+
   /** Scrollable lists on screen now ([setListVisible]); counted, so the grid and any other list balance out. */
   @Volatile private var listsOnScreen = 0
 
@@ -798,7 +825,8 @@ class FindrEngine(private val context: Context) : SearchEngine {
     if (q.length < 3 || vectors.size == 0 || embedder.modelFile == null) return null
     val fingerprint = embedder.textFingerprint ?: return null
     return try {
-      queryCache.get(fingerprint, q) { embedder.query(it) }
+      // A Luganda or Swahili query is embedded with its English gloss after it (LocalKeywords.embedText); any other query as typed.
+      queryCache.get(fingerprint, LocalKeywords.embedText(q, localKeywords)) { embedder.query(it) }
     } catch (e: CancellationException) {
       throw e   // the user typed on: not a failure
     } catch (e: EngineUnhealthyException) {
@@ -1097,12 +1125,17 @@ class FindrEngine(private val context: Context) : SearchEngine {
     return store.nextWithoutWords(1, enabledKinds().intersect(WORDS_PASS_KINDS)).isNotEmpty()
   }
 
-  /** Something is left for the worker to do: files without their words, or waiting for the meaning pass. */
+  /**
+   * Something is left for the worker to do: files without their words, or waiting for the meaning pass, or videos an earlier build read
+   * that the catch-up has not reached yet (VideoCatchUp: bulk work like the backlog, so a run on battery leaves the request the charger
+   * starts). Trawl Go reads no videos, and with no model in place the bulk loop that runs the catch-up does not start.
+   */
   fun workWaiting(): Boolean {
     val kinds = enabledKinds()
     val store = storeOrNull() ?: return false
     return store.nextWithoutWords(1, kinds.intersect(WORDS_PASS_KINDS)).isNotEmpty() ||
-      store.nextPending(1, kinds).isNotEmpty() || store.nextPartial(1, kinds).isNotEmpty()
+      store.nextPending(1, kinds).isNotEmpty() || store.nextPartial(1, kinds).isNotEmpty() ||
+      (!Edition.GO && FileKind.VIDEO in kinds && embedder.modelFile != null && store.nextOldVideos(1).isNotEmpty())
   }
 
   /**
@@ -1335,6 +1368,11 @@ class FindrEngine(private val context: Context) : SearchEngine {
           Log.w(TAG, "words pass failed: ${redact(p.file.name)}", t)
           store.setState(p.file.id, finished, IndexStore.WORDS_DONE)
         }
+        // Heat pacing (a study knob, off in every shipped build): rest in proportion to the file's work once the phone is warm.
+        if (Tuning.current.paces) {
+          val rest = HeatPace.restMs((System.nanoTime() - fileStarted) / 1_000_000, heatPaced(), Tuning.current.paceWordsDuty)
+          if (rest > 0) delay(rest)
+        }
         true
       } finally {
         wordsPassNow = false
@@ -1494,6 +1532,28 @@ class FindrEngine(private val context: Context) : SearchEngine {
   /** Android's thermal status (0 none … 2 moderate … 6 shutdown). The A06 under-reports (it throttles without saying so); the worker also reads the battery's own temperature. */
   fun thermalStatus(): Int = runCatching { context.getSystemService(PowerManager::class.java).currentThermalStatus }.getOrDefault(0)
 
+  @Volatile private var heatAt = 0L
+  @Volatile private var heatHot = false
+
+  /**
+   * Is the phone warm enough for heat pacing ([HeatPace], off unless a knob file turns it on)? The battery's own temperature and the
+   * fast cores' clock cap, read at most every [HEAT_READ_MS] (the three lanes ask after every file).
+   */
+  fun heatPaced(): Boolean {
+    val t = Tuning.current
+    if (!t.paces) return false
+    val now = android.os.SystemClock.elapsedRealtime()
+    if (now - heatAt >= HEAT_READ_MS) {
+      val intent = context.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+      val batteryC = (intent?.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, 0) ?: 0) / 10.0
+      val cap = if (t.paceCapBelowKhz > 0) runCatching { File(FAST_CAP_FILE).readText().trim().toLong() }.getOrNull() else null
+      val hot = HeatPace.hot(batteryC, t.paceFromC, cap, t.paceCapBelowKhz)
+      if (hot != heatHot || heatAt == 0L) Log.i(TAG, "heat pace: ${if (hot) "on" else "off"} (battery $batteryC °C, fast-core cap ${cap ?: "unread"} kHz)")
+      heatHot = hot; heatAt = now
+    }
+    return heatHot
+  }
+
   fun isCharging(): Boolean {
     val intent = context.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED)) ?: return false
     val plugged = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0)
@@ -1534,10 +1594,15 @@ class FindrEngine(private val context: Context) : SearchEngine {
     const val KEY_PROFILE_OVERRIDE = "memory_profile_override"
     /** A profiling build ([BuildConfig.FINDR_KNOBS]) reads Tuning overrides from here. */
     const val KNOBS_FILE = "/data/local/tmp/dp-knobs.txt"
+    /** Heat pacing's clock-cap reading: the last core, a fast one on the phones measured (A06: cpu6-7, 2.0 GHz uncapped). */
+    const val FAST_CAP_FILE = "/sys/devices/system/cpu/cpu7/cpufreq/scaling_max_freq"
+    const val HEAT_READ_MS = 2_000L
     /** A profiling build runs the queries in this file (see [startQueryProbe]). */
     const val PROBE_QUERIES_FILE = "/data/local/tmp/lv-queries.txt"
     const val PROBE_LIMIT = 20   // one logcat line holds ~4 KB: 20 hits of ~100 bytes fit
     private const val YIELD_AFTER_MS = 1_500L
+    /** After a scroll stops, the on-demand privacy score starts this much later (a fling that is caught again does not start one). */
+    private const val SCROLL_SETTLE_MS = 400L
     /** At most one enqueue of the index work this often (ScheduleGate). */
     private const val SCHEDULE_GAP_MS = 10_000L
     /** While Findr is visible: how long MediaStore may stay busy before the in-process crawl, and how often to look for stalled work. */

@@ -40,6 +40,9 @@ enum class Dev(val tag: String, val q: String, val label: String) {
   TABLET_LAND("tabletland", "w1340dp-h800dp-land-hdpi", "tablet landscape 1340x800dp"),
   SMALL("small", "w360dp-h640dp-port-xhdpi", "small phone 360x640dp"),
   SPLIT("split", "w411dp-h430dp-port-xhdpi", "multi-window half 411x430dp"),
+  /** The Spark's Galaxy Tab SM-X135G: 1340 x 800 px at 213 dpi. */
+  TAB_A9("taba9", "w601dp-h1007dp-port-tvdpi", "Galaxy Tab SM-X135G 601x1007dp"),
+  TAB_A9_LAND("taba9land", "w1007dp-h601dp-land-tvdpi", "Galaxy Tab SM-X135G on its side 1007x601dp"),
   /** Very tall windows: a scrolling page (Settings, Licences) drawn whole in one picture. */
   TALL("tall", "w411dp-h4200dp-port-hdpi", "phone, whole page 411dp wide"),
   TALLER("taller", "w411dp-h8400dp-port-hdpi", "phone, whole page (large font) 411dp wide"),

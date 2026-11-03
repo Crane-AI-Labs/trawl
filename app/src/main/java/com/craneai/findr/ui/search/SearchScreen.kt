@@ -33,6 +33,7 @@ import androidx.compose.foundation.interaction.DragInteraction
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import com.craneai.findr.ui.common.rememberSharedIcons
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.SideEffect
 import kotlin.math.abs
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -48,6 +49,13 @@ import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.layout.heightIn
 import com.craneai.findr.core.KindFilter
 import com.craneai.findr.core.SortOrder
 import androidx.activity.compose.BackHandler
@@ -249,7 +257,9 @@ fun SearchScreen(
 
   // While sensitive items are on screen the window is FLAG_SECURE (no screenshots, blank card in recents).
   val privacy = LocalPrivacy.current
-  LaunchedEffect(privacy, state.showsSensitive) { privacy?.setSensitiveOnScreen("main", state.showsSensitive) }
+  // Told as this composition is applied, before its frame is drawn, so the window is secure for the first frame that shows one (UI audit P10).
+  val showsSensitive = state.showsSensitive
+  SideEffect { privacy?.setSensitiveOnScreen("main", showsSensitive) }
   DisposableEffect(privacy) { onDispose { privacy?.setSensitiveOnScreen("main", false) } }
   val markedMsg = stringResource(R.string.snack_marked_sensitive)
   val unmarkedMsg = stringResource(R.string.snack_unmarked_sensitive)
@@ -305,6 +315,7 @@ fun SearchScreen(
           compact = searchingNow || homeCompact,
           onClick = openSheet,
           modifier = m,
+          searching = searchingNow,
         )
       }
     }
@@ -447,9 +458,9 @@ private val MEDIA_ONLY_FILTERS = setOf(KindFilter.PHOTOS, KindFilter.SCREENSHOTS
 
 /** The only place (besides the sheet) that follows the live status, so its updates redraw the meter and nothing else. */
 @Composable
-private fun LiveMeter(indexViewModel: IndexViewModel, compact: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun LiveMeter(indexViewModel: IndexViewModel, compact: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier, searching: Boolean = false) {
   val status by indexViewModel.status.collectAsStateWithLifecycle()
-  IndexMeterCard(status = status, compact = compact, onClick = onClick, modifier = modifier)
+  IndexMeterCard(status = status, compact = compact, onClick = onClick, modifier = modifier, searching = searching)
 }
 
 /**
@@ -464,9 +475,10 @@ private fun MeterUnlessTyping(
   compact: Boolean,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
+  searching: Boolean = false,
 ) {
   if (fieldFocused.value && WindowInsets.isImeVisible) return
-  LiveMeter(indexViewModel = indexViewModel, compact = compact, onClick = onClick, modifier = modifier)
+  LiveMeter(indexViewModel = indexViewModel, compact = compact, onClick = onClick, modifier = modifier, searching = searching)
 }
 
 /** How far learning has got, for the line under the results while typing. Equal values do not redraw. */
@@ -506,17 +518,34 @@ private fun LiveLearningLine(indexViewModel: IndexViewModel) {
 /** The note above results while the index is still filling in; it says why meaning is not ready when it is the charger. */
 @Composable
 private fun LiveIncompleteNote(indexViewModel: IndexViewModel) {
-  val charger by remember(indexViewModel) { indexViewModel.status.map { it.needsCharger && !it.lightOnBattery }.distinctUntilChanged() }
-    .collectAsStateWithLifecycle(initialValue = false)
-  IncompleteNote(waitingForCharger = charger)
+  val note by remember(indexViewModel) { indexViewModel.status.map { incompleteNote(it) }.distinctUntilChanged() }
+    .collectAsStateWithLifecycle(initialValue = IncompleteNoteKind.MEANING)
+  when (note) {
+    IncompleteNoteKind.NONE -> {}
+    IncompleteNoteKind.CHARGER -> IncompleteNote(waitingForCharger = true)
+    IncompleteNoteKind.MEANING -> IncompleteNote(waitingForCharger = false)
+  }
+}
+
+internal enum class IncompleteNoteKind { NONE, CHARGER, MEANING }
+
+/**
+ * Which note goes above answers while the index is still filling in. None while the search model is not on the phone: the meter right
+ * above says "Waiting for the search models" and the models strip offers them, so a third sentence saying the same pushed every answer
+ * below the fold at large text (UI audit P3, D16).
+ */
+internal fun incompleteNote(s: IndexStatus): IncompleteNoteKind = when {
+  !s.modelReady -> IncompleteNoteKind.NONE
+  s.needsCharger && !s.lightOnBattery -> IncompleteNoteKind.CHARGER
+  else -> IncompleteNoteKind.MEANING
 }
 
 /** Empty home: a fresh phone (nothing known yet) or a chip with nothing in it. Reads the file count here, not above. */
 @Composable
-private fun EmptyHome(indexViewModel: IndexViewModel) {
+private fun EmptyHome(indexViewModel: IndexViewModel, scrolls: Boolean = true) {
   val filesKnown by remember(indexViewModel) { indexViewModel.status.map { it.filesKnown }.distinctUntilChanged() }
     .collectAsStateWithLifecycle(initialValue = 0)
-  if (filesKnown == 0) FreshPhone() else EmptyFilter()
+  if (filesKnown == 0) FreshPhone(scrolls = scrolls) else EmptyFilter()
 }
 
 /** The wordmark, and Settings as an icon with its word (every icon has its word). */
@@ -692,14 +721,14 @@ private fun Results(
     if (!short) notes()
     when {
       state.mode == SearchMode.RESULTS && state.nothingFound -> {
-        // The empty-state bodies scroll by themselves (EmptyStates.kt), so they get a fixed height inside the lazy list: a
-        // scrolling parent would hand them unbounded height, which Compose refuses.
+        // In a short window the body is an item of the scrolling list, so it does not scroll by itself: it is at least SHORT_EMPTY_BODY
+        // tall and grows with its words (a fixed 260 dp cut the words off at large text and scrolled inside the list, UI audit P6).
         if (short) LazyColumn(Modifier.weight(1f).fillMaxWidth()) {
           item { shortLead() }
           item { Box(Modifier.sunContentWidth().padding(horizontal = Sun.S12)) { filters() } }
           item {
-            Box(Modifier.fillMaxWidth().height(SHORT_EMPTY_BODY), contentAlignment = Alignment.Center) {
-              NothingFound(query = state.resultsQuery, indexIncomplete = state.indexIncomplete, date = state.date?.filter?.label, similarTo = state.similar?.name)
+            Box(Modifier.fillMaxWidth().heightIn(min = SHORT_EMPTY_BODY).testTag("empty-body"), contentAlignment = Alignment.Center) {
+              NothingFound(query = state.resultsQuery, indexIncomplete = state.indexIncomplete, date = state.date?.filter?.label, similarTo = state.similar?.name, scrolls = false)
             }
           }
         } else {
@@ -714,8 +743,8 @@ private fun Results(
           item { shortLead() }
           if (!compactRows) item { Box(Modifier.sunContentWidth().padding(horizontal = Sun.S12)) { filters() } }
           item {
-            Box(Modifier.fillMaxWidth().height(SHORT_EMPTY_BODY), contentAlignment = Alignment.Center) {
-              EmptyHome(indexViewModel)
+            Box(Modifier.fillMaxWidth().heightIn(min = SHORT_EMPTY_BODY).testTag("empty-body"), contentAlignment = Alignment.Center) {
+              EmptyHome(indexViewModel, scrolls = false)
             }
           }
         } else {
@@ -759,7 +788,7 @@ private fun Results(
         LazyVerticalGrid(
           columns = GridCells.Adaptive(104.dp),
           state = gridState,
-          modifier = Modifier.weight(1f).fillMaxWidth(),
+          modifier = Modifier.weight(1f).fillMaxWidth().fadeAtBottom(gridState, MaterialTheme.colorScheme.background),
           contentPadding = PaddingValues(start = listInset, end = listInset, top = if (compactRows) 2.dp else 6.dp, bottom = 12.dp),
           horizontalArrangement = Arrangement.spacedBy(6.dp),
           verticalArrangement = Arrangement.spacedBy(6.dp),
@@ -827,6 +856,20 @@ private fun Results(
     }
   }
 }
+
+/**
+ * A 24 dp fade into the page at the list's bottom edge while more lies below: a row cut by the search box then reads as "more below",
+ * not as a sliced row (UI audit P4, D12). Drawing only: nothing moves, and at the end of the list there is no fade.
+ */
+private fun Modifier.fadeAtBottom(state: LazyGridState, page: Color): Modifier = drawWithContent {
+  drawContent()
+  if (state.canScrollForward) {
+    val h = BOTTOM_FADE.toPx().coerceAtMost(size.height)
+    drawRect(Brush.verticalGradient(listOf(page.copy(alpha = 0f), page), startY = size.height - h, endY = size.height), topLeft = Offset(0f, size.height - h), size = Size(size.width, h))
+  }
+}
+
+private val BOTTOM_FADE = 24.dp
 
 @Composable
 private fun SectionHeader(text: String, modifier: Modifier = Modifier) {

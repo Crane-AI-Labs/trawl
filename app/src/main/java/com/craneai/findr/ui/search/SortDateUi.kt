@@ -49,6 +49,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
@@ -171,6 +172,7 @@ private fun ChipFace(
   clearLabel: String = "",
   maxTextWidth: Int = 120,
   arrow: Boolean = true,
+  overflow: TextOverflow = TextOverflow.Ellipsis,
 ) {
   val t = LocalSunlight.current
   val fg = if (active) t.onMarker else t.ink
@@ -195,7 +197,12 @@ private fun ChipFace(
       Icon(icon, contentDescription = null, tint = fg, modifier = Modifier.size(20.dp))
       if (text != null) {
         Spacer(Modifier.width(Sun.S4))
-        Text(text, style = SunType.CaptionBold, color = fg, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.widthIn(max = (maxTextWidth * maxOf(1f, LocalDensity.current.fontScale)).dp))
+        // The cap grows with the font size. A chip with a cross also stays inside the window (less its icon, cross and the list's
+        // edges): at 2.0 the Find-similar chip (220 dp of words) ran off a 411 dp phone and took its cross with it (1.0.6 polish, P5).
+        // The sort chip has no cross and its word is never cut (UI audit item 11): its row scrolls instead.
+        val grown = maxTextWidth * maxOf(1f, LocalDensity.current.fontScale)
+        val cap = if (onClear != null) minOf(grown, (LocalConfiguration.current.screenWidthDp - CHIP_CHROME_DP).toFloat()) else grown
+        Text(text, style = SunType.CaptionBold, color = fg, maxLines = 1, overflow = overflow, modifier = Modifier.widthIn(max = cap.coerceAtLeast(48f).dp).testTag("chip-text"))
       }
       if (arrow) Icon(Icons.Rounded.ArrowDropDown, contentDescription = null, tint = fg, modifier = Modifier.size(20.dp))
     }
@@ -213,6 +220,9 @@ private fun ChipFace(
     }
   }
 }
+
+/** A chip's own parts beside its words (start padding, icon, gap, 36 dp cross) and the list's side insets, in dp. */
+private const val CHIP_CHROME_DP = 120
 
 @Composable
 private fun menuColors() = LocalSunlight.current
@@ -337,6 +347,9 @@ fun SimilarChip(name: String, onClear: () -> Unit, modifier: Modifier = Modifier
       clearLabel = stringResource(R.string.similar_remove),
       maxTextWidth = 220,
       arrow = false,
+      // Cut in the middle, as the reading-now line does (IndexDetailSheet): "Similar to IMG_2026…1502.jpg" keeps the end that tells
+      // two photos apart, and the extension (UI audit P5, D18).
+      overflow = TextOverflow.MiddleEllipsis,
     )
   }
 }

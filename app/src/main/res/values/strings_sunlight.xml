@@ -31,6 +31,8 @@
   <string name="action_copy_file">Copy %1$s</string>
   <!-- Over a blurred thumbnail: the picture may be private and is hidden until tapped. Keep short (it sits on a small tile). -->
   <string name="preview_hidden_words">Looks private · tap to see</string>
+  <!-- Over a blurred thumbnail of a new picture that has not been checked for privacy yet (a second or two). Keep short (small tile). -->
+  <string name="preview_checking_words">Checking · tap to see</string>
   <!-- TalkBack name of the group of filter tiles above the results. -->
   <string name="filter_group">Show which files</string>
 

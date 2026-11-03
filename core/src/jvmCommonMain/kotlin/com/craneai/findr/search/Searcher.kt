@@ -45,6 +45,11 @@ class Searcher(
   private val wordWeight: Double = Fusion.WORD_WEIGHT,
   /** The quick-look vectors (D2: pictures EmbeddingGemma hasn't understood yet), scored against [search]'s `quickVector`. */
   private val quick: VectorIndex? = null,
+  /**
+   * The local-language -> English keyword table ([LocalKeywords]: Luganda, Swahili, and the [LocalLanguage]s), read on the first query
+   * holding a local grammar word ([LocalLanguages.mayBeLocal]); an English query never reads it. Null: no table, every query as before.
+   */
+  private val keywords: Lazy<LocalKeywords?>? = null,
 ) {
 
   private class Meaning(val z: Double, val segmentId: Long)
@@ -99,7 +104,19 @@ class Searcher(
     // A date read from the query is a filter, except for the files that carry those very words in their name or text: "Church choir
     // schedule Oct 2026.docx" (modified in September) is what "church choir schedule oct 2026" asks for, not something to hide.
     val carriers = if (dates != null && view.datePhrase != null && DateParser.namesCalendarDate(view.datePhrase)) carrying(view.datePhrase) else emptySet()
-    val found = words(terms, filter, prefixLast, dates, carriers)
+    // The table is read only for a query holding a local grammar word (LocalLanguages.mayBeLocal); an English query never reads it.
+    val table = if (LocalLanguages.mayBeLocal(query)) keywords?.value else null
+    // Another local language (Runyankole, Kinyarwanda, Acholi: LocalKeywords.languageOf), or null: Luganda/Swahili or not local.
+    val language = table?.languageOf(query)
+    val local = language == null && Fusion.isLocal(query)
+    // A Luganda or Swahili query's words as the table reads them (LocalKeywords.words: "ng'ombe" stays one word); another local
+    // language's without its grammar words, matching its English words; any other query's as before.
+    val found = if (table != null && language != null) {
+      words(table.terms(query, language), filter, prefixLast, dates, carriers, nounClasses = language.bantu, english = { table.english(language, it) })
+    } else {
+      val lgsw = if (local) table else null
+      words(lgsw?.terms(query) ?: terms, filter, prefixLast, dates, carriers, nounClasses = local, english = lgsw?.let { t -> { t.english(it) } })
+    }
     val inRange = dates?.let { d -> store.idsInDateRange(d).let { if (carriers.isEmpty()) it else it + carriers } }
     val best = meaning(queryVector, filter, quickVector, found.coverage.filterValues { it >= Fusion.MIN_COVERAGE }.keys, inRange)
     val words = found.matches
@@ -496,19 +513,36 @@ class Searcher(
    * The matches (one per file, best first by BM25, name weighted 3x), each file's share of the query's words, and the files
    * where the words form a phrase ([Fusion.phraseQuery]) in one passage of text (not a file name or folder, which are
    * words of their own). Same index, same Porter stemming and the same unfinished last word as the word patterns.
+   *
+   * [nounClasses]: a Luganda or Swahili query ([Fusion.isLocal]); each word then also matches its other Luganda noun-class forms
+   * ([Fusion.nounClassForms], "ekifaananyi" finds "ebifaananyi"), and any of them counts as that word being there.
+   * [english] (a local query only): each word group's English words ([LocalKeywords.english], "lisiiti" finds "receipt"); each word
+   * also matches them, and they count as that word being there too: a word's share of the coverage is the same, whichever form matched.
    */
-  private fun words(terms: List<String>, filter: KindFilter, prefixLast: Boolean, dates: DateRange? = null, carriers: Set<Long> = emptySet()): Words {
+  private fun words(
+    terms: List<String>, filter: KindFilter, prefixLast: Boolean, dates: DateRange? = null, carriers: Set<Long> = emptySet(),
+    nounClasses: Boolean = false, english: ((List<List<String>>) -> List<List<String>>)? = null,
+  ): Words {
     if (terms.isEmpty() || filter.kinds.isEmpty()) return Words.NONE
     val kinds = filter.kinds.joinToString(",") { "'${it.name}'" }
     val inDates = dateClause("f", dates, carriers)
     return try {
       store.read { db ->
-        val patterns = terms.mapIndexed { i, term -> "\"$term\"" + if (prefixLast && i == terms.lastIndex) "*" else "" }.toMutableList()
+        val classForms = terms.map { if (nounClasses) Fusion.nounClassForms(it) else listOf(it) }
+        val englishWords = english?.invoke(classForms)
+        val forms = if (englishWords == null) classForms else classForms.mapIndexed { i, g -> g + englishWords[i] }
+        val star = BooleanArray(terms.size) { prefixLast && it == terms.lastIndex }
+        // One word's pattern: `"word"`, or `("form1" OR "form2" ...)` for its noun-class forms; `*` after each when it is a prefix.
+        fun group(i: Int, prefix: Boolean): String {
+          val s = if (prefix) "*" else ""
+          return if (forms[i].size == 1) "\"${forms[i][0]}\"$s" else forms[i].joinToString(" OR ", "(", ")") { "\"$it\"$s" }
+        }
+        val patterns = terms.indices.map { group(it, star[it]) }.toMutableList()
         // A word that is in no file as typed matches as the start of longer words (stemming only covers endings),
         // so a result the panel showed while typing does not vanish when typing stops. A word that is in the index
         // stays whole ("cat" must not bring in "category"), and two-letter words are too short to stand for one.
         for (i in terms.indices) {
-          if (terms[i].length >= 3 && !patterns[i].endsWith("*") && !isIndexed(db, patterns[i])) patterns[i] += "*"
+          if (terms[i].length >= 3 && !star[i] && !isIndexed(db, patterns[i])) { star[i] = true; patterns[i] = group(i, true) }
         }
         val words = ArrayList<WordMatch>()
         val seen = HashSet<Long>()
@@ -529,18 +563,18 @@ class Searcher(
         val prefixOnly = HashSet<Long>()
         if (words.isNotEmpty()) {
           val files = words.joinToString(",") { it.file.toString() }
-          for (pattern in patterns) {
+          for ((i, pattern) in patterns.withIndex()) {
             val matched = HashSet<Long>()
             db.query(
               "SELECT DISTINCT s.file FROM fts JOIN segments s ON s.id = fts.rowid WHERE fts MATCH ? AND s.file IN ($files)",
               pattern,
             ) { matched += it.getLong(0); coverage.merge(it.getLong(0), 1.0 / patterns.size, Double::plus) }
-            if (pattern.endsWith("*")) {
+            if (star[i]) {
               // One more query, only for a prefix: the files with the word whole ("toy", "toys") tell the others ("toilet") apart.
               val whole = HashSet<Long>()
               db.query(
                 "SELECT DISTINCT s.file FROM fts JOIN segments s ON s.id = fts.rowid WHERE fts MATCH ? AND s.file IN ($files)",
-                pattern.removeSuffix("*"),
+                group(i, false),
               ) { whole += it.getLong(0) }
               prefixOnly += matched - whole
             }

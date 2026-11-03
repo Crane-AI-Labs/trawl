@@ -109,6 +109,9 @@ class SearchViewModel(
 ) : ViewModel() {
   private data class Request(val query: String, val filter: KindFilter, val immediate: Boolean, val nonce: Int = 0)
 
+  /** Scores an unscored picture on screen, for the blur (PreviewBlur; blur until scored). */
+  val privacyCheck: com.craneai.findr.core.PrivacyCheck get() = engine.privacyCheck
+
   /** What a raw query, the chips and the sorts add up to: the words to search, the date, the order, and whether it is a search at all. */
   private class Derived(val text: String, val date: ActiveDate?, val sort: SortOrder, val similar: Boolean = false) {
     /** Browsing: no words and no "Find similar" (that is a result list of its own, with Best match). */
@@ -379,7 +382,12 @@ class SearchViewModel(
   fun prewarm() = engine.prewarm()
 
   /** Scrolling or typing: the index worker waits between files so the grid gets the CPU (SearchEngine.setUserInteracting). */
-  fun setInteracting(active: Boolean) = engine.setUserInteracting(active || focusHeld)
+  fun setInteracting(active: Boolean) {
+    engine.setUserInteracting(active || focusHeld)
+    // Only the scroll itself, not the held focus: the on-demand privacy score of the pictures on screen waits for a scroll to stop,
+    // never for the box's 30 s focus hold, or the results the person is looking at would stay blurred that long (blur until scored).
+    engine.setUserScrolling(active)
+  }
 
   /** The results grid is on screen (and not covered by the meter sheet): GPU encodes hold back (SearchEngine.setListVisible). */
   fun setListVisible(visible: Boolean) = engine.setListVisible(visible)

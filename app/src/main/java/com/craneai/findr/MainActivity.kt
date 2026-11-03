@@ -4,7 +4,7 @@ import com.craneai.findr.ui.language.AppLocale
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
-import android.view.WindowManager
+import com.craneai.findr.privacy.followSecureWindow
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -50,16 +50,15 @@ class MainActivity : FragmentActivity() {   // FragmentActivity because the phon
       }.build()
     }
 
+    // Blank this window in recents and block screenshots while it shows sensitive results, or when the person asked for it.
+    // Followed from here, not from the composition, so the flag is on before the first frame that shows one (UI audit P10).
+    followSecureWindow(privacy.secureWindow)
+
     setContent {
       val themeMode by appViewModel.themeMode.collectAsStateWithLifecycle()
       val palette by appViewModel.palette.collectAsStateWithLifecycle()
       val locked by privacy.locked.collectAsStateWithLifecycle()
-      val secure by privacy.secureWindow.collectAsStateWithLifecycle()
       val lockOn by privacy.prefs.lockEnabled.collectAsStateWithLifecycle()
-      // Blank this window in recents and block screenshots while it shows sensitive results, or when the person asked for it.
-      LaunchedEffect(secure) {
-        if (secure) window.addFlags(WindowManager.LayoutParams.FLAG_SECURE) else window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
-      }
       // With the lock on, the recents card must not be a screenshot of the last results (API 33+; older phones need the switch).
       LaunchedEffect(lockOn) {
         if (Build.VERSION.SDK_INT >= 33) setRecentsScreenshotEnabled(!lockOn)

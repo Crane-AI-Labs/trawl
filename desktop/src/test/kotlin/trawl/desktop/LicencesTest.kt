@@ -102,6 +102,21 @@ class LicencesTest {
     assertTrue("Silero VAD" in mit && "ONNX Runtime" in mit)
   }
 
+  /** The keyword table ships in the desktop's resources too (the app's assets folder): CC BY 4.0 attribution, as on the phone. */
+  @Test fun keywordTableIsAttributed() {
+    val kw = Licences.load().required.first { it.name.startsWith("Luganda and Swahili keyword table") }
+    assertEquals("CC BY 4.0", kw.licence)
+    assertTrue("Makerere MT Corpus" in kw.text && "TICO-19" in kw.text && "creativecommons.org/licenses/by/4.0" in kw.text && "Changes:" in kw.text, kw.text)
+    assertTrue(Licences.load().required.none { "Sunbird" in it.text || "BY-SA" in it.licence })
+    assertTrue(Licences::class.java.classLoader.getResource("local_keywords.txt.gz") != null, "the table is on the classpath")
+  }
+
+  @Test fun moreLanguagesKeywordTableIsAttributed() {
+    val kw = Licences.load().required.first { it.name.startsWith("Runyankole, Kinyarwanda and Acholi keyword table") }
+    assertEquals("CC BY 4.0", kw.licence)
+    assertTrue("doi.org/10.7910/DVN/BEROE0" in kw.text && "BUAIR" in kw.text && "TICO-19" in kw.text && "Changes:" in kw.text, kw.text)
+  }
+
   @Test fun fullTextsAreOnTheClasspath() {
     for (t in Licences.texts) assertTrue(Licences.read(t.resource).orEmpty().length > 500, "${t.resource} is missing or empty")
     val mit = Licences.read("trawl/licences/MIT.txt").orEmpty()

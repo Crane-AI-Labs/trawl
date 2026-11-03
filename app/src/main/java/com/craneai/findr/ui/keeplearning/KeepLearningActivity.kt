@@ -247,7 +247,9 @@ private fun Stopped(reason: KeepLearning.Stop, onClose: () -> Unit) {
       Text(stringResource(title), style = SunType.Heading, color = Ink, textAlign = TextAlign.Center, modifier = Modifier.semantics { heading() })
       Text(appString(body), style = SunType.Body, color = InkDim, textAlign = TextAlign.Center)
       Text(stringResource(R.string.keep_screen_will_sleep), style = SunType.Caption, color = InkDim, textAlign = TextAlign.Center)
-      SunOutlinedButton(onClick = onClose) { Text(stringResource(R.string.keep_close), style = SunType.Label) }
+      // The theme's ink edge was near-invisible on this black screen, and Close is the only way out (UI audit P9, D20): the light ink
+      // of this screen's words instead, about 10:1 on black.
+      SunOutlinedButton(onClick = onClose, ink = Ink) { Text(stringResource(R.string.keep_close), style = SunType.Label) }
     }
   }
 }

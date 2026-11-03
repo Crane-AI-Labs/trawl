@@ -104,6 +104,13 @@ internal fun rememberStripFrames(file: IndexedFile, momentMs: Long, hidden: Bool
 internal fun StripFrames?.takesRoom(): Boolean = this == null || plan.worthShowing
 
 /**
+ * Whether a video row may have a strip at all, from what the row already knows (the moment and the video's length), before anything
+ * is read from the file. A clip too short for two pictures half a second apart never gets one: the row used to keep empty tiles for it
+ * on its first frame and drop them when the plan came back, so the rows below jumped up (UI audit P7, H9e).
+ */
+internal fun stripMayShow(momentMs: Long, durationMs: Long?): Boolean = VideoStrip.targets(momentMs, durationMs).size >= 2
+
+/**
  * Five small pictures from just before to just after a matched moment in a video, like a scrub bar. The picture nearest the match
  * carries its time on the marker (a fill under ink, as everywhere in Sunlight). Tapping a picture opens the video at the time that
  * picture is from ([onOpenAt]), so a timestamp that is a few seconds off still lands the eye on the right spot.

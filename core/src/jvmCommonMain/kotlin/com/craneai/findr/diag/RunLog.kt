@@ -289,7 +289,8 @@ class RunLog(
 
     private fun fromJson(o: JSONObject): RunRecord {
       val fgs = HashMap<String, Long>()
-      o.optJSONObject("fgs")?.let { f -> f.keys().forEach { k -> fgs[k] = f.optLong(k) } }
+      // keys() is Iterator<String> on Android but a raw Iterator in the desktop's JSON library (as in SignedBundle): read the names as strings on both.
+      o.optJSONObject("fgs")?.let { f -> f.keys().forEach { k -> val key = k.toString(); fgs[key] = f.optLong(key) } }
       return RunRecord(
         id = o.getLong("id"), pid = o.optInt("pid"), kind = o.optString("kind"), startedAt = o.optLong("start"), lastBeat = o.optLong("beat"),
         endedAt = o.optLong("endAt"),

@@ -30,6 +30,7 @@ import com.craneai.findr.index.PendingFile
 import com.craneai.findr.index.Rules
 import com.craneai.findr.index.Segment
 import com.craneai.findr.index.SegmentKind
+import com.craneai.findr.index.VideoCatchUp
 import com.craneai.findr.ui.common.appString
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -320,7 +321,7 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
       }
       Log.i(TAG, "no model: reading names and words" + if (quickJob != null) " and pictures (quick look)" else "")
       engine.wordsPass(processor, stop = { mustStop() }, holdWhilePolite = true,
-        onPoliteHold = { startForeground(R.string.notif_waiting_polite) })
+        onPoliteHold = { startForeground(politeLine(engine.keyguardLocked())) })
       if (unprotectedStop) {
         endUnprotected(engine)
         return Result.success()
@@ -535,7 +536,7 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
       startQuickLook()
       startPrivacy()
       engine.wordsPass(processor, stop = { mustStop() }, holdWhilePolite = true,   // gives up after a polite wait (RunHandoff.HAND_OFF_AFTER_MS)
-        onPoliteHold = { startForeground(R.string.notif_waiting_polite) })
+        onPoliteHold = { startForeground(politeLine(engine.keyguardLocked())) })
       if (unprotectedStop) {
         endUnprotected(engine)
         return Result.success()
@@ -636,7 +637,12 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
         else mediaShare.mediaOrder(mediaKinds).firstNotNullOfOrNull { k -> engine.store.nextPending(if (tight) TIGHT_MEDIA_BURST else 1, setOf(k)).takeIf { it.isNotEmpty() } } ?: emptyList()
         val other = if (mediaShare.noShare) engine.store.nextPending(8, kinds) else if (otherKinds.isEmpty()) emptyList() else engine.store.nextPending(8, otherKinds)
         val mediaTurn = media.isNotEmpty() && mediaShare.mediaTurn(true, other.isNotEmpty())
-        val batch = (if (mediaTurn) media else other).ifEmpty { engine.store.nextPartial(4, kinds) }
+        // Nothing new is waiting: videos an earlier build read get today's reading of their words and picture times, one per turn. Before
+        // the later steps of long files: those are searchable by every word already and can take hours (a 1,000-page PDF), a catch-up is
+        // seconds a video (VideoCatchUp).
+        val pending = if (mediaTurn) media else other
+        if (pending.isEmpty() && catchUpOldVideo(engine, processor, kinds)) continue
+        val batch = pending.ifEmpty { engine.store.nextPartial(4, kinds) }
         if (batch.isEmpty()) break
         Log.i(TAG, "pick: ${batch.size} ${kindCounts(batch.map { it.file.kind })} left ${kindCounts(null, engine)}")   // log-safe: counts per kind, no names
         for ((i, p) in batch.withIndex()) {
@@ -723,7 +729,7 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
     var tight = false      // the memory rule, read once when the settle time is up (a phone with room keeps its models)
     var judged = false
     Log.i(TAG, "polite: the screen is on and Trawl is not in front, so heavy work waits")
-    startForeground(R.string.notif_waiting_polite)   // asked again each wait: only the text changes while the service runs
+    startForeground(politeLine(engine.keyguardLocked()))   // asked again each wait: only the text changes while the service runs
     try {
     while (!isStopped && !engine.paused && engine.polite()) {
       val waited = android.os.SystemClock.elapsedRealtime() - since
@@ -878,7 +884,9 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
       val state = if (result.nextChunk != null) FileState.PARTIAL else FileState.UNDERSTOOD
       val detail = listOfNotNull(result.detail, result.nextChunk?.let { "next=$it" }, carry).joinToString(" ").ifEmpty { null }
       val tdb = System.nanoTime()
+      // A video's first step is today's reading of it from the start: stamped, so the catch-up of older videos leaves it be (VideoCatchUp).
       engine.store.saveSegments(file.id, segments, state, detail, replace = from == 0,
+        info = VideoCatchUp.STAMP.takeIf { file.kind == FileKind.VIDEO && from == 0 },
         keepQuick = keepsQuick(segments, engine.embedder.imagesByEmbeddingGemma))
       engine.onFileIndexed(file.id)
       runFiles++
@@ -925,6 +933,67 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
     val vectors = batch.map { it.segmentId to engine.embedder.document(it.text) }
     engine.store.replaceTextVectors(vectors, through = batch.last().segmentId)
     batch.map { it.fileId }.distinct().forEach(engine::onFileIndexed)
+    rest(engine)
+    return true
+  }
+
+  /**
+   * One video an earlier build read, brought up to today's reading ([VideoCatchUp]): its pictures read again for their words only (no
+   * picture embedded, no soundtrack), and its picture rows given the keyframe times that pass meets. It runs in the bulk tier once nothing
+   * new is waiting, before the later steps of long files (so on the charger, unless the person asked for full indexing on battery), one
+   * video per turn of the loop, so every
+   * check of the loop (stop, polite, heat, charger) runs between two videos. A stop loses only the video in hand, which is read again
+   * next time; what it held stays searchable throughout, and is replaced in one transaction. False when no older video is left.
+   */
+  private suspend fun catchUpOldVideo(engine: FindrEngine, processor: FileProcessor, kinds: Set<FileKind>): Boolean {
+    if (FileKind.VIDEO !in kinds) return false
+    val found = engine.store.nextOldVideos(1).firstOrNull()?.file ?: return false
+    // No length from MediaStore: ask the file, as understand() did when it was first read, so the frame plan is the one it was read with.
+    val file = if (found.durationMs == null) probedLength(found.uri)?.let { found.copy(durationMs = it) } ?: found else found
+    if (!engine.store.beginVideoCatchUp(file.id)) {
+      Log.w(TAG, "the process died twice while an older video's words were read again: it keeps the reading it has")
+      return true
+    }
+    engine.workerState = engine.workerState.copy(currentFile = if (engine.store.isSensitive(file.id)) null else file.name)
+    if (!foregroundDenied) startForeground(notificationLine(FileKind.VIDEO), FgsPolicy.preferred(FileKind.VIDEO, android.os.Build.VERSION.SDK_INT, Edition.MEDIA_PROCESSING_FGS))
+    val started = System.nanoTime()
+    try {
+      val read = withTimeout(timeoutFor(FileKind.VIDEO)) { processor.videoWords(file) }
+      val old = engine.store.videoRows(file.id)
+      val marks = VideoCatchUp.retime(old.frames, read.stats.frameTimes)
+      val lines = read.pieces.mapNotNull { it.second.text }.flatMap { it.lines() }
+      val keepOld = VideoCatchUp.keepOld(old.ocrLines, lines)
+      val segments = read.pieces.map { (window, piece) -> piece.toSegment(late = window > 0) }   // as a fresh read saves a later window's
+      val saved = engine.store.saveVideoCatchUp(file.id, marks, segments, keepOld)
+      // Picture vectors are untouched, so the vector index only reloads the file when its words carry vectors (the lite profile).
+      if (saved && (old.ocrVectors || segments.any { it.vector != null })) engine.onFileIndexed(file.id)
+      val s = read.stats
+      val waited = s.waitedMs / 1e3
+      val (left, leftMs) = engine.store.oldVideosLeft()
+      // Counts and times only (the name is redacted in a release build): what the research notes time per video minute.
+      Log.i(TAG, "older video caught up: ${redact(file.name)} in ${"%.1f".format((System.nanoTime() - started) / 1e9 - waited)} s, " +
+        "video ${"%.1f".format((file.durationMs ?: 0L) / 1e3)} s: ${s.frames} frames, ${s.distinct} distinct " +
+        "(sample ${"%.1f".format(s.sampleMs / 1e3)} s ocr ${"%.1f".format(s.ocrMs / 1e3)} s), ${s.extraReads} extra reads; " +
+        "picture times ${marks.size} of ${VideoCatchUp.untimed(old.frames).size} set; words ${old.ocrLines.size} -> ${lines.size} lines " +
+        (if (keepOld) "(old kept beside)" else "(replaced)") + (if (s.unreadable > 0) ", ${s.unreadable} windows not opened" else "") +
+        (if (!saved) ", not saved (the file changed meanwhile)" else "") + "; $left older videos left (${leftMs / 60_000} min)")
+    } catch (e: UserYield.DeferredForUser) {
+      Log.i(TAG, "older video deferred: the user kept scrolling or is in another app")   // read again from the start next turn
+    } catch (e: TimeoutCancellationException) {
+      engine.store.stampVideo(file.id)
+      Log.i(TAG, "an older video took too long to read again: it keeps the reading it has")
+    } catch (e: CancellationException) {
+      throw e   // stopped: nothing was saved, and the video is read again next time
+    } catch (e: EngineUnhealthyException) {
+      throw e
+    } catch (t: Throwable) {
+      if (com.craneai.findr.index.StorageFull.isFull(t)) throw StorageFullException(t)
+      Log.w(TAG, "an older video's words were not read again: it keeps the reading it has", t)
+      com.craneai.findr.diag.Diag.handled(com.craneai.findr.diag.HandledKind.WORKER, t)
+      engine.store.stampVideo(file.id)
+    } finally {
+      runCatching { engine.store.endVideoCatchUp() }
+    }
     rest(engine)
     return true
   }
@@ -1075,5 +1144,12 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
       FileKind.AUDIO -> R.string.notif_reading_recording
       FileKind.OTHER -> R.string.notif_reading_file
     }
+
+    /**
+     * The ongoing notification while heavy work waits out a polite phone (PolitePolicy: the screen is on and Trawl is not in front).
+     * Unlocked, the person is in another app, and the line says so; on the lock screen it keeps the general words, which are true there
+     * too. Wording only: when the work waits is PolitePolicy's rule, unchanged (1.0.6, the background status lines).
+     */
+    @StringRes fun politeLine(keyguardLocked: Boolean): Int = if (keyguardLocked) R.string.notif_waiting_polite else R.string.notif_waiting_other_app
   }
 }
