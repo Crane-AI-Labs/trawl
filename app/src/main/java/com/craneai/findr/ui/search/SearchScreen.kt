@@ -460,6 +460,7 @@ private val MEDIA_ONLY_FILTERS = setOf(KindFilter.PHOTOS, KindFilter.SCREENSHOTS
 @Composable
 private fun LiveMeter(indexViewModel: IndexViewModel, compact: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier, searching: Boolean = false) {
   val status by indexViewModel.status.collectAsStateWithLifecycle()
+  if (com.craneai.findr.diag.StartupFrames.on) SideEffect { com.craneai.findr.diag.StartupFrames.note("meter", status.phase.name) }
   IndexMeterCard(status = status, compact = compact, onClick = onClick, modifier = modifier, searching = searching)
 }
 
@@ -545,6 +546,7 @@ internal fun incompleteNote(s: IndexStatus): IncompleteNoteKind = when {
 private fun EmptyHome(indexViewModel: IndexViewModel, scrolls: Boolean = true) {
   val filesKnown by remember(indexViewModel) { indexViewModel.status.map { it.filesKnown }.distinctUntilChanged() }
     .collectAsStateWithLifecycle(initialValue = 0)
+  if (com.craneai.findr.diag.StartupFrames.on) SideEffect { com.craneai.findr.diag.StartupFrames.note("empty", if (filesKnown == 0) "fresh" else "filter") }
   if (filesKnown == 0) FreshPhone(scrolls = scrolls) else EmptyFilter()
 }
 

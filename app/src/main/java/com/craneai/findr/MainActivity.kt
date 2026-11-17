@@ -37,6 +37,7 @@ class MainActivity : FragmentActivity() {   // FragmentActivity because the phon
   override fun onCreate(savedInstanceState: Bundle?) {
     installSplashScreen()
     super.onCreate(savedInstanceState)
+    com.craneai.findr.diag.StartupFrames.note("activity", if (savedInstanceState != null) "restored" else "fresh")
     enableEdgeToEdge()
     // Back on the first screen goes to the background, never ends the app (see RootBack). Registered before any screen's own handler.
     rootBack = RootBack.install(this, intent = { intent }, isTaskRoot = { isTaskRoot }, moveToBack = { moveTaskToBack(true) })

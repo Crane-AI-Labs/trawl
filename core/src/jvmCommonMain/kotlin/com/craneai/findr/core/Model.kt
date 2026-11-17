@@ -109,6 +109,13 @@ data class SearchResults(
 enum class IndexPhase { NOT_STARTED, SCANNING, INDEXING, UP_TO_DATE, PAUSED, ERROR }
 
 /**
+ * Whether the search model is on the phone, as three answers: [UNKNOWN] until someone has looked (a status built before the engine
+ * checked), then [INSTALLED] or [MISSING]. Only [MISSING] brings the "Get the search models" card: an unknown first frame draws the
+ * normal Home. Two answers used to share one value (modelBytes 0), so a cold start drew the card until the index had opened (1.0.8).
+ */
+enum class ModelPresence { UNKNOWN, INSTALLED, MISSING }
+
+/**
  * Why the index file could not be opened right now (see `IndexOpenProblems.classify`). Only a reason class: never a file name,
  * never the raw error. The app keeps trying and shows plain copy for each.
  */
@@ -148,6 +155,8 @@ data class IndexStatus(
   /** What the matrix will need once every file is read. */
   val estimatedSearchMemoryBytes: Long = 0,
   val modelBytes: Long = 0,        // the embedding model on disk
+  /** Whether the search model is on the phone. Known from the engine's first status on (a few file checks); [ModelPresence.UNKNOWN] only in a status built without looking. */
+  val models: ModelPresence = ModelPresence.UNKNOWN,
   /**
    * A search model is on the phone. False on a first run before the models are downloaded: files get names and words only, nothing
    * is understood by meaning yet, and the charger changes nothing. The meter then says so instead of promising meaning "when you charge".

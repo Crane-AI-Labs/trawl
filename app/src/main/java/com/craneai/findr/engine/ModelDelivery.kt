@@ -302,9 +302,10 @@ class ModelDelivery(
 
   // ---- installing ------------------------------------------------------------------------------------------------
 
-  private fun installFile(file: File) {
+  /** A bundle found in Downloads (internal for ModelDeliveryQuietCheckTest; the watcher is the only caller). */
+  internal fun installFile(file: File) {
     val rec = Pending(file, null, file.length(), file.lastModified(), "${file.name}|${file.length()}|${file.lastModified()}", file.name)
-    start(rec) { file.inputStream() }
+    start(rec, announce = false) { file.inputStream() }
   }
 
   override fun installFrom(uri: String) {
@@ -326,12 +327,18 @@ class ModelDelivery(
     }
   }
 
-  private fun start(rec: Pending, open: () -> InputStream) {
+  /**
+   * [announce] false: a file found in Downloads. The card says "Installing" only once its files are really being copied (the first
+   * progress), not while the bundle's first two entries are read and compared: the bundle left in Downloads after an install is looked
+   * at again on every start of the app and answered "already installed" in a moment, and announcing that could draw the "Get the
+   * search models" card for a frame or more on a cold start (1.0.8). A file the person chose is announced at once.
+   */
+  private fun start(rec: Pending, announce: Boolean = true, open: () -> InputStream) {
     synchronized(lock) {
       if (job?.isActive == true) return
       cancelled = false
       val before = InstalledBundle.read(modelsDir)?.bundleClass
-      flow.value = flow.value.copy(phase = DeliveryPhase.INSTALLING, doneBytes = 0, totalBytes = 0, refusal = null, removable = null)
+      if (announce) flow.value = flow.value.copy(phase = DeliveryPhase.INSTALLING, doneBytes = 0, totalBytes = 0, refusal = null, removable = null)
       job = scope.launch(Dispatchers.IO) {
         PackLocks.of(MODEL_LOCK).withLock {
           val result = try {
@@ -342,7 +349,8 @@ class ModelDelivery(
                 val now = System.nanoTime()
                 if (now - lastPublished > 200_000_000L || done == total) {
                   lastPublished = now
-                  flow.value = flow.value.copy(doneBytes = done, totalBytes = total)
+                  flow.value = if (flow.value.phase == DeliveryPhase.INSTALLING) flow.value.copy(doneBytes = done, totalBytes = total)
+                  else flow.value.copy(phase = DeliveryPhase.INSTALLING, doneBytes = done, totalBytes = total, refusal = null, removable = null)
                 }
               },
               cancelled = { cancelled },

@@ -31,6 +31,7 @@ import com.craneai.findr.core.LocalData
 import com.craneai.findr.core.Locator
 import com.craneai.findr.core.IndexPhase
 import com.craneai.findr.core.IndexStatus
+import com.craneai.findr.core.ModelPresence
 import com.craneai.findr.core.IndexedFile
 import com.craneai.findr.core.KindFilter
 import com.craneai.findr.core.KindProgress
@@ -151,8 +152,14 @@ class FindrEngine(private val context: Context) : SearchEngine {
     if (com.craneai.findr.BuildConfig.FINDR_KNOBS) runCatching { Tuning.parse(File(KNOBS_FILE).readText()) }.getOrDefault(emptyMap()) else emptyMap()
   private val openFailures = java.util.concurrent.atomic.AtomicInteger(openKnobs["openFail"]?.toIntOrNull() ?: 0)
   private val openFailCode = openKnobs["openFailCode"]?.toIntOrNull() ?: 13
+  /**
+   * The same knob file's `openDelayMs=N` holds the FIRST open of this process N ms: an index that is slow to answer, as a big library
+   * read cold after a memory kill is, for the cold-start check of the "Get the search models" flash. Test builds only.
+   */
+  private val openDelay = java.util.concurrent.atomic.AtomicLong(openKnobs["openDelayMs"]?.toLongOrNull() ?: 0L)
 
   private fun openIndex(onTransient: (Throwable) -> Unit): IndexStore {
+    openDelay.getAndSet(0L).takeIf { it > 0 }?.let { Thread.sleep(it) }
     val real = androidx.sqlite.driver.bundled.BundledSQLiteDriver()
     val driver = if (openFailures.get() <= 0) real else object : androidx.sqlite.SQLiteDriver {
       override fun open(fileName: String): androidx.sqlite.SQLiteConnection {
@@ -301,7 +308,12 @@ class FindrEngine(private val context: Context) : SearchEngine {
   private val revealedFlow = MutableStateFlow(false)
   override val sensitiveRevealed: StateFlow<Boolean> = revealedFlow
   override val searchRepairing: StateFlow<Boolean> get() = embedder.repairing
-  private val statusFlow = MutableStateFlow(IndexStatus())
+  /**
+   * The first status already says whether the model is on the phone (a few file checks, here at start-up): the index opens off the
+   * main thread and can take a while, and a status that said "no model" until then drew the "Get the search models" card on a cold
+   * start (1.0.8). The counts wait for the index as before.
+   */
+  private val statusFlow = MutableStateFlow(modelStatus(IndexStatus()))
   override val status: StateFlow<IndexStatus> = statusFlow
 
   /**
@@ -1425,7 +1437,10 @@ class FindrEngine(private val context: Context) : SearchEngine {
     if (store == null) {
       // Still opening: the "getting ready" status stands. Cannot be opened right now: say so calmly (the screen's words are in
       // IndexCopy) while the engine keeps trying in the background.
-      (opener.state.value as? StoreOpener.State.Failed)?.let { statusFlow.value = IndexStatus(phase = IndexPhase.ERROR, openProblem = it.problem, charging = isCharging()) }
+      (opener.state.value as? StoreOpener.State.Failed)?.let {
+        statusFlow.value = modelStatus(IndexStatus(phase = IndexPhase.ERROR, openProblem = it.problem, charging = isCharging()))
+        com.craneai.findr.diag.StartupFrames.note("status", "ERROR")
+      }
       return
     }
     val stats = runCatching { store.stats() }.getOrNull() ?: return
@@ -1471,6 +1486,7 @@ class FindrEngine(private val context: Context) : SearchEngine {
       searchMemoryBytes = vectors.memoryBytes() + quickVectors.memoryBytes(),
       estimatedSearchMemoryBytes = estimate.ramBytes,
       modelBytes = embedder.modelFile?.length() ?: 0,
+      models = if (embedder.modelFile != null) ModelPresence.INSTALLED else ModelPresence.MISSING,
       modelReady = modelReady,
       speechReady = asr.available(),
       currentFile = if (w.running) w.currentFile else null,
@@ -1479,7 +1495,14 @@ class FindrEngine(private val context: Context) : SearchEngine {
       quickLook = quickLookProgress(stats, kinds),
       reembed = runCatching { store.reembedProgress().over(kinds) }.getOrNull()?.let { ReembedMeter(it.first, it.second) },
     )
+    com.craneai.findr.diag.StartupFrames.note("status", phase.name)   // test builds: when the first real status is known, against Home's first frame
     logMeter(statusFlow.value)
+  }
+
+  /** [s] with what is known about the model without the index: whether it is on the phone (a few file checks), and its size. */
+  private fun modelStatus(s: IndexStatus): IndexStatus {
+    val file = embedder.modelFile
+    return s.copy(modelBytes = file?.length() ?: 0, models = if (file != null) ModelPresence.INSTALLED else ModelPresence.MISSING)
   }
 
   private var estimateKey: Pair<Int, Set<FileKind>>? = null
@@ -1554,6 +1577,42 @@ class FindrEngine(private val context: Context) : SearchEngine {
     return heatHot
   }
 
+  @Volatile private var warmAt = 0L
+  @Volatile private var warmNow = false
+  private val fastMaxKhz: Long? by lazy { runCatching { File(FAST_MAX_FILE).readText().trim().toLong() }.getOrNull() }
+
+  /**
+   * Warm enough to pace the privacy pass ([PrivacyPace.warm]): the battery at 38 °C or more, or the fast cores capped under their own
+   * maximum. Read at most every [HEAT_READ_MS] (the pass asks after every photo). A shipped rule, unlike the study's [heatPaced].
+   */
+  fun privacyPaceWarm(): Boolean {
+    val now = android.os.SystemClock.elapsedRealtime()
+    if (warmAt == 0L || now - warmAt >= HEAT_READ_MS) {
+      val intent = context.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+      val batteryC = (intent?.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, 0) ?: 0) / 10.0
+      val cap = runCatching { File(FAST_CAP_FILE).readText().trim().toLong() }.getOrNull()
+      warmNow = PrivacyPace.warm(batteryC, cap, fastMaxKhz)
+      warmAt = now
+    }
+    return warmNow
+  }
+
+  /**
+   * Quick look or the words pass still has work: some picture or video waits for its quick look (while quick look may run), or some
+   * file waits for its words. [PrivacyPace] paces the privacy pass only while this holds.
+   */
+  fun searchableWorkLeft(): Boolean = searchableWorkLeft(store, enabledKinds(), quickLookShouldRun())
+
+  /** One [PrivacyPace] for an index-worker run: the shipped rule, unless a knob file turned it off for a baseline arm. */
+  fun newPrivacyPace(): PrivacyPace = PrivacyPace(
+    clock = { android.os.SystemClock.elapsedRealtime() },
+    searchableWorkLeft = { runCatching { searchableWorkLeft() }.getOrDefault(false) },
+    warm = { privacyPaceWarm() },
+    enabled = Tuning.current.privacyPace,
+    catchUp = settingsFlow.value.learningSpeed != com.craneai.findr.core.LearningSpeed.GENTLE,
+    maxPaceMs = Tuning.current.privacyPaceMaxS * 1000L,
+  )
+
   fun isCharging(): Boolean {
     val intent = context.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED)) ?: return false
     val plugged = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0)
@@ -1584,6 +1643,14 @@ class FindrEngine(private val context: Context) : SearchEngine {
      * model, and the charger) are not here, however recent they are.
      */
     val WORDS_PASS_KINDS = setOf(FileKind.DOCUMENT, FileKind.PDF, FileKind.SCREENSHOT, FileKind.IMAGE)
+
+    /**
+     * Quick look ([quickOn]: it may run now) or the words pass still has work among [kinds]. Words count only for the kinds the
+     * words pass reads ([WORDS_PASS_KINDS]): a video or recording has no words until the full reading, so counting it would keep
+     * the privacy pass paced until EmbeddingGemma reached it (found on the A06 warm-up, 3 Nov 2026).
+     */
+    fun searchableWorkLeft(store: IndexStore, kinds: Set<FileKind>, quickOn: Boolean): Boolean =
+      (quickOn && store.nextForQuickLook(1, kinds).isNotEmpty()) || store.nextWithoutWords(1, kinds.intersect(WORDS_PASS_KINDS)).isNotEmpty()
     private const val BACKOFF_S = 30L  // linear: a stopped worker is back within minutes, not hours
     private const val KEY_SETTINGS = "settings"
     private const val VECTORS_FILE = "vectors.bin"
@@ -1596,6 +1663,8 @@ class FindrEngine(private val context: Context) : SearchEngine {
     const val KNOBS_FILE = "/data/local/tmp/dp-knobs.txt"
     /** Heat pacing's clock-cap reading: the last core, a fast one on the phones measured (A06: cpu6-7, 2.0 GHz uncapped). */
     const val FAST_CAP_FILE = "/sys/devices/system/cpu/cpu7/cpufreq/scaling_max_freq"
+    /** The same core's own maximum clock: a cap under it means the phone is holding the fast cores back. */
+    const val FAST_MAX_FILE = "/sys/devices/system/cpu/cpu7/cpufreq/cpuinfo_max_freq"
     const val HEAT_READ_MS = 2_000L
     /** A profiling build runs the queries in this file (see [startQueryProbe]). */
     const val PROBE_QUERIES_FILE = "/data/local/tmp/lv-queries.txt"

@@ -98,6 +98,18 @@ data class Tuning(
    * blur is on. On in every build; a knob file can turn it off (the 1.0.6 behaviour) only for the A06 baseline arm.
    */
   val blurGate: Boolean = true,
+  /**
+   * Privacy catch-up ([PrivacyPace], internal/research/privacy-pace-until-searchable.md): once quick look and words are done, the
+   * background privacy pass scores with no rest, so new photos stop showing "Checking" about 50 min sooner on the A06. On in every
+   * build; a knob file can turn it off (the 1.0.7 behaviour) only for the A06 baseline arm.
+   */
+  val privacyPace: Boolean = true,
+  /**
+   * The longest one pacing episode lasts. 0, shipped: never pace, only catch up. Pacing while photos are made searchable (900 s,
+   * [PrivacyPace.MAX_PACE_MS]) was 14-17 % faster to searchable on the A06 but failed the first-10-min Checking and unblur gates;
+   * catch-up alone passed every gate (3 catch against 4 flat runs, 3 Nov 2026). Knob builds can set it for a study.
+   */
+  val privacyPaceMaxS: Int = 0,
 ) {
   /** Is any lane paced by heat at all (a knob file asked for it)? */
   val paces: Boolean get() = (paceFromC < PACE_OFF_C || paceCapBelowKhz > 0) && minOf(paceWordsDuty, paceQuickDuty, pacePrivacyDuty) < 1.0
@@ -203,6 +215,8 @@ data class Tuning(
         paceQuickDuty = dbl("paceQuickDuty")?.takeIf { it in 0.1..1.0 } ?: base.paceQuickDuty,
         pacePrivacyDuty = dbl("pacePrivacyDuty")?.takeIf { it in 0.1..1.0 } ?: base.pacePrivacyDuty,
         blurGate = o["blurGate"]?.let { it == "true" } ?: base.blurGate,
+        privacyPace = o["privacyPace"]?.let { it == "true" } ?: base.privacyPace,
+        privacyPaceMaxS = int("privacyPaceMaxS")?.takeIf { it in 0..3_600 } ?: base.privacyPaceMaxS,
       )
     }
   }

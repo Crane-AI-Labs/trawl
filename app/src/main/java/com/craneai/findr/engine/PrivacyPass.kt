@@ -42,7 +42,11 @@ class PrivacyPass(
   var done = 0
     private set
 
-  suspend fun run() = withContext(dispatcher) {
+  /**
+   * [pace]: how fast to score while the phone is still making photos searchable ([PrivacyPace]); one per worker run, so an episode's
+   * 15 min carry over when the pass ends and restarts within the run.
+   */
+  suspend fun run(pace: PrivacyPace = engine.newPrivacyPace()) = withContext(dispatcher) {
     val store = engine.store
     if (store.ensurePrivateModel(PrivateLook.MODEL)) engine.privacyOnDemand.forget()
     engine.privacyPassRunning = true
@@ -69,7 +73,13 @@ class PrivacyPass(
           decodeMs += workMs - engine.privacy.lastPrepMs - engine.privacy.lastModelMs
           prepMs += engine.privacy.lastPrepMs; modelMs += engine.privacy.lastModelMs
           done++; inBatch++
-          if (engine.embeddingNow) delay((workMs * (1 / Tuning.current.privacyDuty - 1)).toLong())
+          // The usual share while EmbeddingGemma embeds, plus the rest while photos are still being made searchable, or none at all
+          // once they are (PrivacyPace). Only this background pass rests: a thumbnail on screen is scored on demand, never paced.
+          val before = pace.last
+          val pacedMs = pace.pacedMs()
+          val mode = pace.mode()
+          if (mode != before) Log.i(TAG, "privacy pace: $mode (episode paced ${maxOf(pacedMs, pace.pacedMs()) / 1000} s, $done scored this run)")
+          pace.restMs(mode, workMs, engine.embeddingNow, Tuning.current.privacyDuty).let { if (it > 0) delay(it) }
           // Heat pacing (a study knob, off in every shipped build): once the phone is warm, a further rest in proportion to the work.
           if (Tuning.current.paces) HeatPace.restMs(workMs, engine.heatPaced(), Tuning.current.pacePrivacyDuty).let { if (it > 0) delay(it) }
         }

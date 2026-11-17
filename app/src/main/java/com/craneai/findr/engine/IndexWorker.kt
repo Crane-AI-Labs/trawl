@@ -467,11 +467,12 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
     // The privacy-score pass (PrivateLook) runs the same way, beside the quick-look pass.
     var privacyJob: Job? = null
     var privacyEndedAt = 0L
+    val privacyPace = engine.newPrivacyPace()   // paced while photos are being made searchable, then full speed (PrivacyPace)
     fun startPrivacy() {
       if (privacyJob?.isActive == true || System.currentTimeMillis() - privacyEndedAt < QUICK_RECHECK_MS || !engine.privacyShouldRun()) return
       privacyJob = quickScope.launch {
         try {
-          PrivacyPass(applicationContext, engine) { mustStop() }.run()
+          PrivacyPass(applicationContext, engine) { mustStop() }.run(privacyPace)
         } catch (e: CancellationException) {
           throw e
         } catch (t: Throwable) {

@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,6 +39,7 @@ import com.craneai.findr.core.DeliveryPhase
 import com.craneai.findr.core.DeliveryState
 import com.craneai.findr.core.ModelChoice
 import com.craneai.findr.core.Refusal
+import com.craneai.findr.diag.StartupFrames
 import com.craneai.findr.ui.app.AccessState
 import com.craneai.findr.ui.common.HomeBanner
 import com.craneai.findr.ui.common.HomeBannerLine
@@ -81,6 +83,7 @@ fun GetModelsCard(
   onOpen: () -> Unit = {},
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
+  if (StartupFrames.on) SideEffect { StartupFrames.note("models", state.phase.name) }
   // Watch Downloads only while a card that asks for the file is on screen.
   DisposableEffect(viewModel) {
     viewModel.watch(true)
@@ -379,8 +382,12 @@ fun modelsCardWanted(viewModel: DeliveryViewModel): Boolean {
   val finished by remember { viewModel.state.map { it.phase == DeliveryPhase.DONE && it.removable == null }.distinctUntilChanged() }
     .collectAsStateWithLifecycle(false)
   LaunchedEffect(finished) { if (finished) viewModel.acknowledge() }
-  return !finished && (noModel || busy)
+  if (StartupFrames.on) SideEffect { StartupFrames.note("modelsWanted", "noModel=$noModel busy=$busy finished=$finished") }
+  return modelsCardWanted(noModel, busy, finished)
 }
+
+/** The rule behind [modelsCardWanted], pure for the unit tests: [noModel] is true only once the model is known to be missing. */
+internal fun modelsCardWanted(noModel: Boolean, busy: Boolean, finished: Boolean): Boolean = !finished && (noModel || busy)
 
 /**
  * What a "hide" on the Home strip is remembered against: hiding the download strip hides the whole download (downloading and

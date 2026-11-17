@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.craneai.findr.core.DeliveryService
 import com.craneai.findr.core.DeliveryState
+import com.craneai.findr.core.ModelPresence
 import com.craneai.findr.core.SearchEngine
 import com.craneai.findr.engine.Edition
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,13 +21,14 @@ class DeliveryViewModel(engine: SearchEngine) : ViewModel() {
   val state: StateFlow<DeliveryState> = delivery.state
 
   /**
-   * True while the phone has no model at all. Mapped to a Boolean so Home does not recompose every time the index status
-   * re-emits (every couple of seconds while the worker runs).
+   * True once it is KNOWN that the phone has no model at all ([ModelPresence.MISSING]); false while it is installed or not known yet,
+   * so a first frame drawn before anyone has looked shows the normal Home, never the card (the cold-start flash, 1.0.8). Mapped to a
+   * Boolean so Home does not recompose every time the index status re-emits (every couple of seconds while the worker runs).
    */
   val noModel: StateFlow<Boolean> =
     if (!Edition.MODELS) MutableStateFlow(false)   // Trawl Go has no model to get: no first-run card, no models page
-    else engine.status.map { it.modelBytes == 0L }.distinctUntilChanged()
-      .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), engine.status.value.modelBytes == 0L)
+    else engine.status.map { it.models == ModelPresence.MISSING }.distinctUntilChanged()
+      .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), engine.status.value.models == ModelPresence.MISSING)
 
   fun downloadUrl(): String = delivery.downloadUrl()
   fun setChoice(choice: com.craneai.findr.core.ModelChoice) = delivery.setChoice(choice)

@@ -16,6 +16,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,6 +37,7 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.craneai.findr.R
 import com.craneai.findr.diag.Diag
+import com.craneai.findr.diag.StartupFrames
 import com.craneai.findr.ui.app.AccessState
 import com.craneai.findr.ui.app.AppViewModel
 import com.craneai.findr.ui.app.UiPrefs
@@ -169,7 +171,9 @@ internal fun HomeCardSlot(
     if (access.allFiles && firstSearchDone && AppViewModel.notificationsNeedRuntimePrompt() && !access.notifications && !notificationsAsked) add(HomeCard.NOTIFICATIONS)
   }
   val typing = fieldFocused.value && WindowInsets.isImeVisible
-  val card = HomeCards.pick(wants, typing, searching) ?: return
+  val card = HomeCards.pick(wants, typing, searching)
+  if (StartupFrames.on) SideEffect { StartupFrames.note("card", card?.name ?: "none") }
+  if (card == null) return
   val strip = HomeCards.asStrip(compact, searching)
 
   val body: @Composable () -> Unit = {

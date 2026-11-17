@@ -13,6 +13,7 @@ import com.craneai.findr.core.IndexedFile
 import com.craneai.findr.core.KindFilter
 import com.craneai.findr.core.KindProgress
 import com.craneai.findr.core.ModelChoice
+import com.craneai.findr.core.ModelPresence
 import com.craneai.findr.core.ModelUpdate
 import com.craneai.findr.core.PackIds
 import com.craneai.findr.core.PackManager
@@ -50,25 +51,26 @@ object Status {
     FileKind.AUDIO to KindProgress(1020, (1020 * frac).toInt()),
   )
 
-  val notStarted = IndexStatus(phase = IndexPhase.NOT_STARTED)
-  val scanning = IndexStatus(phase = IndexPhase.SCANNING, filesKnown = 1832, modelBytes = 310_000_000, modelReady = true)
+  // Each state says whether the model is on the phone, as the real engine does from its first status (ModelPresence): 0 bytes is MISSING.
+  val notStarted = IndexStatus(phase = IndexPhase.NOT_STARTED, models = ModelPresence.MISSING)
+  val scanning = IndexStatus(phase = IndexPhase.SCANNING, filesKnown = 1832, modelBytes = 310_000_000, models = ModelPresence.INSTALLED, modelReady = true)
   val upToDate = IndexStatus(
     phase = IndexPhase.UP_TO_DATE, filesKnown = 5400, filesSearchable = 5400, filesUnderstood = 5400, byKind = kinds(1.0),
-    modelBytes = 310_000_000, indexBytes = 96_000_000, searchMemoryBytes = 31_000_000, estimatedSearchMemoryBytes = 31_000_000,
+    modelBytes = 310_000_000, models = ModelPresence.INSTALLED, indexBytes = 96_000_000, searchMemoryBytes = 31_000_000, estimatedSearchMemoryBytes = 31_000_000,
     quickLook = QuickLookProgress(known = 4300, ready = 4300, full = 4300),
   )
   val indexing = IndexStatus(
     phase = IndexPhase.INDEXING, filesKnown = 5400, filesSearchable = 5400, filesUnderstood = 1800, byKind = kinds(0.33), etaSeconds = 3 * 3600 + 1200,
-    ratePerHour = 900.0, modelBytes = 310_000_000, indexBytes = 52_000_000, estimatedIndexBytes = 96_000_000, currentFile = "IMG_20261012_1832.jpg",
+    ratePerHour = 900.0, modelBytes = 310_000_000, models = ModelPresence.INSTALLED, indexBytes = 52_000_000, estimatedIndexBytes = 96_000_000, currentFile = "IMG_20261012_1832.jpg",
     searchMemoryBytes = 10_000_000, estimatedSearchMemoryBytes = 31_000_000, quickLook = QuickLookProgress(known = 4300, ready = 3900, full = 1700),
   )
-  val indexingNoModel = indexing.copy(modelBytes = 0, modelReady = false, filesUnderstood = 0, byKind = kinds(0.0))
-  val waitingForModels = IndexStatus(phase = IndexPhase.INDEXING, filesKnown = 5400, filesSearchable = 2100, filesUnderstood = 0, modelReady = false, modelBytes = 0)
+  val indexingNoModel = indexing.copy(modelBytes = 0, models = ModelPresence.MISSING, modelReady = false, filesUnderstood = 0, byKind = kinds(0.0))
+  val waitingForModels = IndexStatus(phase = IndexPhase.INDEXING, filesKnown = 5400, filesSearchable = 2100, filesUnderstood = 0, modelReady = false, modelBytes = 0, models = ModelPresence.MISSING)
   fun paused(reason: PauseReason) = indexing.copy(
     phase = IndexPhase.PAUSED, pauseReason = reason, charging = reason != PauseReason.NOT_CHARGING,
     needsCharger = reason == PauseReason.NOT_CHARGING, etaSeconds = null,
   )
-  val error = IndexStatus(phase = IndexPhase.ERROR, filesKnown = 5400, lastError = "storage", openProblem = IndexOpenProblem.STORAGE_FULL)
+  val error = IndexStatus(phase = IndexPhase.ERROR, filesKnown = 5400, lastError = "storage", openProblem = IndexOpenProblem.STORAGE_FULL, models = ModelPresence.MISSING)
   val errorBusy = error.copy(openProblem = IndexOpenProblem.BUSY)
   val reembedding = indexing.copy(reembed = com.craneai.findr.core.ReembedMeter(done = 1200, total = 5400))
 }

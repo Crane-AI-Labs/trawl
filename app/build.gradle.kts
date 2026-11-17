@@ -18,8 +18,8 @@ android {
     applicationId = "com.craneai.findr"
     minSdk = 30   // MediaStore generations (the change journal Findr's crawler relies on) start at Android 11
     targetSdk = 36   // compile against 37, but keep 36 runtime behaviour until it's tested
-    versionCode = 8
-    versionName = "1.0.7"
+    versionCode = 9
+    versionName = "1.0.8"
     // Compose UI tests (src/androidTest): screenshot-free checks of the Sunlight components on a phone.
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     // The ABI is per edition (productFlavors below): the full app is 64-bit only, Trawl Go is 32-bit only.
@@ -36,6 +36,9 @@ android {
     // that many MB for the life of the process, so a phone whose Java heap limit is 256 MB behaves like a 128 MB one (diag/HeapProbe).
     buildConfigField("boolean", "FINDR_HEAPLOG", providers.gradleProperty("findrHeapLog").orNull ?: "false")
     buildConfigField("int", "HEAP_BALLAST_MB", providers.gradleProperty("heapBallastMb").orNull ?: "0")
+    // Test builds only: `-PfindrStartupLog=true` logs, as "FindrStartup", what Home draws in the first seconds of each process (which
+    // card, the meter's phase), to check a cold start's first frames from the log (diag/StartupFrames). On in debug builds; off in every shipped build.
+    buildConfigField("boolean", "STARTUP_LOG", providers.gradleProperty("findrStartupLog").orNull ?: "false")
     buildConfigField("String", "FINDR_PROFILE", "\"${providers.gradleProperty("findrProfile").orNull ?: ""}\"")
     // Detail logging (core/FindrLog): file names, paths and queries in logcat. Debug builds only, unless a release is
     // built with `-PfindrLogDetail=true` for a test phone (the smoke scripts read file names from the log). Never ship that.
@@ -120,6 +123,7 @@ android {
       providers.gradleProperty("appIdSuffix").orNull?.let { applicationIdSuffix = it }
       // `-PfindrLogDetail=false` turns detail logging off in a debug build, to see what a user's build logs (and what a problem report holds).
       buildConfigField("boolean", "LOG_DETAIL", providers.gradleProperty("findrLogDetail").orNull ?: "true")
+      buildConfigField("boolean", "STARTUP_LOG", providers.gradleProperty("findrStartupLog").orNull ?: "true")
     }
     release {
       // The same side-by-side switch for a release build, so timings can be taken on what a user gets without touching their install.
