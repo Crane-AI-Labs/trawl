@@ -308,6 +308,7 @@ class FindrEngine(private val context: Context) : SearchEngine {
   private val revealedFlow = MutableStateFlow(false)
   override val sensitiveRevealed: StateFlow<Boolean> = revealedFlow
   override val searchRepairing: StateFlow<Boolean> get() = embedder.repairing
+  override val meaningReady: StateFlow<Boolean> get() = embedder.ready
   /**
    * The first status already says whether the model is on the phone (a few file checks, here at start-up): the index opens off the
    * main thread and can take a while, and a status that said "no model" until then drew the "Get the search models" card on a cold

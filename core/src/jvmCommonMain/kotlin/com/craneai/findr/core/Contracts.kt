@@ -116,6 +116,8 @@ interface SearchEngine {
    */
   val searchRepairing: StateFlow<Boolean> get() = NOT_REPAIRING
 
+  val meaningReady: StateFlow<Boolean> get() = MEANING_READY
+
   /** The privacy gate reveals sensitive results (after the device credential) or hides them again. */
   fun setSensitiveRevealed(revealed: Boolean) {}
 
@@ -142,6 +144,7 @@ interface SearchEngine {
 
 private val NEVER_REVEALED: StateFlow<Boolean> = kotlinx.coroutines.flow.MutableStateFlow(false)
 private val NOT_REPAIRING: StateFlow<Boolean> = kotlinx.coroutines.flow.MutableStateFlow(false)
+private val MEANING_READY: StateFlow<Boolean> = kotlinx.coroutines.flow.MutableStateFlow(true)
 
 // ---- Extraction data (package `extract` reads and writes these; the Android-typed seams that return them stay in :app) ----
 

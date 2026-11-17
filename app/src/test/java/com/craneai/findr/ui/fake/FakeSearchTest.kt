@@ -3,6 +3,7 @@ package com.craneai.findr.ui.fake
 import com.craneai.findr.core.FileKind
 import com.craneai.findr.core.KindFilter
 import com.craneai.findr.core.Locator
+import com.craneai.findr.ui.common.plainSnippet
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -48,5 +49,23 @@ class FakeSearchTest {
       val s = h.snippet ?: continue
       assertEquals(s, s.count { it == '«' }, s.count { it == '»' })
     }
+  }
+
+  @Test fun snippetWindowKeepsWholeApostropheAndNonLatinWords() {
+    for (word in listOf("ng'ombe", "eby’obulimi", "привет", "مرحبا", "cafe\u0301")) {
+      val text = "opening " + word.repeat(9) + " target " + word.repeat(20) + " mwisho"
+      val entry = FakeEntry(entries.first { it.file.kind == FileKind.DOCUMENT }.file, pages = listOf(text))
+      val hit = FakeSearch.run(listOf(entry), "target", KindFilter.ALL, 60, false).first.single()
+      val snippet = hit.snippet!!
+      assertEquals("…" + text.substringAfter("opening ").substringBeforeLast(" mwisho") + "…", plainSnippet(snippet))
+      assertTrue(snippet, snippet.contains("«target»"))
+    }
+  }
+
+  @Test fun aMatchLongerThanTheWindowStaysVisibleAndComplete() {
+    val word = "target" + "a".repeat(200)
+    val entry = FakeEntry(entries.first { it.file.kind == FileKind.DOCUMENT }.file, pages = listOf("before $word after"))
+    val hit = FakeSearch.run(listOf(entry), "target", KindFilter.ALL, 60, false).first.single()
+    assertEquals("before «$word»…", hit.snippet)
   }
 }

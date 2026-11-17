@@ -52,6 +52,7 @@ fun HomeBanner(
   onDismiss: (() -> Unit)? = null,
   color: Color = MaterialTheme.colorScheme.surfaceVariant,
   below: (@Composable () -> Unit)? = null,
+  wrapTitle: Boolean = false,
   actions: @Composable () -> Unit = {},
 ) {
   val config = LocalConfiguration.current
@@ -61,7 +62,7 @@ fun HomeBanner(
   // ("G / e / t" on a phone on its side at 2.0, 1.0.6 polish), so the actions go under the title there too.
   val wide = config.screenWidthDp >= 600 && !large
   val showBody = body != null && config.screenHeightDp >= 500
-  val titleLines = if (large) Int.MAX_VALUE else 3
+  val titleLines = if (large || wrapTitle) Int.MAX_VALUE else 3
   val bodyLines = Int.MAX_VALUE   // the body only shows on a window 500 dp tall, which has the room; Luganda runs longer than English
   val text: @Composable (Modifier) -> Unit = { m ->
     Column(m) {

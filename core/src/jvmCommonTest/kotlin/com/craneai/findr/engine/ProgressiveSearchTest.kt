@@ -17,6 +17,7 @@ import java.nio.file.Files
 import kotlin.math.sqrt
 import kotlin.random.Random
 import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
@@ -184,6 +185,33 @@ class ProgressiveSearchTest {
     assertEquals("two answers", 2, seen.size)
     val direct = searcher.search("rental contract", embed("rental contract"), KindFilter.ALL, 20, prefixLast = true, wordWeight = 4.0)
     same(direct, seen.last(), "the meaning answer ranks with the weight the policy returned")
+  }
+
+  @Test fun aColdQueryShowsWordsWhileTheEngineWarmsThenPublishesTheSameFusedAnswer() = runBlocking {
+    val vectors = VectorIndex(parallelism = 1)
+    try {
+      val searcher = Searcher(store, vectors, kinds)
+      val warming = CompletableDeferred<Unit>()
+      val ready = CompletableDeferred<Unit>()
+      val progressive = ProgressiveSearch(
+        searcher = { searcher }, meaningPossible = { true }, storedVectors = { store.hasVectors() },
+        ensureVectors = { vectors.load(store) }, wantsMeaning = { true },
+        embed = { query -> warming.complete(Unit); ready.await(); QueryVectors(embed(query), null) },
+      )
+      val seen = ArrayList<SearchResults>()
+      val query = "rental contract"
+      val collector = launch { progressive.run(query, KindFilter.ALL, 20).collect { seen += it } }
+      withTimeout(10_000) { warming.await() }
+      assertEquals(1, seen.size)
+      assertFalse(seen.single().complete)
+      ready.complete(Unit)
+      collector.join()
+      assertEquals(2, seen.size)
+      assertTrue(seen.last().complete)
+      same(searcher.search(query, embed(query), KindFilter.ALL, 20, prefixLast = true), seen.last(), "warm final answer")
+    } finally {
+      vectors.close()
+    }
   }
 
   @Test fun withoutAModelWordsAreTheCompleteAnswerAsBefore() {

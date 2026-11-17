@@ -4,6 +4,11 @@
   <string name="models_title">Pata modeli za utafutaji</string>
   <string name="models_body">Tumia Wi-Fi ukiweza: faili moja la %1$d MB, linalopakuliwa mara moja. Kutafuta majina na maneno hufanya kazi mara moja. Kutafuta kwa maana kunaboreka kadiri <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> inavyojifunza, na huwa bora zaidi baada ya usiku mmoja kwenye chaja.</string>
   <string name="models_get">Pata modeli (%1$d MB)</string>
+  <string name="models_search_installed">Modeli ya utafutaji imesakinishwa.</string>
+  <string name="models_missing_packs">Modeli ya utafutaji imesakinishwa. Vifurushi vinavyokosekana: %1$s.</string>
+  <string name="models_missing_full_bundle">Vipakuzi tofauti vya vifurushi hivi havipatikani hapa. Pakua kifurushi kizima ili kuviongeza.</string>
+  <string name="models_get_full_bundle">Pata kifurushi kizima (%1$d MB)</string>
+  <string name="models_refused_installed_safe">Faili lililopakuliwa halikuweza kutumiwa. Modeli yako ya utafutaji iliyosakinishwa bado ipo.</string>
   <string name="models_choose">Chagua faili</string>
   <string name="models_hint_choose">Tayari una faili? Lichague kwenye simu yako.</string>
   <string name="models_hint_access"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> huongeza faili kiotomatiki linapomaliza kupakuliwa, ukiruhusu ifikie mafaili yako. Au tumia Chagua faili.</string>
@@ -21,8 +26,8 @@
   <string name="models_free_no">Hapana, lihifadhi</string>
   <string name="models_try_again">Jaribu tena</string>
   <string name="models_refused_wrong_class">Faili hili ni la aina nyingine ya simu. Tumia Pata modeli ili kupakua faili la simu hii.</string>
-  <string name="models_refused_damaged">Faili limeharibika au halijakamilika, kwa hivyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> haikulitumia. Lipakue tena, kisha ujaribu tena.</string>
-  <string name="models_refused_incomplete">Upakuaji ulisimama kabla ya kukamilika. Gusa Pata modeli ili uanze tena.</string>
+  <string name="models_refused_damaged">Faili lililopakuliwa limeharibika, kwa hivyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> haikulitumia. Lipakue tena, kisha ujaribu tena.</string>
+  <string name="models_refused_incomplete">Upakuaji haujakamilika. Gusa kitufe cha kupakua tena ili kivinjari chako kiweze kuendelea.</string>
   <string name="models_refused_incomplete_progress">MB %1$d kati ya %2$d zimefika.</string>
   <string name="models_refused_unreadable">Faili halikuweza kufunguliwa. Hakikisha bado liko kwenye simu, kisha ujaribu tena.</string>
   <string name="models_refused_not_signed"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> haikuweza kuthibitisha kuwa faili hili ni halisi, kwa hivyo haikulitumia. Tumia Pata modeli ili kulipakua tena.</string>

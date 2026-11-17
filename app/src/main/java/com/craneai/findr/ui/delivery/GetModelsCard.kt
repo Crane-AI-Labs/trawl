@@ -38,6 +38,7 @@ import com.craneai.findr.R
 import com.craneai.findr.core.DeliveryPhase
 import com.craneai.findr.core.DeliveryState
 import com.craneai.findr.core.ModelChoice
+import com.craneai.findr.core.PackCatalog
 import com.craneai.findr.core.Refusal
 import com.craneai.findr.diag.StartupFrames
 import com.craneai.findr.ui.app.AccessState
@@ -108,7 +109,7 @@ fun GetModelsCard(
     Column(if (framed) Modifier.padding(Sun.S16) else Modifier) {
       if (framed) {
         Text(
-          stringResource(R.string.models_title),
+          modelsTitle(state),
           style = SunType.BodyLarge.copy(fontWeight = FontWeight.Bold),
           color = MaterialTheme.colorScheme.onSurface,
           modifier = Modifier.semantics { heading() },
@@ -137,15 +138,19 @@ private fun Idle(
   onChoose: () -> Unit,
   onChoice: (ModelChoice) -> Unit,
 ) {
-  if (showBody && state.sizeMb > 0) {
-    Text(appString(R.string.models_body, state.sizeMb), style = SunType.Body, color = MaterialTheme.colorScheme.onSurfaceVariant)
+  if (showBody && (state.sizeMb > 0 || state.searchModelInstalled)) {
+    Text(
+      if (state.searchModelInstalled) installedPacksText(state) else appString(R.string.models_body, state.sizeMb),
+      style = SunType.Body,
+      color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
     Spacer(Modifier.height(Sun.S12))
   }
   if (showsChoice(state)) {
     ModelChoicePicker(state, onChoice)
     Spacer(Modifier.height(Sun.S12))
   }
-  SunButton(onClick = onGet, modifier = Modifier.fillMaxWidth()) { Text(modelsGetLabel(stringResource(R.string.models_get, state.sizeMb), state.sizeMb), style = SunType.Label) }
+  SunButton(onClick = onGet, modifier = Modifier.fillMaxWidth()) { Text(downloadLabel(state), style = SunType.Label) }
   if (noBrowser) {
     Spacer(Modifier.height(Sun.S8))
     SunErrorText(stringResource(R.string.models_no_browser))
@@ -167,7 +172,30 @@ private fun Idle(
 }
 
 /** The pack choice is asked on a phone that can hold either pack and has no signed pack yet; a 2 GB phone is on Save data without being asked. */
-internal fun showsChoice(state: DeliveryState): Boolean = state.choiceOffered && state.installedChoice == null
+internal fun showsChoice(state: DeliveryState): Boolean = state.choiceOffered && state.installedChoice == null && !state.searchModelInstalled
+
+@Composable
+private fun modelsTitle(state: DeliveryState): String =
+  stringResource(if (state.searchModelInstalled) R.string.models_search_installed else R.string.models_title)
+
+@Composable
+internal fun downloadLabel(state: DeliveryState): String = modelsGetLabel(
+  stringResource(if (state.searchModelInstalled) R.string.models_get_full_bundle else R.string.models_get, state.sizeMb),
+  state.sizeMb,
+)
+
+@Composable
+private fun installedPacksText(state: DeliveryState): String {
+  if (state.missingPacks.isEmpty()) return stringResource(R.string.models_search_installed)
+  val names = state.missingPacks.map { id ->
+    stringResource(when (id) {
+      PackCatalog.QUICK_LOOK -> R.string.pack_quicklook_name
+      PackCatalog.PRIVACY -> R.string.pack_privacy_name
+      else -> R.string.pack_speech_name
+    })
+  }
+  return stringResource(R.string.models_missing_packs, names.joinToString(", ")) + " " + stringResource(R.string.models_missing_full_bundle)
+}
 
 @Composable
 internal fun Downloading(state: DeliveryState) {
@@ -192,15 +220,19 @@ internal fun Installing(state: DeliveryState, onCancel: () -> Unit) {
 }
 
 @Composable
-internal fun refusalText(state: DeliveryState): String = when (state.refusal) {
-  Refusal.WRONG_CLASS -> stringResource(R.string.models_refused_wrong_class)
-  Refusal.NOT_SIGNED, Refusal.BAD_SIGNATURE, Refusal.BAD_MANIFEST -> appString(R.string.models_refused_not_signed)
-  Refusal.OLDER_VERSION -> appString(R.string.models_refused_older)
-  Refusal.NO_SPACE -> stringResource(R.string.models_refused_no_space, state.sizeMb)
-  Refusal.CANCELLED -> stringResource(R.string.models_refused_cancelled)
-  Refusal.INCOMPLETE -> incompleteText(state)
-  Refusal.UNREADABLE -> stringResource(R.string.models_refused_unreadable)
-  else -> appString(R.string.models_refused_damaged)
+internal fun refusalText(state: DeliveryState): String {
+  if (state.searchModelInstalled && state.refusal == Refusal.DAMAGED && state.missingPacks.isNotEmpty()) return installedPacksText(state)
+  val reason = when (state.refusal) {
+    Refusal.WRONG_CLASS -> stringResource(R.string.models_refused_wrong_class)
+    Refusal.NOT_SIGNED, Refusal.BAD_SIGNATURE, Refusal.BAD_MANIFEST -> appString(R.string.models_refused_not_signed)
+    Refusal.OLDER_VERSION -> appString(R.string.models_refused_older)
+    Refusal.NO_SPACE -> stringResource(R.string.models_refused_no_space, state.sizeMb)
+    Refusal.CANCELLED -> stringResource(R.string.models_refused_cancelled)
+    Refusal.INCOMPLETE -> incompleteText(state)
+    Refusal.UNREADABLE -> stringResource(R.string.models_refused_unreadable)
+    else -> if (state.searchModelInstalled) stringResource(R.string.models_refused_installed_safe) else appString(R.string.models_refused_damaged)
+  }
+  return if (state.searchModelInstalled && state.missingPacks.isNotEmpty()) reason + " " + installedPacksText(state) else reason
 }
 
 /** A download that stopped: how far it got ("300 of 670 MB arrived."), when known, then what to do. */
@@ -215,7 +247,7 @@ private fun incompleteText(state: DeliveryState): String {
 private fun Refused(state: DeliveryState, onGet: () -> Unit, onChoose: () -> Unit, onAcknowledge: () -> Unit) {
   SunErrorText(refusalText(state))
   Spacer(Modifier.height(Sun.S12))
-  SunButton(onClick = onGet, modifier = Modifier.fillMaxWidth()) { Text(modelsGetLabel(stringResource(R.string.models_get, state.sizeMb), state.sizeMb), style = SunType.Label) }
+  SunButton(onClick = onGet, modifier = Modifier.fillMaxWidth()) { Text(downloadLabel(state), style = SunType.Label) }
   Spacer(Modifier.height(Sun.S8))
   SunOutlinedButton(onClick = onChoose, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.models_choose), style = SunType.Label) }
   SunTextButton(onClick = onAcknowledge) { Text(stringResource(R.string.models_ok)) }
@@ -253,7 +285,7 @@ internal fun Done(state: DeliveryState, viewModel: DeliveryViewModel, confirmDon
  */
 @Composable
 private fun foldedTitle(state: DeliveryState, confirmDone: Boolean): String? = when (state.phase) {
-  DeliveryPhase.IDLE -> stringResource(R.string.models_title)
+  DeliveryPhase.IDLE -> modelsTitle(state)
   DeliveryPhase.REFUSED -> refusalText(state)
   DeliveryPhase.DOWNLOADING, DeliveryPhase.INSTALLING -> null
   DeliveryPhase.DONE -> state.removable?.let { stringResource(R.string.models_free_question, formatBytes(it.bytes)) }
@@ -273,7 +305,7 @@ private fun ModelsBanner(
   modifier: Modifier,
 ) {
   val close = stringResource(R.string.report_close)
-  val get: @Composable () -> Unit = { SunButton(onClick = onGet) { Text(modelsGetLabel(stringResource(R.string.models_get, state.sizeMb), state.sizeMb), style = SunType.Label) } }
+  val get: @Composable () -> Unit = { SunButton(onClick = onGet) { Text(downloadLabel(state), style = SunType.Label) } }
   val choose: @Composable () -> Unit = { SunTextButton(onClick = onChoose) { Text(stringResource(R.string.models_choose), style = SunType.Label) } }
   // The strip has no room for two rows: one text button switches to the other pack, naming its size.
   val switch: @Composable () -> Unit = {
@@ -289,9 +321,11 @@ private fun ModelsBanner(
   }
   when (state.phase) {
     DeliveryPhase.IDLE -> HomeBanner(
-      title = stringResource(R.string.models_title),
+      title = if (state.searchModelInstalled) installedPacksText(state) else modelsTitle(state),
       modifier = modifier,
-      body = if (noBrowser) stringResource(R.string.models_no_browser) else if (access.allFiles) appString(R.string.models_hint_wait) else appString(R.string.models_hint_access),
+      body = if (noBrowser) stringResource(R.string.models_no_browser) else if (state.searchModelInstalled) null
+        else if (access.allFiles) appString(R.string.models_hint_wait) else appString(R.string.models_hint_access),
+      wrapTitle = state.searchModelInstalled,
       dismissLabel = close,
       onDismiss = onHide,
     ) { get(); choose(); switch() }
@@ -315,6 +349,7 @@ private fun ModelsBanner(
     DeliveryPhase.REFUSED -> HomeBanner(
       title = refusalText(state),
       modifier = modifier,
+      wrapTitle = state.searchModelInstalled || state.refusal == Refusal.INCOMPLETE,
       dismissLabel = close,
       onDismiss = viewModel::acknowledge,
     ) { get(); choose() }

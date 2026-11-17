@@ -5,6 +5,7 @@ import com.craneai.findr.core.KindFilter
 import com.craneai.findr.core.Locator
 import com.craneai.findr.core.MatchReason
 import com.craneai.findr.core.SearchHit
+import com.craneai.findr.search.SnippetEdges
 
 /**
  * A small stand-in for the real fusion search: words match the file name and its text, "meaning" matches the concept
@@ -69,11 +70,7 @@ internal object FakeSearch {
     val at = marked.indexOf('«').coerceAtLeast(0)
     val from = (at - 40).coerceAtLeast(0)
     val to = (from + 120).coerceAtMost(marked.length)
-    var s = marked.substring(from, to)
-    // never leave a half-open « » pair at the window edges
-    if (s.count { it == '«' } > s.count { it == '»' }) s += "»"
-    if (s.count { it == '»' } > s.count { it == '«' }) s = "«$s"
-    return (if (from > 0) "…" else "") + s.trim() + (if (to < marked.length) "…" else "")
+    return SnippetEdges.window(marked, from, to)
   }
 
   fun run(entries: List<FakeEntry>, query: String, filter: KindFilter, limit: Int, useMeaning: Boolean): Pair<List<SearchHit>, Int> {

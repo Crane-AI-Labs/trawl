@@ -140,7 +140,10 @@ class FileProcessor(
    * them with the speech model (words + sound labels). For a sound file, [AudioPolicy] decides what is done: a short
    * recording with no working speech model gets the audio vector even with [withAudio] off. Videos use the flags as given.
    */
-  suspend fun process(file: IndexedFile, fromChunk: Int = 0, withAudio: Boolean = false, withSpeech: Boolean = false): Processed {
+  suspend fun process(file: IndexedFile, fromChunk: Int = 0, withAudio: Boolean = false, withSpeech: Boolean = false): Processed =
+    process(file, fromChunk, withAudio, withSpeech, DocumentProgress(fromChunk))
+
+  internal suspend fun process(file: IndexedFile, fromChunk: Int, withAudio: Boolean, withSpeech: Boolean, progress: DocumentProgress): Processed {
     val uri = Uri.parse(file.uri)
     yieldToUser.reset()
     // A long video or recording is read one window (MEDIA_WINDOW_MS) per step: `fromChunk` is the window. Each step is saved by
@@ -149,7 +152,7 @@ class FileProcessor(
     val window = if (windows > 1 && (file.kind == FileKind.VIDEO || file.kind == FileKind.AUDIO)) fromChunk else null
     if (window != null && window >= windows) return Processed(emptyList(), null, null)
     return when (file.kind) {
-      FileKind.DOCUMENT, FileKind.PDF -> document(file, uri, fromChunk)
+      FileKind.DOCUMENT, FileKind.PDF -> document(file, uri, fromChunk, progress)
       FileKind.IMAGE, FileKind.SCREENSHOT -> image(file, uri)
       FileKind.VIDEO -> video(file, uri, withAudio, withSpeech, window, windows)
       FileKind.AUDIO -> AudioPolicy.plan(file.kind, file.durationMs, withSpeech, asr?.available() == true, withAudio).let { plan ->
@@ -203,17 +206,12 @@ class FileProcessor(
     }
   }
 
-  private suspend fun document(file: IndexedFile, uri: Uri, fromChunk: Int): Processed {
+  private suspend fun document(file: IndexedFile, uri: Uri, fromChunk: Int, progress: DocumentProgress): Processed {
     // Later steps: the first step stored every chunk's text, so embed the next ones from the index, not the file.
     if (fromChunk > 0) storedChunks?.invoke(file.id, fromChunk, CHUNKS_PER_STEP)?.let { (chunks, total) ->
       if (chunks.isNotEmpty()) {
-        val pieces = chunks.map { (page, chunk) ->
-          coroutineContext.ensureActive()
-          letUserFirst()
-          Piece(PieceKind.CHUNK, PieceModality.TEXT, page, page, null, embedder.document(chunk))
-        }
-        val read = fromChunk + chunks.size
-        return Processed(pieces, read.takeIf { it < total }, "chunks $read/$total")
+        progress.prepare(chunks, total)
+        return embedDocumentChunks(chunks, progress)
       }
     }
     val extracted = text.extract(context, uri, file.mimeType, file.name)
@@ -243,19 +241,20 @@ class FileProcessor(
     // The first step replaces everything the file had, so it carries the rest of the text too (words only): a long
     // document stays searchable by all its words while later steps add meaning. Those later steps add vectors only,
     // so no text is in the keyword index twice.
-    val pieces = step.map { (page, chunk) ->
-      coroutineContext.ensureActive()
-      letUserFirst()
-      Piece(PieceKind.CHUNK, PieceModality.TEXT, page.toLong(), page.toLong(), chunk.takeIf { fromChunk == 0 }, embedder.document(chunk))
-    } + if (fromChunk == 0) all.drop(step.size).map { (page, chunk) ->
-      Piece(PieceKind.CHUNK, PieceModality.TEXT, page.toLong(), page.toLong(), chunk, null)
-    } else emptyList()
-    val next = (fromChunk + step.size).takeIf { it < all.size }
-    val detail = (if (all.isEmpty()) "no text" else "chunks ${fromChunk + step.size}/${all.size}") +
-      (extracted.stopped?.let { ", stopped early: $it" } ?: "") +
+    val suffix = (extracted.stopped?.let { ", stopped early: $it" } ?: "") +
       (if (unread > 0) ", $unread scanned pages past $OCR_MAX_PAGES not read" else "") +
       (if (extracted.truncated && all.isNotEmpty()) ", long file: first part read" else "")
-    return Processed(pieces, next, detail)
+    progress.prepare((if (fromChunk == 0) all else step).map { (page, chunk) -> page.toLong() to chunk }, all.size, suffix)
+    return embedDocumentChunks(step.map { (page, chunk) -> page.toLong() to chunk }, progress)
+  }
+
+  private suspend fun embedDocumentChunks(chunks: List<Pair<Long?, String>>, progress: DocumentProgress): Processed {
+    for ((index, chunk) in chunks.withIndex()) {
+      coroutineContext.ensureActive()
+      letUserFirst()
+      progress.embedded(index, embedder.document(chunk.second))
+    }
+    return progress.result()!!
   }
 
   private suspend fun image(file: IndexedFile, uri: Uri): Processed = if (lite) liteImage(file, uri) else coroutineScope {

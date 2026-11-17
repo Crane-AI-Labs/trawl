@@ -17,6 +17,8 @@ interface Embedder {
   /** True while the engine has failed its self-test even after a fresh cache: search runs on words alone ("Search is repairing itself"). */
   val repairing: StateFlow<Boolean>
 
+  val ready: StateFlow<Boolean> get() = READY
+
   /** The model files this phone may use, in order of preference ([modelNames]). */
   val modelNames: List<String>
 
@@ -63,6 +65,7 @@ interface Embedder {
   suspend fun dropAudioEncoder()
 
   companion object {
+    private val READY: StateFlow<Boolean> = kotlinx.coroutines.flow.MutableStateFlow(true)
     /**
      * D4, behind a flag: Findr's language-tuned bundles (the experiment code, setup B). They are Google's
      * 740m/440m bundles with the student backbone transplanted in (int8); vision and audio encoders are Google's, byte

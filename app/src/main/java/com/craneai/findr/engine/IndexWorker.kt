@@ -805,6 +805,8 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
 
   /** Once per installed build: files that failed under an earlier build get another go (the bug may be fixed). */
   private fun retryFailuresAfterUpdate(engine: FindrEngine) {
+    val timedOut = engine.store.retryTimedOut()
+    if (timedOut > 0) Log.i(TAG, "continuing $timedOut files that previously took too long")
     val build = applicationContext.packageManager.getPackageInfo(applicationContext.packageName, 0).lastUpdateTime.toString()
     if (engine.store.meta(RETRY_KEY) == build) return
     val n = engine.store.retryFailed()
@@ -871,7 +873,7 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
     engine: FindrEngine, processor: FileProcessor, p: PendingFile, withAudio: Boolean, withSpeech: Boolean, windowed: Boolean,
   ): Step {
     val file = p.file
-    val from = p.detail?.let { NEXT_CHUNK.find(it)?.groupValues?.get(1)?.toIntOrNull() } ?: 0   // "words" → 0
+    val from = UnderstandingStep.from(p)
     val carry = p.detail?.let { SKIPPED_WINDOWS.find(it)?.value }   // a window left out after two kills stays noted in the file's detail
     engine.workerState = engine.workerState.copy(currentFile = if (engine.store.isSensitive(file.id)) null else file.name)
     // Never the name: it can show on the lock screen. Pictures, videos and recordings run under media processing, the rest under data
@@ -880,28 +882,20 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
     val started = System.nanoTime()
     engine.store.markInflight(file.id, from, windowed)   // a process death inside this step is counted at the next start (kill-loop breaker)
     try {
-      val result = withTimeout(timeoutFor(file.kind)) { processor.process(file, from, withAudio, withSpeech) }
-      val segments = result.pieces.map { it.toSegment(late = from > 0) }
-      val state = if (result.nextChunk != null) FileState.PARTIAL else FileState.UNDERSTOOD
-      val detail = listOfNotNull(result.detail, result.nextChunk?.let { "next=$it" }, carry).joinToString(" ").ifEmpty { null }
-      val tdb = System.nanoTime()
-      // A video's first step is today's reading of it from the start: stamped, so the catch-up of older videos leaves it be (VideoCatchUp).
-      engine.store.saveSegments(file.id, segments, state, detail, replace = from == 0,
-        info = VideoCatchUp.STAMP.takeIf { file.kind == FileKind.VIDEO && from == 0 },
-        keepQuick = keepsQuick(segments, engine.embedder.imagesByEmbeddingGemma))
+      val result = UnderstandingStep(engine.store, processor).process(p, withAudio, withSpeech, timeoutFor(file.kind), engine.embedder.imagesByEmbeddingGemma)
+      val segments = result.segments
+      val detail = result.detail
       engine.onFileIndexed(file.id)
       runFiles++
-      val dbMs = (System.nanoTime() - tdb) / 1_000_000
+      val dbMs = result.dbMs
       val waited = processor.waitedMs / 1e3   // time spent letting the user scroll isn't indexing time
       val seconds = (System.nanoTime() - started) / 1e9 - waited
-      if (!windowed) Pace.record(file.kind, seconds)
-      Log.i(TAG, "understood ${redact(file.name)} in ${"%.1f".format(seconds)} s: ${segments.size} pieces${detail?.let { ", $it" } ?: ""}" +
+      if (!windowed && !result.timedOut) Pace.record(file.kind, seconds)
+      Log.i(TAG, "${if (result.timedOut) "time budget spent" else "understood"} ${redact(file.name)} in ${"%.1f".format(seconds)} s: ${segments.size} pieces${detail?.let { ", $it" } ?: ""}" +
         (if (waited > 0) " (waited ${"%.1f".format(waited)} s for the user)" else "") + ", db write $dbMs ms")
-      return Step(result.nextChunk, seconds, finished = result.nextChunk == null, carry)
+      return Step(result.next, seconds, finished = result.finished, carry)
     } catch (e: UserYield.DeferredForUser) {
       Log.i(TAG, "deferred ${redact(file.name)}: the user kept scrolling or is in another app")   // stays pending, picked up when they stop
-    } catch (e: TimeoutCancellationException) {
-      engine.store.setState(file.id, FileState.FAILED, "took too long")
     } catch (e: CancellationException) {
       throw e   // stopped: the file stays as it was and is picked up next time
     } catch (e: EngineUnhealthyException) {

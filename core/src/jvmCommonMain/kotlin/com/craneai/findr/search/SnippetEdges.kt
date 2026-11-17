@@ -13,11 +13,96 @@ package com.craneai.findr.search
  * Whether an end is inside a word depends on the text around the excerpt, which the caller knows and this does not:
  * pass [tidy] the characters just before and just after (empty when the excerpt reaches the start or the end of the
  * text). Languages written without spaces (Chinese, Japanese, Thai, ...) have no word to cut at, so nothing is trimmed there.
+ * [window] takes offsets in the marked input and expands them to complete words, emoji sequences and highlights. Its character
+ * budget is soft: a word may run [WORD_OVERRUN] characters past it, and a longer run (a base64 line, a minified blob) is cut there,
+ * at a clean code point; unspaced scripts cut at Unicode code points rather than dictionary word boundaries. Pass `highlights = false`
+ * for plain text whose « » are the author's quotation marks, not highlights.
  */
 object SnippetEdges {
   const val ELLIPSIS = "…"
   private const val OPEN = '«'
   private const val CLOSE = '»'
+
+  /** How far past the requested edge a window may stretch to finish a word, so a preview stays about one row long. A highlight is never cut. */
+  const val WORD_OVERRUN = 200
+
+  fun window(snippet: String, from: Int, to: Int, highlights: Boolean = true): String {
+    require(from in 0..snippet.length && to in from..snippet.length)
+    val plain = StringBuilder(snippet.length)
+    val marked = ArrayList<Boolean>(snippet.length)
+    val offsets = IntArray(snippet.length + 1)
+    var marking = false
+    for ((index, character) in snippet.withIndex()) {
+      offsets[index] = plain.length
+      when (character) {
+        OPEN -> if (highlights) marking = true else { plain.append(character); marked += false }
+        CLOSE -> if (highlights) marking = false else { plain.append(character); marked += false }
+        else -> { plain.append(character); marked += marking }
+      }
+    }
+    offsets[snippet.length] = plain.length
+    var start = offsets[from]
+    var end = offsets[to]
+    val wantedStart = start
+    val wantedEnd = end
+    while (start > 0 && start < plain.length && (marked[start - 1] && marked[start] || insideCluster(plain, start) || wantedStart - start < WORD_OVERRUN && insideWordRun(plain, start))) start--
+    while (end > 0 && end < plain.length && (marked[end - 1] && marked[end] || insideCluster(plain, end) || end - wantedEnd < WORD_OVERRUN && insideWordRun(plain, end))) end++
+    val lead = start > 0
+    val trail = end < plain.length
+    while (start < end && plain[start].isWhitespace() && !marked[start]) start++
+    while (end > start && plain[end - 1].isWhitespace() && !marked[end - 1]) end--
+    if (start == end) return ""
+    return buildString {
+      if (lead && plain[start] != ELLIPSIS[0]) append(ELLIPSIS)
+      var open = false
+      for (index in start until end) {
+        if (marked[index] != open) { append(if (marked[index]) OPEN else CLOSE); open = marked[index] }
+        append(plain[index])
+      }
+      if (open) append(CLOSE)
+      if (trail && plain[end - 1] != ELLIPSIS[0]) append(ELLIPSIS)
+    }
+  }
+
+  private const val ZWNJ = 0x200C
+  private const val ZWJ = 0x200D
+
+  /** A cut between these two characters would split one emoji (a ZWJ family, a skin tone, a flag, a tag flag) or a word joined by a zero-width (non-)joiner, as Persian writes it. */
+  private fun joinsCluster(text: CharSequence, cut: Int, left: Int, right: Int): Boolean {
+    if (right == ZWJ || right == ZWNJ) return !Character.isWhitespace(left)
+    if (left == ZWJ || left == ZWNJ) return !Character.isWhitespace(right)
+    if (right in 0x1F3FB..0x1F3FF || right in 0xE0020..0xE007F) return !Character.isWhitespace(left)
+    if (isRegionalIndicator(left) && isRegionalIndicator(right)) {
+      // flags are pairs: the cut is inside one when an odd number of indicators come before it
+      var count = 0
+      var at = cut
+      while (at > 0 && isRegionalIndicator(Character.codePointBefore(text, at))) { count++; at -= 2 }
+      return count % 2 == 1
+    }
+    return false
+  }
+
+  private fun isRegionalIndicator(codePoint: Int) = codePoint in 0x1F1E6..0x1F1FF
+
+  /** A cut here would split one character: a surrogate pair, a base letter from its mark, or an emoji sequence. Never cut, however long. */
+  private fun insideCluster(text: CharSequence, cut: Int): Boolean {
+    if (Character.isHighSurrogate(text[cut - 1]) && Character.isLowSurrogate(text[cut])) return true
+    val right = Character.codePointAt(text, cut)
+    val type = Character.getType(right)
+    if (type == Character.NON_SPACING_MARK.toInt() || type == Character.COMBINING_SPACING_MARK.toInt() || type == Character.ENCLOSING_MARK.toInt()) return true
+    return joinsCluster(text, cut, Character.codePointBefore(text, cut), right)
+  }
+
+  /** A cut here would leave half a word (letters either side, an apostrophe between letters counting as one). */
+  private fun insideWordRun(text: CharSequence, cut: Int): Boolean {
+    val left = Character.codePointBefore(text, cut)
+    val right = Character.codePointAt(text, cut)
+    val before = cut - Character.charCount(left)
+    val after = cut + Character.charCount(right)
+    val leftIsWord = isWord(left) || isApostrophe(left) && before > 0 && isWord(Character.codePointBefore(text, before))
+    val rightIsWord = isWord(right) || isApostrophe(right) && after < text.length && isWord(Character.codePointAt(text, after))
+    return leftIsWord && rightIsWord && !(isApostrophe(left) && isApostrophe(right))
+  }
 
   /**
    * @param snippet the excerpt, with « » around matched words and optionally an ellipsis at either end
@@ -90,9 +175,11 @@ object SnippetEdges {
   }
 
   /** A letter or digit of a script that puts spaces between words; the unspaced scripts have no word edge to cut at. */
-  private fun isWord(c: Char): Boolean {
-    if (!(Character.isLetterOrDigit(c) || Character.getType(c).let { it == Character.NON_SPACING_MARK.toInt() || it == Character.COMBINING_SPACING_MARK.toInt() })) return false
-    return when (Character.UnicodeScript.of(c.code)) {
+  private fun isWord(c: Char) = isWord(c.code)
+
+  private fun isWord(codePoint: Int): Boolean {
+    if (!(Character.isLetterOrDigit(codePoint) || Character.getType(codePoint).let { it == Character.NON_SPACING_MARK.toInt() || it == Character.COMBINING_SPACING_MARK.toInt() })) return false
+    return when (Character.UnicodeScript.of(codePoint)) {
       Character.UnicodeScript.HAN, Character.UnicodeScript.HIRAGANA, Character.UnicodeScript.KATAKANA, Character.UnicodeScript.THAI,
       Character.UnicodeScript.LAO, Character.UnicodeScript.KHMER, Character.UnicodeScript.MYANMAR, Character.UnicodeScript.TIBETAN,
       -> false
@@ -100,5 +187,7 @@ object SnippetEdges {
     }
   }
 
-  private fun isApostrophe(c: Char) = c == '\'' || c == '’' || c == 'ʼ' || c == '‘'
+  private fun isApostrophe(character: Char) = isApostrophe(character.code)
+
+  private fun isApostrophe(codePoint: Int) = codePoint == '\''.code || codePoint == '’'.code || codePoint == 'ʼ'.code || codePoint == '‘'.code
 }

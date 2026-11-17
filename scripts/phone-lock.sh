@@ -70,6 +70,7 @@ fi
 # force-stop keeps their data, and Android runs none of their jobs until they are launched again. A window that needs its
 # own side build starts it itself. The main app, com.craneai.findr, is left alone.
 quiet_side_apps() {
+  [[ "${FINDR_PHONE_LOCK_ONLY:-}" == 1 ]] && return 0
   local pkgs
   pkgs=$(adb -s "$SERIAL" shell pm list packages com.craneai.findr. 2>/dev/null | tr -d '\r' | sed 's/^package://' | grep -v '^com\.craneai\.findr$')
   for p in $pkgs; do adb -s "$SERIAL" shell am force-stop "$p" >/dev/null 2>&1; done

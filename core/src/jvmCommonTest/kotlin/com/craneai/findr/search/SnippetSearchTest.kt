@@ -184,4 +184,51 @@ class SnippetSearchTest {
     val s = snippetOf(searcher.search("study of speech", topic(3), KindFilter.ALL, 50), file)!!
     assertFalse(s, s.startsWith("…"))
   }
+
+  @Test fun meaningLeadExpandsPastTheBudgetToFinishTheWord() {
+    for ((index, word) in listOf("ng'ombe", "eby’obulimi", "привет", "مرحبا", "cafe\u0301").withIndex()) {
+      // one run of about 250 characters that the 200-character budget cuts through, well inside the overrun a word may take
+      val text = "opening $word " + word.repeat(250 / word.length + 1) + " mwisho"
+      val slot = 6 + index
+      val file = save("lead-${nextId}.txt", listOf(text), 0, slot)
+      val snippet = snippetOf(searcher.search("unrelated concept", topic(slot), KindFilter.ALL, 50), file)!!
+      assertEquals(text.substringBeforeLast(" mwisho") + "…", snippet)
+      assertWholeWords(text, snippet)
+    }
+  }
+
+  @Test fun aMeaningLeadKeepsAnUnbrokenFirstWordWhole() {
+    val word = "ng'ombe".repeat(50)
+    val file = save("long-word.txt", listOf("$word mwisho"), 0, 6)
+    assertEquals("$word…", snippetOf(searcher.search("unrelated concept", topic(6), KindFilter.ALL, 50), file))
+  }
+
+  @Test fun wordIndexSnippetsKeepApostropheAndNonLatinMatchesWhole() {
+    for ((word, query) in listOf("ng'ombe" to "ombe", "eby’obulimi" to "obulimi", "y'omu" to "omu", "привет" to "привет", "مرحبا" to "مرحبا")) {
+      val text = "context ".repeat(20) + word + " " + "ending ".repeat(20)
+      val file = save("words-${nextId}.txt", listOf(text), 0, 6)
+      val snippet = snippetOf(searcher.search(query, null, KindFilter.ALL, 50), file)!!
+      assertTrue(snippet, snippet.contains('«'))
+      assertTrue(snippet, plain(snippet).contains(word))
+      assertWholeWords(text, snippet)
+    }
+  }
+
+  @Test fun aMeaningLeadTreatsQuotationGuillemetsAsPlainText() {
+    // « » in the source are quotation marks, not highlights: an unclosed or distant one must not stretch the preview to the end of the passage
+    for ((index, text) in listOf("Il a dit «" + "mot ".repeat(100) + "fin»", "Il a dit " + "mot ".repeat(12) + "«" + "mot ".repeat(90) + "fin»", "Il a dit «" + "mot ".repeat(100)).withIndex()) {
+      val slot = 6 + index
+      val file = save("quote-${nextId}.txt", listOf(text), 0, slot)
+      val snippet = snippetOf(searcher.search("unrelated concept", topic(slot), KindFilter.ALL, 50), file)!!
+      assertEquals(text.substring(0, text.indexOf(' ', 200)) + "…", snippet)
+    }
+  }
+
+  @Test fun aMeaningLeadOfAnUnbrokenBlobStaysOneRowLong() {
+    val text = "opening " + "x".repeat(4000) + " mwisho"
+    val file = save("blob-${nextId}.txt", listOf(text), 0, 6)
+    val snippet = snippetOf(searcher.search("unrelated concept", topic(6), KindFilter.ALL, 50), file)!!
+    assertTrue("${snippet.length}", snippet.length <= 410)
+    assertTrue(snippet, snippet.endsWith("…"))
+  }
 }

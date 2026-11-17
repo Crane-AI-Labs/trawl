@@ -725,8 +725,7 @@ class Searcher(
     val t = SnippetEdges.tidy(text.trim().replace(Regex("\\s+"), " "), before)
     if (t.isEmpty()) return null
     if (t.length <= limit) return t
-    val cut = t.lastIndexOf(' ', limit).let { if (it < limit / 2) limit else it }
-    return t.substring(0, cut) + "…"
+    return SnippetEdges.window(t, 0, limit, highlights = false)
   }
 
   /**

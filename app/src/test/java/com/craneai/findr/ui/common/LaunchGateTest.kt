@@ -66,7 +66,7 @@ class DoubleTapOpenTest {
     val app: Context = activity
     later(5_000)
     assertEquals(OpenResult.OPENED, FileActions.open(app, file(1)))
-    later(150)
+    later(93)
     assertEquals(OpenResult.OPENED, FileActions.open(app, file(1)))
     assertEquals(1, launches())
   }
@@ -78,6 +78,20 @@ class DoubleTapOpenTest {
     later(LaunchGate.WINDOW_MS + 100)
     FileActions.open(app, file(1))
     assertEquals(2, launches())
+  }
+
+  @Test fun `Open then Share uses the same launch window`() {
+    FileActions.open(activity, file(1))
+    later(93)
+    FileActions.share(activity, file(1))
+    assertEquals(1, launches())
+  }
+
+  @Test fun `Share then Open uses the same launch window`() {
+    FileActions.share(activity, file(1))
+    later(93)
+    FileActions.open(activity, file(1))
+    assertEquals(1, launches())
   }
 
   @Test fun `Share and Show folder are held by the same gate`() {

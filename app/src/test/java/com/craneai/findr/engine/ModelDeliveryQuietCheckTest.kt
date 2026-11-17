@@ -3,6 +3,8 @@ package com.craneai.findr.engine
 import android.net.Uri
 import androidx.test.core.app.ApplicationProvider
 import com.craneai.findr.core.DeliveryPhase
+import com.craneai.findr.core.ModelChoice
+import com.craneai.findr.core.PackCatalog
 import com.craneai.findr.core.Refusal
 import java.io.File
 import java.util.zip.ZipEntry
@@ -13,7 +15,9 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -58,5 +62,30 @@ class ModelDeliveryQuietCheckTest {
     d.installFrom(Uri.fromFile(notABundle()).toString())
     assertEquals(DeliveryPhase.INSTALLING, d.state.value.phase)   // the person chose it: say so at once
     waitFor(d, DeliveryPhase.REFUSED)
+  }
+
+  @Test fun choosingTheSameBundleRefreshesALooseInstalledSearchModel() {
+    val delivery = ModelDelivery(context, scope, MemoryProfile.STANDARD) {}
+    assertFalse(delivery.state.value.searchModelInstalled)
+    val models = File(context.filesDir, "models")
+    val createdDirectory = !models.exists()
+    models.mkdirs()
+    val model = File(models, Embedder.STOCK_NAMES.first())
+    assertFalse(model.exists())
+    model.writeText("installed")
+    try {
+      delivery.setChoice(ModelChoice.STANDARD)
+      assertTrue(delivery.state.value.searchModelInstalled)
+      assertEquals(listOf(
+        PackCatalog.QUICK_LOOK,
+        PackCatalog.PRIVACY,
+        PackCatalog.SPEECH,
+      ), delivery.state.value.missingPacks)
+      assertEquals(null, delivery.state.value.installedChoice)
+      assertEquals(com.craneai.findr.BuildConfig.MODELS_BASE_URL + ModelBundle.ARCHIVE_NAME, delivery.downloadUrl())
+    } finally {
+      model.delete()
+      if (createdDirectory) models.delete()
+    }
   }
 }

@@ -73,6 +73,9 @@ class LiteRtEmbedder(private val context: Context, override val profile: MemoryP
   /** True while the engine has failed its self-test even after a fresh cache: search runs on words alone ("Search is repairing itself"). */
   override val repairing: StateFlow<Boolean> get() = repairingFlow
 
+  private val readyFlow = MutableStateFlow(false)
+  override val ready: StateFlow<Boolean> get() = readyFlow
+
   /** The model files this phone may use, in order of preference ([modelNames]). */
   override val modelNames: List<String> = Embedder.modelNames(profile)
 
@@ -151,6 +154,7 @@ class LiteRtEmbedder(private val context: Context, override val profile: MemoryP
     check(!lite || needed == Level.TEXT) { "the lite profile loads no $needed encoder" }
     if (needed == Level.AUDIO) check(supportsAudio) { "${file.name} has no audio encoder" }
     if (SystemClock.elapsedRealtime() < unhealthyUntil) throw EngineUnhealthyException("failed its self-test a moment ago; trying again later")
+    readyFlow.value = false
     guard.discard("rebuilding at $needed"); level = null
     val start = System.nanoTime()
     val threads = textThreads()
@@ -186,6 +190,7 @@ class LiteRtEmbedder(private val context: Context, override val profile: MemoryP
     guard.install(e)
     level = needed
     loadedThreads = threads
+    readyFlow.value = true
     Log.i(TAG, "loaded ${file.name} at $needed (vision ${if (needed >= Level.VISION && visionOnGpu) "GPU" else "CPU, idle"}) in ${(System.nanoTime() - start) / 1_000_000} ms, self-test ${selfTest.lastProbeMs} ms")   // log-safe: our model file
     return e.engine
   }
@@ -243,12 +248,13 @@ class LiteRtEmbedder(private val context: Context, override val profile: MemoryP
    * loaded instead ([EngineGuard.unload]): the memory is not given back there.
    */
   override suspend fun release() = guard.serial {
-    if (guard.unload("release")) { level = null; loadedThreads = null }
+    if (guard.unload("release")) { level = null; loadedThreads = null; readyFlow.value = false }
   }
 
   /** The loaded engine is stale (a new model file): gone for good, closed unless that is the Adreno GPU engine, which is set aside unclosed. */
   override suspend fun discard() = guard.serial {
     guard.discard("model replaced"); level = null; loadedThreads = null
+    readyFlow.value = false
   }
 
   /**
@@ -262,6 +268,7 @@ class LiteRtEmbedder(private val context: Context, override val profile: MemoryP
       Log.i(TAG, "audio encoder released (the engine reloads at the level the next file needs)")
       level = null
       loadedThreads = null
+      readyFlow.value = false
     }
   }
 

@@ -20,4 +20,8 @@ class ModelChoiceVisibilityTest {
     assertFalse(showsChoice(DeliveryState(choiceOffered = true, installedChoice = ModelChoice.SAVE_DATA)))
     assertFalse(showsChoice(DeliveryState(choiceOffered = true, installedChoice = ModelChoice.STANDARD)))
   }
+
+  @Test fun notAskedWhenTheSearchModelCameFromLooseFiles() {
+    assertFalse(showsChoice(DeliveryState(choiceOffered = true, searchModelInstalled = true)))
+  }
 }

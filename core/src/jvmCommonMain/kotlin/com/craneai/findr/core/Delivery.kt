@@ -89,6 +89,8 @@ data class DeliveryState(
    * model, and the app has to be closed and opened once so it starts the full stack.
    */
   val upgradedToStandard: Boolean = false,
+  val searchModelInstalled: Boolean = false,
+  val missingPacks: List<String> = emptyList(),
 ) {
   /**
    * How far a stopped download got, as whole MB (arrived, expected) for "300 of 670 MB", or null when either is not known (a file

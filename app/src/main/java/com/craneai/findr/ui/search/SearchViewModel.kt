@@ -196,6 +196,7 @@ class SearchViewModel(
   }
 
   private val request = MutableStateFlow(Request("", KindFilter.ALL, immediate = true))
+  private val wordsOnlyRequest = MutableStateFlow<Request?>(null)
   private val _state = MutableStateFlow(SearchUiState())
   val state: StateFlow<SearchUiState> = _state
 
@@ -231,6 +232,16 @@ class SearchViewModel(
     viewModelScope.launch {
       engine.status.map { refreshKey(it) }.distinctUntilChanged().drop(1).collect {
         request.update { r -> r.copy(immediate = true, nonce = r.nonce + 1) }
+      }
+    }
+    viewModelScope.launch {
+      combine(engine.meaningReady, wordsOnlyRequest) { ready, answered -> answered.takeIf { ready } }.collect { answered ->
+        if (answered != null) {
+          wordsOnlyRequest.value = null
+          request.update { current ->
+            if (current == answered) current.copy(immediate = true, nonce = current.nonce + 1) else current
+          }
+        }
       }
     }
     // The engine's self-test failing (or passing again) changes what a search can do: show the note, and run the search again.
@@ -446,12 +457,13 @@ class SearchViewModel(
     if (quiet && old.size == new.size && old.indices.all { old[it].key == new[it].key }) old else new
 
   private suspend fun load(r: Request) {
+    wordsOnlyRequest.value = null
     senseClock()
     val d = derive(r.query)
     val q = d.text
     // The same question, chips, sort and date as the last time, only the nonce moved: a refresh. The person is looking at this list.
     val asked = listOf(r.query, r.filter, d.sort, d.date, similarTo?.id)
-    val quiet = _state.value.loaded && asked == lastAsked && r.nonce != lastNonce
+    val quiet = (_state.value.loaded || _state.value.mode == SearchMode.RESULTS) && asked == lastAsked && r.nonce != lastNonce
     lastAsked = asked
     lastNonce = r.nonce
     val seed = similarTo.takeIf { q.isEmpty() }
@@ -512,6 +524,7 @@ class SearchViewModel(
     // Word matches arrive at once, meaning matches when the model is free (it may be busy indexing): show each step.
     var phraseWasContent = false
     engine.searchProgressive(q, r.filter, meaningDelayMs = if (r.immediate) 0L else DEBOUNCE_MS, view = d.view).collect { results ->
+      if (quiet && !results.complete) return@collect
       // A date read from the words that leaves nothing: unless the phrase is part of what the person is looking for (it is written in
       // a file that also matches the rest of the query), in which case it is searched as ordinary words instead.
       val phrase = d.date?.phrase
@@ -546,6 +559,9 @@ class SearchViewModel(
         )
       }
       if (alreadyDrawn) feedDrawn()
+      if (results.complete && !engine.meaningReady.value && q.length >= 3 && results.hits.all { it.reason == MatchReason.WORDS }) {
+        wordsOnlyRequest.value = r
+      }
     }
     if (phraseWasContent) load(r) // the phrase is in `ignored` now: the same query, without the date chip
   }

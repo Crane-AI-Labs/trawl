@@ -104,7 +104,15 @@ class ShareA11yTest {
   }
 
   @Test fun documentRowAnnouncesItsDate() {
-    search("school")
+    assertDocumentRowsAnnounceTheirDate()
+  }
+
+  @Test fun documentRowAnnouncesItsDateAtLargeFont() {
+    assertDocumentRowsAnnounceTheirDate(fontScale = 2.0f)
+  }
+
+  private fun assertDocumentRowsAnnounceTheirDate(fontScale: Float = 1.0f) {
+    search("school", fontScale)
     val rows = nodes().filter { it.config.contains(SemanticsActions.OnClick) && desc(it).contains(", ") && desc(it).contains("school", ignoreCase = true) && !desc(it).startsWith("Share") && !desc(it).startsWith("Copy") }
     assertTrue("no document row found in ${nodes().map { desc(it) }.filter { it.isNotEmpty() }}", rows.isNotEmpty())
     // The age the row shows in its subtitle ("PDF  ·  folder  ·  2 hours ago", merged into the row's node) is the one it has to announce.

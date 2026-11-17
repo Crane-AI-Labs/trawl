@@ -174,6 +174,17 @@ object DownloadsWatch {
     exists && (nowLength != startedLength || nowModified != startedModified)
 }
 
+internal fun installedModelsState(state: DeliveryState, modelsDir: File, bundleClass: BundleClass): DeliveryState {
+  val searchModelInstalled = Embedder.modelNames(MemoryProfile.LITE).any { File(modelsDir, it).isFile }
+  val expectedPacks = listOf(PackCatalog.QUICK_LOOK, PackCatalog.PRIVACY) +
+    if (bundleClass == BundleClass.STANDARD) listOf(PackCatalog.SPEECH) else emptyList()
+  val missingPacks = if (searchModelInstalled) expectedPacks.filter { id ->
+    val files = PackFilesRegistry.of(id) ?: return@filter false
+    !AsrModelInstaller(File(modelsDir, files.dir), files.manifest).complete()
+  } else emptyList()
+  return state.copy(searchModelInstalled = searchModelInstalled, missingPacks = missingPacks)
+}
+
 /**
  * Gets the models onto the phone (core/Delivery.kt). While a card that wants them is on screen it watches Downloads for the bundle
  * a browser saved, installs it through [SignedBundleInstaller] with progress, and offers once to delete the verified file. A file
@@ -237,14 +248,14 @@ class ModelDelivery(
   /** [s] with the pack-choice fields brought up to date (the sizes come from the same file as the update notice). */
   private fun choiceState(s: DeliveryState): DeliveryState {
     val choice = currentChoice()
-    return s.copy(
+    return installedModelsState(s.copy(
       choice = choice,
       choiceOffered = ModelPlan.offered(phoneClass),
       standardMb = known[BundleClass.STANDARD]?.sizeMb ?: 0,
       saveDataMb = known[BundleClass.LITE]?.sizeMb ?: 0,
       installedChoice = ModelPlan.choiceOf(InstalledBundle.read(modelsDir)?.bundleClass),
       sizeMb = sizeOf(choice),
-    )
+    ), modelsDir, ModelPlan.bundleClass(phoneClass, choice))
   }
 
   override fun downloadUrl(): String = BuildConfig.MODELS_BASE_URL + ModelPlan.archiveName(phoneClass, currentChoice())
@@ -273,6 +284,7 @@ class ModelDelivery(
 
   /** One look at Downloads. Public for the engine's start-up check, which has no card on screen yet. */
   suspend fun pollOnce() {
+    flow.value = choiceState(flow.value)
     if (!Environment.isExternalStorageManager()) return
     if (job?.isActive == true) return
     val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
@@ -368,6 +380,7 @@ class ModelDelivery(
   }
 
   private suspend fun finish(result: BundleResult, rec: Pending, before: BundleClass?) {
+    flow.value = choiceState(flow.value)
     when (result) {
       is BundleResult.Installed -> {
         Log.i(TAG, "installed ${result.manifest.bundle} v${result.manifest.version} (${result.installedBytes / 1_000_000} MB)")   // log-safe: our own bundle

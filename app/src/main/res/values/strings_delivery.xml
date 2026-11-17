@@ -5,6 +5,11 @@
   <string name="models_title">Get the search models</string>
   <string name="models_body">Use Wi-Fi if you can: one file of %1$d MB, downloaded once. Names and words work right away. Meaning search gets better as <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> learns, best after a night on the charger.</string>
   <string name="models_get">Get the models (%1$d MB)</string>
+  <string name="models_search_installed">The search model is installed.</string>
+  <string name="models_missing_packs">The search model is installed. Missing packs: %1$s.</string>
+  <string name="models_missing_full_bundle">Separate downloads for these packs are not available here. Get the full bundle to add them.</string>
+  <string name="models_get_full_bundle">Get the full bundle (%1$d MB)</string>
+  <string name="models_refused_installed_safe">The downloaded file could not be used. Your installed search model is still in place.</string>
   <string name="models_choose">Choose the file</string>
   <string name="models_hint_choose">Already have the file? Choose it from your phone.</string>
   <string name="models_hint_access"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> adds the file by itself when it finishes downloading, once you allow access to your files. Or use Choose the file.</string>
@@ -22,8 +27,8 @@
   <string name="models_free_no">No, keep it</string>
   <string name="models_try_again">Try again</string>
   <string name="models_refused_wrong_class">This file is for a different kind of phone. Use Get the models to download the one for this phone.</string>
-  <string name="models_refused_damaged">The file is damaged or incomplete, so <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> did not use it. Download it again, then try again.</string>
-  <string name="models_refused_incomplete">The download stopped before it finished. Tap Get the models to start it again.</string>
+  <string name="models_refused_damaged">The downloaded file is damaged, so <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> did not use it. Download it again, then try again.</string>
+  <string name="models_refused_incomplete">The download did not finish. Tap the download button again to let your browser continue it.</string>
   <string name="models_refused_incomplete_progress">%1$d of %2$d MB arrived.</string>
   <string name="models_refused_unreadable">The file could not be opened. Check that it is still on your phone, then try again.</string>
   <string name="models_refused_not_signed"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> could not confirm that this file is genuine, so it did not use it. Use Get the models to download it again.</string>

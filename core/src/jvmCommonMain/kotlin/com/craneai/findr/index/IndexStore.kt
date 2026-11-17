@@ -624,6 +624,13 @@ class IndexStore private constructor(
     n
   }
 
+  fun retryTimedOut(): Int = write { db ->
+    val where = "state = 'failed' AND detail = 'took too long'"
+    val count = (db.long("SELECT COUNT(*) FROM files WHERE $where") ?: 0).toInt()
+    if (count > 0) db.run("UPDATE files SET state = 'partial', detail = 'next=0 timeouts=1' WHERE $where")
+    count
+  }
+
   /**
    * Files understood while the speech models were missing (FileProcessor notes it in the detail): once the models are in,
    * they go back in the queue so their soundtrack gets read. Their frames stay searchable meanwhile.
