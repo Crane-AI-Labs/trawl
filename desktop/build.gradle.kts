@@ -39,6 +39,7 @@ sourceSets.main {
   // Android org.json, which the 2013 Apache-2.0 copy lacks. Put it back with a typed org.json.
   kotlin.exclude("**/core/SettingsCodec.kt")
   resources.srcDir(rootDir.resolve("../app/src/main/assets"))   // the word lists and language centroids the engine reads
+  resources.srcDir(rootDir.resolve("../app/src/full/assets"))   // full-edition word lists, BPE merges, language centroids, and models-known.json
   resources.srcDir(rootDir.resolve("../app/src/main/res/font")) // Atkinson Hyperlegible, the same two weights the phone bundles
   resources.srcDir(rootDir.resolve("native"))                    // the OCR helper scripts: extracted next to the index at run time
   resources.srcDir(layout.buildDirectory.dir("native"))          // the Apple Vision helper, compiled by buildAppleOcr (macOS builds only)

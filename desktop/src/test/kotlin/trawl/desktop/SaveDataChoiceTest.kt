@@ -160,7 +160,12 @@ class SaveDataChoiceTest {
   }
 
   @Test fun theSizesShownAreTheSizesTheAppKnowsAbout() {
-    val known = listOf(File("../app/src/main/assets/models-known.json"), File("app/src/main/assets/models-known.json")).first { it.isFile }
+    val known = listOf(
+      File("../app/src/full/assets/models-known.json"),
+      File("app/src/full/assets/models-known.json"),
+      File("../app/src/main/assets/models-known.json"),
+      File("app/src/main/assets/models-known.json"),
+    ).first { it.isFile }
     val classes = JSONObject(known.readText()).getJSONObject("classes")
     assertEquals(classes.getJSONObject("standard").getInt("size_mb"), ModelSetup.STANDARD_MB)
     assertEquals(classes.getJSONObject("lite").getInt("size_mb"), ModelSetup.SAVE_DATA_MB)

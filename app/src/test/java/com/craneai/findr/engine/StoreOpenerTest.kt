@@ -1,8 +1,8 @@
 package com.craneai.findr.engine
 
 import com.craneai.findr.core.IndexOpenProblem
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
@@ -28,7 +28,12 @@ class StoreOpenerTest {
   private class Fake(val id: Int) { var closed = false }
   private class Boom(val problem: IndexOpenProblem) : RuntimeException("open failed")
 
-  private class Rig(scope: TestScope, failWith: (Int) -> IndexOpenProblem?) {
+  private class Rig(
+    scope: TestScope,
+    settleAfter: (IndexOpenProblem) -> Int = { Int.MAX_VALUE },
+    settledWait: (IndexOpenProblem) -> Long? = { StoreOpener.MAX_BACKOFF_MS },
+    failWith: (Int) -> IndexOpenProblem?,
+  ) {
     val opens = ArrayList<Long>()          // virtual time of every open attempt
     val failed = ArrayList<Pair<IndexOpenProblem, Int>>()
     val ready = ArrayList<Boolean>()       // the `recovered` flag of every onReady
@@ -56,6 +61,8 @@ class StoreOpenerTest {
         onReady = { _, recovered -> ready += recovered; if (readyThrows) error("late work failed") },
         onFailed = { p, n -> failed += p to n },
         close = { it.closed = true },
+        settleAfter = settleAfter,
+        settledWaitMs = settledWait,
       )
     }
   }
@@ -256,5 +263,63 @@ class StoreOpenerTest {
     runCurrent()
     assertTrue("a completed blocking open must not lose its store at the dispatcher boundary", store.closed)
     assertNull(opener.current)
+  }
+
+  // ---- settling: the same reason again and again must stop the quick retries (desktop, 22 Nov: 784 failed opens in 40 hours) ----------
+
+  @Test fun theSameReasonSettlesTheLoopAndItWaitsForTheNextTryOrTheLongWait() = runTest {
+    val r = Rig(this, settleAfter = { 3 }, settledWait = { 900_000L }) { IndexOpenProblem.MEMORY }
+    r.opener.start()
+    runCurrent()
+    advanceTimeBy(5_000); runCurrent()      // second try after the first wait
+    assertEquals(IndexOpenProblem.MEMORY, (r.opener.state.value as StoreOpener.State.Failed).problem)
+    assertFalse("two failures: still the quick retries", (r.opener.state.value as StoreOpener.State.Failed).settled)
+    advanceTimeBy(10_000); runCurrent()     // third try: settled now
+    val s = r.opener.state.value as StoreOpener.State.Failed
+    assertEquals(3, s.failures)
+    assertTrue("three in a row: settled", s.settled)
+    assertEquals(3, r.opens.size)
+    // A day of waiting makes one try every 15 minutes, not one a minute.
+    val before = r.opens.size
+    advanceTimeBy(24 * 3_600_000L); runCurrent()
+    assertEquals("96 long waits in a day", before + 96, r.opens.size)
+  }
+
+  @Test fun aSettledLoopWithNoLongWaitTriesAgainOnlyWhenAsked() = runTest {
+    val r = Rig(this, settleAfter = { 3 }, settledWait = { null }) { n -> if (n <= 5) IndexOpenProblem.MEMORY else null }
+    r.opener.start()
+    runCurrent(); advanceTimeBy(5_000); runCurrent(); advanceTimeBy(10_000); runCurrent()
+    assertEquals(3, r.opens.size)
+    assertTrue((r.opener.state.value as StoreOpener.State.Failed).settled)
+    advanceTimeBy(7 * 24 * 3_600_000L); runCurrent()
+    assertEquals("a week later it has not tried again by itself", 3, r.opens.size)
+    r.opener.retryNow(); runCurrent()
+    assertEquals("Try again makes one try", 4, r.opens.size)
+    val s = r.opener.state.value as StoreOpener.State.Failed
+    assertTrue("and the same reason is settled at once, no quick retries come back", s.settled)
+    advanceTimeBy(24 * 3_600_000L); runCurrent()
+    assertEquals(4, r.opens.size)
+    r.opener.retryNow(); runCurrent()
+    assertEquals(5, r.opens.size)
+    r.opener.retryNow(); runCurrent()   // the sixth try opens
+    assertTrue(r.opener.state.value is StoreOpener.State.Ready<*>)
+    assertEquals("a recovery", listOf(true), r.ready)
+  }
+
+  @Test fun aDifferentReasonStartsTheCountAgain() = runTest {
+    val r = Rig(this, settleAfter = { 3 }) { n -> if (n % 2 == 1) IndexOpenProblem.BUSY else IndexOpenProblem.IO }
+    r.opener.start()
+    runCurrent()
+    repeat(6) { advanceTimeBy(60_000); runCurrent() }
+    assertFalse("alternating reasons never reach three in a row", (r.opener.state.value as StoreOpener.State.Failed).settled)
+  }
+
+  @Test fun theDefaultNeverSettlesSoThePhoneKeepsItsOneMinuteRetry() = runTest {
+    val r = Rig(this) { IndexOpenProblem.MEMORY }
+    r.opener.start()
+    runCurrent()
+    advanceTimeBy(30 * 60_000L); runCurrent()
+    assertFalse((r.opener.state.value as StoreOpener.State.Failed).settled)
+    assertTrue("a try about every minute", r.opens.size >= 28)
   }
 }

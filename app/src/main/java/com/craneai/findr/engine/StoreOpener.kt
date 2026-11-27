@@ -44,12 +44,23 @@ class StoreOpener<T : Any>(
   private val log: (String) -> Unit = {},
   private val firstBackoffMs: Long = FIRST_BACKOFF_MS,
   private val maxBackoffMs: Long = MAX_BACKOFF_MS,
+  /**
+   * How many failed opens in a row with the same reason before the loop gives up its quick retries ([State.Failed.settled]); the default
+   * never does, which is the phone's behaviour. The desktop's index once failed 784 times in 40 hours, each try reading the whole file.
+   */
+  private val settleAfter: (IndexOpenProblem) -> Int = { Int.MAX_VALUE },
+  /** What a settled loop does: the wait before one more try (its length), or null to stop trying until [retryNow] or a restart. */
+  private val settledWaitMs: (IndexOpenProblem) -> Long? = { maxBackoffMs },
 ) {
   sealed interface State {
     data object Opening : State
     class Ready<T>(val store: T) : State
-    /** [problem] is why; [failures] counts failed opens in this run (0: a first transient failure, the open itself is still trying). */
-    data class Failed(val problem: IndexOpenProblem, val failures: Int) : State
+    /**
+     * [problem] is why; [failures] counts failed opens in this run (0: a first transient failure, the open itself is still trying).
+     * [settled]: the same reason came up [settleAfter] times in a row, so the quick retries have stopped (see [settledWaitMs]) and
+     * the person has to be told what to do.
+     */
+    data class Failed(val problem: IndexOpenProblem, val failures: Int, val settled: Boolean = false) : State
   }
 
   private val _state = MutableStateFlow<State>(State.Opening)
@@ -109,7 +120,9 @@ class StoreOpener<T : Any>(
     var failures = 0
     var backoff = firstBackoffMs
     var lastProblem: IndexOpenProblem? = null
+    var sameInARow = 0
     while (true) {
+      var wait: Long? = backoff
       var opened: T? = null
       try {
         val store = withContext(ioDispatcher + NonCancellable) {
@@ -137,13 +150,23 @@ class StoreOpener<T : Any>(
         withContext(ioDispatcher + NonCancellable) { opened?.let { runCatching { close(it) } } }
         failures++
         val p = classify(t)
+        sameInARow = if (p == lastProblem) sameInARow + 1 else 1
         lastProblem = p
-        _state.value = State.Failed(p, failures)
+        val settled = sameInARow >= settleAfter(p)
+        _state.value = State.Failed(p, failures, settled)
         onFailed(p, failures)
-        log("index open failed ($p), attempt $failures; next try in ${backoff / 1000} s")
+        wait = if (settled) settledWaitMs(p) else backoff
+        log(
+          "index open failed ($p), attempt $failures" + when {
+            !settled -> "; next try in ${backoff / 1000} s"
+            wait == null -> "; the same reason $sameInARow times in a row: not trying again until asked"
+            else -> "; the same reason $sameInARow times in a row: next try in ${wait / 1000} s"
+          },
+        )
       }
       kicks.tryReceive()   // a kick that arrived while the open was running is stale
-      withTimeoutOrNull(backoff) { kicks.receive() }
+      val w = wait
+      if (w == null) kicks.receive() else withTimeoutOrNull(w) { kicks.receive() }
       backoff = (backoff * 2).coerceAtMost(maxBackoffMs)
     }
   }
