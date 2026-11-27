@@ -1,138 +1,179 @@
-# Trawl
+<div align="center">
 
-**Trawl by Crane AI Labs** is an Android app that finds the photos, screenshots, documents, videos and voice notes on your phone when you describe what is in them. It runs entirely on the phone: the app has no internet permission, needs no account and shows no ads.
+<a href="https://trawlsearch.com">
+  <img src="site/favicon.svg" width="88" height="88" alt="Trawl logo" />
+</a>
 
-[Website](https://trawl.craneailabs.com/) | [Check the privacy claims yourself](PRIVACY.md) | [How we measured](https://trawl.craneailabs.com/how-we-measured.html) | [Releases](https://github.com/Crane-AI-Labs/trawl/releases)
+<h1>Trawl</h1>
 
-Type "receipt from the hardware shop", "the dog at the lake" or "meeting about the budget" and Trawl brings up the file.
-It works fully offline: it reads the files already on your phone, builds a search index on the phone, and never sends anything anywhere.
+<p>
+  <strong>Private, offline search across your photos, documents, screenshots, voice notes, and videos — by meaning, OCR, or speech.</strong>
+</p>
 
-Made by [Crane AI Labs](https://github.com/Crane-AI-Labs). Android 11 or newer. How it works: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+<p>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache--2.0-111111?style=flat" alt="Apache-2.0 License" /></a>
+  <a href="https://github.com/Crane-AI-Labs/trawl/releases/tag/v1.2.0"><img src="https://img.shields.io/badge/Android-v1.2.0-111111?style=flat&logo=android&logoColor=FFD400" alt="Android v1.2.0" /></a>
+  <a href="https://github.com/Crane-AI-Labs/trawl/releases/tag/desktop-1.1.0"><img src="https://img.shields.io/badge/Desktop-v1.1.0-111111?style=flat" alt="Desktop v1.1.0" /></a>
+  <a href="PRIVACY.md"><img src="https://img.shields.io/badge/Telemetry-None-146B37?style=flat" alt="Zero Telemetry" /></a>
+  <a href="https://trawlsearch.com"><img src="https://img.shields.io/badge/Website-trawlsearch.com-FFD400?style=flat&labelColor=111111" alt="trawlsearch.com" /></a>
+  <a href="https://app.trawlsearch.com"><img src="https://img.shields.io/badge/Web%20Demo-Try%20in%20Browser-FFD400?style=flat&labelColor=111111" alt="Try Web Demo" /></a>
+</p>
+
+<p>
+  <a href="#download">Download</a> &nbsp;·&nbsp;
+  <a href="#what-trawl-finds">Features</a> &nbsp;·&nbsp;
+  <a href="#verifiable-privacy">Why Offline</a> &nbsp;·&nbsp;
+  <a href="#benchmarks">Benchmarks</a> &nbsp;·&nbsp;
+  <a href="#build-from-source">Build from Source</a>
+</p>
+
+<br />
+
+<!-- Hero visual: poster-singing-man-1920x1080.png -->
+<a href="https://trawlsearch.com">
+  <img src="docs/assets/hero.png" width="880" alt="Trawl finding photos, documents, screenshots, and voice notes offline on Desktop and Android" />
+</a>
+
+</div>
+
+<br />
+
+## What Trawl Finds
+
+Describe what is *inside* a file — even when its filename is `IMG_4821.jpg`, `Scan_004.pdf`, or `PTT-20260412-WA0008.opus`:
+
+| Capability | Example Queries | How It Works Locally |
+|---|---|---|
+| **Visual & Scene Search** | `"happy man singing"`, `"sunset by the water"`, `"the dog at the lake"` | On-device multimodal image & video-frame embeddings — no cloud tagging. |
+| **Text Inside Images & PDFs (OCR)** | `"wifi password"`, `"receipt from hardware shop"`, `"50000"` *(matches `50k` / `50,000`)* | Reads screenshots, photographed receipts, scanned PDFs, Office docs & `.xls` sheets. |
+| **Spoken Words in Audio & Video** | `"meeting about the budget"`, `"school fees due Friday"` | On-device speech transcription in **English** plus optional offline packs for **5 East African languages**: Luganda, Swahili, Runyankole, Acholi, and Lusoga *(beta)*. |
+| **Find Similar** | Click **Find similar** on any photo or document | Ranks visually or semantically related files across your local index in milliseconds. |
+| **Fast Exact & Multilingual Text** | Any word, ID, invoice number, or phrase | Local SQLite FTS5 across English, Luganda, Swahili, French, Arabic, Portuguese, Kinyarwanda, Hausa, Yoruba, Amharic, and more. |
+
+<details>
+<summary><strong>Supported file formats (241-file real-device sweep)</strong></summary>
+<br />
+<p align="center">
+  <img src="docs/formats.svg" width="520" alt="Chart of file formats Trawl reads by content vs filename, plus skipped clutter and graceful handling of damaged files." />
+</p>
+<p align="center"><em>Damaged or malformed files are logged and skipped without crashing. Clutter folders, thumbnails, and chat databases stay out of your index.</em></p>
+</details>
+
+---
 
 ## Download
 
-Get the app from [**Releases**](https://github.com/Crane-AI-Labs/trawl/releases/latest): `trawl-<version>.apk`. Open it on your
-phone and allow the install (it is an app outside Google Play, so Android asks once).
+All desktop and mobile releases are free, open source, and published directly on [GitHub Releases](https://github.com/Crane-AI-Labs/trawl/releases) with `SHA256SUMS`.
 
-Trawl needs its search models, one file downloaded once. Inside the app, **Get the models** fetches the right one for your phone.
-To download on another device and copy it over, the files are on the `models-v1` release:
-
-| File | For |
-|---|---|
-| `trawl-models.zip` (about 670 MB) | phones with 3 GB of memory or more |
-| `trawl-models-lite.zip` (about 304 MB) | phones with 2 GB of memory |
-
-Copy the zip into your phone's Downloads folder and open Trawl: it finds the file and checks its signature and checksums before using it.
-
-Trawl needs Android 11 or newer on a 64-bit phone. For 32-bit Android Go phones (many itel models, some 2 GB phones) there is
-**Trawl Go**, `trawl-go-<version>.apk` on the same release (about 21 MB). It needs no models: it finds files by their names, the
-words in documents and the words in photos and screenshots, but it doesn't search by meaning or listen to recordings.
-
-## Desktop developer preview
-
-A Windows, Mac and Linux version is available as a **developer preview** on the
-[`desktop-preview-1.0.3`](https://github.com/Crane-AI-Labs/trawl/releases/tag/desktop-preview-1.0.3) release. The installers are
-**unsigned**: on a Mac right-click the app and choose Open; on Windows SmartScreen shows "More info", then "Run anyway"; on Linux run
-`sudo apt install ./trawl_1.0.3_amd64.deb` (video needs `ffmpeg`). The desktop app makes no network connections either; the release
-notes say how that was tested.
-
-## What it reads
-
-Photos and screenshots (and the words in them), video (what you see, the words on screen, and what is said), audio and voice
-notes, PDFs and common documents. Files it cannot open yet are still found by name. Damaged or fake files are noted and skipped,
-never a crash. This chart comes from a sweep of 241 test files on real phones:
-
-<p align="center"><img src="docs/formats.svg" width="480" alt="A chart of the file formats Trawl reads, by family. Photos, screenshots, video, audio and most documents are read by content. Some video, audio and document formats are found by name only. Clutter such as hidden folders, trash and thumbnails is skipped. Damaged or fake files are noted and skipped without a crash."></p>
-
-## Languages
-
-Search works best in **English**, which is the first quality gate. Other languages work in varying degrees and are improving:
-Luganda, Swahili, Runyankole, Acholi, Ateso, Lugbara, Kinyarwanda, French, Portuguese, Arabic, Amharic, Hausa, Yoruba, Somali, Zulu and more.
-Exact-word search works in any language. Spoken words are transcribed in English only for now.
-
-## Privacy
-
-- Nothing leaves your phone. There is no internet permission, so the app could not send anything even if it tried.
-- No ads, no analytics, no account.
-- The index lives in the app's private storage on the phone. Uninstalling the app deletes it.
-- If the app crashes, it offers a problem report with no file names, searches or text from your files. You read it first, and it is sent only when you press Send in your own email app.
-- Trawl asks for **All files access** so it can read the files it searches. It never changes or deletes them.
-
-## Credits and licences
-
-Inspired by [DigUp](https://github.com/ARahim3/DigUp) (MIT): design ideas only; no code was copied.
-
-Trawl is built on open models and libraries. Each one's version, licence and required notice is in
-[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md), and in the app under Settings, Licences and credits. The models:
-
-| Model | Used for | Licence |
+| Platform | Download | Notes |
 |---|---|---|
-| [EmbeddingGemma 2](https://huggingface.co/google/embeddinggemma-2), Google | meaning search over text and images | Apache-2.0 |
-| [TinyCLIP](https://github.com/microsoft/Cream), Microsoft | Quick look: fast photo results while indexing | MIT |
-| [Parakeet-TDT-CTC-110M](https://huggingface.co/nvidia/parakeet-tdt_ctc-110m), NVIDIA | English speech to text | CC-BY-4.0 (attribution) |
-| [nsfw-image-detection-384](https://huggingface.co/Marqo/nsfw-image-detection-384), Marqo | optional blur of private-looking previews | Apache-2.0 |
-| Silero VAD, CED-mini, Moonshine tiny | speech detection, sound labels, optional speech model | MIT, Apache-2.0, MIT |
+| **macOS** *(Apple Silicon, 13+)* | [`Trawl-1.1.0-arm64.dmg`](https://github.com/Crane-AI-Labs/trawl/releases/download/desktop-1.1.0/Trawl-1.1.0-arm64.dmg) *(232 MiB)* | Unsigned release — right-click → **Open** on first launch. |
+| **Windows** *(64-bit x64)* | [`Trawl-1.1.0.msi`](https://github.com/Crane-AI-Labs/trawl/releases/download/desktop-1.1.0/Trawl-1.1.0.msi) *(223 MiB)* | Unsigned release — SmartScreen → **More info** → **Run anyway**. |
+| **Linux** *(Debian/Ubuntu x64)* | [`trawl_1.1.0_amd64.deb`](https://github.com/Crane-AI-Labs/trawl/releases/download/desktop-1.1.0/trawl_1.1.0_amd64.deb) *(222 MiB)* | `sudo apt install ./trawl_1.1.0_amd64.deb` (`ffmpeg` for video). |
+| **Android** *(64-bit, Android 11+)* | [`trawl-1.2.0.apk`](https://github.com/Crane-AI-Labs/trawl/releases/download/v1.2.0/trawl-1.2.0.apk) *(46 MiB)* | Full semantic, OCR, video & voice-note search. |
+| **Android Go** *(32-bit / 2 GB RAM)* | [`trawl-go-1.2.0.apk`](https://github.com/Crane-AI-Labs/trawl/releases/download/v1.2.0/trawl-go-1.2.0.apk) *(20 MiB)* | Lightweight words + OCR edition — no model download needed. |
+| **Web Demo** *(Any modern browser)* | [**app.trawlsearch.com**](https://app.trawlsearch.com) | Runs locally in WebAssembly + OPFS. Zero file uploads. |
+| **iPhone (iOS)** | *In progress* | Native on-device iOS app under active development (`PrivacyInfo.xcprivacy` with "Data Not Collected"). |
 
-Libraries: [LiteRT-LM](https://github.com/google-ai-edge/LiteRT-LM), [sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx),
-[ONNX Runtime](https://github.com/microsoft/onnxruntime), Google ML Kit text recognition (Google's terms),
-[PdfBox-Android](https://github.com/TomRoush/PdfBox-Android), Coil, AndroidX and Jetpack Compose, Kotlin.
-The font is Atkinson Hyperlegible (SIL OFL 1.1).
+### Offline Model Bundles & East African Speech Packs
 
-## Build from source
+All AI weights are optional offline zips published in [**`models-v1`**](https://github.com/Crane-AI-Labs/trawl/releases/tag/models-v1) — drop a zip into your `Downloads` folder and Trawl verifies its signature and SHA-256 checksums locally before loading:
 
-You need JDK 17 and the Android SDK (platform 36). The build uses Gradle (`./gradlew`).
+- **Core search bundles:**
+  - `trawl-models.zip` *(670 MB)* — Desktop & Android devices with 3 GB+ RAM.
+  - `trawl-models-lite.zip` *(304 MB)* — Android devices with 2 GB RAM.
+- **Offline East African speech packs (~101 MB each):**
+  - Luganda (`trawl-speech-lg.zip`), Swahili (`trawl-speech-sw.zip`), Runyankole (`trawl-speech-nyn.zip`), Acholi (`trawl-speech-ach.zip`), and Lusoga beta (`trawl-speech-xog.zip`).
 
+<details>
+<summary><strong>Official Android signing certificate (SHA-256)</strong></summary>
+
+```text
+3d056763b58093e91006f00b44d98d47bfe5f26140be6105598363e670708d80  (CN=Trawl, O=Crane AI Labs, C=UG)
 ```
-./gradlew :app:assembleDebug            # a debug build
-./gradlew :app:testFullDebugUnitTest :app:testGoDebugUnitTest   # the unit tests (both editions)
-./gradlew :app:assembleRelease          # a release build (debug-signed unless you set up a key, below)
-./gradlew :app:assembleGoRelease        # Trawl Go, the 32-bit words-only edition (no native model libraries)
+
+</details>
+
+---
+
+## Verifiable Privacy
+
+Trawl doesn't ask you to trust a privacy policy — it is built so you can verify it yourself ([`PRIVACY.md`](PRIVACY.md)):
+
+- **Zero internet permission on Android:** `trawl-1.2.0.apk` and `trawl-go-1.2.0.apk` declare **zero `android.permission.INTERNET`**. Verify any APK yourself:
+  ```bash
+  aapt dump permissions trawl-1.2.0.apk | grep INTERNET || echo "0 network permissions"
+  ```
+- **100% on-device storage & indexing:** Your index lives exclusively in local SQLite/FTS5 + quantized embedding vectors on your device. No account, no telemetry, no analytics, no ads, and Trawl never modifies or deletes your files.
+- **Zero-upload Web Demo with WebCrypto Vault Lock:** [`app.trawlsearch.com`](https://app.trawlsearch.com) indexes selected folders entirely inside your browser (WebAssembly + OPFS, strict `connect-src 'self'` CSP), encrypting local file indexes with client-side WebCrypto (`PBKDF2` + `AES-256-GCM`).
+
+---
+
+## Benchmarks
+
+Measured on real consumer hardware with zero cloud assistance. Full methodology and device traces live at [trawlsearch.com/how-we-measured.html](https://trawlsearch.com/how-we-measured.html).
+
+| Platform & Device | Benchmark | Trawl | Built-in OS Search |
+|---|---|---:|---:|
+| **macOS** *(Apple M5)* | Opaque-filename corpus *(semantic, OCR, visual, speech)* | **24 / 24** | 6 / 24 *(Spotlight)* |
+| **macOS** *(Apple M5)* | Exact document keyword queries *(fair baseline)* | **6 / 6** | 6 / 6 *(Spotlight)* |
+| **Android** *(Galaxy A06 & TECNO KN4)* | Semantic, OCR & spoken-word queries | **5 / 5** | 0 / 5 *(Built-in)* |
+| **Android** *(Galaxy A06, 4 GB RAM)* | Scroll smoothness (heavy frame jank) | **6.1%** *(4.1× fewer stutters)* | 25.3% *(Samsung Gallery)* |
+
+---
+
+## Build from Source
+
+Requires **JDK 17+** (Android SDK platform 36 for Android builds). See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for system internals.
+
+```bash
+# Desktop (macOS / Windows / Linux)
+cd desktop && ../gradlew run                         # launch Desktop app locally
+cd desktop && ../gradlew test                        # run Desktop test suite
+
+# Android (Full 64-bit & Go 32-bit)
+./gradlew :app:assembleGoDebug                       # build Trawl Go (no native AARs required)
+./gradlew :app:assembleFullDebug                     # build Full edition (after fetching native AARs)
+./gradlew :app:testFullDebugUnitTest :app:testGoDebugUnitTest
 ```
 
-The app has two editions, as product flavors over one code base: `full` (Trawl, arm64-v8a) and `go` (Trawl Go, armeabi-v7a,
-package `com.craneai.findr.go`). `src/main` is shared; `src/full` and `src/go` hold what differs. The plain task names
-(`assembleRelease`, `assembleDebug`) build the full edition.
+<details>
+<summary><strong>Native AARs, model bundles, and release signing</strong></summary>
 
-Two native libraries are not in the repository (they are large) and go in `app/libs/`. **A fresh clone does not build the full
-edition until both AARs are there**:
+<br />
 
-- **sherpa-onnx** AAR (speech, voice detection, sound labels): `scripts/fetch-asr.sh` fetches the pinned version.
-- **onnxruntime-slim** AAR (an ONNX Runtime with only the operators Quick look and private-preview blur use, 9 MB smaller),
-  built from source by `scripts/ort-slim/build.sh` on a Linux machine you can reach over ssh: set `TRAWL_BUILD_SSH=user@host`
-  (see `scripts/ort-slim/README.md`). The script writes the finished AAR to `app/libs/`.
+- **Native libraries (`app/libs/`, required for the `full` Android flavor):**
+  - Fetch `sherpa-onnx` AAR: `scripts/fetch-asr.sh`
+  - Build `onnxruntime-slim` AAR: `TRAWL_BUILD_SSH=user@host scripts/ort-slim/build.sh` (see [`scripts/ort-slim/README.md`](scripts/ort-slim/README.md))
+- **Model bundles:** Place source weights in `bench-data/` and run `scripts/pack-bundle.sh` (`LITE=1` for 2 GB bundle). Local unsigned testing builds accept unsigned bundles with `-PallowUnsignedModels=true`.
+- **Signed Android releases:** Generate a local keystore via `scripts/make-signing-key.sh` (written to `~/.gradle/gradle.properties`, never committed), then run:
+  ```bash
+  ./gradlew :app:assembleFullRelease :app:assembleGoRelease -PtrawlPublish=true
+  ```
+- **Desktop installers:** Run `packageDmg` (macOS), `packageMsi` (Windows), or `packageDeb` (Linux) from `desktop/`.
 
-**Models.** The models are not in the repository either, and live under the ignored folder `bench-data/`.
-`scripts/pack-bundle.sh` builds the one-file bundle the app installs (`LITE=1 scripts/pack-bundle.sh` for the lite one). A release
-app only accepts bundles signed with a key whose public half is compiled into `engine/SignedBundle.kt`. The signing key is not
-in this repository. To use your own models, make your own key, put its public half in `engine/SignedBundle.kt`, and sign by
-setting `TRAWL_SIGN_SSH` (an ssh target with the Azure CLI logged in) and `TRAWL_VAULT` (the Key Vault that holds the key).
-Neither has a default, and `NO_SIGN=1` writes an unsigned bundle. For local testing only, build with
-`-PallowUnsignedModels=true`.
+</details>
 
-**Signing a release.** `scripts/make-signing-key.sh` creates a publishing key on your machine and writes its location to
-`~/.gradle/gradle.properties`; the key and passwords never enter the repository. Then
-`./gradlew :app:assembleRelease -PtrawlPublish=true` builds a release signed with it (and refuses to fall back to a debug key).
-Without `-PtrawlPublish=true` every build stays debug-signed, so test phones keep upgrading in place.
-`scripts/release.sh <version>` does the whole sequence, builds both model bundles (it needs `TRAWL_SIGN_SSH` and `TRAWL_VAULT`,
-or `--no-models`), writes the release notes and prints the `gh release create` commands. It never publishes anything itself.
-It consumes the flavour outputs directly: `app/build/outputs/apk/full/release/app-full-release.apk` and
-`app/build/outputs/apk/go/release/app-go-release.apk`, not the Full edition's legacy compatibility copy. After a build, both APKs
-must be newer than its start marker; missing or stale outputs stop before release copying or remote re-signing. Remote output
-timestamps are preserved, so cached outputs or a build-box clock behind this machine fail closed: regenerate the APKs (for example,
-rerun the same Gradle tasks with `--rerun-tasks`) and correct clock skew. `--remote --skip-build` explicitly reuses existing flavour
-APKs and only checks that they exist; it still applies the normal certificate and manifest checks after signing.
-To check paths without a publishing key, use `scripts/release.sh <version> --check-apk-paths`, optionally with `--remote` or
-`--remote --skip-build`. Unless skipping the build, this builds without `-PtrawlPublish=true`; it stops before release signing,
-copying release APKs, model bundling or publish commands and does not certify an APK for release. Run the hermetic shell regression
-suite with `bash scripts/test-release.sh`; it uses fake builders and verification only, and refuses any signing or network command.
+<details>
+<summary><strong>Open models, libraries & credits</strong></summary>
 
-**Phones.** The adb helpers (`scripts/phone-lock.sh` and friends) take the phone from `ANDROID_SERIAL`. Your own phone list, and
-any phone that must not be locked without an explicit go, goes in an ignored file `scripts/phones.local`; copy
-`scripts/phones.local.example`.
+<br />
 
-## Licence
+| Model / Library | Role | License |
+|---|---|---|
+| [EmbeddingGemma 2](https://huggingface.co/google/embeddinggemma-2) *(Google)* | Semantic search over text & images | Apache-2.0 |
+| [TinyCLIP](https://github.com/microsoft/Cream) *(Microsoft)* | Fast photo visual search while indexing | MIT |
+| [Parakeet-TDT-CTC-110M](https://huggingface.co/nvidia/parakeet-tdt_ctc-110m) *(NVIDIA)* | On-device English speech transcription | CC-BY-4.0 |
+| [nsfw-image-detection-384](https://huggingface.co/Marqo/nsfw-image-detection-384) *(Marqo)* | Optional private-preview blur | Apache-2.0 |
+| Silero VAD, CED-mini, Moonshine tiny | Voice activity, sound labels & speech | MIT / Apache-2.0 |
+| LiteRT-LM, sherpa-onnx, ONNX Runtime, PdfBox-Android, Atkinson Hyperlegible | Runtime, OCR/PDF & typography | See [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) |
 
-Trawl is open source under the **Apache License, Version 2.0**: see [LICENSE](LICENSE), and [NOTICE](NOTICE) for the notices that
-travel with it. Copyright 2026 Crane AI Labs. The models and libraries it uses keep their own licences, listed in
-[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). The Android app uses Google ML Kit for text recognition, a proprietary Google
-library linked at build time; Apache-2.0 has no copyleft, so that sits beside this licence without a conflict.
+Inspired in design philosophy by [DigUp](https://github.com/ARahim3/DigUp) (MIT); zero code copied.
+
+</details>
+
+---
+
+## License
+
+Copyright 2026 **Crane AI Labs**. Open source under the [**Apache License, Version 2.0**](LICENSE) — see [`NOTICE`](NOTICE) and [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) for bundled model and library attributions.
