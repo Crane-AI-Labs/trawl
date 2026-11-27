@@ -93,6 +93,7 @@ fun SettingsScreen(c: AppController, scroll: androidx.compose.foundation.ScrollS
   val model by c.model.collectAsState()
   val storage by c.storage.collectAsState()
   val forgot by c.forgot.collectAsState()
+  val wipeRunning by c.forgetting.collectAsState()
   val index by c.index.collectAsState()
   var skipProblem by remember { mutableStateOf<Scope.SkipProblem?>(null) }
   var removing by remember { mutableStateOf<String?>(null) }
@@ -149,6 +150,7 @@ fun SettingsScreen(c: AppController, scroll: androidx.compose.foundation.ScrollS
           Column(Modifier.widthIn(max = 800.dp).fillMaxWidth().padding(horizontal = Sun.S24, vertical = Sun.S20)) {
             Section(SettingsSection.FILES) {
               Folders(c, settings.folders, counts, index.blocked, onRemove = { removing = it })
+              AddedFiles(c, settings.addedFiles)
               WhatToRead(c, settings, index)
               SkippedFolders(c, settings, skipProblem, onProblem = { skipProblem = it })
             }
@@ -246,7 +248,7 @@ fun SettingsScreen(c: AppController, scroll: androidx.compose.foundation.ScrollS
               Spacer(Modifier.height(Sun.S12))
               Text(t("settings_delete_hint"), style = SunType.Body, color = tk.ink)
               Spacer(Modifier.height(Sun.S12))
-              SunOutlinedButton(onClick = { forgetting = true }, danger = true) { Text(t("settings_forget"), style = SunType.Label) }
+              SunOutlinedButton(onClick = { forgetting = true }, enabled = !wipeRunning, danger = true) { Text(t(if (wipeRunning) "settings_forgetting" else "settings_forget"), style = SunType.Label) }
               forgot?.let { Spacer(Modifier.height(Sun.S12)); Notice(trawl.desktop.ForgetNote.line(it), bad = false) }
             }
 
@@ -265,7 +267,14 @@ fun SettingsScreen(c: AppController, scroll: androidx.compose.foundation.ScrollS
               Text(t("settings_about_runtime", RuntimeInfo.display), style = SunType.Body, color = tk.ink)
               Text(t("settings_about_model"), style = SunType.Body, color = tk.ink)
               Spacer(Modifier.height(Sun.S12))
-              SunOutlinedButton(onClick = c::openLicences) { Text(t("licences_title"), style = SunType.Label) }
+              FlowRow(horizontalArrangement = Arrangement.spacedBy(Sun.S12), verticalArrangement = Arrangement.spacedBy(Sun.S8)) {
+                SunOutlinedButton(onClick = c::openLicences) { Text(t("licences_title"), style = SunType.Label) }
+                SunOutlinedButton(onClick = c::checkForUpdates) {
+                  Icon(Icons.OpenInNew, contentDescription = null, modifier = Modifier.size(Sun.IconSmall))
+                  Spacer(Modifier.width(Sun.S8))
+                  Text(t("settings_check_updates"), style = SunType.Label)
+                }
+              }
               Spacer(Modifier.height(Sun.S16))
               Notice(t("settings_about_private"), bad = false)
             }
@@ -342,7 +351,39 @@ private fun Folders(c: AppController, folders: List<String>, counts: Map<String,
       Spacer(Modifier.width(8.dp))
       Text(t("action_add_folder"), style = SunType.Label)
     }
+    SunOutlinedButton(onClick = { Pickers.files().takeIf { it.isNotEmpty() }?.let(c::addFiles) }) {
+      Icon(Icons.Add, contentDescription = null, modifier = Modifier.size(20.dp))
+      Spacer(Modifier.width(8.dp))
+      Text(t("action_add_files"), style = SunType.Label)
+    }
     SunTextButton(onClick = c::rescan) { Text(t("action_rescan"), style = SunType.Label) }
+  }
+}
+
+/** Individual files added outside chosen folders (never crawls siblings; removing never touches disk). */
+@Composable
+private fun AddedFiles(c: AppController, addedFiles: List<String>) {
+  if (addedFiles.isEmpty()) return
+  val tk = LocalSunlight.current
+  SectionHeading(t("settings_added_files_title"))
+  Text(t("settings_added_files_body"), style = SunType.Body, color = tk.ink)
+  Spacer(Modifier.height(Sun.S8))
+  addedFiles.forEach { path ->
+    val f = File(path)
+    SunCard(Modifier.fillMaxWidth().padding(vertical = 3.dp)) {
+      Row(Modifier.padding(start = Sun.S16, top = 6.dp, bottom = 6.dp, end = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+        Icon(Icons.Document, contentDescription = null, tint = tk.ink, modifier = Modifier.size(Sun.Icon))
+        Spacer(Modifier.width(Sun.S12))
+        Column(Modifier.weight(1f)) {
+          Text(f.name.ifBlank { path }, style = SunType.Body, color = tk.ink, maxLines = 1, overflow = TextOverflow.Ellipsis)
+          Text(PathText.tilde(f.parent.orEmpty()), style = SunType.Caption, color = tk.ink2, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        }
+        SunTextButton(
+          onClick = { c.removeAddedFile(path) },
+          modifier = Modifier.semantics { contentDescription = t("speak_remove_named", f.name.ifBlank { path }) },
+        ) { Text(t("action_remove"), style = SunType.Label) }
+      }
+    }
   }
 }
 
@@ -412,6 +453,23 @@ private fun SkippedFolders(c: AppController, settings: Settings, problem: Scope.
       }),
       bad = true,
     )
+  }
+  if (settings.excludedFiles.isNotEmpty()) {
+    Spacer(Modifier.height(Sun.S16))
+    Text(t("settings_excluded_files_heading"), style = SunType.Label, color = tk.ink)
+    Spacer(Modifier.height(Sun.S4))
+    settings.excludedFiles.forEach { path ->
+      SunCard(Modifier.fillMaxWidth().padding(vertical = 3.dp)) {
+        Row(Modifier.padding(start = Sun.S16, top = 6.dp, bottom = 6.dp, end = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+          Icon(Icons.Document, contentDescription = null, tint = tk.ink, modifier = Modifier.size(Sun.Icon))
+          Spacer(Modifier.width(Sun.S12))
+          Text(path, style = SunType.Body, color = tk.ink, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+          SunTextButton(onClick = { c.restoreExcludedFile(path) }) {
+            Text(t("settings_excluded_files_restore", File(path).name.ifBlank { path }), style = SunType.Label, maxLines = 1, overflow = TextOverflow.Ellipsis)
+          }
+        }
+      }
+    }
   }
 }
 

@@ -13,6 +13,12 @@ import com.craneai.findr.core.OcrLine
 import com.craneai.findr.core.TextExtractor
 import com.craneai.findr.core.VideoFrame
 import com.craneai.findr.core.VideoSampler
+import com.craneai.findr.index.CrawlRecord
+import com.craneai.findr.index.FileState
+import com.craneai.findr.index.IndexStore
+import com.craneai.findr.index.PendingFile
+import com.craneai.findr.index.ReadingStamps
+import com.craneai.findr.index.SeesCatchUp
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.Dispatchers
@@ -20,6 +26,8 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Assert.assertFalse
+import org.junit.Assume.assumeFalse
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -27,6 +35,7 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import java.io.File
+import java.nio.file.Files
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
@@ -121,6 +130,57 @@ class VideoWordsTest {
   private fun run(block: suspend () -> Unit) = runBlocking(Dispatchers.Default) { withTimeout(120_000) { block() } }
 
   private fun ocrOf(pieces: List<Piece>) = pieces.filter { it.kind == PieceKind.OCR }.map { listOf(it.text, it.locStart, it.locEnd, it.marks) }
+
+  @Test fun freshReadAndCatchUpUseTheSameStoredFramesWithoutDecodingAgain() = run {
+    assumeFalse(Edition.GO)
+    val directory = Files.createTempDirectory("sees-fresh").toFile()
+    val store = IndexStore.open(directory, log = {})
+    try {
+      store.upsertFromCrawl(listOf(CrawlRecord("test", 1, "content://test/1", "Movies/", "clip.mp4", FileKind.VIDEO, "video/mp4", 100, 1000, durationMs = 45000)))
+      val fileId = store.knownMediaStoreIds("test").getValue(1)
+      val calls = Calls()
+      val processor = processor(calls, { Color.BLUE }, 45000)
+      val pending = PendingFile(store.fileById(fileId)!!, FileState.SEARCHABLE, null)
+      val result = UnderstandingStep(store, processor).process(pending, false, false, 120000, true)
+      assertTrue(result.finished)
+      val freshWords = store.read { it.text("SELECT body FROM sees_fts") }
+      assertTrue(store.nextOldSees(1).isEmpty())
+      val segments = result.segments
+      store.saveSegments(fileId, segments, FileState.UNDERSTOOD, info = "video-reading=1 soundtrack-reading=1")
+      val noRead = Calls()
+      assertTrue(processor(noRead, { error("no frame may be sampled") }, 45000).seesWords(store, fileId))
+      assertEquals(freshWords, store.read { it.text("SELECT body FROM sees_fts") })
+      assertTrue(noRead.sampled.isEmpty())
+      assertEquals(0, noRead.images.get())
+      assertEquals(0, noRead.documents.get())
+      assertEquals(0, noRead.audio.get())
+    } finally {
+      store.close()
+      directory.deleteRecursively()
+    }
+  }
+
+  @Test fun windowedFreshReadStampsSeesOnlyAfterItsLastWindow() = run {
+    assumeFalse(Edition.GO)
+    val directory = Files.createTempDirectory("sees-windows").toFile()
+    val store = IndexStore.open(directory, log = {})
+    try {
+      store.upsertFromCrawl(listOf(CrawlRecord("test", 1, "content://test/1", "Movies/", "clip.mp4", FileKind.VIDEO, "video/mp4", 100, 1000, durationMs = 240000)))
+      val fileId = store.knownMediaStoreIds("test").getValue(1)
+      val reader = processor(Calls(), { Color.BLUE }, 240000)
+      for (window in 0 until 4) {
+        val pending = PendingFile(store.fileById(fileId)!!, if (window == 0) FileState.SEARCHABLE else FileState.PARTIAL, if (window == 0) null else "next=$window")
+        UnderstandingStep(store, reader).process(pending, false, false, 120000, true)
+        val info = store.read { it.text("SELECT info FROM files WHERE id = ?", fileId) }
+        if (window < 3) assertFalse(ReadingStamps.has(info, SeesCatchUp.KEY, SeesCatchUp.VERSION))
+        else assertTrue(ReadingStamps.has(info, SeesCatchUp.KEY, SeesCatchUp.VERSION))
+      }
+      assertTrue(store.nextOldSees(1).isEmpty())
+    } finally {
+      store.close()
+      directory.deleteRecursively()
+    }
+  }
 
   @Test fun aShortVideosWordsAreWhatAFreshReadStoresWithNothingEmbedded() = run {
     // 45 s: red (a sign) to 16 s, blue to 32 s, green (a caption) after

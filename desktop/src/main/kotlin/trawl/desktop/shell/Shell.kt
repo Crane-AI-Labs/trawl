@@ -5,6 +5,7 @@ import androidx.compose.ui.window.TrayState
 import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -74,7 +75,7 @@ class Shell(
   val fullPreview: FullPreview = QuickLookMac.forOs(os, dataDir = { dataDir })
 
   val quickApi: QuickSearchApi = ControllerQuickSearch(controller, full = fullPreview)
-  val panel = QuickPanelState(quickApi, scope, onClose = ::hidePanel)
+  val panel = QuickPanelState(quickApi, scope, onClose = ::hidePanel, onOpenFullSearch = ::openFullSearch)
 
   // The press arrives on a native thread; everything it touches is a StateFlow, so it is safe to act right there.
   val hotkey = HotkeyService(os, nativeHotkey) { togglePanel() }
@@ -85,7 +86,18 @@ class Shell(
   private val firstIndex = FirstIndexWatcher(_prefs.value.firstIndexNotified)
 
   init {
+    controller.notifyLargeFolder = { title, body ->
+      if (System.getenv("TRAWL_NO_OS_NOTIFY").isNullOrBlank()) {
+        scope.launch(Dispatchers.IO) {
+          val sent = trawl.desktop.OsNotifier.notify(title, body, os)
+          if (!sent && trayAvailable) {
+            runCatching { trayState.sendNotification(Notification(title, body, Notification.Type.Warning)) }
+          }
+        }
+      }
+    }
     instance?.listen(::handle)
+    runCatching { controller.windowShown(startWithMain) }
     if (!startWithMain) showPanel()
     scope.launch {
       var was = false
@@ -107,13 +119,18 @@ class Shell(
 
   // ---- windows -------------------------------------------------------------------------------------------------
 
+  // The index is told first, before the window paints: a computer that was put behind the person's programs while no window showed is
+  // brought back at once, so a window never opens inside a throttled process. (A failure there is the index's problem, never the window's.)
   fun showMain() {
+    // Set both visible and focused before painting (and before hidePanel clears panelOpen) so Balanced speed lifts PRIO_DARWIN_BG immediately.
+    runCatching { controller.windowShown(true); controller.windowFocused(true) }
     hidePanel()
     _mainVisible.value = true
     _mainRaise.update { it + 1 }
   }
 
   fun showPanel() {
+    runCatching { controller.panelShown(true) }
     panel.reset()
     _panelVisible.value = true
     _panelRaise.update { it + 1 }
@@ -121,14 +138,19 @@ class Shell(
 
   fun hidePanel() {
     panel.dismissPreviews()
+    runCatching { controller.previewPlayer.stop() }
     _panelVisible.value = false
+    runCatching { controller.panelShown(false) }
   }
 
+  /** True while a native OS file drag is underway from Quick Search so the panel does not vanish mid-drag. */
+  @Volatile var dragInProgress: Boolean = false
+
   /**
-   * True while the system's preview (Quick Look) is on screen. It is another app's window, so the panel loses focus to it; that must not
-   * close the panel (the person is still using it). When the system preview goes, the panel comes back to the front with the keyboard.
+   * True while the system's preview (Quick Look) or a native file drag is active. Another app's window takes focus during those;
+   * that must not auto-hide the panel mid-action.
    */
-  val autoHideSuspended: Boolean get() = fullPreview.open.value
+  val autoHideSuspended: Boolean get() = fullPreview.open.value || dragInProgress
 
   fun togglePanel() { if (_panelVisible.value) hidePanel() else showPanel() }
 
@@ -137,12 +159,26 @@ class Shell(
     showMain()
   }
 
+  /** Opens the full Trawl search window pre-filled with [query] and hides the quick panel. */
+  fun openFullSearch(query: String) {
+    if (controller.screen.value != trawl.desktop.Screen.FIRST_RUN) controller.closeSettings()
+    controller.setQuery(query.trim())
+    showMain()
+  }
+
   fun togglePause() = controller.setPaused(!controller.settings.value.indexPaused)
 
   /** The window's close button. Keeps running in the tray when the person wants that and there is a tray to come back from. */
   fun onMainCloseRequest() {
-    if (_prefs.value.keepRunning && trayAvailable) _mainVisible.value = false else quit()
+    runCatching { controller.previewPlayer.stop() }
+    if (_prefs.value.keepRunning && trayAvailable) { _mainVisible.value = false; runCatching { controller.windowShown(false) } } else quit()
   }
+
+  /** The window can be put away without ending Trawl: it keeps running in the tray, which is there to bring it back. Esc on an empty search box uses this. */
+  val canHideMain: Boolean get() = _prefs.value.keepRunning && trayAvailable
+
+  /** Puts the main window away (never quits). A no-op where there is no tray to come back from. */
+  fun hideMain() { if (canHideMain) { runCatching { controller.previewPlayer.stop() }; _mainVisible.value = false; runCatching { controller.windowShown(false) } } }
 
   fun quit() {
     close()
@@ -200,7 +236,10 @@ class Shell(
   }
 
   override fun close() {
+    runCatching { controller.previewPlayer.stop() }
+    runCatching { fullPreview.close() }
     runCatching { hotkey.close() }
     runCatching { instance?.close() }
+    runCatching { scope.cancel() }
   }
 }

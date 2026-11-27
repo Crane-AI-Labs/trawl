@@ -255,6 +255,9 @@
   <string name="addons_problem_unavailable">This add-on cannot be added in this version yet.</string>
   <string name="addons_add_title">Add %1$s</string>
   <string name="addons_add_install">Install</string>
+  <string name="addons_download_browser">Download in browser</string>
+  <string name="addons_download_return_hint">After the file finishes downloading into Downloads, return here and tap Install.</string>
+  <string name="addons_no_browser">No browser app found to open the download link.</string>
   <string name="addons_remove_title">Remove %1$s?</string>
   <string name="addons_remove_body">This frees %1$s and switches it off. Words and meanings <xliff:g id="app_name" example="Trawl">%2$s</xliff:g> already learned stay until those files are read again. You can add it back any time.</string>
   <string name="addons_remove_confirm">Remove</string>
@@ -340,6 +343,8 @@
   <string name="settings_about_model">Search runs on EmbeddingGemma 2 by Google (Apache 2.0), entirely on this phone.</string>
   <string name="settings_about_private"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> has no internet permission. Your files and what it learns from them never leave the phone.</string>
   <string name="settings_about_maker">Made by Crane AI Labs.</string>
+  <string name="settings_check_updates">Check for updates</string>
+  <string name="settings_check_updates_hint">Opens the downloads page in your browser.</string>
   <string name="settings_licences">Licences and credits</string>
   <string name="licences_title">Licences and credits</string>
   <string name="licences_intro"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> is built on the work below. These notices are required by the licences, and they are also how we say thank you.</string>

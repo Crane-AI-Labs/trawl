@@ -49,6 +49,8 @@ data class PackDef(
    * onboarding does not ask about it. Settings → Add-ons still switches it off or removes it, and that choice is kept.
    */
   val byDefault: Boolean = false,
+  /** False for an opt-in pack that only some people want (a speech pack): it is found in Settings → Add-ons and onboarding does not ask about it. */
+  val atOnboarding: Boolean = true,
 ) {
   /** Whole megabytes, rounded down, as the install log and the docs say it. */
   val sizeMb: Long get() = sizeBytes / 1_000_000
@@ -62,7 +64,17 @@ object PackIds {
   const val SPEECH = "speech"
   const val QUICK_LOOK = "quicklook"
   const val PRIVACY = "privacy"
-  val ALL: List<String> = listOf(SPEECH, QUICK_LOOK, PRIVACY)
+  /**
+   * The opt-in speech add-on: one pack per language, a second recogniser for the speech the English one cannot read
+   * (engine/LocalSpeech.kt, D48). At most one is in use at a time ([FindrSettings.speechPack]).
+   */
+  const val SPEECH_LG = "speech-lg"
+  const val SPEECH_NYN = "speech-nyn"
+  const val SPEECH_ACH = "speech-ach"
+  const val SPEECH_SW = "speech-sw"
+  const val SPEECH_XOG = "speech-xog"
+  val SPEECH_PACKS: List<String> = listOf(SPEECH_LG, SPEECH_NYN, SPEECH_ACH, SPEECH_SW, SPEECH_XOG)
+  val ALL: List<String> = listOf(SPEECH, QUICK_LOOK, PRIVACY) + SPEECH_PACKS
 }
 
 // ---- State ---------------------------------------------------------------------------------------------------------
@@ -92,6 +104,8 @@ interface PackManager {
   fun decline(id: String)
   /** One or two sentences on how this build gets the file (today: copy a .zip into Downloads), null for an unknown pack. */
   fun howToAdd(id: String): PackCopy?
+  /** Browser download URL for sideloaded builds (null on Play Asset Delivery or unknown pack). Trawl opens it via ACTION_VIEW, never its own socket. */
+  fun downloadUrl(id: String): String? = null
 }
 
 object NoPacks : PackManager {
@@ -146,7 +160,7 @@ fun packRows(catalog: List<PackDef>, states: Map<String, PackState>, settings: F
  * Packs onboarding can still ask about: the opt-in ones that can be added today. The default packs ([PackDef.byDefault]) are
  * installed without a question when their files are in Downloads and are never nagged about when they are not.
  */
-fun offeredAtOnboarding(rows: List<PackRow>): List<PackRow> = rows.filter { it.status != PackStatus.COMING_SOON && !it.def.byDefault }
+fun offeredAtOnboarding(rows: List<PackRow>): List<PackRow> = rows.filter { it.status != PackStatus.COMING_SOON && !it.def.byDefault && it.def.atOnboarding }
 
 /**
  * The ids onboarding asks about when it opens: [offeredAtOnboarding] minus what is already on the phone. Taken once, so a

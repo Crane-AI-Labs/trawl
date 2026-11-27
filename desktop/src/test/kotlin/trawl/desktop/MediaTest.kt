@@ -372,6 +372,73 @@ class MediaProcessorTest {
   private fun processor(d: MediaDecoder, e: FakeEmbedder, t: Transcriber?, dir: File, stop: () -> Boolean = { false }) =
     MediaProcessor(d, e, t, gate(), { null }, dir, stop)
 
+  @Test fun shortCaptionWordsAreKeptOnceWithoutTextVectorsOnEitherPack() {
+    for (vision in listOf(true, false)) {
+      val dir = tmpDir()
+      try {
+        val embedder = FakeEmbedder(vision)
+        val info = MediaInfo(10_000, true, false)
+        val decoder = FakeDecoder(info) { time -> if (time < 5_000) 1 else 2 }
+        val reader = object : Ocr {
+          override val name = "caption"
+          override fun read(image: File) = "Harbour\n|l1\n50%"
+          override fun readLines(image: File) = read(image).lines().map {
+            com.craneai.findr.core.OcrLine(it, 0.97f, 0f, 0.08f, 0.3f, "en", 0.95f)
+          }
+          override fun close() = Unit
+        }
+        val step = MediaProcessor(decoder, embedder, null, gate(), { reader }, dir)
+          .step(fileOf(FileKind.VIDEO, 10_000), File("/x"), info, null, 1)
+        val words = step.segments.filter { it.kind == SegmentKind.OCR }.single()
+        assertEquals("Harbour", words.text)
+        assertEquals(Modality.NONE, words.modality)
+        assertNull(words.vector)
+        assertTrue(embedder.documents.isEmpty())
+      } finally { dir.deleteRecursively() }
+    }
+  }
+
+  @Test fun severalShortCaptionsDoNotBecomeALongTextVector() {
+    val dir = tmpDir()
+    try {
+      val embedder = FakeEmbedder(vision = false)
+      val info = MediaInfo(10_000, true, false)
+      val decoder = FakeDecoder(info) { time -> if (time < 5_000) 1 else 2 }
+      var readings = 0
+      val reader = object : Ocr {
+        override val name = "caption"
+        override fun read(image: File) = if (readings++ == 0) "Harbour" else "Welcome"
+        override fun readLines(image: File) = listOf(com.craneai.findr.core.OcrLine(read(image), 0.97f, 0f, 0.08f, 0.3f, "en", 0.95f))
+        override fun close() = Unit
+      }
+      val step = MediaProcessor(decoder, embedder, null, gate(), { reader }, dir)
+        .step(fileOf(FileKind.VIDEO, 10_000), File("/x"), info, null, 1)
+      assertEquals("Harbour\nWelcome", step.segments.single().text)
+      assertNull(step.segments.single().vector)
+      assertTrue(embedder.documents.isEmpty())
+    } finally { dir.deleteRecursively() }
+  }
+
+  @Test fun shortCaptionsDoNotEnterTheVectorsOfLongCaptions() {
+    val dir = tmpDir()
+    try {
+      val embedder = FakeEmbedder(vision = false)
+      val info = MediaInfo(10_000, true, false)
+      val decoder = FakeDecoder(info) { time -> if (time < 5_000) 1 else 2 }
+      var readings = 0
+      val reader = object : Ocr {
+        override val name = "caption"
+        override fun read(image: File) = if (readings++ == 0) "Harbour" else "GRAND OPENING TODAY"
+        override fun readLines(image: File) = listOf(com.craneai.findr.core.OcrLine(read(image), 0.97f, 0f, 0.08f, 0.3f, "en", 0.95f))
+        override fun close() = Unit
+      }
+      val step = MediaProcessor(decoder, embedder, null, gate(), { reader }, dir)
+        .step(fileOf(FileKind.VIDEO, 10_000), File("/x"), info, null, 1)
+      assertEquals("Harbour\nGRAND OPENING TODAY", step.segments.single().text)
+      assertEquals(listOf("GRAND OPENING TODAY"), embedder.documents)
+    } finally { dir.deleteRecursively() }
+  }
+
   @Test fun aShortVideoGetsItsFramesItsSpeechAndItsSoundLabels() {
     val dir = tmpDir(); val e = FakeEmbedder()
     val d = FakeDecoder(MediaInfo(10_000, hasVideo = true, hasAudio = true)) { t -> if (t < 5_000) 1 else 2 }

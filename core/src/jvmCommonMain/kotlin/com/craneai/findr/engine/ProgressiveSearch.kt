@@ -56,6 +56,12 @@ class ProgressiveSearch(
   private val wordsWeight: (query: String) -> Double = { Fusion.WORD_WEIGHT },
   private val meaningWeight: (query: String, vector: FloatArray?) -> Double = { _, _ -> Fusion.WORD_WEIGHT },
   private val onMeaning: (query: String, embedMs: Long, results: SearchResults, note: String) -> Unit = { _, _, _, _ -> },
+  /**
+   * Optional cold-start fast path: runs [ensureVectors] and query embedding concurrently when meaning is expected,
+   * cutting first-search latency from `vectorLoadMs + embedMs` to `max(vectorLoadMs, embedMs)`.
+   * Must call [ensureVectors] before returning; null falls back to the sequential path.
+   */
+  private val embedWithLoad: (suspend (query: String, ensureVectors: suspend () -> Unit) -> QueryVectors)? = null,
 ) {
   fun run(query: String, filter: KindFilter, limit: Int, meaningDelayMs: Long = 0, view: ResultView = ResultView.DEFAULT): Flow<SearchResults> = flow {
     val q = query.trim()
@@ -72,6 +78,21 @@ class ProgressiveSearch(
     // Typing: cancelled here by the next keystroke, so no embed starts for a half-typed word. Only when meaning is expected,
     // so a words-only answer is final as fast as before.
     if (meaningDelayMs > 0 && !words.complete) delay(meaningDelayMs)
+    val overlapped = embedWithLoad
+    if (expectMeaning && overlapped != null) {
+      val t0 = System.nanoTime()
+      val vectors = overlapped(q, ensureVectors)
+      val embedMs = (System.nanoTime() - t0) / 1_000_000
+      if (wantsMeaning(q)) {
+        val weight = meaningWeight(q, vectors.eg)
+        val results = searcher().search(q, vectors.eg, filter, limit, prefixLast = true, quickVector = vectors.quick, includeSensitive = sensitive, wordWeight = weight, view = view)
+        onMeaning(q, embedMs, results, vectors.note)
+        emit(results)
+      } else {
+        emit(words.copy(complete = true))
+      }
+      return@flow
+    }
     ensureVectors()
     if (wantsMeaning(q)) {
       val t0 = System.nanoTime()

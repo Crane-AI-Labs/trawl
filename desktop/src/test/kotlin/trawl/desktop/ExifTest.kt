@@ -93,8 +93,33 @@ class ExifTest {
     val photo = found.first { it.name == "IMG_1.jpg" }
     assertEquals(ms("2021-02-03T04:05:06"), photo.record().dateMillis)
     assertEquals(f.lastModified(), photo.record().modifiedMillis)
-    assertEquals(0L, found.first { it.name == "a.txt" }.record().dateMillis, "0 means: the modified time, as for every other file")
+    val docFound = found.first { it.name == "a.txt" }
+    val attrs = java.nio.file.Files.readAttributes(doc.toPath(), java.nio.file.attribute.BasicFileAttributes::class.java)
+    val expectedCreated = attrs.creationTime().toMillis().takeIf { it > 0L } ?: doc.lastModified()
+    assertEquals(expectedCreated, docFound.record().dateMillis, "non-EXIF files carry BasicFileAttributes creationTime (falling back to modified)")
+    assertEquals(doc.lastModified(), docFound.record().modifiedMillis)
     d.deleteRecursively()
+  }
+
+  @Test fun createdOfFallsBackToModifiedWhenCreationTimeIsZero() {
+    val d = java.nio.file.Files.createTempDirectory("trawl-created").toFile()
+    try {
+      val doc = java.io.File(d, "notes.txt").apply { writeText("hello") }
+      val fakeAttrs = object : java.nio.file.attribute.BasicFileAttributes {
+        override fun lastModifiedTime() = java.nio.file.attribute.FileTime.fromMillis(1_700_000_000_000L)
+        override fun lastAccessTime() = lastModifiedTime()
+        override fun creationTime() = java.nio.file.attribute.FileTime.fromMillis(0L)
+        override fun isRegularFile() = true
+        override fun isDirectory() = false
+        override fun isSymbolicLink() = false
+        override fun isOther() = false
+        override fun size() = 5L
+        override fun fileKey(): Any? = null
+      }
+      assertEquals(1_700_000_000_000L, Crawler.createdOf(doc.toPath(), doc.name, com.craneai.findr.core.FileKind.DOCUMENT, fakeAttrs))
+    } finally {
+      d.deleteRecursively()
+    }
   }
 
   @Test fun rotationSwapsTheSides() {

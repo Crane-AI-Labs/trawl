@@ -7,4 +7,6 @@
   <string name="open_problem_memory">Simu haina kumbukumbu ya kutosha. Itajaribu tena baada ya muda mfupi.</string>
   <string name="open_problem_other">Itajaribu tena baada ya muda mfupi.</string>
   <string name="open_problem_detail">Matokeo yako ya awali yapo salama, na hakuna kilichofutwa. Inajaribu tena yenyewe, au gusa Jaribu tena.</string>
+  <string name="index_opening_title">Inafungua faharasa yako</string>
+  <string name="index_opening_detail">Matokeo yataonekana punde faharasa ikiwa tayari.</string>
 </resources>

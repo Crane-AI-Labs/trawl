@@ -49,6 +49,7 @@ final class Host: NSObject, NSApplicationDelegate, QLPreviewPanelDataSource, QLP
     func finish() {
         if finished { return }
         finished = true
+        QLPreviewPanel.shared()?.orderOut(nil)
         say("closed")
         exit(0)
     }

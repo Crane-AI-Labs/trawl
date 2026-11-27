@@ -15,7 +15,7 @@ import androidx.compose.ui.test.performKeyInput
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.pressKey
 import androidx.compose.ui.test.requestFocus
-import androidx.compose.ui.test.runComposeUiTest
+import trawl.desktop.runComposeUiTest
 import com.craneai.findr.core.FileKind
 import java.util.Locale
 import kotlin.test.BeforeTest

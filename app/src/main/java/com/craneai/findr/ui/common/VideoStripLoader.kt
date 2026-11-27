@@ -70,8 +70,8 @@ object VideoStripLoader {
     plan.slots.forEachIndexed { i, slot -> frames.put(frameKey(file, slot, hidden), bitmaps[i]) }
   }
 
-  private fun planKey(file: IndexedFile, momentMs: Long) = "${file.uri}|$momentMs"
-  private fun frameKey(file: IndexedFile, slot: VideoStrip.Slot, hidden: Boolean) = "${file.uri}|${slot.atMs}|${slot.exact}|$hidden"
+  private fun planKey(file: IndexedFile, momentMs: Long) = "${file.uri}|${file.modifiedMillis}|${file.sizeBytes}|$momentMs"
+  private fun frameKey(file: IndexedFile, slot: VideoStrip.Slot, hidden: Boolean) = "${file.uri}|${file.modifiedMillis}|${file.sizeBytes}|${slot.atMs}|${slot.exact}|$hidden"
 
   /**
    * Plans and fetches the strip for [file] at [momentMs], calling [onPlan] once the pictures are chosen and [onFrame] for each as it
@@ -111,10 +111,18 @@ object VideoStripLoader {
             val hit = cachedFrame(file, slot, hidden)
             val bitmap = if (hit != null) { fromCache.incrementAndGet(); hit } else {
               ensureActive()
-              gate.withPermit {
-                val r = retriever ?: Retriever.open(context, file.uri).also { retriever = it }
-                r.frame(slot, hidden)
-              }?.also { frames.put(frameKey(file, slot, hidden), it); decoded.incrementAndGet() } ?: run { failed.incrementAndGet(); null }
+              val opened = try {
+                gate.withPermit {
+                  val r = retriever ?: Retriever.open(context, file.uri).also { retriever = it }
+                  r.frame(slot, hidden)
+                }
+              } catch (e: CancellationException) {
+                throw e
+              } catch (_: Exception) {
+                failed.incrementAndGet()
+                break
+              }
+              opened?.also { frames.put(frameKey(file, slot, hidden), it); decoded.incrementAndGet() } ?: run { failed.incrementAndGet(); null }
             }
             if (bitmap != null) {
               firstMs.compareAndSet(-1, SystemClock.elapsedRealtime() - t0)

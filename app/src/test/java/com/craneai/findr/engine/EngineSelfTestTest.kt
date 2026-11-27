@@ -181,20 +181,63 @@ class EngineSelfTestTest {
     for (t in texts) assertFalse("log has probe text: $all", all.contains(t))
   }
 
-  @Test fun `the cache clearing takes this model's xnnpack files and nothing else`() {
+  @Test fun `the cache clearing takes this model's xnnpack and mldrift gpu files and nothing else`() {
     val dir = tmp.newFolder()
-    val mine = listOf("m.litertlm_1_2.text_encoder.xnnpack_cache", "m.litertlm_1_2.vision_encoder.xnnpack_cache", "m.litertlm_9_9.audio_adapter.xnnpack_cache")
+    val mine = listOf(
+      "m.litertlm_1_2.text_encoder.xnnpack_cache",
+      "m.litertlm_1_2.vision_encoder.xnnpack_cache",
+      "m.litertlm_9_9.audio_adapter.xnnpack_cache",
+      "m.litertlm.vision_encoder_123_weight_cache.bin",
+      "m.litertlm.vision_encoder_123.program_cache.bin",
+      "m.litertlm_mldrift_opencl.bin",
+      "m_mldrift_shader.bin",
+      "m.program_cache",
+      "m.weight_cache.bin",
+    )
     mine.forEach { File(dir, it).writeText("x") }
-    val keep = listOf("m2.litertlm_1_2.text_encoder.xnnpack_cache", "m.litertlm", "m.litertlm_1_2.json", "scratch")
+    val keep = listOf(
+      "m2.litertlm_1_2.text_encoder.xnnpack_cache",
+      "m2.litertlm.vision_encoder_123_weight_cache.bin",
+      "m2_mldrift_shader.bin",
+      "other.program_cache.bin",
+      "m.litertlm",
+      "m.litertlm_1_2.json",
+      "scratch",
+    )
     keep.forEach { File(dir, it).writeText("x") }
-    assertEquals(3, EngineCache.clear(dir, "m.litertlm"))
+    assertEquals(mine.size, EngineCache.clear(dir, "m.litertlm"))
     assertEquals(keep.sorted(), dir.list()!!.sorted())
     assertEquals("a missing folder is fine", 0, EngineCache.clear(File(dir, "nope"), "m.litertlm"))
   }
 
+  @Test fun `a corrupt mldrift gpu cache is cleared on self-test failure and repairs`() {
+    val dir = tmp.newFolder()
+    val gpuCache = File(dir, "${bundle}.vision_encoder_123_weight_cache.bin").apply { writeText("GARBAGE") }
+    val otherGpu = File(dir, "other.litertlm.vision_encoder_123_weight_cache.bin").apply { writeText("keep") }
+    var loads = 0
+    val vectors = golden.associate { it.text to it.vector }
+    val selfTest = EngineSelfTest<FakeEngine>(
+      probe, clearCache = { EngineCache.clear(dir, bundle) }, log = {},
+    )
+    val engine = selfTest.loadVerified(
+      bundle,
+      load = {
+        loads++
+        val mode = if (gpuCache.exists()) gpuCache.readText() else "OK".also { gpuCache.writeText(it) }
+        FakeEngine(mode, vectors)
+      },
+      embed = { e, t -> e.embed(t) },
+      close = { it.closed = true },
+    )
+    assertEquals(2, loads)
+    assertEquals("OK", engine.mode)
+    assertEquals("OK", gpuCache.readText())
+    assertEquals("keep", otherGpu.readText())
+  }
+
   // ---- the shipped asset ----------------------------------------------------------------------------------------
 
-  private val shipped = File("src/main/assets/${EngineProbe.ASSET}").readText().let { EngineProbe.fromJson(it) }
+  private val shipped = File("src/full/assets/${EngineProbe.ASSET}").readText().let { EngineProbe.fromJson(it) }
 
   @Test fun `every stock bundle has three unit-length 768-d golden probes in the shipped asset`() {
     for (name in Embedder.MODEL_NAMES.filter { it !in Embedder.FINETUNED_NAMES } + Embedder.TEXT_ONLY_NAME) {
@@ -214,7 +257,7 @@ class EngineSelfTestTest {
   }
 
   private val shippedVectors: Map<String, Map<String, FloatArray>> by lazy {
-    val root = org.json.JSONObject(File("src/main/assets/${EngineProbe.ASSET}").readText()).getJSONObject("bundles")
+    val root = org.json.JSONObject(File("src/full/assets/${EngineProbe.ASSET}").readText()).getJSONObject("bundles")
     root.keys().asSequence().associateWith { name ->
       val arr = root.getJSONArray(name)
       (0 until arr.length()).associate { i ->

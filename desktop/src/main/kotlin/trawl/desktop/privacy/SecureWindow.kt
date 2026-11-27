@@ -75,11 +75,35 @@ object SecureWindow {
     fun objc_msgSend(receiver: Pointer, selector: Pointer, arg: Long): Pointer
   }
 
+  fun interface MainWork : com.sun.jna.Callback { fun invoke(context: Pointer?) }
+
+  private interface Dispatch : Library {
+    fun dispatch_async_f(queue: Pointer, context: Pointer?, work: MainWork)
+  }
+
   private val objc: ObjC by lazy { Native.load("objc", ObjC::class.java) }
+  private val dispatch: Dispatch by lazy { Native.load("System", Dispatch::class.java) }
+  private val mainQueue: Pointer by lazy { com.sun.jna.NativeLibrary.getInstance("System").getGlobalVariableAddress("_dispatch_main_q") }
+  private val inFlight: MutableSet<MainWork> = java.util.Collections.synchronizedSet(mutableSetOf())
 
   private fun mac(window: Window, on: Boolean): CaptureResult {
+    // Prefer libtrawl_mac.dylib (retains NSWindow under ARC and dispatches asynchronously onto the AppKit main queue).
+    if (trawl.desktop.shell.MacNative.setSharingType(window, allowCapture = !on)) return CaptureResult.APPLIED
     val ns = nsWindowOf(window) ?: return CaptureResult.FAILED
-    objc.objc_msgSend(ns, objc.sel_registerName("setSharingType:"), if (on) NS_WINDOW_SHARING_NONE else NS_WINDOW_SHARING_READ_ONLY)
+    val sharing = if (on) NS_WINDOW_SHARING_NONE else NS_WINDOW_SHARING_READ_ONLY
+    val work = object : MainWork {
+      override fun invoke(context: Pointer?) {
+        try {
+          // Retain/send on AppKit main thread only (never off-main from Dispatchers.IO).
+          objc.objc_msgSend(ns, objc.sel_registerName("setSharingType:"), sharing) // garden-lint:allow
+        } catch (_: Throwable) {
+        } finally {
+          inFlight.remove(this)
+        }
+      }
+    }
+    inFlight += work
+    dispatch.dispatch_async_f(mainQueue, null, work)
     return CaptureResult.APPLIED
   }
 
@@ -89,7 +113,21 @@ object SecureWindow {
     val accessorType = Class.forName("sun.awt.AWTAccessor\$ComponentAccessor")
     val peer = accessorType.getMethod("getPeer", java.awt.Component::class.java).invoke(accessor, window) ?: return null
     val platformWindow = peer.javaClass.getMethod("getPlatformWindow").apply { isAccessible = true }.invoke(peer) ?: return null
-    val ptr = platformWindow.javaClass.getMethod("getNSWindowPtr").apply { isAccessible = true }.invoke(platformWindow) as? Long ?: return null
+    // OpenJDK 21's CPlatformWindow extends CFRetainedResource, which stores the NSWindow* in private field `ptr`
+    // (there is no public `getNSWindowPtr()` method on JDK 21). Check `ptr` across superclasses first, then fall back.
+    var cur: Class<*>? = platformWindow.javaClass
+    while (cur != null && cur != Any::class.java) {
+      val field = runCatching { cur.getDeclaredField("ptr") }.getOrNull()
+      if (field != null) {
+        field.isAccessible = true
+        val ptr = (field.get(platformWindow) as? Long) ?: 0L
+        return if (ptr == 0L) null else Pointer(ptr)
+      }
+      cur = cur.superclass
+    }
+    val method = runCatching { platformWindow.javaClass.getDeclaredMethod("getNSWindowPtr").apply { isAccessible = true } }.getOrNull()
+      ?: return null
+    val ptr = method.invoke(platformWindow) as? Long ?: return null
     return if (ptr == 0L) null else Pointer(ptr)
   }
 }

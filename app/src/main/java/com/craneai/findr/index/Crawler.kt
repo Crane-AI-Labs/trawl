@@ -115,7 +115,7 @@ class Crawler(
     }
     // A prune pass with no stored position (an empty index, as after "Delete everything") has nothing to take out.
     if (!pruneOnly || storedGeneration != null) {
-      source.forEachChanged(volume, if (full) -1 else (storedGeneration ?: -1)) { row ->
+      source.forEachChanged(volume, if (full) -1 else storedGeneration) { row ->
         scanned++
         // The same rules either way (exclusions, folder scope, private places, .nomedia). Paused, only what a rule now
         // covers goes on, to the same "now skipped: forget what was read" step a normal pass uses (IndexStore.upsertOne).
@@ -188,7 +188,9 @@ class Crawler(
     }
     if (reason == null) {
       val folder = row.absolutePath?.substringBeforeLast('/', "")
-      if (!folder.isNullOrEmpty() && Rules.underNoMedia(folder, noMedia)) reason = ".nomedia folder"
+      if (!folder.isNullOrEmpty() && Rules.underNoMedia(folder, noMedia)) {
+        reason = Rules.skipReason(row.relativePath, row.name, kind, row.sizeBytes, row.width, row.height, excluded, noMedia = true, scope = scope)
+      }
     }
     return CrawlRecord(
       volume = row.volume, mediaStoreId = row.id, uri = row.uri, relativePath = row.relativePath, name = row.name,

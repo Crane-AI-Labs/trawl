@@ -25,7 +25,10 @@ class AddOnHeaderTest : AtlasTestBase() {
     val a = Atlas(rule, "t-addon-header")
     a.forEach(listOf(Cfg(1.3f, false, Dev.SMALL), Cfg(2.0f, false, Dev.SMALL), Cfg(2.0f, false, Dev.PHONE, "lg"), Cfg(1.0f, false, Dev.SMALL)), "addon") { c ->
       prefs()
-      val rows = packRows(PackCatalog.all, PackCatalog.all.associate { it.id to PackState.NotInstalled }, FindrSettings())
+      // The three default packs and the speech pack with the longest title: all eight cards do not fit one unscrolled column at 2x text
+      // (the ones below the fold measure 0 x 0), and the Settings screen scrolls them anyway.
+      val shown = PackCatalog.all.filter { it.byDefault } + PackCatalog.speechXog
+      val rows = packRows(shown, shown.associate { it.id to PackState.NotInstalled }, FindrSettings())
       a.launch(c) { Column(Modifier.padding(16.dp)) { rows.forEach { PackHeader(it) } } }
       a.settle(300)
       val titles = rule.onAllNodes(hasTestTag("pack-title"), useUnmergedTree = true).fetchSemanticsNodes().map { it.boundsInRoot }

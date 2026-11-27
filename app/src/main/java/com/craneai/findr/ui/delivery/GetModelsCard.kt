@@ -188,11 +188,7 @@ internal fun downloadLabel(state: DeliveryState): String = modelsGetLabel(
 private fun installedPacksText(state: DeliveryState): String {
   if (state.missingPacks.isEmpty()) return stringResource(R.string.models_search_installed)
   val names = state.missingPacks.map { id ->
-    stringResource(when (id) {
-      PackCatalog.QUICK_LOOK -> R.string.pack_quicklook_name
-      PackCatalog.PRIVACY -> R.string.pack_privacy_name
-      else -> R.string.pack_speech_name
-    })
+    PackCatalog.byId(id)?.let { stringResource(it.nameRes) } ?: id
   }
   return stringResource(R.string.models_missing_packs, names.joinToString(", ")) + " " + stringResource(R.string.models_missing_full_bundle)
 }

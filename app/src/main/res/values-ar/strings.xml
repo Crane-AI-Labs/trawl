@@ -306,6 +306,8 @@
   <string name="settings_about_model">يعتمد البحث على EmbeddingGemma 2 من Google (Apache 2.0)، بالكامل على هذا الهاتف.</string>
   <string name="settings_about_private">لا يملك <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> إذن الوصول إلى الإنترنت. ملفاتك وما يتعلمه التطبيق منها لا تغادر الهاتف أبداً.</string>
   <string name="settings_about_maker">من تطوير Crane AI Labs.</string>
+  <string name="settings_check_updates">التحقق من التحديثات</string>
+  <string name="settings_check_updates_hint">يفتح صفحة التنزيلات في متصفحك.</string>
   <string name="settings_licences">التراخيص والشكر والتقدير</string>
   <string name="licences_title">التراخيص والشكر والتقدير</string>
   <string name="licences_intro">تم بناء <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> استناداً إلى الأعمال أدناه. هذه الإشعارات مطلوبة بموجب التراخيص، وهي أيضاً طريقتنا لتقديم الشكر.</string>
@@ -511,4 +513,7 @@
     <item quantity="many">تعذّرت قراءة %1$d ملفًا (تالفة، أو بصيغة لا يستطيع هذا الهاتف فتحها). يمكنك العثور عليها بالاسم.</item>
     <item quantity="other">تعذّرت قراءة %1$d ملف (تالفة، أو بصيغة لا يستطيع هذا الهاتف فتحها). يمكنك العثور عليها بالاسم.</item>
   </plurals>
+  <string name="addons_download_browser">التنزيل في المتصفح</string>
+  <string name="addons_download_return_hint">بعد انتهاء تنزيل الملف في مجلد التنزيلات، عُد إلى هنا واضغط على تثبيت.</string>
+  <string name="addons_no_browser">لم يتم العثور على متصفح لفتح رابط التنزيل.</string>
 </resources>

@@ -2,6 +2,7 @@ package com.craneai.findr.index
 
 import com.craneai.findr.core.FileKind
 import com.craneai.findr.engine.IndexPolicy
+import com.craneai.findr.extract.DocumentTextExtractor
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -286,6 +287,21 @@ class IndexStoreTest {
     assertEquals(FileState.SEARCHABLE, store.stateOf(ids[21]!!)!!.first)
     assertEquals(FileState.UNDERSTOOD, store.stateOf(ids[22]!!)!!.first)   // a PDF isn't read differently by this change
     assertEquals(FileState.SEARCHABLE, store.stateOf(ids[23]!!)!!.first)
+  }
+
+  @Test fun theLegacyWorkbookReaderUpdateReadsOnlyXlsFilesAgain() {
+    // Reader version 3 (XlsText) changes nothing but .xls: no other workbook, text file or PDF is read again, whatever its MIME type.
+    store.upsertFromCrawl(listOf(record("budget.xls", FileKind.DOCUMENT, id = 41, path = "Download/"),
+      record("OLD.XLS", FileKind.DOCUMENT, id = 42, path = "Download/"), record("budget.xlsx", FileKind.DOCUMENT, id = 43, path = "Download/"),
+      CrawlRecord("external_primary", 44, "content://media/external/file/44", "Download/", "prices.csv", FileKind.DOCUMENT, "text/csv", 50_000, 1_000),
+      record("notes.txt", FileKind.DOCUMENT, id = 45, path = "Download/"), record("report.pdf", FileKind.PDF, id = 46, path = "Download/")))
+    val ids = store.knownMediaStoreIds("external_primary")
+    for (k in 41L..46L) store.saveSegments(ids[k]!!, listOf(Segment(SegmentKind.CHUNK, Modality.TEXT, 1, 1, text = "t", vector = vec(k.toInt()))), FileState.UNDERSTOOD)
+    assertEquals(listOf("xls"), DocumentTextExtractor.VERSION_AFFECTS)
+    assertEquals(2, store.requeueRead(listOf(FileKind.DOCUMENT, FileKind.PDF), DocumentTextExtractor.VERSION_AFFECTS))
+    assertEquals(FileState.SEARCHABLE, store.stateOf(ids[41]!!)!!.first)
+    assertEquals(FileState.SEARCHABLE, store.stateOf(ids[42]!!)!!.first)
+    for (k in 43L..46L) assertEquals(FileState.UNDERSTOOD, store.stateOf(ids[k]!!)!!.first)
   }
 
   private val day = 24L * 60 * 60 * 1000
@@ -947,12 +963,21 @@ class IndexStoreTest {
     store = IndexStore.open(dir, log = { logs += it })
   }
 
+  @Test fun externalProcessStopsDoNotClaimTheFileIsTooLarge() {
+    val (big, small) = twoFiles()
+    store.markInflight(big); processDies(); assertNull(store.recoverInflight())
+    store.markInflight(big); processDies(); store.recoverInflight()
+    assertEquals("reading interrupted repeatedly; will retry after an app update", store.stateOf(big)!!.second)
+    assertEquals(0, store.stats().tooLarge)
+    assertEquals(listOf(small), store.nextPending(10, both).map { it.file.id })
+  }
+
   @Test fun aFileThatTookTheProcessDownTwiceIsFailedAndTheQueueMovesOn() {
     val (big, small) = twoFiles()
-    store.markInflight(big); processDies()
+    store.markInflight(big); store.noteInflightMemoryPressure(); processDies()
     assertNull(store.recoverInflight())                                   // first death: another chance
     assertTrue(store.nextPending(10, both).any { it.file.id == big })
-    store.markInflight(big); processDies()                                // the same file again
+    store.markInflight(big); store.noteInflightMemoryPressure(); processDies() // the same file again
     val r = store.recoverInflight()!!                                     // second death: given up on
     assertEquals(big, r.fileId); assertFalse(r.skippedWindow)
     assertEquals(FileState.FAILED, store.stateOf(big)!!.first)
@@ -980,8 +1005,8 @@ class IndexStoreTest {
 
   @Test fun theUpdateRetryGivesATooLargeFileOneMoreChance() {
     val (big, _) = twoFiles()
-    store.markInflight(big); processDies(); store.recoverInflight()
-    store.markInflight(big); processDies(); store.recoverInflight()
+    store.markInflight(big); store.noteInflightMemoryPressure(); processDies(); store.recoverInflight()
+    store.markInflight(big); store.noteInflightMemoryPressure(); processDies(); store.recoverInflight()
     assertEquals(1, store.retryFailed())                                  // a new build may have fixed it
     assertEquals(0, store.stats().tooLarge)
     assertNull(store.recoverInflight())
@@ -990,9 +1015,9 @@ class IndexStoreTest {
   @Test fun twoDeathsInOneWindowSkipThatWindowNotTheFile() {
     val (big, _) = twoFiles()
     store.saveSegments(big, listOf(Segment(SegmentKind.FRAME, Modality.IMAGE, 0, 60_000, vector = vec(1))), FileState.PARTIAL, "6 frames next=1")
-    store.markInflight(big, step = 3, windowed = true); processDies()
+    store.markInflight(big, step = 3, windowed = true); store.noteInflightMemoryPressure(); processDies()
     assertNull(store.recoverInflight())
-    store.markInflight(big, step = 3, windowed = true); processDies()     // the same window again
+    store.markInflight(big, step = 3, windowed = true); store.noteInflightMemoryPressure(); processDies() // the same window again
     val r = store.recoverInflight()!!
     assertTrue(r.skippedWindow); assertEquals(3, r.step)
     val (state, detail) = store.stateOf(big)!!
@@ -1012,8 +1037,8 @@ class IndexStoreTest {
   @Test fun aSecondSkippedWindowFailsTheWholeFile() {
     val (big, _) = twoFiles()
     store.setState(big, FileState.PARTIAL, "next=4 skipped=1")
-    store.markInflight(big, step = 5, windowed = true); processDies(); assertNull(store.recoverInflight())
-    store.markInflight(big, step = 5, windowed = true); processDies()
+    store.markInflight(big, step = 5, windowed = true); store.noteInflightMemoryPressure(); processDies(); assertNull(store.recoverInflight())
+    store.markInflight(big, step = 5, windowed = true); store.noteInflightMemoryPressure(); processDies()
     val r = store.recoverInflight()!!
     assertFalse(r.skippedWindow)                                          // it is the file, not one window
     assertEquals(IndexStore.TOO_LARGE_DETAIL, store.stateOf(big)!!.second)

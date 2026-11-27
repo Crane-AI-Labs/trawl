@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="pack_speech_lg_name">Lok i leb Luganda</string>
+  <string name="pack_speech_nyn_name">Lok i leb Runyankole</string>
+  <string name="pack_speech_ach_name">Lok i leb Acholi</string>
+  <string name="pack_speech_sw_name">Lok i leb Swahili</string>
+  <string name="pack_speech_xog_name">Lok i leb Lusoga (temo)</string>
+  <string name="speech_language_lg">Luganda</string>
+  <string name="speech_language_nyn">Runyankole</string>
+  <string name="speech_language_ach">Acholi</string>
+  <string name="speech_language_sw">Swahili</string>
+  <string name="speech_language_xog">Lusoga</string>
+  <string name="pack_speech_language_benefit">Nongo gin ma kiwaco i dwan ma kigwoko ki vidio i leb %1$s, ma yeny me leb Munu pe twero kwano. I temo wa, dwan ma atir obino mukwongo %2$d%%, kun labongo en obedo %3$d%%.</string>
+  <string name="pack_speech_language_cost">Kwano lok ma pe leb Munu tyen me aryo, pi meno fayil magi tero cawa malac me kwano, dok pe ber ma opong: gen nyig lok mogo marac. Lok me leb Munu kikwano kit macon. Leb acel keken i cawa acel; mito kabedo me wic mukene ka tye ka tic keken.</string>
+</resources>

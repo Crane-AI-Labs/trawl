@@ -16,8 +16,10 @@ import java.io.File
 import java.nio.file.Files
 import kotlin.math.sqrt
 import kotlin.random.Random
+import kotlinx.coroutines.async
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
@@ -424,5 +426,39 @@ class ProgressiveSearchTest {
     val out = typing(VectorIndex(parallelism = 1), ArrayList()).run("ab", KindFilter.ALL, 20, meaningDelayMs = 10_000).toList()
     assertTrue(out.first().complete)
     assertTrue("finished without the 10 s pause", (System.nanoTime() - t0) / 1_000_000 < 5_000)
+  }
+
+  @Test fun coldStartOverlapRunsVectorLoadAndQueryEmbedConcurrently() = runBlocking {
+    val vectors = VectorIndex(parallelism = 1)
+    try {
+      val searcher = Searcher(store, vectors, kinds)
+      val loadMs = 150L
+      val embedMs = 150L
+      val progressive = ProgressiveSearch(
+        searcher = { searcher },
+        meaningPossible = { true },
+        storedVectors = { store.hasVectors() },
+        ensureVectors = { delay(loadMs); vectors.load(store) },
+        wantsMeaning = { it.length >= 3 && vectors.size > 0 },
+        embed = { delay(embedMs); QueryVectors(embed(it), null) },
+        embedWithLoad = { q, load ->
+          coroutineScope {
+            val v = async { delay(embedMs); embed(q) }
+            load()
+            QueryVectors(v.await(), null)
+          }
+        },
+      )
+      val t0 = System.nanoTime()
+      val seen = progressive.run("rental contract", KindFilter.ALL, 20).toList()
+      val elapsedMs = (System.nanoTime() - t0) / 1_000_000
+      assertEquals(2, seen.size)
+      assertTrue(seen.last().complete)
+      // Sequential would take >= 300 ms; overlapped completes near max(150, 150) = ~150 ms.
+      assertTrue("expected overlapped load+embed (< 270 ms), took $elapsedMs ms", elapsedMs < 270)
+      same(searcher.search("rental contract", embed("rental contract"), KindFilter.ALL, 20, prefixLast = true), seen.last(), "overlapped answer")
+    } finally {
+      vectors.close()
+    }
   }
 }

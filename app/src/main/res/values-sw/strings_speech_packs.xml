@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="pack_speech_lg_name">Hotuba kwa Kiganda</string>
+  <string name="pack_speech_nyn_name">Hotuba kwa Runyankole</string>
+  <string name="pack_speech_ach_name">Hotuba kwa Kiacholi</string>
+  <string name="pack_speech_sw_name">Hotuba kwa Kiswahili</string>
+  <string name="pack_speech_xog_name">Hotuba kwa Lusoga (majaribio)</string>
+  <string name="speech_language_lg">Kiganda</string>
+  <string name="speech_language_nyn">Runyankole</string>
+  <string name="speech_language_ach">Kiacholi</string>
+  <string name="speech_language_sw">Kiswahili</string>
+  <string name="speech_language_xog">Lusoga</string>
+  <string name="pack_speech_language_benefit">Hupata yaliyosemwa katika jumbe za sauti na video za %1$s, ambazo utafutaji wa hotuba ya Kiingereza hauwezi kusoma. Katika majaribio yetu ujumbe sahihi wa sauti ulikuja wa kwanza kwa %2$d%%, dhidi ya %3$d%% bila hiyo.</string>
+  <string name="pack_speech_language_cost">Husoma tena hotuba isiyo ya Kiingereza mara ya pili, kwa hivyo faili hizo huchukua muda mrefu kusomwa, na si kamili: tarajia maneno machache yasiyo sahihi. Kiingereza husomwa kama awali. Lugha moja ya hotuba kwa wakati mmoja; huhitaji kumbukumbu ya ziada wakati inafanya kazi tu.</string>
+</resources>

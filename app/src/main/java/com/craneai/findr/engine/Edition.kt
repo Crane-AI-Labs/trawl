@@ -61,4 +61,4 @@ object Edition {
  */
 fun FindrSettings.forEdition(): FindrSettings =
   if (!Edition.GO) this
-  else copy(speechToText = false, quickLook = false, blurPrivatePreviews = false, privateScoring = false, indexAudio = false)
+  else copy(speechToText = false, speechPack = null, quickLook = false, blurPrivatePreviews = false, privateScoring = false, indexAudio = false)

@@ -1,0 +1,9 @@
+{
+  "pad_pack_name": "pack_quicklook",
+  "pack_id": "quicklook",
+  "folder_name": "findr-quicklook-models",
+  "archive_name": "trawl-quicklook-models.zip",
+  "delivery_type": "on-demand",
+  "expected_uncompressed_bytes": 117164024,
+  "staging_note": "Stage verified real weights into src/main/assets/<folder_name>/ via scripts/pack-speech-packs.sh --stage-pad before Play Console upload."
+}

@@ -130,8 +130,13 @@ class PanelRaiser(
     fun forWindow(os: Os, onSettled: (Int, Boolean) -> Unit = { _, _ -> }, overlay: Boolean = true): PanelRaiser {
       var current: Window? = null
       return PanelRaiser(
-        os, RaiseNative { step, w -> current = w; PanelRaiseNative.run(step, w, os) },
-        hasFocus = { current?.let { it.isFocused || it.isActive } ?: false },
+        os, RaiseNative { step, w -> current = w; PanelRaiseNative.run(step, w, os, overlay) },
+        hasFocus = {
+          current?.let { w ->
+            val awtOk = (w.isFocused || w.isActive) && w.focusOwner != null
+            if (overlay && os == Os.MAC && MacNative.available) awtOk && MacNative.isOverlayKeyWindow() else awtOk
+          } ?: false
+        },
         later = { ms, work -> timer.schedule({ SwingUtilities.invokeLater(work) }, ms, TimeUnit.MILLISECONDS) },
         onSettled = onSettled, overlay = overlay,
       )

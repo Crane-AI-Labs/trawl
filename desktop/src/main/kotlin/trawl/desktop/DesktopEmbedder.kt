@@ -9,6 +9,13 @@ import com.google.ai.edge.litertlm.EmbeddingOptions
 import com.google.ai.edge.litertlm.InputData
 import java.io.File
 
+/** What [Indexer] needs from the embedding engine ([DesktopEmbedder] in production, faked in unit tests). */
+interface IndexEmbedder {
+  val textOnly: Boolean
+  fun document(text: String, title: String? = null): FloatArray
+  fun image(jpeg: ByteArray): FloatArray
+}
+
 /**
  * EmbeddingGemma 2 on LiteRT-LM's JVM build: the same `.litertlm` file, the same prefixes and the same options as the phone's
  * LiteRtEmbedder (text on CPU, pictures on the GPU (Metal here) at 70 vision tokens, 768-d, normalised). One engine, one lock.
@@ -18,14 +25,14 @@ class DesktopEmbedder(
   private val cacheDir: File,
   /** null = decide by trying it safely (see [GpuProbe]); true or false forces it. `TRAWL_VISION_CPU` / `TRAWL_VISION_GPU` set it from outside. */
   visionGpu: Boolean? = when { System.getenv("TRAWL_VISION_CPU") != null -> false; System.getenv("TRAWL_VISION_GPU") != null -> true; else -> null },
-) : AutoCloseable {
+) : AutoCloseable, IndexEmbedder {
   private var engine: EmbeddingEngine? = null
 
   /**
    * The Save data pack's 270m model reads text only. It gets no vision backend (a vision budget without one is refused), the GPU
    * probe is skipped, and [image] is not available: pictures are read through the words in them instead ([Indexer]).
    */
-  val textOnly: Boolean = ModelSetup.isTextOnly(model)
+  override val textOnly: Boolean = ModelSetup.isTextOnly(model)
   private val options = if (textOnly) EmbeddingOptions(normalize = true) else EmbeddingOptions(normalize = true, visionTokensPerImage = VISION_TOKENS)
   private val wantGpu = visionGpu
   /** CPU threads for the text side: null leaves it to LiteRT-LM (the Balanced speed, how Trawl has always run). */
@@ -38,7 +45,7 @@ class DesktopEmbedder(
   private fun create(gpu: Boolean) = EmbeddingEngine(
     EmbeddingEngineConfig(
       modelPath = model.absolutePath,
-      backend = Backend.CPU(threadCount = threads),
+      backend = Backend.CPU(threadCount = threads ?: Runtime.getRuntime().availableProcessors().coerceIn(1, 4)),
       visionBackend = if (textOnly) null else if (gpu) Backend.GPU() else Backend.CPU(),
       cacheDir = cacheDir.absolutePath,
       visionTokensPerImage = if (textOnly) null else VISION_TOKENS,
@@ -52,9 +59,10 @@ class DesktopEmbedder(
     // A computer with no usable GPU (a headless VM, no Vulkan or D3D12 adapter) does not always fail with an exception: LiteRT-LM's
     // GPU path can crash the whole process in native code, and nothing in the JVM can catch that. So the first time, a separate
     // process tries the GPU path on a tiny picture; only if it comes back clean does this process use the GPU. The answer is kept.
-    val gpu = wantGpu ?: GpuProbe.usable(model, File(cacheDir.parentFile ?: cacheDir, "vision-backend.txt"))
-    val e = if (gpu) runCatching { create(true) }.getOrElse { create(false).also { visionUsed = "cpu" } } else create(false).also { visionUsed = "cpu" }
-    if (gpu && visionUsed != "cpu") visionUsed = "gpu"
+    val gpu = wantGpu ?: GpuProbe.usable(model, File(cacheDir.parentFile ?: cacheDir, "vision-backend.txt"), cacheDir = cacheDir)
+    var usedGpu = false
+    val e = if (gpu) runCatching { create(true).also { usedGpu = true } }.getOrElse { create(false) } else create(false)
+    visionUsed = if (usedGpu) "gpu" else "cpu"
     e.also { engine = it; initMs = (System.nanoTime() - t) / 1_000_000 }
   }
 
@@ -73,9 +81,9 @@ class DesktopEmbedder(
   /** A text exactly as given, with no prefix added: the self-test's fixed probes carry their own. */
   fun raw(text: String): FloatArray = run(InputData.Text(text))
   fun query(text: String): FloatArray = run(InputData.Text(QUERY_PREFIX + text))
-  fun document(text: String, title: String? = null): FloatArray =
+  override fun document(text: String, title: String?): FloatArray =
     run(InputData.Text("title: ${title?.takeIf { it.isNotBlank() } ?: "none"} | text: $text"))
-  fun image(jpeg: ByteArray): FloatArray {
+  override fun image(jpeg: ByteArray): FloatArray {
     check(!textOnly) { "the text-only model cannot embed a picture" }
     return run(InputData.Image(jpeg))
   }

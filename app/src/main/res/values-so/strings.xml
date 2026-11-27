@@ -298,6 +298,8 @@
   <string name="settings_about_model">Raadintu waxay ku shaqaysaa EmbeddingGemma 2 oo ay leedahay Google (Apache 2.0), gabi ahaanba taleefankan ku jira.</string>
   <string name="settings_about_private"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ma laha fasax internet. Faylashada iyo waxa uu ka barto marnaba kama baxaan taleefanka.</string>
   <string name="settings_about_maker">Waxaa sameeyay Crane AI Labs.</string>
+  <string name="settings_check_updates">Hubi cusboonaysiinta</string>
+  <string name="settings_check_updates_hint">Wuxuu ku furayaa bogga soo dejinta biraawsarkaaga.</string>
   <string name="settings_licences">Shatiyada iyo mahadcelinta</string>
   <string name="licences_title">Shatiyada iyo mahadcelinta</string>
   <string name="licences_intro"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> waxaa lagu dhisay shaqada hoose. Ogeysiisyadan waxaa waajibinaya shatiyada, waana sidoo kale sida aan u mahadcelino.</string>
@@ -471,4 +473,7 @@
     <item quantity="one">%1$d fayl lama akhrin karin (waa dhaawacan yahay, ama qaab taleefankani furi karin). Weli magaciisa ayaad ku heli kartaa.</item>
     <item quantity="other">%1$d faylal lama akhrin karin (way dhaawacan yihiin, ama qaab taleefankani furi karin). Weli magacyadooda ayaad ku heli kartaa.</item>
   </plurals>
+  <string name="addons_download_browser">Ku soo degso biraawsarka</string>
+  <string name="addons_download_return_hint">Marka faylku ku dhammaado soo degista Downloads, ku soo noqo halkan oo taabo Rakib.</string>
+  <string name="addons_no_browser">Lama helin biraawsar furi kara xiriiriyaha soo degista.</string>
 </resources>

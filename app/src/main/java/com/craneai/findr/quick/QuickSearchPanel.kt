@@ -12,6 +12,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import com.craneai.findr.ui.theme.LocalSunlight
 import com.craneai.findr.ui.theme.SCRIM_ALPHA
 import com.craneai.findr.ui.theme.Sun
@@ -36,6 +37,8 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.KeyboardActionHandler
 import androidx.compose.foundation.text.input.TextFieldLineLimits
@@ -148,11 +151,12 @@ internal fun QuickSearchPanel(
     snapshotFlow { text.text.isNotEmpty() }.collect { onTyping(it) }
   }
 
+  val closeLabel = stringResource(R.string.quick_close)
   Box(
     Modifier
       .fillMaxSize()
       .background(Color.Black.copy(alpha = SCRIM_ALPHA))   // Sunlight: the panel's only "shadow" is this scrim
-      .clickable(interactionSource = null, indication = null, onClick = onClose)
+      .clickable(interactionSource = null, indication = null, onClickLabel = closeLabel, onClick = onClose)
       .imePadding(),
   ) {
     Surface(
@@ -235,25 +239,27 @@ private fun Body(
     )
   }
   when {
-    state.hits.isNotEmpty() -> Column {
-      LazyColumn(
-        state = listState,
-        modifier = Modifier.weight(1f, fill = false),
-        contentPadding = PaddingValues(horizontal = Sun.S8, vertical = Sun.S4),
-      ) {
-        items(state.hits, key = { it.file.id }) { hit ->
-          FileRow(
-            hit,
-            onOpen = { onOpen(hit.file) },
-            onShare = { onShare(hit.file) },
-            onCopy = { onCopy(hit.file) },
-            onToggle = { sheetUri = hit.file.uri },  // no selection in the panel: long-press still opens its sheet
-            // The panel's box keeps focus while it is open: compact rows whenever the keyboard is up, as on the home screen.
-            compact = imeUp,
-          )
+    state.hits.isNotEmpty() -> LazyColumn(
+      state = listState,
+      modifier = Modifier.fillMaxWidth(),
+      contentPadding = PaddingValues(horizontal = Sun.S8, vertical = Sun.S4),
+    ) {
+      items(state.hits, key = { it.file.id }) { hit ->
+        FileRow(
+          hit,
+          onOpen = { onOpen(hit.file) },
+          onShare = { onShare(hit.file) },
+          onCopy = { onCopy(hit.file) },
+          onToggle = { sheetUri = hit.file.uri },  // no selection in the panel: long-press still opens its sheet
+          // The panel's box keeps focus while it is open: compact rows whenever the keyboard is up, as on the home screen.
+          compact = imeUp,
+        )
+      }
+      if (offerTile) {
+        item(key = "tile-offer") {
+          TileOfferCard(onAddTile, onDeclineTile)
         }
       }
-      if (offerTile) TileOfferCard(onAddTile, onDeclineTile)
     }
     state.notSetUp -> Message(appString(R.string.quick_not_set_up), actionLabel = appString(R.string.quick_open_findr), onAction = onOpenFindr)
     state.nothingFound -> Message(
@@ -268,7 +274,13 @@ private fun Body(
 /** What the panel says instead of a search box while the phone or Findr is locked. It names nothing and lists nothing. */
 @Composable
 private fun LockedCard(mode: QuickMode, onUnlock: () -> Unit) {
-  Column(Modifier.fillMaxWidth().padding(horizontal = Sun.S24, vertical = Sun.S24), horizontalAlignment = Alignment.CenterHorizontally) {
+  Column(
+    Modifier
+      .fillMaxWidth()
+      .verticalScroll(rememberScrollState())
+      .padding(horizontal = Sun.S24, vertical = Sun.S24),
+    horizontalAlignment = Alignment.CenterHorizontally,
+  ) {
     Icon(Icons.Rounded.Lock, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface, modifier = Modifier.size(40.dp))
     Spacer(Modifier.height(Sun.S12))
     if (mode == QuickMode.DEVICE_LOCKED) {
@@ -283,7 +295,12 @@ private fun LockedCard(mode: QuickMode, onUnlock: () -> Unit) {
 
 @Composable
 private fun Message(text: String, actionLabel: String? = null, onAction: () -> Unit = {}) {
-  Column(Modifier.fillMaxWidth().padding(horizontal = Sun.S16, vertical = Sun.S16)) {
+  Column(
+    Modifier
+      .fillMaxWidth()
+      .verticalScroll(rememberScrollState())
+      .padding(horizontal = Sun.S16, vertical = Sun.S16),
+  ) {
     Text(text, style = SunType.BodyLarge, color = MaterialTheme.colorScheme.onSurface)
     if (actionLabel != null) {
       Spacer(Modifier.height(Sun.S8))
@@ -346,7 +363,7 @@ private fun QuickField(text: TextFieldState, focus: FocusRequester, onFocused: (
         Icon(Icons.Rounded.Search, contentDescription = null, tint = t.ink, modifier = Modifier.size(Sun.Icon))
         Spacer(Modifier.width(Sun.S12))
         Box(Modifier.weight(1f).padding(vertical = Sun.S8), contentAlignment = Alignment.CenterStart) {
-          if (text.text.isEmpty()) Text(hint, style = SunType.BodyLarge, color = t.ink2, maxLines = 1)
+          if (text.text.isEmpty()) Text(hint, style = SunType.BodyLarge, color = t.ink2, maxLines = 1, overflow = TextOverflow.Ellipsis)
           inner()
         }
         if (text.text.isNotEmpty()) {

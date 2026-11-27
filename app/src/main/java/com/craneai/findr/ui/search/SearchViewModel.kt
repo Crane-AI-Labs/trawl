@@ -47,6 +47,10 @@ enum class SearchMode { RECENT, RESULTS }
 data class SearchUiState(
   val query: String = "",
   val filter: KindFilter = KindFilter.ALL,
+  /** Optional format sub-filter inside [filter] (e.g. PDF, Word, Excel/CSV, PNG, MP4). Null = all types. */
+  val subType: FileSubType? = null,
+  /** Grid tiles (default) or dense metadata List rows for all files including photos. */
+  val viewMode: ResultViewMode = ResultViewMode.GRID,
   val mode: SearchMode = SearchMode.RECENT,
   val feed: List<FeedItem> = emptyList(),
   /** A search is in flight (the previous list stays on screen, so typing never flashes empty). */
@@ -77,12 +81,22 @@ data class SearchUiState(
   val selected: Set<Long> = emptySet(),
   /** "Find similar" is on: the list is the files like this one (the query is empty). Shown as one chip the person can take away. */
   val similar: SimilarTo? = null,
+  /** One-shot scroll position to restore when returning from "Find similar" via Back or chip cross. */
+  val pendingScrollRestore: ScrollRestore? = null,
   /** How far the phone's clock is behind its own files, in ms ([com.craneai.findr.core.ClockSense]); 0 for a right clock. Ages on the list count from clock + this. */
   val clockSkewMs: Long = 0L,
 )
 
 /** The file "Find similar" started from. */
 data class SimilarTo(val id: Long, val name: String)
+
+/** Saved list/grid scroll position & anchor file captured before entering "Find similar", restored on exit. */
+data class ScrollRestore(
+  val firstVisibleItemIndex: Int,
+  val firstVisibleItemScrollOffset: Int,
+  val anchorFileId: Long? = null,
+  val token: Int = 0,
+)
 
 /**
  * The date the list is limited to. [phrase] is the text of the query it was read from ("last week"); null when the person chose it
@@ -91,8 +105,8 @@ data class SimilarTo(val id: Long, val name: String)
 data class ActiveDate(val filter: DateFilter, val phrase: String? = null)
 
 /** What, in the indexing status, makes the visible list stale. Not the counts: they change on every file, the list must not reload that often. */
-internal fun refreshKey(status: IndexStatus): Triple<IndexPhase, PauseReason?, Boolean> =
-  Triple(status.phase, status.pauseReason, status.filesKnown == 0)
+internal fun refreshKey(status: IndexStatus) =
+  Triple(status.phase, status.pauseReason, status.filesKnown == 0) to status.indexOpening
 
 /** The date chip's choice when it was made by hand: a quick preset (worked out again at each search, so "Today" stays today) or a picked range. */
 private sealed interface ManualDate {
@@ -124,6 +138,8 @@ class SearchViewModel(
   private var browseSort = SortOrder.NEWEST
   private var resultsSort = SortOrder.BEST
   private var manualDate: ManualDate? = null
+  private var activeSubType: FileSubType? = null
+  private var activeViewMode: ResultViewMode = ResultViewMode.GRID
   /** Date phrases the person took off with the chip's cross: read as ordinary words until they leave the query. */
   private val ignored = HashSet<String>()
 
@@ -133,14 +149,23 @@ class SearchViewModel(
    * that has not happened. Empty until the first load, and for an engine without an index: the clock then stands.
    */
   @Volatile private var clockEvidence: List<Long> = emptyList()
+  private var clockSensedAtMs = Long.MIN_VALUE
+  private var clockSensedNonce = Int.MIN_VALUE
 
   /** The clock, unless the files prove it behind ([ClockSense]); to the millisecond the clock itself when it is right. */
   private fun now(): ZonedDateTime = ClockSense.now(clock(), clockEvidence)
 
-  /** Reads the newest files' dates again (an index scan) and tells the screen how far behind the clock is, if it is. */
-  private suspend fun senseClock() {
+  /**
+   * Reads the newest files' dates again (an index scan) and tells the screen how far behind the clock is, if it is.
+   * Cached across consecutive typing keystrokes: refreshes on the first load, whenever the index/reload [nonce]
+   * moves, or after [CLOCK_SENSE_TTL_MS] (60 s).
+   */
+  private suspend fun senseClock(nonce: Int) {
     val clockMs = clock().toInstant().toEpochMilli()
+    if (clockSensedAtMs != Long.MIN_VALUE && nonce == clockSensedNonce && kotlin.math.abs(clockMs - clockSensedAtMs) < CLOCK_SENSE_TTL_MS) return
     clockEvidence = engine.newestDates(ClockSense.EVIDENCE_FILES, ClockSense.ceiling(clockMs))
+    clockSensedAtMs = clockMs
+    clockSensedNonce = nonce
     val skew = ClockSense.skewMs(clockMs, clockEvidence)
     if (_state.value.clockSkewMs != skew) _state.update { it.copy(clockSkewMs = skew) }
   }
@@ -171,23 +196,24 @@ class SearchViewModel(
    * new header). Only valid for the same chips and while nothing has asked for a reload since ([nonce]).
    */
   private class HomeSnapshot(
-    val filter: KindFilter, val sort: SortOrder, val date: ActiveDate?, val nonce: Int,
+    val filter: KindFilter, val subType: FileSubType?, val viewMode: ResultViewMode, val sort: SortOrder, val date: ActiveDate?, val nonce: Int,
     val feed: List<FeedItem>, val hidden: Int, val showsSensitive: Boolean,
   )
   private var home: HomeSnapshot? = null
 
   /** Puts the cached home list back with the box empty, in one state update. False (nothing changed) when there is no valid one. */
-  private fun publishCachedHome(): Boolean {
+  private fun publishCachedHome(scrollRestore: ScrollRestore? = null): Boolean {
     if (similarTo != null) return false
     val h = home ?: return false
     val r = request.value
     val d = derive("")
-    if (h.filter != r.filter || h.nonce != r.nonce || h.sort != d.sort || h.date != d.date) return false
+    if (h.filter != r.filter || h.subType != activeSubType || h.viewMode != activeViewMode || h.nonce != r.nonce || h.sort != d.sort || h.date != d.date) return false
     lastResults = null
     _state.update {
       it.copy(
         query = "", sort = h.sort, date = h.date, mode = SearchMode.RECENT, feed = h.feed, selected = it.selected.keepIn(h.feed),
         loaded = true, searching = false, nothingFound = false, indexIncomplete = false, resultsQuery = "", similar = null,
+        pendingScrollRestore = scrollRestore ?: it.pendingScrollRestore,
         hiddenCount = h.hidden, showsSensitive = h.showsSensitive,
         revealedForNow = engine.sensitiveRevealed.value && !engine.settings.value.showSensitive,
       )
@@ -204,6 +230,11 @@ class SearchViewModel(
   private var weakExpanded = false
   /** The file "Find similar" was started on (whole file: the engine needs its name too). Typing a query leaves it. */
   private var similarTo: IndexedFile? = null
+  /** Query active before entering "Find similar" (null or blank when started from Home); restored when leaving Find similar. */
+  private var queryBeforeSimilar: String? = null
+  /** Scroll position & anchor file captured before entering "Find similar"; restored on Back or chip cross. */
+  private var scrollBeforeSimilar: ScrollRestore? = null
+  private var scrollRestoreSeq = 0
 
   // FindrPerf (J2): what the person feels. Time from the last keystroke to the words-first answer being on screen, to the
   // meaning answer, and whether the top result moved between the two. One logcat line each (`adb logcat -s FindrPerf`).
@@ -289,7 +320,12 @@ class SearchViewModel(
 
   fun setQuery(text: String) {
     if (text == request.value.query) return
-    if (text.isNotBlank() && similarTo != null) { similarTo = null; _state.update { it.copy(similar = null) } }
+    if (text.isNotBlank() && similarTo != null) {
+      similarTo = null
+      queryBeforeSimilar = null
+      scrollBeforeSimilar = null
+      _state.update { it.copy(similar = null, pendingScrollRestore = null) }
+    }
     typedAtNs = System.nanoTime()
     wordsTopId = null
     weakExpanded = false
@@ -308,35 +344,95 @@ class SearchViewModel(
 
   fun setFilter(filter: KindFilter) {
     if (filter == request.value.filter) return
-    _state.update { it.copy(filter = filter) }
+    val nextSub = activeSubType?.takeIf { filter in it.filters }
+    activeSubType = nextSub
+    _state.update { it.copy(filter = filter, subType = nextSub) }
     request.update { it.copy(filter = filter, immediate = true) }
+  }
+
+  /** Narrows the active [KindFilter] to a specific format (e.g. PDF, Word, Excel/CSV), or null for all types. */
+  fun setSubType(subType: FileSubType?) {
+    val valid = subType?.takeIf { request.value.filter in it.filters }
+    if (valid == activeSubType) return
+    activeSubType = valid
+    _state.update { it.copy(subType = valid) }
+    rerun()
+  }
+
+  /** Switches between Grid tiles and dense metadata List rows. */
+  fun setViewMode(mode: ResultViewMode) {
+    if (mode == activeViewMode) return
+    activeViewMode = mode
+    _state.update { it.copy(viewMode = mode) }
+    rerun()
+  }
+
+  private fun applySubType(hits: List<com.craneai.findr.core.SearchHit>, strongCount: Int): Pair<List<com.craneai.findr.core.SearchHit>, Int> {
+    val st = activeSubType ?: return hits to strongCount
+    val split = strongCount.coerceIn(0, hits.size)
+    val strong = hits.subList(0, split).filter { st.matches(it.file.name) }
+    val weak = hits.subList(split, hits.size).filter { st.matches(it.file.name) }
+    return (strong + weak) to strong.size
   }
 
   // ---- find similar --------------------------------------------------------------------------------------------------
 
   /**
    * "Find similar" on [file]: the result list becomes the files whose picture vectors are closest to its own. The query box is
-   * emptied (the words and the file cannot both be the question); the kind chips, the date and the sort keep working.
+   * emptied (the words and the file cannot both be the question), while any active query and scroll position are remembered so
+   * Back or the chip's cross restores them; the kind chips, the date and the sort keep working.
    */
-  fun findSimilar(file: IndexedFile) {
+  fun findSimilar(file: IndexedFile, firstVisibleItemIndex: Int = 0, firstVisibleItemScrollOffset: Int = 0) {
+    if (similarTo == null) {
+      queryBeforeSimilar = request.value.query
+      scrollBeforeSimilar = ScrollRestore(
+        firstVisibleItemIndex = firstVisibleItemIndex.coerceAtLeast(0),
+        firstVisibleItemScrollOffset = firstVisibleItemScrollOffset.coerceAtLeast(0),
+        anchorFileId = file.id,
+      )
+    }
     similarTo = file
     weakExpanded = false
     typedAtNs = 0L
     ignored.clear()
-    _state.update { it.copy(query = "", similar = SimilarTo(file.id, file.name), searching = true, selected = emptySet()) }
+    _state.update {
+      it.copy(
+        query = "",
+        similar = SimilarTo(file.id, file.name),
+        pendingScrollRestore = null,
+        searching = true,
+        selected = emptySet(),
+      )
+    }
     showDerived("", withSort = false)
     request.update { it.copy(query = "", immediate = true, nonce = it.nonce + 1) }
   }
 
-  /** The chip's cross: back to the home list. */
+  /** System Back or the chip's cross: restores the prior query & scroll position when Find similar started from a search or browse list. */
   fun clearSimilar() {
     if (similarTo == null) return
+    val prior = queryBeforeSimilar?.takeIf { it.isNotBlank() }
+    val savedScroll = scrollBeforeSimilar?.copy(token = ++scrollRestoreSeq)
+    queryBeforeSimilar = null
+    scrollBeforeSimilar = null
     similarTo = null
-    _state.update { it.copy(similar = null) }
-    if (publishCachedHome()) { request.update { it.copy(immediate = true) }; return }
+    if (prior != null) {
+      weakExpanded = false
+      _state.update { it.copy(query = prior, similar = null, pendingScrollRestore = savedScroll, searching = true) }
+      showDerived(prior, withSort = false)
+      request.update { it.copy(query = prior, immediate = true, nonce = it.nonce + 1) }
+      return
+    }
+    if (publishCachedHome(scrollRestore = savedScroll)) { request.update { it.copy(immediate = true) }; return }
+    _state.update { it.copy(similar = null, pendingScrollRestore = savedScroll) }
     showDerived(request.value.query, withSort = false)
     weakExpanded = false
     request.update { it.copy(immediate = true, nonce = it.nonce + 1) }
+  }
+
+  /** Marks a one-shot [ScrollRestore] applied by the UI so subsequent list updates behave normally. */
+  fun consumeScrollRestore(token: Int) {
+    _state.update { if (it.pendingScrollRestore?.token == token) it.copy(pendingScrollRestore = null) else it }
   }
 
   // ---- sort and date -------------------------------------------------------------------------------------------------
@@ -425,8 +521,22 @@ class SearchViewModel(
   fun toggleWeak() {
     weakExpanded = !weakExpanded
     val results = lastResults ?: return
-    val sorted = derive(request.value.query).sort != SortOrder.BEST
-    _state.update { it.copy(feed = buildResultFeed(results.hits, results.strongCount, weakExpanded, sorted)) }
+    val d = derive(request.value.query)
+    val sorted = d.sort != SortOrder.BEST
+    val prioritize = !d.similar && shouldPrioritizeImagesAndDocuments(d.text, request.value.filter)
+    val (filteredHits, filteredStrong) = applySubType(results.hits, results.strongCount)
+    _state.update {
+      it.copy(
+        feed = buildResultFeed(
+          filteredHits,
+          filteredStrong,
+          weakExpanded,
+          sorted,
+          listMode = activeViewMode == ResultViewMode.LIST,
+          prioritizeImagesAndDocs = prioritize,
+        ),
+      )
+    }
   }
 
   /** The UI calls this one frame after a new feed was composed: that is when its pixels are on screen. */
@@ -458,11 +568,13 @@ class SearchViewModel(
 
   private suspend fun load(r: Request) {
     wordsOnlyRequest.value = null
-    senseClock()
+    senseClock(r.nonce)
     val d = derive(r.query)
     val q = d.text
     // The same question, chips, sort and date as the last time, only the nonce moved: a refresh. The person is looking at this list.
-    val asked = listOf(r.query, r.filter, d.sort, d.date, similarTo?.id)
+    val listMode = activeViewMode == ResultViewMode.LIST
+    val subType = activeSubType
+    val asked = listOf(r.query, r.filter, subType, activeViewMode, d.sort, d.date, similarTo?.id)
     val quiet = (_state.value.loaded || _state.value.mode == SearchMode.RESULTS) && asked == lastAsked && r.nonce != lastNonce
     lastAsked = asked
     lastNonce = r.nonce
@@ -472,7 +584,8 @@ class SearchViewModel(
       val results = engine.similar(seed, r.filter, SIMILAR_LIMIT, d.view)
       if (similarTo?.id != seed.id) return   // left "Find similar" while it ran: the list that follows is not this one
       lastResults = results
-      val feed = buildResultFeed(results.hits, results.strongCount, weakExpanded, sorted = d.sort != SortOrder.BEST)
+      val (filteredHits, filteredStrong) = applySubType(results.hits, results.strongCount)
+      val feed = buildResultFeed(filteredHits, filteredStrong, weakExpanded, sorted = d.sort != SortOrder.BEST, listMode = listMode, prioritizeImagesAndDocs = false)
       _state.update {
         it.copy(
           mode = SearchMode.RESULTS,
@@ -480,13 +593,13 @@ class SearchViewModel(
           feed = feed,
           selected = it.selected.keepIn(feed),
           searching = false,
-          nothingFound = results.hits.isEmpty(),
+          nothingFound = filteredHits.isEmpty(),
           // "Still learning" only when the list is genuinely thin: a full list of similar pictures needs no excuse.
-          indexIncomplete = results.indexIncomplete && results.hits.size < SIMILAR_THIN,
+          indexIncomplete = results.indexIncomplete && filteredHits.size < SIMILAR_THIN,
           resultsQuery = "",
           loaded = true,
           hiddenCount = results.hiddenCount,
-          showsSensitive = results.hits.any { h -> h.file.sensitive },
+          showsSensitive = filteredHits.any { h -> h.file.sensitive },
           revealedForNow = engine.sensitiveRevealed.value && !engine.settings.value.showSensitive,
         )
       }
@@ -494,12 +607,15 @@ class SearchViewModel(
     }
     if (q.isEmpty()) {
       lastResults = null
-      val recent = engine.recent(r.filter, RECENT_LIMIT, d.view)
+      val rawRecent = engine.recent(r.filter, RECENT_LIMIT, d.view)
+      val recent = if (subType == null) rawRecent else rawRecent.filter { subType.matches(it.name) }
       val hidden = engine.recentHiddenCount(r.filter, d.view.dates)
       // The grouped "recent documents, then photos" list is the start screen; a chosen sort or date, or a date typed alone, is one list.
-      val grouped = d.sort == SortOrder.NEWEST && d.date == null
-      val feed = withContext(feedDispatcher) { if (grouped) buildRecentFeed(recent) else buildSortedFeed(recent) } // thousands of items: not on the UI thread
-      home = HomeSnapshot(r.filter, d.sort, d.date, r.nonce, feed, hidden, recent.any { f -> f.sensitive })
+      val grouped = d.sort == SortOrder.NEWEST && d.date == null && subType == null
+      val feed = withContext(feedDispatcher) {
+        if (grouped) buildRecentFeed(recent, listMode = listMode) else buildSortedFeed(recent, listMode = listMode)
+      } // thousands of items: not on the UI thread
+      home = HomeSnapshot(r.filter, subType, activeViewMode, d.sort, d.date, r.nonce, feed, hidden, recent.any { f -> f.sensitive })
       _state.update {
         it.copy(
           sort = d.sort,
@@ -523,7 +639,7 @@ class SearchViewModel(
     _state.update { it.copy(searching = true, date = d.date) }
     // Word matches arrive at once, meaning matches when the model is free (it may be busy indexing): show each step.
     var phraseWasContent = false
-    engine.searchProgressive(q, r.filter, meaningDelayMs = if (r.immediate) 0L else DEBOUNCE_MS, view = d.view).collect { results ->
+    engine.searchProgressive(q, r.filter, limit = SEARCH_LIMIT, meaningDelayMs = if (r.immediate) 0L else DEBOUNCE_MS, view = d.view).collect { results ->
       if (quiet && !results.complete) return@collect
       // A date read from the words that leaves nothing: unless the phrase is part of what the person is looking for (it is written in
       // a file that also matches the rest of the query), in which case it is searched as ordinary words instead.
@@ -532,11 +648,20 @@ class SearchViewModel(
         phraseWasContent = true
         return@collect
       }
+      val (filteredHits, filteredStrong) = applySubType(results.hits, results.strongCount)
       // A half-typed word that matches nothing keeps the last list for a moment instead of flashing "nothing found" between
       // keystrokes; the next keystroke cancels this wait. A finished search shows its answer exactly as before.
-      if (!r.immediate && results.complete && results.hits.isEmpty()) delay(DEBOUNCE_MS)
+      if (!r.immediate && results.complete && filteredHits.isEmpty()) delay(DEBOUNCE_MS)
       lastResults = results
-      val feed = buildResultFeed(results.hits, results.strongCount, weakExpanded, sorted = d.sort != SortOrder.BEST)
+      val prioritize = shouldPrioritizeImagesAndDocuments(q, r.filter)
+      val feed = buildResultFeed(
+        filteredHits,
+        filteredStrong,
+        weakExpanded,
+        sorted = d.sort != SortOrder.BEST,
+        listMode = listMode,
+        prioritizeImagesAndDocs = prioritize,
+      )
       // An answer whose list equals the one already drawn composes nothing new, so the screen's draw hook (keyed on the feed) never
       // fires for it and its mark would wait for the next, different list. The pixels are right already: close the mark now.
       // (With a draw still pending for that same list, pendingMark is not null and that draw closes this mark instead.)
@@ -550,11 +675,11 @@ class SearchViewModel(
           quietRefresh = quiet,
           selected = it.selected.keepIn(feed),
           searching = !results.complete,
-          nothingFound = results.complete && results.hits.isEmpty(),
+          nothingFound = results.complete && filteredHits.isEmpty(),
           indexIncomplete = results.indexIncomplete,
           resultsQuery = q,
           hiddenCount = results.hiddenCount,
-          showsSensitive = results.hits.any { h -> h.file.sensitive },
+          showsSensitive = filteredHits.any { h -> h.file.sensitive },
           revealedForNow = engine.sensitiveRevealed.value && !engine.settings.value.showSensitive,
         )
       }
@@ -596,12 +721,17 @@ class SearchViewModel(
     /** How long typing must pause before the meaning step (the query embed) starts. Words do not wait. */
     const val DEBOUNCE_MS = 250L
     const val FOCUS_HOLD_MS = 30_000L
+    /** How long [senseClock] is reused across consecutive keystrokes when the index nonce has not moved. */
+    const val CLOCK_SENSE_TTL_MS = 60_000L
     const val PERF = "FindrPerf"
 
     /** The home grid is the recent library, not one screenful of it: scrolling to the end must not hit a wall at 60. */
     const val RECENT_LIMIT = 5000
 
-    /** How many files "Find similar" lists, at most (a search lists 60). */
+    /** Search results scroll lazily across all matching files instead of truncating at a small fixed page. */
+    const val SEARCH_LIMIT = 500
+
+    /** How many files "Find similar" lists, at most. */
     const val SIMILAR_LIMIT = 60
     /** Fewer similar pictures than this while the index is unfinished: the list is thin, and the "still learning" note is shown. */
     const val SIMILAR_THIN = 10

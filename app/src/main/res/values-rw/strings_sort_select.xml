@@ -5,6 +5,14 @@
   <string name="sort_oldest">Ibya kera cyane</string>
   <string name="sort_largest">Ibinini cyane</string>
   <string name="sort_name">Izina kuva kuri A kugeza kuri Z</string>
+  <string name="sort_chip_best">Ibihuye</string>
+  <string name="sort_chip_newest">Ibishya</string>
+  <string name="sort_chip_oldest">Ibya kera</string>
+  <string name="sort_chip_created_newest">Byaremwe</string>
+  <string name="sort_chip_created_oldest">Byaremwe</string>
+  <string name="sort_chip_largest">Ibinini</string>
+  <string name="sort_chip_smallest">Ibito</string>
+  <string name="sort_chip_name">Izina</string>
   <string name="sort_group">Tondeka ukurikije</string>
   <string name="date_any_time">Igihe icyo ari cyo cyose</string>
   <string name="date_group">Itariki</string>
@@ -85,4 +93,20 @@
   <string name="snack_marked_sensitive_many">Byashyizweho ikimenyetso cy\'ibanga. Ubu byihishe mu bisubizo.</string>
   <string name="snack_unmarked_sensitive_many">Ikimenyetso cyakuweho. Bishobora kongera kugaragara mu bisubizo.</string>
   <string name="nothing_in_dates">Nta cyabonetse muri iki gihe: %1$s. Gerageza indi tariki.</string>
+  <string name="sort_created_newest">Itariki y\'iremwa (nshya)</string>
+  <string name="sort_created_oldest">Itariki y\'iremwa (za kera)</string>
+  <string name="sort_smallest">Ntoya kurusha</string>
+  <string name="subtype_group">Ubwoko bwa dosiye</string>
+  <string name="subtype_all">Ubwoko bwose</string>
+  <string name="subtype_remove">Kuraho akayunguruzo k\'ubwoko bwa dosiye</string>
+  <string name="subtype_spreadsheet_menu">Excel na CSV (.xlsx, .csv)</string>
+  <string name="subtype_text_menu">Inyandiko na Markdown (.txt, .md)</string>
+  <string name="subtype_text_chip">Inyandiko / MD</string>
+  <string name="subtype_code_menu">Kode n\'amakuru (.json, .xml, …)</string>
+  <string name="subtype_code_chip">Kode / Amakuru</string>
+  <string name="view_mode_group">Uburyo bwo kureba</string>
+  <string name="view_grid">Utureba</string>
+  <string name="view_list">Urutonde</string>
+  <string name="label_modified_short">Yahinduwe %1$s</string>
+  <string name="label_created_short">Yaremwe %1$s</string>
 </resources>

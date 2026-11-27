@@ -37,6 +37,8 @@ interface MediaDecoder : AutoCloseable {
 /** The user's ffmpeg and ffprobe, run as separate programs (nothing of ffmpeg is in Trawl, so its licence is the person's own install's). */
 class FfmpegDecoder(private val ffmpeg: String = "ffmpeg", private val ffprobe: String = "ffprobe", private val timeoutS: Long = 300) : MediaDecoder {
   override val name = "ffmpeg"
+  @Volatile private var activeProc: Process? = null
+  @Volatile private var closed = false
 
   override fun probe(file: File): MediaInfo {
     val out = run(
@@ -56,31 +58,48 @@ class FfmpegDecoder(private val ffmpeg: String = "ffmpeg", private val ffprobe: 
   }
 
   override fun audio(file: File, startMs: Long, spanMs: Long, sink: (ByteArray, Int) -> Unit) {
+    if (closed) return
     val cmd = listOf(ffmpeg, "-nostdin", "-v", "error", "-ss", seconds(startMs), "-t", seconds(spanMs), "-i", file.absolutePath,
       "-vn", "-sn", "-ac", "1", "-ar", "16000", "-f", "s16le", "-")
-    val p = try { ProcessBuilder(cmd).redirectError(ProcessBuilder.Redirect.DISCARD).start() } catch (e: java.io.IOException) { throw FormatNotReadable("ffmpeg is not installed", e) }
+    val p = try { HelperProcs.started(HelperProcs.builder(cmd).redirectError(ProcessBuilder.Redirect.DISCARD).start()) } catch (e: java.io.IOException) { throw FormatNotReadable("ffmpeg is not installed", e) }
+    activeProc = p
+    if (closed) { p.destroyForcibly(); return }
     var timedOut = false
     val watchdog = Thread { try { Thread.sleep(timeoutS * 1000); timedOut = true; p.destroyForcibly() } catch (_: InterruptedException) { } }.also { it.isDaemon = true; it.start() }
     try {
       val buf = ByteArray(1 shl 16)
-      p.inputStream.use { input -> while (true) { val n = input.read(buf); if (n < 0) break; if (n > 0) sink(buf, n) } }
+      p.inputStream.use { input -> while (!closed) { val n = input.read(buf); if (n < 0) break; if (n > 0) sink(buf, n) } }
       p.waitFor(5, TimeUnit.SECONDS)
       if (timedOut) throw FormatNotReadable("ffmpeg did not finish in $timeoutS s")
-    } finally { watchdog.interrupt(); p.destroy() }
+    } finally {
+      watchdog.interrupt()
+      if (activeProc === p) activeProc = null
+      p.destroyForcibly()
+    }
   }
 
   private fun run(cmd: List<String>, timeoutS: Long): ByteArray {
-    val p = try { ProcessBuilder(cmd).redirectError(ProcessBuilder.Redirect.DISCARD).start() } catch (e: java.io.IOException) { throw FormatNotReadable("${cmd.first()} is not installed", e) }
+    if (closed) return ByteArray(0)
+    val p = try { HelperProcs.started(HelperProcs.builder(cmd).redirectError(ProcessBuilder.Redirect.DISCARD).start()) } catch (e: java.io.IOException) { throw FormatNotReadable("${cmd.first()} is not installed", e) }
+    activeProc = p
+    if (closed) { p.destroyForcibly(); runCatching { p.waitFor(1, TimeUnit.SECONDS) }; return ByteArray(0) }
     // A decoder stuck on a damaged file is killed when the time is up; that ends its output, so the read below returns.
     var timedOut = false
     val watchdog = Thread { try { Thread.sleep(timeoutS * 1000); timedOut = true; p.destroyForcibly() } catch (_: InterruptedException) { } }.also { it.isDaemon = true; it.start() }
     try {
       p.outputStream.close()
-      val out = p.inputStream.readBytes()
+      val out = p.inputStream.use { it.readBytes() }
       p.waitFor(5, TimeUnit.SECONDS)
       if (timedOut) throw FormatNotReadable("${File(cmd.first()).name} did not finish in $timeoutS s")
       return out
-    } finally { watchdog.interrupt(); p.destroy() }
+    } finally {
+      watchdog.interrupt()
+      if (activeProc === p) activeProc = null
+      if (p.isAlive) {
+        p.destroyForcibly()
+        runCatching { p.waitFor(1, TimeUnit.SECONDS) }
+      }
+    }
   }
 
   companion object {
@@ -105,7 +124,14 @@ class FfmpegDecoder(private val ffmpeg: String = "ffmpeg", private val ffprobe: 
     }
   }
 
-  override fun close() {}
+  override fun close() {
+    closed = true
+    activeProc?.let { p ->
+      runCatching { p.inputStream.close() }
+      runCatching { p.destroyForcibly() }
+    }
+    activeProc = null
+  }
 }
 
 /**
@@ -116,14 +142,29 @@ class FfmpegDecoder(private val ffmpeg: String = "ffmpeg", private val ffprobe: 
  * serves both and the helper can be tried by hand: `echo -e "probe\t/some/file.mp4" | media-apple`.
  */
 class HelperDecoder(private val command: List<String>, override val name: String, private val timeoutS: Long = 300) : MediaDecoder {
-  private var proc: Process? = null
+  private val procLock = Any()
+  @Volatile private var proc: Process? = null
   private var input: DataInputStream? = null
+  @Volatile private var closed = false
 
   @Synchronized private fun ensure(): Pair<Process, DataInputStream> {
-    proc?.takeIf { it.isAlive }?.let { return it to input!! }
-    val p = ProcessBuilder(command).redirectError(ProcessBuilder.Redirect.DISCARD).start()
-    proc = p; input = DataInputStream(BufferedInputStream(p.inputStream, 1 shl 16))
-    return p to input!!
+    synchronized(procLock) {
+      if (closed) throw FormatNotReadable("$name helper closed")
+      proc?.takeIf { it.isAlive }?.let { return it to input!! }
+    }
+    val p = HelperProcs.started(HelperProcs.builder(command).redirectError(ProcessBuilder.Redirect.DISCARD).start())
+    val din = DataInputStream(BufferedInputStream(p.inputStream, 1 shl 16))
+    val keep = synchronized(procLock) {
+      if (closed) false else { proc = p; input = din; true }
+    }
+    if (!keep) {
+      runCatching { p.outputStream.close() }
+      runCatching { p.inputStream.close() }
+      runCatching { p.destroyForcibly() }
+      runCatching { p.waitFor(1, TimeUnit.SECONDS) }
+      throw FormatNotReadable("$name helper closed")
+    }
+    return p to din
   }
 
   @Synchronized private fun <T> call(request: String, readBody: (JSONObject, DataInputStream) -> T): T {
@@ -150,23 +191,46 @@ class HelperDecoder(private val command: List<String>, override val name: String
 
   private fun drainChunks(header: JSONObject, din: DataInputStream) { if (header.optBoolean("chunked", false)) chunks(din) { _, _ -> } }
 
-  override fun probe(file: File): MediaInfo = call("probe\t${file.absolutePath}") { h, _ ->
+  private fun safePath(file: File): String {
+    val path = file.absolutePath
+    if (path.any { it == '\n' || it == '\r' || it == '\t' }) {
+      throw FormatNotReadable("unsupported path characters")
+    }
+    return path
+  }
+
+  override fun probe(file: File): MediaInfo = call("probe\t${safePath(file)}") { h, _ ->
     MediaInfo(if (h.has("durationMs")) h.optLong("durationMs").takeIf { it > 0 } else null, h.optBoolean("hasVideo"), h.optBoolean("hasAudio"))
   }
 
-  override fun frame(file: File, timeMs: Long, maxSide: Int): ByteArray? = call("frame\t${file.absolutePath}\t$timeMs\t$maxSide") { h, din ->
+  override fun frame(file: File, timeMs: Long, maxSide: Int): ByteArray? = call("frame\t${safePath(file)}\t$timeMs\t$maxSide") { h, din ->
     val out = ByteArrayOutputStream()
     if (h.optBoolean("chunked", false)) chunks(din) { b, n -> out.write(b, 0, n) }
     out.toByteArray().takeIf { it.isNotEmpty() }
   }
 
   override fun audio(file: File, startMs: Long, spanMs: Long, sink: (ByteArray, Int) -> Unit) {
-    call("audio\t${file.absolutePath}\t$startMs\t$spanMs") { h, din -> if (h.optBoolean("chunked", false)) chunks(din, sink) }
+    call("audio\t${safePath(file)}\t$startMs\t$spanMs") { h, din -> if (h.optBoolean("chunked", false)) chunks(din, sink) }
   }
 
-  override fun close() { runCatching { proc?.outputStream?.close() }; runCatching { proc?.destroy() }; proc = null }
+  override fun close() {
+    val p = synchronized(procLock) {
+      closed = true
+      val cur = proc
+      proc = null
+      cur
+    }
+    if (p != null) {
+      runCatching { p.outputStream.close() }
+      runCatching { p.inputStream.close() }
+      runCatching { p.destroyForcibly() }
+      runCatching { p.waitFor(1, TimeUnit.SECONDS) }
+    }
+  }
 
   companion object {
+    private const val MAX_LINE_BYTES = 64 * 1024
+
     /** One line of ASCII/UTF-8 up to the newline, byte by byte (a buffered reader would swallow the binary that follows). */
     fun readLine(din: InputStream): String? {
       val b = ByteArrayOutputStream()
@@ -174,6 +238,7 @@ class HelperDecoder(private val command: List<String>, override val name: String
         val c = din.read()
         if (c < 0) return if (b.size() == 0) null else b.toString(Charsets.UTF_8)
         if (c == '\n'.code) return b.toString(Charsets.UTF_8).trimEnd('\r')
+        if (b.size() >= MAX_LINE_BYTES) throw java.io.IOException("helper header exceeded $MAX_LINE_BYTES bytes")
         b.write(c)
       }
     }
@@ -214,10 +279,16 @@ object MediaDecoders {
 
   /** ffmpeg and ffprobe both answer `-version` (the two programs come together in every package; one without the other cannot read the length). */
   fun ffmpegPresent(): Boolean = listOf("ffmpeg", "ffprobe").all { tool ->
+    var proc: Process? = null
     try {
-      val p = ProcessBuilder(tool, "-version").redirectErrorStream(true).redirectOutput(ProcessBuilder.Redirect.DISCARD).start()
+      val p = Politeness.Cpu.track(ProcessBuilder(tool, "-version").redirectErrorStream(true).redirectOutput(ProcessBuilder.Redirect.DISCARD).start())
+      proc = p
       p.waitFor(5, TimeUnit.SECONDS) && p.exitValue() == 0
-    } catch (_: Exception) { false }
+    } catch (_: Exception) {
+      false
+    } finally {
+      proc?.let { p -> if (p.isAlive) p.destroyForcibly() }
+    }
   }
 
   private fun appleHelper(dir: File): File {
@@ -229,7 +300,7 @@ object MediaDecoders {
   private fun buildApple(source: File, dir: File): File {
     val bin = File(dir, "media-apple")
     if (!bin.exists() || bin.lastModified() < source.lastModified()) {
-      val p = ProcessBuilder("swiftc", "-O", source.absolutePath, "-o", bin.absolutePath).redirectErrorStream(true).start()
+      val p = Politeness.Cpu.track(ProcessBuilder("swiftc", "-O", source.absolutePath, "-o", bin.absolutePath).redirectErrorStream(true).start())
       val log = p.inputStream.bufferedReader().readText()
       check(p.waitFor() == 0) { "swiftc failed: $log" }
     }

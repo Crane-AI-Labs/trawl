@@ -133,6 +133,15 @@ class QuickKeysTest {
     assertEquals(QuickKey.SHOW_IN_FOLDER, quickKeyFor(Key.Enter, true, ctrl = true, meta = false, os = Os.LINUX))
     assertEquals(QuickKey.OPEN, quickKeyFor(Key.Enter, true, ctrl = false, meta = true, os = Os.WINDOWS))
   }
+
+  @Test fun shiftEnterMapsToOpenTopWithoutConflictingWithShowInFolder() {
+    for (os in Os.entries) {
+      assertEquals(QuickKey.OPEN_TOP, quickKeyFor(Key.Enter, true, ctrl = false, meta = false, os = os, shift = true))
+      assertEquals(QuickKey.OPEN_TOP, quickKeyFor(Key.NumPadEnter, true, ctrl = false, meta = false, os = os, shift = true))
+    }
+    assertEquals(QuickKey.SHOW_IN_FOLDER, quickKeyFor(Key.Enter, true, ctrl = false, meta = true, os = Os.MAC, shift = true))
+    assertEquals(QuickKey.SHOW_IN_FOLDER, quickKeyFor(Key.Enter, true, ctrl = true, meta = false, os = Os.LINUX, shift = true))
+  }
 }
 
 class QuickPanelStateTest {
@@ -238,6 +247,167 @@ class QuickPanelStateTest {
     eventually("recent again") { st.answered.value == "" && st.hits.value.size == 3 }
     assertEquals("", st.query.value)
     assertEquals(0, st.selected.value)
+    assertFalse(st.userSelectedRow.value)
+  }
+
+  @Test fun enterWithNonBlankUnselectedQueryOpensFullSearchImmediatelyWithoutOpeningStaleRecentFile() = runBlocking {
+    val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    val api = FakeSearch(files)
+    val fullSearch = mutableListOf<String>()
+    var closed = 0
+    // Long debounce simulates typing quickly and pressing Enter before search returns.
+    val st = QuickPanelState(api, scope, onClose = { closed++ }, debounceMs = 2_000, onOpenFullSearch = { fullSearch += it })
+    try {
+      eventually("recent files") { st.hits.value.size == 3 }
+      st.setQuery("  tax return  ")
+      assertFalse(st.userSelectedRow.value)
+      st.onKey(QuickKey.OPEN)
+      assertEquals(listOf("tax return"), fullSearch)
+      assertTrue(api.opened.isEmpty(), "must never open a stale recent file during debounce")
+      assertEquals(0, closed, "onOpenFullSearch owns closing/hiding the panel")
+    } finally { scope.cancel() }
+  }
+
+  @Test fun arrowingSelectsRowSoEnterOpensFileAndTypingResetsSelectionFlag() = runBlocking {
+    val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    val api = FakeSearch(files)
+    val fullSearch = mutableListOf<String>()
+    var closed = 0
+    val st = QuickPanelState(api, scope, onClose = { closed++ }, debounceMs = 20, onOpenFullSearch = { fullSearch += it })
+    try {
+      st.setQuery("invoice")
+      eventually("invoice hits") { st.answered.value == "invoice" && st.hits.value.size == 2 }
+      // First Down highlights row 0 cleanly (no implicit highlight before arrowing); second Down moves to row 1.
+      st.onKey(QuickKey.DOWN)
+      assertTrue(st.userSelectedRow.value)
+      assertEquals(0, st.selected.value)
+      // Pressing Up from row 0 returns cleanly to the search box (unselected).
+      st.onKey(QuickKey.UP)
+      assertFalse(st.userSelectedRow.value)
+      st.onKey(QuickKey.DOWN)
+      st.onKey(QuickKey.DOWN)
+      assertTrue(st.userSelectedRow.value)
+      assertEquals(1, st.selected.value)
+      st.onKey(QuickKey.OPEN)
+      assertEquals(listOf(files[1]), api.opened)
+      assertTrue(fullSearch.isEmpty())
+      assertEquals(1, closed)
+
+      // Typing a new query resets userSelectedRow so Enter goes back to opening full search.
+      st.setQuery("holiday")
+      assertFalse(st.userSelectedRow.value)
+      eventually("holiday hit") { st.answered.value == "holiday" }
+      st.onKey(QuickKey.OPEN)
+      assertEquals(listOf("holiday"), fullSearch)
+    } finally { scope.cancel() }
+  }
+
+  @Test fun openTopAndShowInFolderRefuseStaleRowsDuringDebounceAndOpenOnceAnswered() = runBlocking {
+    val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    val api = FakeSearch(files)
+    val fullSearch = mutableListOf<String>()
+    var closed = 0
+    val st = QuickPanelState(api, scope, onClose = { closed++ }, debounceMs = 120, onOpenFullSearch = { fullSearch += it })
+    try {
+      eventually("recent files") { st.hits.value.size == 3 }
+      st.setQuery("holiday")
+      // Still debouncing: answered is "", query is "holiday" -> stale recent row must NOT be opened or revealed.
+      st.onKey(QuickKey.OPEN_TOP)
+      st.onKey(QuickKey.SHOW_IN_FOLDER)
+      st.onKey(QuickKey.DOWN)
+      st.onKey(QuickKey.OPEN)
+      assertTrue(api.opened.isEmpty() && api.shown.isEmpty(), "stale recent rows must never open during debounce")
+      assertEquals(0, closed)
+
+      // Once answered, Shift+Enter (OPEN_TOP) opens the top hit directly without invoking onOpenFullSearch.
+      st.setQuery("holiday")
+      eventually("holiday answered") { st.answered.value == "holiday" && st.hits.value.size == 1 }
+      st.onKey(QuickKey.OPEN_TOP)
+      assertEquals(listOf(files[2]), api.opened)
+      assertTrue(fullSearch.isEmpty())
+      assertEquals(1, closed)
+    } finally { scope.cancel() }
+  }
+
+  @Test fun blankQueryEnterStillOpensSelectedRecentFileEvenWhenFullSearchWired() = runBlocking {
+    val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    val api = FakeSearch(files)
+    val fullSearch = mutableListOf<String>()
+    var closed = 0
+    val st = QuickPanelState(api, scope, onClose = { closed++ }, debounceMs = 20, onOpenFullSearch = { fullSearch += it })
+    try {
+      eventually("recent files") { st.hits.value.size == 3 }
+      st.onKey(QuickKey.OPEN)
+      assertEquals(listOf(files[0]), api.opened)
+      assertTrue(fullSearch.isEmpty())
+      assertEquals(1, closed)
+    } finally { scope.cancel() }
+  }
+
+  @Test fun resetClearsStaleAnsweredAndHitsImmediatelyBeforeRecentReloads() = runBlocking {
+    val recentGate = kotlinx.coroutines.CompletableDeferred<Unit>()
+    var blankCalls = 0
+    val api = object : QuickSearchApi {
+      override fun search(query: String): Flow<List<QuickHit>> = flow {
+        if (query.isBlank()) {
+          val n = ++blankCalls
+          if (n > 1) recentGate.await()
+          emit(files.map { QuickHit(it, null) })
+        } else {
+          emit(files.filter { it.name.contains(query, ignoreCase = true) }.map { QuickHit(it, null) })
+        }
+      }
+      override fun open(file: IndexedFile) {}
+      override fun showInFolder(file: IndexedFile) {}
+    }
+    val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    val st = QuickPanelState(api, scope, onClose = {}, debounceMs = 15)
+    try {
+      st.setQuery("holiday")
+      eventually("holiday answered") { st.answered.value == "holiday" && st.hits.value.size == 1 }
+      st.reset()
+      // Immediately after reset(), before recent reload completes, stale hits and answered must already be cleared.
+      assertNull(st.answered.value, "reset() must clear stale answered immediately")
+      assertTrue(st.hits.value.isEmpty(), "reset() must clear stale hits immediately")
+      assertEquals("", st.query.value)
+      recentGate.complete(Unit)
+      eventually("recent reloaded") { st.answered.value == "" && st.hits.value.size == 3 }
+    } finally { scope.cancel() }
+  }
+
+  @Test fun midDebounceStaleEmissionIsDroppedWhenQueryAlreadyChanged() = runBlocking {
+    val stage2Gate = kotlinx.coroutines.CompletableDeferred<Unit>()
+    val stage2Emitted = kotlinx.coroutines.CompletableDeferred<Unit>()
+    val api = object : QuickSearchApi {
+      override fun search(query: String): Flow<List<QuickHit>> = flow {
+        when (query) {
+          "invoice" -> {
+            emit(listOf(QuickHit(files[0], null)))
+            stage2Gate.await()
+            emit(listOf(QuickHit(files[0], null), QuickHit(files[1], null)))
+            stage2Emitted.complete(Unit)
+          }
+          "holiday" -> emit(listOf(QuickHit(files[2], null)))
+          else -> emit(emptyList())
+        }
+      }
+      override fun open(file: IndexedFile) {}
+      override fun showInFolder(file: IndexedFile) {}
+    }
+    val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    // Long debounce ensures setQuery("holiday") has not yet cancelled the in-flight "invoice" collector when Stage 2 emits.
+    val st = QuickPanelState(api, scope, onClose = {}, debounceMs = 250)
+    try {
+      st.setQuery("invoice")
+      eventually("invoice stage 1") { st.answered.value == "invoice" && st.hits.value.size == 1 }
+      st.setQuery("holiday")
+      stage2Gate.complete(Unit)
+      stage2Emitted.await()
+      delay(30)
+      assertEquals(1, st.hits.value.size, "stale Stage-2 emission for old query must be dropped mid-debounce")
+      assertEquals("invoice-march.pdf", st.hits.value.single().file.name)
+      eventually("holiday finally answered") { st.answered.value == "holiday" && st.hits.value.singleOrNull()?.file?.name == "holiday.jpg" }
+    } finally { scope.cancel() }
   }
 }
 

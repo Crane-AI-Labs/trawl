@@ -85,29 +85,36 @@ function Frame($path, [int64]$ms, [int]$maxSide) {
   if ($total -gt 0 -and $at -ge $total) { $at = [Math]::Max(0, $total - 100) }
   $comp = New-Object Windows.Media.Editing.MediaComposition
   [System.Collections.Generic.ICollection[Windows.Media.Editing.MediaClip]].GetMethod('Add').Invoke($comp.Clips, @($clip))   # PowerShell 5.1 cannot cast the WinRT list itself; the runtime can
-  # The nearest keyframe, not the exact frame: much faster, and the phone does the same.
-  $stream = Await ($comp.GetThumbnailAsync([TimeSpan]::FromMilliseconds($at), $w, $h, [Windows.Media.Editing.VideoFramePrecision]::NearestKeyFrame)) ([Windows.Graphics.Imaging.ImageStream])
-  $net = [System.IO.WindowsRuntimeStreamExtensions]::AsStreamForRead($stream)
-  $ms2 = New-Object System.IO.MemoryStream
-  $net.CopyTo($ms2)
-  $bytes = $ms2.ToArray()
-  if ($bytes.Length -lt 4) { return Fail 'no picture there' }
-  if (-not ($bytes[0] -eq 0xFF -and $bytes[1] -eq 0xD8)) {
-    # Not a JPEG already: decode it and write a JPEG.
-    $mem = New-Object Windows.Storage.Streams.InMemoryRandomAccessStream
-    $dec = Await ([Windows.Graphics.Imaging.BitmapDecoder]::CreateAsync($stream.CloneStream())) ([Windows.Graphics.Imaging.BitmapDecoder])
-    $bmp = Await ($dec.GetSoftwareBitmapAsync()) ([Windows.Graphics.Imaging.SoftwareBitmap])
-    $enc = Await ([Windows.Graphics.Imaging.BitmapEncoder]::CreateAsync([Windows.Graphics.Imaging.BitmapEncoder]::JpegEncoderId, $mem)) ([Windows.Graphics.Imaging.BitmapEncoder])
-    $enc.SetSoftwareBitmap($bmp)
-    AwaitAction ($enc.FlushAsync())
-    $r = [System.IO.WindowsRuntimeStreamExtensions]::AsStreamForRead($mem.GetInputStreamAt(0))
-    $ms3 = New-Object System.IO.MemoryStream
-    $r.CopyTo($ms3)
-    $bytes = $ms3.ToArray()
+  $stream = $null; $net = $null; $ms2 = $null; $mem = $null; $bmp = $null; $r = $null; $ms3 = $null
+  try {
+    # The nearest keyframe, not the exact frame: much faster, and the phone does the same.
+    $stream = Await ($comp.GetThumbnailAsync([TimeSpan]::FromMilliseconds($at), $w, $h, [Windows.Media.Editing.VideoFramePrecision]::NearestKeyFrame)) ([Windows.Graphics.Imaging.ImageStream])
+    $net = [System.IO.WindowsRuntimeStreamExtensions]::AsStreamForRead($stream)
+    $ms2 = New-Object System.IO.MemoryStream
+    $net.CopyTo($ms2)
+    $bytes = $ms2.ToArray()
+    if ($bytes.Length -lt 4) { return Fail 'no picture there' }
+    if (-not ($bytes[0] -eq 0xFF -and $bytes[1] -eq 0xD8)) {
+      # Not a JPEG already: decode it and write a JPEG.
+      $mem = New-Object Windows.Storage.Streams.InMemoryRandomAccessStream
+      $dec = Await ([Windows.Graphics.Imaging.BitmapDecoder]::CreateAsync($stream.CloneStream())) ([Windows.Graphics.Imaging.BitmapDecoder])
+      $bmp = Await ($dec.GetSoftwareBitmapAsync()) ([Windows.Graphics.Imaging.SoftwareBitmap])
+      $enc = Await ([Windows.Graphics.Imaging.BitmapEncoder]::CreateAsync([Windows.Graphics.Imaging.BitmapEncoder]::JpegEncoderId, $mem)) ([Windows.Graphics.Imaging.BitmapEncoder])
+      $enc.SetSoftwareBitmap($bmp)
+      AwaitAction ($enc.FlushAsync())
+      $r = [System.IO.WindowsRuntimeStreamExtensions]::AsStreamForRead($mem.GetInputStreamAt(0))
+      $ms3 = New-Object System.IO.MemoryStream
+      $r.CopyTo($ms3)
+      $bytes = $ms3.ToArray()
+    }
+    Send @{ ok = $true; chunked = $true; width = $w; height = $h }
+    Chunk $bytes 0 $bytes.Length
+    EndChunks
+  } finally {
+    foreach ($obj in @($ms3, $r, $bmp, $mem, $ms2, $net, $stream)) {
+      if ($null -ne $obj) { try { $obj.Dispose() } catch { } }
+    }
   }
-  Send @{ ok = $true; chunked = $true; width = $w; height = $h }
-  Chunk $bytes 0 $bytes.Length
-  EndChunks
 }
 
 function Audio($path, [int64]$startMs, [int64]$spanMs) {

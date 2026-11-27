@@ -43,6 +43,8 @@ data class Settings(
   val onboarded: Boolean = false,
   /** Absolute paths of the folders Trawl reads, in the order added. */
   val folders: List<String> = emptyList(),
+  /** Absolute paths of individual files added outside chosen folders (indexed without crawling siblings). */
+  val addedFiles: List<String> = emptyList(),
   val theme: ThemeChoice = ThemeChoice.SYSTEM,
   /** Models the person declined at first run ("Not now"): the first-run card is not shown again, Settings still offers them. */
   val modelsDeclined: Boolean = false,
@@ -55,6 +57,10 @@ data class Settings(
   val indexAudio: Boolean = true,
   /** Absolute paths of folders inside the chosen folders that are never read. */
   val excludedFolders: List<String> = emptyList(),
+  /** Absolute paths of individual files removed from Trawl's index (never deleted on disk, skipped on future scans). */
+  val excludedFiles: List<String> = emptyList(),
+  /** Absolute paths of unusually large subfolders the person has already acknowledged (excluded or "Keep reading") so we never nag twice. */
+  val dismissedLargeFolders: List<String> = emptyList(),
   /** How hard Trawl works while reading: [LearningSpeed.BALANCED] is how it has always worked. */
   val learningSpeed: LearningSpeed = LearningSpeed.BALANCED,
   /** The person's Pause: kept across restarts, cleared only by Resume. */
@@ -77,6 +83,7 @@ class SettingsStore(private val dir: File) {
     Settings(
       onboarded = o.optBoolean("onboarded", false),
       folders = o.optJSONArray("folders")?.let { a -> (0 until a.length()).map { a.getString(it) } } ?: emptyList(),
+      addedFiles = o.optJSONArray("addedFiles")?.let { a -> (0 until a.length()).mapNotNull { a.optString(it).takeIf { s -> s.isNotBlank() } } } ?: emptyList(),
       theme = ThemeChoice.of(o.optString("theme")),
       modelsDeclined = o.optBoolean("modelsDeclined", false),
       indexPhotos = o.optBoolean("indexPhotos", true),
@@ -85,6 +92,8 @@ class SettingsStore(private val dir: File) {
       indexVideos = o.optBoolean("indexVideos", true),
       indexAudio = o.optBoolean("indexAudio", true),
       excludedFolders = o.optJSONArray("excludedFolders")?.let { a -> (0 until a.length()).mapNotNull { a.optString(it).takeIf { s -> s.isNotBlank() } } } ?: emptyList(),
+      excludedFiles = o.optJSONArray("excludedFiles")?.let { a -> (0 until a.length()).mapNotNull { a.optString(it).takeIf { s -> s.isNotBlank() } } } ?: emptyList(),
+      dismissedLargeFolders = o.optJSONArray("dismissedLargeFolders")?.let { a -> (0 until a.length()).mapNotNull { a.optString(it).takeIf { s -> s.isNotBlank() } } } ?: emptyList(),
       learningSpeed = LearningSpeed.of(o.optString("learningSpeed")) ?: LearningSpeed.BALANCED,
       indexPaused = o.optBoolean("indexPaused", false),
       language = o.optString("language").takeIf { it.isNotBlank() },
@@ -98,13 +107,16 @@ class SettingsStore(private val dir: File) {
 
   fun save(s: Settings) {
     dir.mkdirs()
+    OwnerOnlyPermissions.hardenDir(dir)
     val part = File(dir, "settings.json.part")
     part.writeText(
-      JSONObject().put("onboarded", s.onboarded).put("folders", JSONArray(s.folders)).put("theme", s.theme.id)
+      JSONObject().put("onboarded", s.onboarded).put("folders", JSONArray(s.folders)).put("addedFiles", JSONArray(s.addedFiles)).put("theme", s.theme.id)
         .put("modelsDeclined", s.modelsDeclined).put("indexPhotos", s.indexPhotos).put("indexScreenshots", s.indexScreenshots)
-        .put("indexDocuments", s.indexDocuments).put("indexVideos", s.indexVideos).put("indexAudio", s.indexAudio).put("excludedFolders", JSONArray(s.excludedFolders)).put("learningSpeed", s.learningSpeed.key)
+        .put("indexDocuments", s.indexDocuments).put("indexVideos", s.indexVideos).put("indexAudio", s.indexAudio).put("excludedFolders", JSONArray(s.excludedFolders)).put("excludedFiles", JSONArray(s.excludedFiles)).put("dismissedLargeFolders", JSONArray(s.dismissedLargeFolders)).put("learningSpeed", s.learningSpeed.key)
         .put("indexPaused", s.indexPaused).put("language", s.language ?: "").put("textSize", s.textSize.id).put("contrast", s.contrast.id).put("modelChoice", s.modelChoice?.id ?: "").toString(2),
     )
+    OwnerOnlyPermissions.hardenFile(part)
     Files.move(part.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING)
+    OwnerOnlyPermissions.hardenFile(file)
   }
 }

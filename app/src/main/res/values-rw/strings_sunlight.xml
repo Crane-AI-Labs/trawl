@@ -9,4 +9,7 @@
   <string name="colours_wallpaper">Amabara y\'ishusho y\'inyuma</string>
   <string name="colours_wallpaper_hint">Ikoresha amabara y\'ishusho yawe y\'inyuma, kandi igahinduka na yo.</string>
   <string name="settings_brightness">Urumuri cyangwa umwijima</string>
+  <string name="notif_waiting_other_app">Iri gutegereza mu gihe ukoresha indi porogaramu</string>
+  <string name="preview_checking">kureba mbere birahishwe kugeza bisuzumwe</string>
+  <string name="preview_checking_words">Iri gusuzuma · kanda urebe</string>
 </resources>

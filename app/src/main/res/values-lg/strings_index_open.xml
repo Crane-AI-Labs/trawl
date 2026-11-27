@@ -7,4 +7,6 @@
   <string name="open_problem_memory">Essimu terina jjukira limala. Ejja kuddamu okugezaako mu kaseera katono.</string>
   <string name="open_problem_other">Ejja kuddamu okugezaako mu kaseera katono.</string>
   <string name="open_problem_detail">Ebizuuliddwa byo ebyasooka bikuumiddwa bulungi, era tewali kyasanguddwa. Eddamu okugezaako ku bwayo, oba onyige Ddamu ogezeeko.</string>
+  <string name="index_opening_title">Eggulawo olukalala lwo</string>
+  <string name="index_opening_detail">Ebivuddemu bijja kulabika ng\'olukalala luwedde.</string>
 </resources>

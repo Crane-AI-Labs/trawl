@@ -5,6 +5,14 @@
   <string name="sort_oldest">Mais antigos</string>
   <string name="sort_largest">Maiores</string>
   <string name="sort_name">Nome de A a Z</string>
+  <string name="sort_chip_best">Relevância</string>
+  <string name="sort_chip_newest">Recentes</string>
+  <string name="sort_chip_oldest">Antigos</string>
+  <string name="sort_chip_created_newest">Criados</string>
+  <string name="sort_chip_created_oldest">Criados</string>
+  <string name="sort_chip_largest">Maiores</string>
+  <string name="sort_chip_smallest">Menores</string>
+  <string name="sort_chip_name">Nome</string>
   <string name="sort_group">Ordenar por</string>
   <string name="date_any_time">Qualquer data</string>
   <string name="date_group">Data</string>
@@ -85,4 +93,20 @@
   <string name="snack_marked_sensitive_many">Marcados como sensíveis. Agora estão ocultos nos resultados.</string>
   <string name="snack_unmarked_sensitive_many">Marcação removida. Eles podem aparecer nos resultados novamente.</string>
   <string name="nothing_in_dates">Nenhum resultado no período: %1$s. Tente outra data.</string>
+  <string name="sort_created_newest">Data de criação (mais recentes)</string>
+  <string name="sort_created_oldest">Data de criação (mais antigos)</string>
+  <string name="sort_smallest">Mais pequenos</string>
+  <string name="subtype_group">Tipo de ficheiro</string>
+  <string name="subtype_all">Todos os tipos</string>
+  <string name="subtype_remove">Remover filtro de tipo de ficheiro</string>
+  <string name="subtype_spreadsheet_menu">Excel e CSV (.xlsx, .csv)</string>
+  <string name="subtype_text_menu">Texto e Markdown (.txt, .md)</string>
+  <string name="subtype_text_chip">Texto / MD</string>
+  <string name="subtype_code_menu">Código e dados (.json, .xml, …)</string>
+  <string name="subtype_code_chip">Código / Dados</string>
+  <string name="view_mode_group">Modo de visualização</string>
+  <string name="view_grid">Grelha</string>
+  <string name="view_list">Lista</string>
+  <string name="label_modified_short">Mod. %1$s</string>
+  <string name="label_created_short">Criado %1$s</string>
 </resources>

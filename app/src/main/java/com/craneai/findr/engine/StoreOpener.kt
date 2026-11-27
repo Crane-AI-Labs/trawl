@@ -7,7 +7,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
@@ -67,10 +66,10 @@ class StoreOpener<T : Any>(
   /** The index cannot be opened right now (the loop is retrying). */
   val failing: Boolean get() = _state.value is State.Failed
 
-  /** Starts the open loop (once; a second call while running does nothing). */
+  /** Starts the open loop once, until [detach] explicitly releases the store. */
   fun start() {
     synchronized(lock) {
-      if (job?.isActive == true) return
+      if (job?.isActive == true || current != null) return
       kicks = Channel(Channel.CONFLATED)
       _state.value = State.Opening
       job = scope.launch { run() }
@@ -94,7 +93,8 @@ class StoreOpener<T : Any>(
 
   /**
    * Stops the loop and hands back the open store (or null if there was none), leaving the state at [State.Opening] with no loop
-   * running, so a caller can close and replace the file and then call [start]. Waits for an open in flight to finish.
+   * running, so a caller can close and replace the file and then call [start]. Waits for an open in flight to finish; an unpublished
+   * store from a cancelled open is closed before returning.
    */
   suspend fun detach(): T? {
     val j = synchronized(lock) { job.also { job = null } }
@@ -110,8 +110,8 @@ class StoreOpener<T : Any>(
     var backoff = firstBackoffMs
     var lastProblem: IndexOpenProblem? = null
     while (true) {
+      var opened: T? = null
       try {
-        // Not cancellable: a store that was opened must reach [detach] or be closed, never be dropped (an open is bounded, about a minute at worst).
         val store = withContext(ioDispatcher + NonCancellable) {
           val s = open { t ->   // a transient failure inside the open: say so now
             val p = classify(t)
@@ -120,18 +120,21 @@ class StoreOpener<T : Any>(
             onFailed(p, failures)
           }
           try { prepare(s) } catch (t: Throwable) { runCatching { close(s) }; throw t }
-          s
+          s.also { opened = it }
         }
         val recovered = failures > 0 || lastProblem != null
         if (recovered) log("index opened after $failures failed open(s)")
         _state.value = State.Ready(store)
+        opened = null
         try { onReady(store, recovered) } catch (c: CancellationException) { throw c } catch (t: Throwable) {
           log("work after the index opened failed (${t.javaClass.simpleName}); the index itself is open")
         }
         return
       } catch (c: CancellationException) {
+        withContext(ioDispatcher + NonCancellable) { opened?.let { runCatching { close(it) } } }
         throw c
       } catch (t: Throwable) {
+        withContext(ioDispatcher + NonCancellable) { opened?.let { runCatching { close(it) } } }
         failures++
         val p = classify(t)
         lastProblem = p

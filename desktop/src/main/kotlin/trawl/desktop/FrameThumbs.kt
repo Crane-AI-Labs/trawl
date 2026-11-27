@@ -21,32 +21,82 @@ class FrameThumbs(
   private val decoder: () -> MediaDecoder?,
   private val clock: () -> Long = System::currentTimeMillis,
 ) : AutoCloseable {
-  private val pool = Executors.newSingleThreadExecutor { r -> Thread(r, "trawl-frames").apply { isDaemon = true } }
+  private val pool = Executors.newSingleThreadExecutor(LowPriority.factory("trawl-frames"))
   private var dec: MediaDecoder? = null
   private var decoderFailedAt = 0L
   private val cache = object : LinkedHashMap<String, ImageBitmap>(KEEP, 0.75f, true) {
     override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, ImageBitmap>) = size > KEEP
   }
   private val failedAt = HashMap<String, Long>()
+  private val pendingConts = java.util.Collections.synchronizedSet(mutableSetOf<kotlinx.coroutines.CancellableContinuation<ImageBitmap?>>())
 
-  private fun key(file: File, momentMs: Long, side: Int) = "${file.absolutePath}|${file.lastModified()}|${bucket(momentMs)}|$side"
+  private fun key(file: File, momentMs: Long, side: Int, modifiedMillis: Long? = null) =
+    "${file.absolutePath}|${modifiedMillis ?: file.lastModified()}|${bucket(momentMs)}|$side"
 
-  /** The frame if it is already decoded (no waiting), so a row scrolling back into view draws at once. */
-  @Synchronized fun peek(file: File, momentMs: Long, side: Int = SIDE): ImageBitmap? = cache[key(file, momentMs, side)]
+  /** The frame if it is already decoded (no waiting), so a row scrolling back into view draws at once. Pass [modifiedMillis] when known to avoid UI-thread `stat()`. */
+  @Synchronized fun peek(file: File, momentMs: Long, side: Int = SIDE, modifiedMillis: Long? = null): ImageBitmap? =
+    cache[key(file, momentMs, side, modifiedMillis)]
 
   /** True while a recent attempt at this frame failed, so the row shows its icon without asking the decoder again. */
-  @Synchronized fun recentlyFailed(file: File, momentMs: Long, side: Int = SIDE): Boolean =
-    failedAt[key(file, momentMs, side)]?.let { clock() - it < RETRY_MS } == true
+  @Synchronized fun recentlyFailed(file: File, momentMs: Long, side: Int = SIDE, modifiedMillis: Long? = null): Boolean =
+    failedAt[key(file, momentMs, side, modifiedMillis)]?.let { clock() - it < RETRY_MS } == true
 
-  /** The frame at about [momentMs], or null when this computer cannot give one. Blocking (one at a time): call it off the UI thread. */
-  fun load(file: File, momentMs: Long, side: Int = SIDE): ImageBitmap? {
-    peek(file, momentMs, side)?.let { return it }
-    if (recentlyFailed(file, momentMs, side)) return null
-    return pool.submit<ImageBitmap?> { decode(file, momentMs, side) }.get()
+  /** Cancellable suspend load: cancels the queued decode Future immediately if the user scrubs or arrows to another file, and always resumes cleanly on close/interrupt. */
+  suspend fun loadSuspend(file: File, momentMs: Long, side: Int = SIDE, modifiedMillis: Long? = null): ImageBitmap? {
+    peek(file, momentMs, side, modifiedMillis)?.let { return it }
+    if (recentlyFailed(file, momentMs, side, modifiedMillis)) return null
+    if (pool.isShutdown) return null
+    return kotlinx.coroutines.suspendCancellableCoroutine { cont ->
+      pendingConts += cont
+      val future = try {
+        pool.submit {
+          var result: ImageBitmap? = null
+          try {
+            if (cont.isActive && !Thread.currentThread().isInterrupted) {
+              result = runCatching { decode(file, momentMs, side, modifiedMillis) }.getOrNull()
+            }
+          } finally {
+            pendingConts.remove(cont)
+            if (cont.isActive) cont.resumeWith(Result.success(result))
+          }
+        }
+      } catch (_: java.util.concurrent.RejectedExecutionException) {
+        pendingConts.remove(cont)
+        if (cont.isActive) cont.resumeWith(Result.success(null))
+        return@suspendCancellableCoroutine
+      }
+      cont.invokeOnCancellation {
+        pendingConts.remove(cont)
+        future.cancel(false)
+      }
+    }
   }
 
-  private fun decode(file: File, momentMs: Long, side: Int): ImageBitmap? {
-    val k = key(file, momentMs, side)
+  /** The frame at about [momentMs], or null when this computer cannot give one. Blocking (one at a time): call it off the UI thread. */
+  fun load(file: File, momentMs: Long, side: Int = SIDE, modifiedMillis: Long? = null): ImageBitmap? {
+    peek(file, momentMs, side, modifiedMillis)?.let { return it }
+    if (recentlyFailed(file, momentMs, side, modifiedMillis)) return null
+    if (pool.isShutdown) return null
+    val future = try {
+      pool.submit<ImageBitmap?> { decode(file, momentMs, side, modifiedMillis) }
+    } catch (_: java.util.concurrent.RejectedExecutionException) {
+      return null
+    }
+    return try {
+      future.get()
+    } catch (e: InterruptedException) {
+      future.cancel(false)
+      Thread.currentThread().interrupt()
+      null
+    } catch (_: Throwable) {
+      future.cancel(false)
+      null
+    }
+  }
+
+  private fun decode(file: File, momentMs: Long, side: Int, modifiedMillis: Long? = null): ImageBitmap? {
+    if (Thread.currentThread().isInterrupted) return null
+    val k = key(file, momentMs, side, modifiedMillis)
     synchronized(this) { cache[k]?.let { return it } }
     val bmp = try {
       val d = decoderOrNull()
@@ -67,6 +117,10 @@ class FrameThumbs(
 
   override fun close() {
     pool.shutdownNow()
+    val drained = synchronized(pendingConts) { pendingConts.toList().also { pendingConts.clear() } }
+    for (c in drained) {
+      if (c.isActive) runCatching { c.resumeWith(Result.success(null)) }
+    }
     synchronized(this) { runCatching { dec?.close() }; dec = null; cache.clear(); failedAt.clear() }
   }
 

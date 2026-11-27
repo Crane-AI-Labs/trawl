@@ -37,6 +37,7 @@ import com.craneai.findr.core.KindFilter
 import com.craneai.findr.core.KindProgress
 import com.craneai.findr.core.PackCatalog
 import com.craneai.findr.core.PackDef
+import com.craneai.findr.core.PackIds
 import com.craneai.findr.core.PackManager
 import com.craneai.findr.core.PauseReason
 import com.craneai.findr.core.QuickLookProgress
@@ -56,11 +57,14 @@ import com.craneai.findr.index.Schema
 import com.craneai.findr.index.quickLookProgress
 import com.craneai.findr.search.LocalKeywords
 import com.craneai.findr.search.Searcher
+import com.craneai.findr.search.TwoStage
+import com.craneai.findr.search.VectorFormat
 import com.craneai.findr.search.VectorIndex
 import java.io.File
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -88,6 +92,11 @@ import org.json.JSONObject
 
 private const val TAG = "FindrEngine"
 
+private fun engineScope() = CoroutineScope(SupervisorJob() + Dispatchers.Default + CoroutineExceptionHandler { _, failure ->
+  if (failure is StoreNotReadyException) Log.i(TAG, "background work skipped: the index is not open")
+  else Thread.currentThread().let { it.uncaughtExceptionHandler?.uncaughtException(it, failure) }
+})
+
 /**
  * The real SearchEngine: one per process, shared by the UI and the background worker.
  *
@@ -95,13 +104,14 @@ private const val TAG = "FindrEngine"
  * keyword index) is cheap and runs right away, so the phone is searchable by name within minutes, Everything-style;
  * understanding files (embeddings) is slow and runs in [IndexWorker], by default only while charging.
  */
-class FindrEngine(private val context: Context) : SearchEngine {
-  private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default + CoroutineExceptionHandler { _, t ->
-    // Work that needs the index while it is not open (busy, or the disk is full) is skipped, not fatal: it is redone once the index
-    // opens (see indexOpened). Any other uncaught error is handed on exactly as before.
-    if (t is StoreNotReadyException) Log.i(TAG, "background work skipped: the index is not open")
-    else Thread.currentThread().let { it.uncaughtExceptionHandler?.uncaughtException(it, t) }
-  })
+class FindrEngine internal constructor(
+  private val context: Context,
+  private val scope: CoroutineScope,
+  private val indexDispatcher: CoroutineDispatcher,
+  private val storeOpen: (((Throwable) -> Unit) -> IndexStore)?,
+) : SearchEngine {
+  constructor(context: Context) : this(context, engineScope(), Dispatchers.IO, null)
+
   private val prefs = context.getSharedPreferences("findr", Context.MODE_PRIVATE)
   private val indexDir = File(context.noBackupFilesDir, "index")
 
@@ -121,7 +131,7 @@ class FindrEngine(private val context: Context) : SearchEngine {
    * [awaitStore], and the meter says what is happening ([refreshStatus]).
    */
   private val opener: StoreOpener<IndexStore> = StoreOpener(
-    scope = scope, ioDispatcher = Dispatchers.IO,
+    scope = scope, ioDispatcher = indexDispatcher,
     open = ::openIndex,
     classify = IndexOpenProblems::classify,
     // The person's privacy marks live in the settings, not the index: put them on the index before anything is crawled or shown.
@@ -159,6 +169,7 @@ class FindrEngine(private val context: Context) : SearchEngine {
   private val openDelay = java.util.concurrent.atomic.AtomicLong(openKnobs["openDelayMs"]?.toLongOrNull() ?: 0L)
 
   private fun openIndex(onTransient: (Throwable) -> Unit): IndexStore {
+    storeOpen?.let { return it(onTransient) }
     openDelay.getAndSet(0L).takeIf { it > 0 }?.let { Thread.sleep(it) }
     val real = androidx.sqlite.driver.bundled.BundledSQLiteDriver()
     val driver = if (openFailures.get() <= 0) real else object : androidx.sqlite.SQLiteDriver {
@@ -173,8 +184,7 @@ class FindrEngine(private val context: Context) : SearchEngine {
   /** Runs once the index is open (not on the opener's thread: a crawl can take minutes). After a failed start it does what the failure skipped. */
   private suspend fun indexOpened(opened: IndexStore, recovered: Boolean) {
     refreshStatus()
-    val startNow = startWhenOpen
-    startWhenOpen = false
+    val startNow = synchronized(indexStartLock) { startWhenOpen.also { startWhenOpen = false } }
     // Opening Trawl while the index could not be opened skipped its crawl; an index that already knows files is crawled again too.
     // (Never for an empty index otherwise: reading must not start before the person taps Start on the first-run screen.)
     if (startNow || (recovered && runCatching { opened.stats().filesKnown }.getOrDefault(0) > 0)) {
@@ -185,13 +195,19 @@ class FindrEngine(private val context: Context) : SearchEngine {
   }
 
   /** Opening Trawl asked for indexing while the index could not be opened; it starts once the index opens ([indexOpened]). */
-  @Volatile private var startWhenOpen = false
+  private val indexStartLock = Any()
+  private var startWhenOpen = false
   /**
    * Both vector indexes keep their vectors off the Java heap, in memory-mapped files next to the database (see [VectorIndex]):
    * they are a cache of SQLite, rebuilt from it if missing, corrupt or out of date, and wiped with it by "Delete everything".
    * They settle (flush, and vouch for the database's generation) only while nothing is writing vectors, see [vectorsQuiet].
    */
-  val vectors = VectorIndex(backing = File(indexDir, VECTORS_FILE), quiet = { vectorsQuiet() })
+  val vectors = VectorIndex(
+    backing = File(indexDir, VECTORS_FILE),
+    quiet = { vectorsQuiet() },
+    twoStage = TwoStage.DEFAULT,
+    format = VectorFormat.SQ8,
+  )
   /** Quick-look vectors (D2, D10): photos EmbeddingGemma hasn't understood yet, in TinyCLIP's 512-d space. */
   val quickVectors = VectorIndex(
     dim = IndexStore.QUICK_DIM, initialCapacity = 256, parallelism = 1, holds = VectorIndex.QUICK_LOOK,
@@ -261,8 +277,15 @@ class FindrEngine(private val context: Context) : SearchEngine {
     if (!embedder.imagesByEmbeddingGemma) clip.releaseImage()
   }
 
-  /** Speech to words (sherpa-onnx). Models are loaded on first use and released when the indexer stops. */
-  val asr: AsrEngine = SherpaAsrEngine(File(context.filesDir, "models/asr"))
+  /**
+   * Speech to words (sherpa-onnx). Models are loaded on first use and released when the indexer stops. The speech pack in use (Settings →
+   * Add-ons; at most one) reads again what the English model cannot (engine/LocalSpeech.kt); on a tight phone it is never kept between files.
+   */
+  val asr: AsrEngine = SherpaAsrEngine(
+    File(context.filesDir, "models/asr"),
+    packDir = { settingsFlow.value.speechPack?.let { PackFilesRegistry.of(it) }?.let { File(context.filesDir, "models/${it.dir}") } },
+    tight = { runTight == true },
+  )
   /** The quick-look model (D2). Its text tower reads English only, so [queryGate] decides which queries it sees. */
   val clip = ClipEncoder(
     File(context.filesDir, "models/${QuickLookPack.DIR}"),
@@ -283,11 +306,12 @@ class FindrEngine(private val context: Context) : SearchEngine {
 
   /** The background privacy pass is running (the on-demand scorer then leaves the model loaded for it). */
   @Volatile var privacyPassRunning: Boolean = false
-  private val queryGate = SpeechLanguageGate.fromAssets(ContextAssets(context))
+  private val queryGate = if (Edition.GO) SpeechLanguageGate(lazyOf(null)) else SpeechLanguageGate.fromAssets(ContextAssets(context))
   /** The D19 word-list rule (the research notes 10e); separate from [queryGate]'s quick-look rule. Now the fallback of [wordWeights]. */
   private val queryLanguage = QueryLanguage(queryGate.words)
   /** The word weight by query language: D19c reads it from the query vector (the research notes 10i), D19 stays for a model without centroids. */
-  private val wordWeights = WordWeightPolicy.fromAssets(ContextAssets(context), queryLanguage) { embedder.textFingerprint }
+  private val wordWeights = if (Edition.GO) WordWeightPolicy(queryLanguage, { null }, { null })
+    else WordWeightPolicy.fromAssets(ContextAssets(context), queryLanguage) { embedder.textFingerprint }
 
   /**
    * The lite profile's picture model: quick look's image tower, run by the index worker itself (FileProcessor), one file at a
@@ -314,16 +338,17 @@ class FindrEngine(private val context: Context) : SearchEngine {
    * main thread and can take a while, and a status that said "no model" until then drew the "Get the search models" card on a cold
    * start (1.0.8). The counts wait for the index as before.
    */
-  private val statusFlow = MutableStateFlow(modelStatus(IndexStatus()))
+  private val statusFlow = MutableStateFlow(modelStatus(IndexStatus(indexOpening = true)))
   override val status: StateFlow<IndexStatus> = statusFlow
 
   /**
-   * Optional model packs (Settings → Add-ons). Today the files come from Downloads; Play later swaps in
-   * [PlayAssetPackSource] here and nothing else changes.
+   * Optional model packs (Settings → Add-ons). Sideload builds read from Downloads ([DownloadsFolderSource]);
+   * Play AAB builds (`-PtrawlPlayAssetDelivery=true`) wire [PlayAssetPackSource] with automatic Downloads fallback
+   * when installed outside Google Play.
    */
   private val packManager = EnginePackManager(
     modelsDir = File(context.filesDir, "models"),
-    source = DownloadsFolderSource(),
+    source = PlayAssetDeliveryBridge.createPackSource(context, DownloadsFolderSource()),
     choices = PackPrefs(context),
     host = PackHost(
       setEnabled = { def, on -> updateSettings { def.withEnabled(it, on) } },
@@ -348,7 +373,8 @@ class FindrEngine(private val context: Context) : SearchEngine {
 
   /** Before a pack's files are deleted: the indexer may have them open. Stop it, wait a moment, give the models back. */
   private suspend fun releaseForRemoval(def: PackDef) {
-    if (def.id != PackCatalog.SPEECH && def.id != PackCatalog.QUICK_LOOK && def.id != PackCatalog.PRIVACY) return
+    val speechPack = def.id in PackIds.SPEECH_PACKS
+    if (def.id != PackCatalog.SPEECH && def.id != PackCatalog.QUICK_LOOK && def.id != PackCatalog.PRIVACY && !speechPack) return
     val wm = WorkManager.getInstance(context)
     listOf(IndexWorker.NAME, IndexWorker.NOW, IndexWorker.BULK, IndexWorker.CHARGER, IndexWorker.LATER, IndexWorker.NEXT, IndexWorker.RESUME, IndexWorker.PERIODIC).forEach { wm.cancelUniqueWork(it) }
     withTimeoutOrNull(20_000) { while (workerState.running) delay(250) }
@@ -360,14 +386,24 @@ class FindrEngine(private val context: Context) : SearchEngine {
       Log.i(TAG, "privacy pack removed: ${awaitStore()?.clearLooksPrivate() ?: 0} scores cleared")
       return
     }
+    if (speechPack) asr.releaseLocal()   // a run keeps the model between files; it closes as soon as the file being read is done
     if (workerState.running) return   // still running after 20 s: its own finally block releases them
-    if (def.id == PackCatalog.SPEECH) asr.release() else clip.release()
+    if (def.id == PackCatalog.SPEECH || speechPack) asr.release() else clip.release()
   }
 
   /** The Luganda/Swahili -> English keyword table, read on the first Luganda or Swahili query (languages-keywords-1.0.6.md). */
   private val localKeywords = LocalKeywords.fromAssets(ContextAssets(context))
 
-  private val searcher get() = Searcher(store, vectors, { enabledKinds() }, quick = quickVectors, keywords = localKeywords)
+  @Volatile private var cachedSearcher: Pair<IndexStore, Searcher>? = null
+
+  private val searcher: Searcher
+    get() {
+      val current = store
+      val cached = cachedSearcher
+      if (cached != null && cached.first === current) return cached.second
+      return Searcher(current, vectors, { enabledKinds() }, quick = quickVectors, keywords = localKeywords)
+        .also { cachedSearcher = current to it }
+    }
 
   /** Only one worker indexes at a time (the one-off and the periodic job can both be started by WorkManager). */
   val workerLock = Mutex()
@@ -409,11 +445,14 @@ class FindrEngine(private val context: Context) : SearchEngine {
   /** The lock screen is up (a plain read, for the words of the polite-wait notification only; [polite] decides the waiting). */
   fun keyguardLocked(): Boolean = keyguardManager?.isKeyguardLocked == true
 
-  fun polite(): Boolean = PolitePolicy.polite(
-    powerManager?.isInteractive ?: false, uiVisible,
-    keyguardLocked = Tuning.current.politeOnLockScreen.not() && keyguardManager?.isKeyguardLocked == true,
-    politeOnLockScreen = Tuning.current.politeOnLockScreen,
-  )
+  fun polite(): Boolean {
+    val t = Tuning.current
+    return PolitePolicy.polite(
+      powerManager?.isInteractive ?: false, uiVisible,
+      keyguardLocked = !t.politeOnLockScreen && keyguardManager?.isKeyguardLocked == true,
+      politeOnLockScreen = t.politeOnLockScreen,
+    )
+  }
 
   /**
    * How important Android thinks this process is right now (`RunningAppProcessInfo.importance`: 100 in front, 125 holding a foreground
@@ -477,7 +516,7 @@ class FindrEngine(private val context: Context) : SearchEngine {
     mediaObserver = null
     foregroundWatch?.cancel()
     foregroundWatch = null
-    schedule()   // hand back to WorkManager
+    scope.launch { schedule() }   // hand back to WorkManager
   }
 
   /** In-process crawl and words pass while Findr is visible; then [schedule] for the rest. One at a time. */
@@ -504,20 +543,6 @@ class FindrEngine(private val context: Context) : SearchEngine {
     if (com.craneai.findr.BuildConfig.FINDR_KNOBS) startQueryProbe()
     // A document copy left by a process killed mid-read: deleted before anything reads a file again.
     scope.launch(Dispatchers.IO) { LocalData.sweepScratch(context.cacheDir).let { if (it > 0) Log.i(TAG, "deleted $it leftover temporary files") } }
-    (context.applicationContext as? android.app.Application)?.registerActivityLifecycleCallbacks(
-      object : android.app.Application.ActivityLifecycleCallbacks {
-        override fun onActivityStarted(activity: android.app.Activity) { if (visibleActivities++ == 0) onUiVisible() }
-        override fun onActivityStopped(activity: android.app.Activity) {
-          visibleActivities = maxOf(0, visibleActivities - 1)
-          if (visibleActivities == 0) onUiHidden()
-        }
-        override fun onActivityCreated(activity: android.app.Activity, state: android.os.Bundle?) {}
-        override fun onActivityResumed(activity: android.app.Activity) {}
-        override fun onActivityPaused(activity: android.app.Activity) {}
-        override fun onActivitySaveInstanceState(activity: android.app.Activity, state: android.os.Bundle) {}
-        override fun onActivityDestroyed(activity: android.app.Activity) {}
-      },
-    )
     if (Edition.MODELS) scope.launch { modelInstaller().installDefaultsFromDownloads(); modelDelivery.pollOnce() }
     // The meter: counts for the screens, refreshed every couple of seconds. ONLY a screen reads it, so it ticks only while a Findr screen
     // is on show. A process nobody is looking at (cached, or running a job) used to re-count the whole index every 2 s: on a phone with
@@ -536,6 +561,26 @@ class FindrEngine(private val context: Context) : SearchEngine {
     }
     watchPower()
     watchScreen()
+    watchThermal()
+  }
+
+  internal fun startUiTracking(startedActivities: Int) {
+    visibleActivities = startedActivities
+    (context.applicationContext as? android.app.Application)?.registerActivityLifecycleCallbacks(
+      object : android.app.Application.ActivityLifecycleCallbacks {
+        override fun onActivityStarted(activity: android.app.Activity) { if (visibleActivities++ == 0) onUiVisible() }
+        override fun onActivityStopped(activity: android.app.Activity) {
+          visibleActivities = maxOf(0, visibleActivities - 1)
+          if (visibleActivities == 0) onUiHidden()
+        }
+        override fun onActivityCreated(activity: android.app.Activity, state: android.os.Bundle?) {}
+        override fun onActivityResumed(activity: android.app.Activity) {}
+        override fun onActivityPaused(activity: android.app.Activity) {}
+        override fun onActivitySaveInstanceState(activity: android.app.Activity, state: android.os.Bundle) {}
+        override fun onActivityDestroyed(activity: android.app.Activity) {}
+      },
+    )
+    if (uiVisible) onUiVisible()
   }
 
   /**
@@ -546,10 +591,12 @@ class FindrEngine(private val context: Context) : SearchEngine {
   private fun watchPower() {
     val receiver = object : BroadcastReceiver() {
       override fun onReceive(c: Context, intent: Intent) {
-        Log.i(TAG, "power: ${intent.action?.substringAfterLast('.')}" + if (intent.action == PowerManager.ACTION_POWER_SAVE_MODE_CHANGED) " saver=${batterySaver()}" else "")
-        refreshStatus()
-        // Battery Saver switched off: the light share is lifted, so ask for the work again (on battery only: the charger never held it).
-        if (intent.action == Intent.ACTION_POWER_CONNECTED || (intent.action == PowerManager.ACTION_POWER_SAVE_MODE_CHANGED && !batterySaver())) schedule()
+        scope.launch {
+          Log.i(TAG, "power: ${intent.action?.substringAfterLast('.')}" + if (intent.action == PowerManager.ACTION_POWER_SAVE_MODE_CHANGED) " saver=${batterySaver()}" else "")
+          refreshStatus()
+          // Battery Saver switched off: the light share is lifted, so ask for the work again (on battery only: the charger never held it).
+          if (intent.action == Intent.ACTION_POWER_CONNECTED || (intent.action == PowerManager.ACTION_POWER_SAVE_MODE_CHANGED && !batterySaver())) schedule()
+        }
       }
     }
     val filter = IntentFilter().apply {
@@ -589,20 +636,20 @@ class FindrEngine(private val context: Context) : SearchEngine {
   }
 
   override suspend fun recentHiddenCount(filter: KindFilter, dates: com.craneai.findr.core.DateRange?): Int = withContext(Dispatchers.IO) {
-    if (includeSensitive()) 0 else awaitStore()?.recentHiddenCount(filter.kinds, dates) ?: 0
+    if (includeSensitive()) 0 else storeOrNull()?.recentHiddenCount(filter.kinds, dates) ?: 0
   }
 
-  override suspend fun newestDates(limit: Int, notAfterMs: Long): List<Long> = withContext(Dispatchers.IO) { awaitStore()?.newestDates(limit, notAfterMs) ?: emptyList() }
+  override suspend fun newestDates(limit: Int, notAfterMs: Long): List<Long> = withContext(Dispatchers.IO) { storeOrNull()?.newestDates(limit, notAfterMs) ?: emptyList() }
 
   // ---- search ------------------------------------------------------------------------------------------------
 
   override suspend fun search(query: String, filter: KindFilter, limit: Int, view: ResultView): SearchResults = withContext(Dispatchers.Default) {
     val q = query.trim()
+    if (storeOrNull() == null) return@withContext indexNotOpen(query)
     if (q.isEmpty()) return@withContext SearchResults(query, emptyList(), 0, 0, indexIncomplete = false)
-    if (awaitStore() == null) return@withContext indexNotOpen(query)
     ensureVectors()
     val (vector, quick) = queryVectors(q)
-    val weight = wordWeights.meaningWeight(q, vector)
+    val weight = if (Edition.GO || (vector == null && quick.vector == null)) com.craneai.findr.search.Fusion.WORD_WEIGHT else wordWeights.meaningWeight(q, vector)
     searcher.search(q, vector, filter, limit, prefixLast = true, quickVector = quick.vector, includeSensitive = includeSensitive(), wordWeight = weight, view = view)
   }
 
@@ -640,11 +687,11 @@ class FindrEngine(private val context: Context) : SearchEngine {
   }
 
   override suspend fun anyMentions(phrase: String, files: List<IndexedFile>): Boolean = withContext(Dispatchers.Default) {
-    awaitStore() != null && searcher.mentioning(phrase, files.map { it.id }).isNotEmpty()
+    storeOrNull() != null && searcher.mentioning(phrase, files.map { it.id }).isNotEmpty()
   }
 
   override suspend fun similar(file: IndexedFile, filter: KindFilter, limit: Int, view: ResultView): SearchResults = withContext(Dispatchers.Default) {
-    if (awaitStore() == null) return@withContext indexNotOpen(file.name)
+    if (storeOrNull() == null) return@withContext indexNotOpen(file.name)
     ensureVectors()
     var embedMs = -1L
     val results = searcher.similar(file.id, filter, limit, includeSensitive = includeSensitive(), view = view, label = file.name, quickSeed = {
@@ -685,6 +732,17 @@ class FindrEngine(private val context: Context) : SearchEngine {
       val (vector, quick) = queryVectors(q)
       QueryVectors(vector, quick.vector, "quick look: ${quick.note}; query cache ${queryCache.hits} hits, ${queryCache.misses} misses")
     },
+    embedWithLoad = { q, loadVectors ->
+      // Overlap cold-start vector loading with EmbeddingGemma's ~500 ms query embed; quickQueryVector waits for
+      // loadVectors() so quickVectors.size is accurate, and still finishes well before queryVector(q).
+      coroutineScope {
+        val eg = async { queryVector(q, skipSizeCheck = !vectorsReady) }
+        loadVectors()
+        val quick = if (wantsMeaning(q)) quickQueryVector(q) else QuickQuery(null, "skipped")
+        val vector = eg.await()
+        QueryVectors(vector, quick.vector, "quick look: ${quick.note}; query cache ${queryCache.hits} hits, ${queryCache.misses} misses")
+      }
+    },
     onMeaning = { q, embedMs, results, note ->
       Log.i(TAG, "search \"${redact(q)}\": embed $embedMs ms ($note), word weight ${wordWeights.counts}, rank ${results.tookMs} ms, ${results.hits.size} hits, " +
         "top ${redact(results.hits.firstOrNull()?.file?.name)}")
@@ -693,8 +751,7 @@ class FindrEngine(private val context: Context) : SearchEngine {
 
   /** Words at once (SQLite only: a cold process does not wait for the vector matrix), then the fused answer. See [ProgressiveSearch]. */
   override fun searchProgressive(query: String, filter: KindFilter, limit: Int, meaningDelayMs: Long, view: ResultView): Flow<SearchResults> = flow {
-    // The index still opening is waited for (milliseconds); one that cannot be opened answers with nothing, and the screen re-asks when it opens.
-    if (awaitStore() == null) emit(indexNotOpen(query)) else emitAll(progressive.run(query, filter, limit, meaningDelayMs, view))
+    if (storeOrNull() == null) emit(indexNotOpen(query)) else emitAll(progressive.run(query, filter, limit, meaningDelayMs, view))
   }.flowOn(Dispatchers.Default)
 
   /** The answer while the index cannot be opened: no hits, flagged incomplete so the screen does not claim nothing matched. */
@@ -786,20 +843,35 @@ class FindrEngine(private val context: Context) : SearchEngine {
   @Volatile private var memoryPressureAt = 0L
 
   override fun noteMemoryTrim(level: Int) {
-    if (PolitePolicy.pressure(level)) memoryPressureAt = android.os.SystemClock.elapsedRealtime()
-    // Android 14+ sends only levels 20 and 40, so the phone's own numbers decide whether a level that does arrive means pressure.
-    val pressureNow = pollMemory(force = true)
-    // An idle app on a roomy phone keeps its models for the next search or run, until the system really asks for the memory back.
-    if (MemoryBudget.releaseWhenIdle(level, pressureNow) && !workerState.running) scope.launch {
-      Log.i(TAG, "the system is short of memory (trim level $level, pressure $pressureNow) and nothing is running: models released")
-      releaseModels()
-      privacy.release()
+    val trimPressure = PolitePolicy.pressure(level)
+    if (trimPressure) {
+      memoryPressureAt = android.os.SystemClock.elapsedRealtime()
+    }
+    // Offload SQLite writeLock (`noteInflightMemoryPressure`), ActivityManager poll, and native ONNX teardown off Main thread to prevent ANR.
+    scope.launch(Dispatchers.IO) {
+      if (trimPressure) {
+        storeOrNull()?.noteInflightMemoryPressure()
+        asr.releaseLocal()
+      }
+      // Android 14+ sends only levels 20 and 40, so the phone's own numbers decide whether a level that does arrive means pressure.
+      val pressureNow = pollMemory(force = true)
+      // An idle app on a roomy phone keeps its models for the next search or run, until the system really asks for the memory back.
+      if (MemoryBudget.releaseWhenIdle(level, pressureNow) && !workerState.running) {
+        Log.i(TAG, "the system is short of memory (trim level $level, pressure $pressureNow) and nothing is running: models released")
+        releaseModels()
+        privacy.release()
+      }
     }
   }
 
   /** The last time [pollMemory] read ActivityManager.MemoryInfo (elapsedRealtime), so a 1 s wait loop reads it every [MemoryBudget.PRESSURE_POLL_MS] only. */
   @Volatile private var memoryPolledAt = 0L
   @Volatile private var memoryShort = false
+
+  fun markInflight(fileId: Long, step: Int, windowed: Boolean) {
+    store.markInflight(fileId, step, windowed)
+    pollMemory(force = true)
+  }
 
   /**
    * Reads ActivityManager.MemoryInfo (availMem against the low-memory line) and, when the phone is short of memory
@@ -817,7 +889,10 @@ class FindrEngine(private val context: Context) : SearchEngine {
     val lineMb = mi.threshold / (1024 * 1024)
     val short = MemoryBudget.pressure(availMb, lineMb, mi.lowMemory)
     memoryShort = short
-    if (short) memoryPressureAt = now
+    if (short) {
+      memoryPressureAt = now
+      storeOrNull()?.noteInflightMemoryPressure()   // not open yet: nothing is in flight to mark
+    }
     Log.i(TAG, "memory poll: free $availMb MB, line $lineMb MB, system low flag ${mi.lowMemory} -> ${if (short) "pressure" else "roomy"}")
     return short
   }
@@ -833,9 +908,9 @@ class FindrEngine(private val context: Context) : SearchEngine {
     quickQueryCache.clear()
   }
 
-  private suspend fun queryVector(q: String): FloatArray? {
+  private suspend fun queryVector(q: String, skipSizeCheck: Boolean = false): FloatArray? {
     // EmbeddingGemma's query vector is only worth its ~0.5 s (plus a load) once it has understood something.
-    if (q.length < 3 || vectors.size == 0 || embedder.modelFile == null) return null
+    if (q.length < 3 || (!skipSizeCheck && vectors.size == 0) || embedder.modelFile == null) return null
     val fingerprint = embedder.textFingerprint ?: return null
     return try {
       // A Luganda or Swahili query is embedded with its English gloss after it (LocalKeywords.embedText); any other query as typed.
@@ -851,7 +926,7 @@ class FindrEngine(private val context: Context) : SearchEngine {
   }
 
   override suspend fun recent(filter: KindFilter, limit: Int, view: ResultView): List<IndexedFile> = withContext(Dispatchers.IO) {
-    awaitStore()?.recent(filter.kinds, limit, includeSensitive = includeSensitive(), order = view.sort, dates = view.dates) ?: emptyList()
+    storeOrNull()?.recent(filter.kinds, limit, includeSensitive = includeSensitive(), order = view.sort, dates = view.dates) ?: emptyList()
   }
 
   private suspend fun ensureVectors() {
@@ -908,8 +983,14 @@ class FindrEngine(private val context: Context) : SearchEngine {
     setPaused(IndexPause.after(IndexPause.Event.START, paused))
     filesAccessGranted()   // the model and default packs now, not whenever the charger-gated worker first runs
     // The index cannot be opened right now: the crawl below is skipped, so remember to do it when the index opens, and try at once.
-    if (opener.failing) { startWhenOpen = true; opener.retryNow() }
-    scope.launch { crawl(forceFull = false) }   // while the index is still opening this waits for it
+    val waiting = synchronized(indexStartLock) {
+      (storeOrNull() == null).also { if (it) startWhenOpen = true }
+    }
+    if (waiting) {
+      opener.retryNow()
+      return
+    }
+    scope.launch { crawl(forceFull = false) }
     schedule()
   }
 
@@ -920,6 +1001,7 @@ class FindrEngine(private val context: Context) : SearchEngine {
 
   override fun pauseIndexing() {
     setPaused(IndexPause.after(IndexPause.Event.PAUSE, paused))
+    asr.releaseLocal()
     WorkManager.getInstance(context).let { wm -> listOf(IndexWorker.NAME, IndexWorker.BULK, IndexWorker.CHARGER, IndexWorker.LATER, IndexWorker.NEXT, IndexWorker.RESUME).forEach(wm::cancelUniqueWork) }
     scope.launch { refreshStatus() }
   }
@@ -937,7 +1019,8 @@ class FindrEngine(private val context: Context) : SearchEngine {
 
   /** The power policy right now (IndexPolicy): what may run on this charger, battery level and heat. */
   fun policy(): IndexPolicy.Decision = settingsFlow.value.let { s ->
-    IndexPolicy.decide(isCharging(), batteryPercent(), thermalStatus(), s.onlyWhileCharging, s.fullOnBattery, batterySaver())
+    IndexPolicy.decide(isCharging(), batteryPercent(), thermalStatus(), s.onlyWhileCharging, s.fullOnBattery, batterySaver(),
+      batteryC = batteryCelsius(), headroom = thermalHeadroom())
   }
 
   /** Android's Battery Saver is on (a plain read: no receiver state to lose when the process dies). */
@@ -1148,7 +1231,8 @@ class FindrEngine(private val context: Context) : SearchEngine {
     val store = storeOrNull() ?: return false
     return store.nextWithoutWords(1, kinds.intersect(WORDS_PASS_KINDS)).isNotEmpty() ||
       store.nextPending(1, kinds).isNotEmpty() || store.nextPartial(1, kinds).isNotEmpty() ||
-      (!Edition.GO && FileKind.VIDEO in kinds && embedder.modelFile != null && store.nextOldVideos(1).isNotEmpty())
+      (!Edition.GO && FileKind.VIDEO in kinds && embedder.modelFile != null &&
+        (store.nextOldVideos(1).isNotEmpty() || (embedder.imagesByEmbeddingGemma && store.nextOldSees(1).isNotEmpty())))
   }
 
   /**
@@ -1162,7 +1246,7 @@ class FindrEngine(private val context: Context) : SearchEngine {
         if (!RunHandoff.resumeOnScreenOff(handOffPending)) return
         handOffPending = false
         Log.i(TAG, "screen off: the run that waited out a polite phone is asked back")
-        schedule()
+        scope.launch { schedule() }
       }
     }
     runCatching { ContextCompat.registerReceiver(context, receiver, IntentFilter(Intent.ACTION_SCREEN_OFF), ContextCompat.RECEIVER_NOT_EXPORTED) }
@@ -1222,8 +1306,11 @@ class FindrEngine(private val context: Context) : SearchEngine {
         // would otherwise carry them across a restart; the worker loads the new ones when it has read the file again).
         val gone = report.deletedFileIds + report.newlySkippedFileIds + report.resetFileIds
         if (gone.isNotEmpty()) {
-          vectors.removeFiles(gone)
-          quickVectors.removeFiles(gone)
+          privacyOnDemand.evict(gone)
+          if (vectorsReady) {
+            vectors.removeFiles(gone)
+            quickVectors.removeFiles(gone)
+          }
         }
         Log.i(TAG, "crawl: $report")
         saveLearnedMarks()
@@ -1263,6 +1350,7 @@ class FindrEngine(private val context: Context) : SearchEngine {
       embedder.release()
       // Also when the index never opened (then there is nothing to close, and the wipe is what mends a file that cannot be opened).
       runCatching { opener.detach()?.close() }.onFailure { Log.w(TAG, "index not closed cleanly (${it.javaClass.simpleName})") }
+      cachedSearcher = null
       // The mapped vector files hold the vectors of every file: overwrite them before the wipe deletes them.
       runCatching { vectors.shred(); quickVectors.shred() }.onFailure { Log.w(TAG, "vector files not shredded (${it.javaClass.simpleName})") }
       LocalData.wipe(indexDir, context.cacheDir).also { opener.start() }
@@ -1275,6 +1363,7 @@ class FindrEngine(private val context: Context) : SearchEngine {
     com.craneai.findr.diag.Diag.forgetReports()
     vectors.clear()
     quickVectors.clear()
+    privacyOnDemand.forget()
     clearQueryCache()
     vectorsReady = false
     storedVectors.reset()
@@ -1291,7 +1380,7 @@ class FindrEngine(private val context: Context) : SearchEngine {
 
   /** Lays the person's [LearningSpeed] over the phone's tuning ([LearningProfile]). */
   private fun applySpeed(speed: com.craneai.findr.core.LearningSpeed) {
-    val roomy = LearningProfile.roomy(Runtime.getRuntime().availableProcessors(), MemoryBudget.tight(device.ramMb, 0))
+    val roomy = LearningProfile.roomy(Runtime.getRuntime().availableProcessors(), MemoryBudget.tight(device.ramMb, 0), device.perfCores)
     Tuning.useSpeed(speed, roomy)
     Log.i(TAG, "learning speed: ${speed.key}; tuning: ${Tuning.current}")
   }
@@ -1316,6 +1405,9 @@ class FindrEngine(private val context: Context) : SearchEngine {
       schedule()   // newly allowed files are waiting to be understood
     }
     if (after.learningSpeed != before.learningSpeed) schedule()
+    // Another speech pack chosen (or none): the held model is the old one. Choosing one queues the not-English voice notes for it
+    // (the soundtrack catch-up, on the charger), so a run is asked for.
+    if (after.speechPack != before.speechPack) { asr.releaseLocal(); schedule() }
     refreshStatus()
   }
 
@@ -1438,8 +1530,14 @@ class FindrEngine(private val context: Context) : SearchEngine {
     if (store == null) {
       // Still opening: the "getting ready" status stands. Cannot be opened right now: say so calmly (the screen's words are in
       // IndexCopy) while the engine keeps trying in the background.
-      (opener.state.value as? StoreOpener.State.Failed)?.let {
-        statusFlow.value = modelStatus(IndexStatus(phase = IndexPhase.ERROR, openProblem = it.problem, charging = isCharging()))
+      val failed = opener.state.value as? StoreOpener.State.Failed
+      statusFlow.value = modelStatus(IndexStatus(
+        phase = if (failed == null) IndexPhase.NOT_STARTED else IndexPhase.ERROR,
+        openProblem = failed?.problem,
+        indexOpening = failed == null,
+        charging = isCharging(),
+      ))
+      if (failed != null) {
         com.craneai.findr.diag.StartupFrames.note("status", "ERROR")
       }
       return
@@ -1513,7 +1611,15 @@ class FindrEngine(private val context: Context) : SearchEngine {
   private fun storageEstimate(store: IndexStore, filesKnown: Int, kinds: Set<FileKind>): StorageEstimate.Result = synchronized(this) {
     val key = filesKnown to kinds
     if (key != estimateKey) {
-      estimateValue = runCatching { StorageEstimate.estimate(store.storageTotals(), kinds, withVectors = !Edition.GO) }.getOrDefault(estimateValue)
+      estimateValue = runCatching {
+        StorageEstimate.estimate(
+          store.storageTotals(),
+          kinds,
+          withVectors = !Edition.GO,
+          format = vectors.format,
+          stageDim = TwoStage.DEFAULT.stageDim,
+        )
+      }.getOrDefault(estimateValue)
       estimateKey = key
     }
     estimateValue
@@ -1553,8 +1659,78 @@ class FindrEngine(private val context: Context) : SearchEngine {
     return if (level < 0 || scale <= 0) -1 else level * 100 / scale
   }
 
-  /** Android's thermal status (0 none … 2 moderate … 6 shutdown). The A06 under-reports (it throttles without saying so); the worker also reads the battery's own temperature. */
-  fun thermalStatus(): Int = runCatching { context.getSystemService(PowerManager::class.java).currentThermalStatus }.getOrDefault(0)
+  /** The battery's own temperature in °C, or NaN when the phone does not say (the second heat sign of [IndexPolicy.corroborate]). */
+  fun batteryCelsius(): Double {
+    val intent = context.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED)) ?: return Double.NaN
+    val tenths = intent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, Int.MIN_VALUE)
+    return if (tenths == Int.MIN_VALUE || tenths <= 0) Double.NaN else tenths / 10.0
+  }
+
+  @Volatile private var liveThermalStatus: Int = -1
+  @Volatile private var thermalListener: PowerManager.OnThermalStatusChangedListener? = null
+  private val headroomCache = HeatPace.HeadroomCache()
+
+  /** Subscribes to Android's thermal status listener (API 29+) so severity changes reach the worker immediately. */
+  private fun watchThermal() {
+    val pm = powerManager ?: return
+    val listener = PowerManager.OnThermalStatusChangedListener { status ->
+      val prev = liveThermalStatus
+      liveThermalStatus = status
+      if (status != prev) Log.i(TAG, "thermal status: $prev -> $status")
+    }
+    runCatching { pm.addThermalStatusListener(listener) }
+      .onSuccess {
+        thermalListener = listener
+        if (liveThermalStatus < 0) liveThermalStatus = runCatching { pm.currentThermalStatus }.getOrDefault(0)
+      }
+      .onFailure {
+        thermalListener = null
+        liveThermalStatus = -1
+      }
+  }
+
+  /** Unregisters the thermal status listener if registered. */
+  internal fun unregisterThermalListener() {
+    val listener = thermalListener
+    thermalListener = null
+    liveThermalStatus = -1
+    if (listener != null) runCatching { powerManager?.removeThermalStatusListener(listener) }
+  }
+
+  /** Android's thermal status (0 none … 2 moderate … 6 shutdown). Backed by [watchThermal] when registered; falls back to a direct read. */
+  fun thermalStatus(): Int {
+    val cached = liveThermalStatus
+    if (thermalListener != null && cached >= 0) return cached
+    return runCatching { powerManager?.currentThermalStatus ?: 0 }.getOrDefault(0)
+  }
+
+  /**
+   * Android ADPF predictive thermal headroom 30 s ahead (0..1 cool, >= 1.0 throttling, NaN when unsupported).
+   * Strictly rate-limited to at most once per [HeatPace.HEADROOM_POLL_MIN_MS] (10 s) per ADPF guidance, and also one of
+   * the two signs that must agree before a SEVERE status holds work back ([IndexPolicy.corroborate]).
+   */
+  fun thermalHeadroom(): Float = headroomCache.read(android.os.SystemClock.elapsedRealtime()) {
+    runCatching { powerManager?.getThermalHeadroom(HeatPace.FORECAST_SECONDS) ?: Float.NaN }.getOrDefault(Float.NaN)
+  }
+
+  /** Predictive thermal decision for [IndexWorker], combining ADPF headroom, corroborated live thermal status, battery temp, charging, and clock cap. */
+  fun thermalDecision(batteryC: Double): HeatPace.Decision {
+    val cfg = Tuning.current
+    val headroom = thermalHeadroom()
+    val status = IndexPolicy.corroborate(thermalStatus(), batteryC, headroom)
+    val cap = if (cfg.paceCapBelowKhz > 0) runCatching { File(FAST_CAP_FILE).readText().trim().toLong() }.getOrNull() else null
+    return HeatPace.decide(
+      headroom = headroom,
+      thermalStatus = status,
+      batteryC = batteryC,
+      charging = isCharging(),
+      capKhz = cap,
+      warmC = cfg.warmC,
+      hotStopC = cfg.hotStopC,
+      paceFromC = cfg.paceFromC,
+      paceCapBelowKhz = cfg.paceCapBelowKhz,
+    )
+  }
 
   @Volatile private var heatAt = 0L
   @Volatile private var heatHot = false
@@ -1654,6 +1830,7 @@ class FindrEngine(private val context: Context) : SearchEngine {
       (quickOn && store.nextForQuickLook(1, kinds).isNotEmpty()) || store.nextWithoutWords(1, kinds.intersect(WORDS_PASS_KINDS)).isNotEmpty()
     private const val BACKOFF_S = 30L  // linear: a stopped worker is back within minutes, not hours
     private const val KEY_SETTINGS = "settings"
+    private const val HEADROOM_READ_MS = 10_000L
     private const val VECTORS_FILE = "vectors.bin"
     private const val QUICK_VECTORS_FILE = "vectors-quick.bin"
     private const val KEY_PAUSED = "paused"

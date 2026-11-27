@@ -1,0 +1,28 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.defaultLocale.1.6.0.schema.json
+
+PackageIdentifier: CraneAILabs.Trawl
+PackageVersion: 1.1.0
+PackageLocale: en-US
+Publisher: Crane AI Labs
+PublisherUrl: https://trawlsearch.com/
+PublisherSupportUrl: https://github.com/Crane-AI-Labs/trawl/issues
+PrivacyUrl: https://trawlsearch.com/privacy.html
+PackageName: Trawl
+PackageUrl: https://trawlsearch.com/
+License: Apache-2.0
+LicenseUrl: https://github.com/Crane-AI-Labs/trawl/blob/main/LICENSE
+ShortDescription: Offline semantic search for your local files — nothing leaves your computer.
+Description: >-
+  Trawl searches your photos, screenshots, documents, PDFs, spreadsheets, videos,
+  and audio recordings by meaning and exact words, entirely on your computer.
+  Trawl contains zero network code and never sends files or queries anywhere.
+Tags:
+  - search
+  - offline
+  - privacy
+  - semantic-search
+  - local-first
+  - documents
+  - photos
+ManifestType: defaultLocale
+ManifestVersion: 1.6.0

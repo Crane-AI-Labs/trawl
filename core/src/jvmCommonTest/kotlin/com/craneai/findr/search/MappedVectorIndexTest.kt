@@ -495,4 +495,108 @@ class MappedVectorIndexTest {
     assertTrue("heap per row $perRow", perRow in 19.0..80.0)
     assertArrayEquals(intArrayOf(20_000), intArrayOf(index.size))
   }
+
+  // ---- concurrency and cold-start safety ----------------------------------------------------------------------------
+
+  @Test fun concurrentSettleNowDoesNotCorruptHeaderOrThrow() {
+    val data = rows(2_500, seed = 41)
+    val legacy = LegacyHeapVectorIndex(parallelism = 1); fillLegacy(legacy, data)
+    val index = mapped("concurrent-settle.bin", rowsPerChunk = 512)
+    index.loadFrom({ 11L }, rowsFrom(data))
+
+    val threads = 6
+    val pool = java.util.concurrent.Executors.newFixedThreadPool(threads)
+    try {
+      repeat(12) { round ->
+        // Re-open the file on each round with a replacement write so settleNow() actually forces chunks + header.
+        val r = data[round]
+        val blob = Fp16.toBlob(r.vector)
+        legacy.addBlob(r.segment, r.file, r.kind, r.modality, r.late, blob)
+        index.addBlob(r.segment, r.file, r.kind, r.modality, r.late, blob)
+        val gate = java.util.concurrent.CountDownLatch(1)
+        val futures = (0 until threads).map {
+          pool.submit<Boolean> {
+            gate.await()
+            index.settleNow()
+          }
+        }
+        gate.countDown()
+        for (f in futures) assertTrue(f.get())
+      }
+    } finally {
+      pool.shutdownNow()
+    }
+    index.close()
+
+    val reopened = mapped("concurrent-settle.bin", rowsPerChunk = 512)
+    reopened.loadFrom({ 11L }, noRows())
+    assertEquals(data.size, reopened.size)
+    assertSameBits(legacy.scores(unit(Random(42))), reopened.scores(unit(Random(42))))
+    legacy.close()
+  }
+
+  @Test fun removeFilesOnUnattachedEmptyIndexDoesNotDeleteSettledFile() {
+    val data = rows(1_200, seed = 43)
+    settledFile(data, name = "preserve.bin")
+    val beforeLen = file("preserve.bin").length()
+    assertTrue(beforeLen > VectorFile.HEADER)
+
+    // Cold-start index pointing at the settled file before loadFrom() has attached it.
+    val cold = mapped("preserve.bin")
+    assertEquals(0, cold.removeFiles(listOf(1L, 2L, 3L)))
+    assertEquals(0, cold.removeFile(1L))
+    cold.clear()
+    assertFalse("still unattached after no-op removals", cold.offHeap)
+    assertEquals("settled file on disk untouched", beforeLen, file("preserve.bin").length())
+
+    // Now attach: must adopt the settled file directly without reading the database.
+    cold.loadFrom({ 7L }, noRows())
+    assertEquals(1_200, cold.size)
+    assertTrue(cold.offHeap)
+  }
+
+  @Test fun lockFreeSizeAndMemoryBytesTrackMutationsAccurately() {
+    val data = rows(1_500, seed = 44)
+    val index = mapped("stats.bin", rowsPerChunk = 500)
+    assertEquals(0, index.size)
+    assertEquals(index.heapBytes() + index.mappedBytes(), index.memoryBytes())
+
+    // Bulk rebuild via loadFrom
+    index.loadFrom({ 9L }, rowsFrom(data))
+    assertEquals(1_500, index.size)
+    assertEquals(index.heapBytes() + index.mappedBytes(), index.memoryBytes())
+    assertTrue(index.memoryBytes() > 1_500L * Fp16.DIM * 2)
+
+    // Incremental add
+    val extra = Row(99_999L, 99_999L, FileKind.IMAGE, Modality.IMAGE, 0, unit(Random(45)))
+    index.add(extra.segment, extra.file, extra.kind, extra.modality, false, extra.vector)
+    assertEquals(1_501, index.size)
+    assertEquals(index.heapBytes() + index.mappedBytes(), index.memoryBytes())
+
+    // removeFile & removeFiles
+    assertEquals(1, index.removeFile(99_999L))
+    assertEquals(1_500, index.size)
+    assertEquals(index.heapBytes() + index.mappedBytes(), index.memoryBytes())
+
+    val removed = index.removeFiles(listOf(1L, 2L))
+    assertTrue(removed > 0)
+    assertEquals(1_500 - removed, index.size)
+    assertEquals(index.heapBytes() + index.mappedBytes(), index.memoryBytes())
+
+    // clear
+    index.clear()
+    assertEquals(0, index.size)
+    assertEquals(index.heapBytes() + index.mappedBytes(), index.memoryBytes())
+
+    // Rebuild, settle, and re-attach on a fresh instance
+    index.loadFrom({ 9L }, rowsFrom(data.take(600)))
+    assertTrue(index.settleNow())
+    index.close()
+    assertEquals(index.heapBytes() + index.mappedBytes(), index.memoryBytes())
+
+    val attached = mapped("stats.bin", rowsPerChunk = 500)
+    attached.loadFrom({ 9L }, noRows())
+    assertEquals(600, attached.size)
+    assertEquals(attached.heapBytes() + attached.mappedBytes(), attached.memoryBytes())
+  }
 }

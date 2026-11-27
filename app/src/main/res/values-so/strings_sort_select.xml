@@ -5,6 +5,14 @@
   <string name="sort_oldest">Ugu qadiimsan</string>
   <string name="sort_largest">Ugu weyn</string>
   <string name="sort_name">Magaca A ilaa Z</string>
+  <string name="sort_chip_best">Habboon</string>
+  <string name="sort_chip_newest">Cusub</string>
+  <string name="sort_chip_oldest">Qadiim</string>
+  <string name="sort_chip_created_newest">La sameeyay</string>
+  <string name="sort_chip_created_oldest">La sameeyay</string>
+  <string name="sort_chip_largest">Ugu weyn</string>
+  <string name="sort_chip_smallest">Ugu yar</string>
+  <string name="sort_chip_name">Magac</string>
   <string name="sort_group">Ku kala sooc</string>
   <string name="date_any_time">Wakhti kasta</string>
   <string name="date_group">Taariikh</string>
@@ -85,4 +93,20 @@
   <string name="snack_marked_sensitive_many">Waxaa loo calaamadeeyay xasaasi. Hadda way ka qarsoon yihiin natiijooyinka.</string>
   <string name="snack_unmarked_sensitive_many">Calaamaddii waa laga saaray. Mar kale ayay ka muuqan karaan natiijooyinka.</string>
   <string name="nothing_in_dates">%1$s waxba lagama helin. Isku day taariikh kale.</string>
+  <string name="sort_created_newest">Taariikhda samaynta (ugu cusub)</string>
+  <string name="sort_created_oldest">Taariikhda samaynta (ugu duqsan)</string>
+  <string name="sort_smallest">Ugu yar</string>
+  <string name="subtype_group">Nooca faylka</string>
+  <string name="subtype_all">Dhammaan noocyada</string>
+  <string name="subtype_remove">Ka saar shaandhada nooca faylka</string>
+  <string name="subtype_spreadsheet_menu">Excel iyo CSV (.xlsx, .csv)</string>
+  <string name="subtype_text_menu">Qoraal iyo Markdown (.txt, .md)</string>
+  <string name="subtype_text_chip">Qoraal / MD</string>
+  <string name="subtype_code_menu">Koodh iyo xog (.json, .xml, …)</string>
+  <string name="subtype_code_chip">Koodh / Xog</string>
+  <string name="view_mode_group">Habka muuqaalka</string>
+  <string name="view_grid">Shabakad</string>
+  <string name="view_list">Liis</string>
+  <string name="label_modified_short">La beddelay %1$s</string>
+  <string name="label_created_short">La sameeyay %1$s</string>
 </resources>

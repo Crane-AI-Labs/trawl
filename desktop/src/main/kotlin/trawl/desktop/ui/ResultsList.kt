@@ -56,7 +56,7 @@ fun ResultsList(c: AppController, built: BuiltResults, ui: MainUi, state: LazyLi
         .semantics { contentDescription = t("results_list_label") },
     ) {
       LazyColumn(state = state, contentPadding = PaddingValues(top = 2.dp, bottom = 16.dp, end = 12.dp), modifier = Modifier.fillMaxSize()) {
-        items(built.entries, key = { it.key }) { entry ->
+        items(built.entries, key = { it.key }, contentType = { it::class }) { entry ->
           when (entry) {
             is Entry.Header -> GroupHeader(entry.group, entry.count, entry.mix)
             is Entry.Doc -> DocRow(entry.row, c, ui, ui.isPicked(entry.row.file.id), ui.listFocused)

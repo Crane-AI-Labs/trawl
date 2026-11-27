@@ -43,13 +43,14 @@ import com.craneai.findr.ui.common.LocalPreviewBlur
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.text.input.clearText
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
@@ -108,6 +109,7 @@ import com.craneai.findr.ui.common.formatCount
 import com.craneai.findr.core.PauseReason
 import com.craneai.findr.core.IndexStatus
 import com.craneai.findr.core.IndexPhase
+import com.craneai.findr.core.FileKind
 import com.craneai.findr.core.IndexedFile
 import com.craneai.findr.ui.app.AccessState
 import com.craneai.findr.ui.app.UiPrefs
@@ -194,8 +196,14 @@ fun SearchScreen(
   LaunchedEffect(state.feed) { withFrameNanos { }; searchViewModel.feedDrawn() }
   val textState = rememberQueryState(state.query)
   BindQuery(textState, searchViewModel::setQuery)
-  // Find similar leaves the box empty (the chip says what is searched): words typed before it was tapped must not stay in the box.
-  LaunchedEffect(state.similar?.id) { if (state.similar != null && textState.text.isNotEmpty()) textState.clearText() }
+  // Find similar leaves the box empty (the chip says what is searched); leaving Find similar restores any prior query into the box.
+  LaunchedEffect(state.similar?.id) {
+    if (state.similar != null) {
+      if (textState.text.isNotEmpty()) textState.clearText()
+    } else if (state.query.isNotEmpty() && textState.text.toString() != state.query) {
+      textState.setTextAndPlaceCursorAtEnd(state.query)
+    }
+  }
   // Typing counts as interaction too: every keystroke starts a short window in which the worker waits between files.
   LaunchedEffect(textState) {
     snapshotFlow { textState.text.toString() }.drop(1).collect {
@@ -220,11 +228,40 @@ fun SearchScreen(
       snackbar.showSnackbar(message)
     }
   }
+  // The video/audio file open in the in-app seekable moment player sheet (null = closed), and its target moment (ms).
+  var playUri by rememberSaveable { mutableStateOf<String?>(null) }
+  var playMs by rememberSaveable { mutableStateOf(0L) }
+  // The JSON / CSV / Excel / code file open in the in-app structured preview sheet (null = closed).
+  var previewUri by rememberSaveable { mutableStateOf<String?>(null) }
   // Remembered so the grid's cells see the same lambdas on every recomposition and can be skipped.
   val reportState = rememberUpdatedState(::report)
-  val onOpen: (IndexedFile, Long?) -> Unit = remember(context) { { file, atMs -> reportState.value(FileActions.open(context, file, atMs)) } }
-  // A tap on a picture of a video's strip: the video opens at the time that picture is from (VideoStrip).
-  val onOpenAt: (IndexedFile, Long) -> Unit = remember(context) { { f, ms -> reportState.value(FileActions.open(context, f, ms)) } }
+  val onOpen: (IndexedFile, Long?) -> Unit = remember(context) {
+    { file, atMs ->
+      when {
+        file.uri.startsWith("fake://") -> reportState.value(OpenResult.SAMPLE)
+        atMs != null && (file.kind == FileKind.VIDEO || file.kind == FileKind.AUDIO) -> {
+          playUri = file.uri
+          playMs = atMs
+        }
+        StructuredPreview.isDirectPreviewable(file.name) -> previewUri = file.uri
+        else -> {
+          val res = FileActions.open(context, file, atMs)
+          if (res == OpenResult.NO_APP && StructuredPreview.kindOf(file.name) != null) previewUri = file.uri
+          else reportState.value(res)
+        }
+      }
+    }
+  }
+  // A tap on a matched timestamp chip or MomentStrip/MomentPeekSheet frame: opens the in-app seekable player at t - 1.5 s.
+  val onOpenAt: (IndexedFile, Long) -> Unit = remember(context) {
+    { f, ms ->
+      if (f.uri.startsWith("fake://")) reportState.value(OpenResult.SAMPLE)
+      else {
+        playUri = f.uri
+        playMs = ms
+      }
+    }
+  }
   // The video whose "pictures around this moment" sheet is open (null = closed), by uri so it survives a rotation, and the moment (ms).
   var peekUri by rememberSaveable { mutableStateOf<String?>(null) }
   var peekMs by rememberSaveable { mutableStateOf(0L) }
@@ -251,7 +288,9 @@ fun SearchScreen(
   fun fileByUri(uri: String?): IndexedFile? = uri?.let { u -> state.feed.shownFiles().firstOrNull { it.uri == u } }
   val actionFile = fileByUri(actionUri)
   val selecting = state.selected.isNotEmpty()
-  val leaveFiles = state.feed.shownFiles().filter { it.id in leaveIds }
+  val leaveFiles = remember(leaveIds, state.feed) {
+    if (leaveIds.isEmpty()) emptyList() else state.feed.shownFiles().filter { it.id in leaveIds }
+  }
   val focus = LocalFocusManager.current
   var pickingDates by rememberSaveable { mutableStateOf(false) }
 
@@ -270,6 +309,8 @@ fun SearchScreen(
   // Leaving with the keyboard put away: let go of focus, and keep the box from being handed focus again while the window comes back.
   val focusHold = ReleaseFocusWhenLeaving(fieldFocused)
 
+  // Hoisted so Find similar can snapshot the exact visible scroll position and restore it on Back / chip cross.
+  val gridState = rememberLazyGridState()
   // A short window (a phone or tablet on its side): the header, cards, meter and chips are the first thing in the list, not fixed
   // above it, so they scroll away and the results get the screen (ShortWindow). A tall window keeps the stacked layout as it was.
   val short = rememberShortWindow()
@@ -347,8 +388,9 @@ fun SearchScreen(
           onFilter = searchViewModel::setFilter, listCovered = showSheet, onListVisible = searchViewModel::setListVisible,
           fieldFocused = fieldFocused,
           onSort = searchViewModel::setSort, onDatePreset = searchViewModel::setDatePreset, onPickDates = { pickingDates = true }, onClearDate = searchViewModel::clearDate,
-          onClearSimilar = searchViewModel::clearSimilar, shortTop = shortTop,
-          onOpenAt = onOpenAt, onPeek = { f, ms -> peekUri = f.uri; peekMs = ms })
+          onClearSimilar = searchViewModel::clearSimilar, onSubType = searchViewModel::setSubType, onViewMode = searchViewModel::setViewMode, shortTop = shortTop,
+          onOpenAt = onOpenAt, onPeek = { f, ms -> peekUri = f.uri; peekMs = ms },
+          gridState = gridState, onConsumeScrollRestore = searchViewModel::consumeScrollRestore)
       }
     }
 
@@ -381,6 +423,8 @@ fun SearchScreen(
     )
   }
 
+  // "Find similar": Back leaves it and restores the prior search (or home) instead of closing the app.
+  BackHandler(enabled = state.similar != null && !selecting) { searchViewModel.clearSimilar() }
   // Choosing files: Back leaves selection first. Choosing starts with the keyboard put away and the search box not in use.
   BackHandler(enabled = selecting) { searchViewModel.clearSelection() }
   LaunchedEffect(selecting) {
@@ -396,9 +440,16 @@ fun SearchScreen(
       file = file,
       onShare = { actionUri = null; searchViewModel.clearSelection(); onShare(file) },
       onCopy = { actionUri = null; searchViewModel.clearSelection(); onCopy(file) },
-      onOpen = { actionUri = null; onOpen(file, null) },
+      onOpen = { actionUri = null; reportState.value(FileActions.open(context, file, null)) },
       onShowFolder = { actionUri = null; onShowFolder(file) },
-      onFindSimilar = if (Edition.FIND_SIMILAR) ({ actionUri = null; searchViewModel.findSimilar(file) }) else null,
+      onFindSimilar = if (Edition.FIND_SIMILAR) ({
+        actionUri = null
+        searchViewModel.findSimilar(file, gridState.firstVisibleItemIndex, gridState.firstVisibleItemScrollOffset)
+      }) else null,
+      onPreview = if (StructuredPreview.kindOf(file.name) != null && !file.uri.startsWith("fake://")) ({
+        actionUri = null
+        previewUri = file.uri
+      }) else null,
       onMarkSensitive = { on ->
         actionUri = null
         searchViewModel.markSensitive(file, on)
@@ -417,6 +468,33 @@ fun SearchScreen(
       onOpenAt = { ms -> peekUri = null; onOpenAt(file, ms) },
       onReveal = { peekBlur.reveal(file) },
       onDismiss = { peekUri = null },
+    )
+  }
+
+  fileByUri(playUri)?.let { file ->
+    val playBlur = LocalPreviewBlur.current
+    MomentPlayerSheet(
+      file = file,
+      momentMs = playMs,
+      hidden = playBlur.hides(file),
+      onOpenExternal = { posMs -> playUri = null; reportState.value(FileActions.open(context, file, posMs)) },
+      onShare = { playUri = null; onShare(file) },
+      onReveal = { playBlur.reveal(file) },
+      onDismiss = { playUri = null },
+    )
+  }
+
+  fileByUri(previewUri)?.let { file ->
+    val prevBlur = LocalPreviewBlur.current
+    StructuredPreviewSheet(
+      file = file,
+      hidden = prevBlur.hides(file),
+      query = state.resultsQuery.ifBlank { state.query },
+      onOpenExternal = { previewUri = null; reportState.value(FileActions.open(context, file, null)) },
+      onShare = { previewUri = null; onShare(file) },
+      onCopy = { previewUri = null; onCopy(file) },
+      onReveal = { prevBlur.reveal(file) },
+      onDismiss = { previewUri = null },
     )
   }
 
@@ -586,9 +664,16 @@ private fun dockStatus(state: SearchUiState): DockStatus? {
   if ((state.query.isBlank() && state.similar == null) || state.nothingFound) return null
   // Every file the answer holds: those listed, plus the weaker ones still folded away.
   // (A date typed alone, "last week", lists that week's files without a search: the same count.)
-  val shown = run {
-    val listed = state.feed.count { it is FeedItem.Cell || it is FeedItem.Row }
-    val folded = state.feed.filterIsInstance<FeedItem.WeakToggle>().firstOrNull()?.takeIf { !it.expanded }?.count ?: 0
+  val shown = remember(state.feed) {
+    var listed = 0
+    var folded = 0
+    for (item in state.feed) {
+      when (item) {
+        is FeedItem.Cell, is FeedItem.Row -> listed++
+        is FeedItem.WeakToggle -> if (!item.expanded && folded == 0) folded = item.count
+        else -> {}
+      }
+    }
     listed + folded
   }
   return when {
@@ -618,12 +703,17 @@ private fun Results(
   onPickDates: () -> Unit = {},
   onClearDate: () -> Unit = {},
   onClearSimilar: () -> Unit = {},
+  onSubType: (FileSubType?) -> Unit = {},
+  onViewMode: (ResultViewMode) -> Unit = {},
   /** A short window (ShortWindow): the header, cards, meter and chips, drawn as the first thing in the list so they scroll away with it. */
   shortTop: (@Composable () -> Unit)? = null,
   /** Opens a video at a time: the pictures of a video row's strip (MomentStrip). */
   onOpenAt: ((IndexedFile, Long) -> Unit)? = null,
   /** Opens the sheet with the pictures around a video tile's matched moment. */
   onPeek: ((IndexedFile, Long) -> Unit)? = null,
+  /** Shared grid scroll state (hoisted so Find similar snapshots & restores exact scroll offset). */
+  gridState: LazyGridState = rememberLazyGridState(),
+  onConsumeScrollRestore: (Int) -> Unit = {},
 ) {
   val reduce = LocalReduceMotion.current
   val short = shortTop != null
@@ -647,10 +737,11 @@ private fun Results(
   // The six big tiles are three rows of a tall tile: at large text or on a narrow phone they push every file below the fold (D3, D24).
   val tilesFit = LocalDensity.current.fontScale < 1.3f && cfg.screenWidthDp >= ShortWindow.TILES_MIN_WIDTH_DP
   val filters: @Composable () -> Unit = if (short && !wideShort) ({
-    // Short window: the kind, sort and date chips share one line (the tiles of the home screen are too tall for it too).
+    // Short window: the kind, subtype, sort, date and view-mode chips share one line (the tiles of the home screen are too tall for it too).
     FilterSortRow(
       state.filter, onFilter, state.sort, searching, state.date, onSort, onDatePreset, onPickDates, onClearDate,
       Modifier.padding(horizontal = Sun.S4, vertical = Sun.S4), similar = state.similar?.name, onClearSimilar = onClearSimilar,
+      subType = state.subType, onSubType = onSubType, viewMode = state.viewMode, onViewMode = onViewMode,
     )
   }) else ({
     Column {
@@ -659,10 +750,10 @@ private fun Results(
       SortDateRow(
         state.sort, searching, state.date, onSort, onDatePreset, onPickDates, onClearDate, Modifier.padding(horizontal = Sun.S4, vertical = Sun.S4),
         similar = state.similar?.name, onClearSimilar = onClearSimilar,
+        filter = state.filter, subType = state.subType, onSubType = onSubType, viewMode = state.viewMode, onViewMode = onViewMode,
       )
     }
   })
-  val gridState = rememberLazyGridState()
   val scope = rememberCoroutineScope()
   // While the list moves (finger down or gliding) the index worker yields between files; it resumes ~1.5 s after.
   LaunchedEffect(gridState) {
@@ -680,12 +771,29 @@ private fun Results(
   val shownList = rememberSaveable { mutableStateOf<String?>(null) }
   // True when this screen was built again over a list that was already showing: the two "back to the top" effects below skip their first run.
   val rebuilt = remember { mutableStateOf(shownList.value != null) }
-  LaunchedEffect(state.resultsQuery, state.filter, state.similar?.id, state.mode) {
-    val now = "${state.resultsQuery}|${state.filter}|${state.similar?.id}|${state.mode}"
+  LaunchedEffect(state.resultsQuery, state.filter, state.subType, state.similar?.id, state.mode) {
+    val now = "${state.resultsQuery}|${state.filter}|${state.subType}|${state.similar?.id}|${state.mode}"
     if (shownList.value == now) return@LaunchedEffect
     shownList.value = now
-    userScrolled.value = false
-    gridState.scrollToItem(0)
+    if (state.pendingScrollRestore == null) {
+      userScrolled.value = false
+      gridState.scrollToItem(0)
+    } else {
+      // Returning from "Find similar": hold off resetting to top so the restore effect jumps straight to the saved item/offset.
+      userScrolled.value = true
+    }
+  }
+  val scrollRestore = state.pendingScrollRestore
+  LaunchedEffect(scrollRestore?.token, state.searching, state.feed, state.mode) {
+    if (scrollRestore == null || state.similar != null || state.searching) return@LaunchedEffect
+    if (state.query.isNotBlank() && state.mode != SearchMode.RESULTS) return@LaunchedEffect
+    if (state.feed.isEmpty()) {
+      onConsumeScrollRestore(scrollRestore.token)
+      return@LaunchedEffect
+    }
+    userScrolled.value = true
+    gridState.scrollToItem(scrollRestore.firstVisibleItemIndex, scrollRestore.firstVisibleItemScrollOffset)
+    onConsumeScrollRestore(scrollRestore.token)
   }
   LaunchedEffect(gridState) {
     gridState.interactionSource.interactions.collect { if (it is DragInteraction.Start) userScrolled.value = true }
@@ -718,7 +826,7 @@ private fun Results(
   // note fold into the line under the results then), and the notes ride with it.
   val showTop = short && !compactRows
   val showNotes = short && (state.mode == SearchMode.RESULTS && state.repairing || showTop)
-  val shortLead: @Composable () -> Unit = { if (showTop) shortTop?.invoke(); if (showNotes) notes() }
+  val shortLead: @Composable () -> Unit = { if (showTop) shortTop(); if (showNotes) notes() }
   Column(Modifier.fillMaxSize()) {
     if (!short) notes()
     when {
@@ -782,7 +890,10 @@ private fun Results(
         }
         // A wide window caps the lists at a reading width and centres them (ContentWidth). A grid of photos, screenshots or videos has
         // no long rows to stretch, so it keeps the whole width and the Adaptive columns simply add more of themselves.
-        val listInset = if (state.filter in MEDIA_ONLY_FILTERS) 12.dp else sunSideInset(12.dp)
+        val listInset = if (state.filter in MEDIA_ONLY_FILTERS && state.viewMode == ResultViewMode.GRID) 12.dp else sunSideInset(12.dp)
+        val baseFeedModifier = remember { Modifier.testTag("feed-item") }
+        val isListMode = state.viewMode == ResultViewMode.LIST
+        val compactItem = compactRows || short
         // B1: the answers and the home list are different lists, so each gets its own grid. One grid carried across the switch kept
         // what the answers had laid out (cells with a placement animation in flight, the retiring cells of an exit animation, a node
         // sized for the one-line filter row reused for the tiles) in the middle of the home list. A new grid starts clean.
@@ -816,7 +927,7 @@ private fun Results(
           ) { item ->
             // Placement animation is for search answers re-ordering as the meaning step lands; on the recent grid (thousands
             // of cells) it is a per-cell cost on every scroll frame for a move that almost never happens.
-            val motion = (if (reduce || state.mode != SearchMode.RESULTS) Modifier else Modifier.animateItem()).testTag("feed-item")
+            val motion = if (reduce || state.mode != SearchMode.RESULTS) baseFeedModifier else Modifier.animateItem().testTag("feed-item")
             when (item) {
               is FeedItem.Header -> SectionHeader(stringResource(item.title), motion)
               is FeedItem.PhotosPeek -> PhotosPeekHeader(item, onOpen = {
@@ -826,29 +937,52 @@ private fun Results(
                 val lead = (if (showTop || showNotes) 1 else 0) + (if (!compactRows || state.mode == SearchMode.RESULTS) 1 else 0)
                 if (target >= 0) scope.launch { gridState.animateScrollToItem(target + lead) }
               }, motion)
-              is FeedItem.Cell -> MediaCell(
-                item.hit,
-                onOpen = { onOpen(item.hit.file, (item.hit.locator as? Locator.Time)?.startMs) },
-                onShare = { onShare(item.hit.file) },
-                onToggle = { onToggle(item.hit.file) },
-                modifier = motion,
-                icons = gridIcons,
-                selecting = selecting,
-                selected = item.hit.file.id in state.selected,
-                onPeek = (item.hit.locator as? Locator.Time)?.let { time -> onPeek?.let { peek -> { peek(item.hit.file, time.startMs) } } },
-              )
-              is FeedItem.Row -> FileRow(
-                item.hit,
-                onOpen = { onOpen(item.hit.file, (item.hit.locator as? Locator.Time)?.startMs) },
-                onShare = { onShare(item.hit.file) },
-                onCopy = { onCopy(item.hit.file) },
-                onToggle = { onToggle(item.hit.file) },
-                modifier = motion,
-                compact = compactRows || short,
-                selecting = selecting,
-                selected = item.hit.file.id in state.selected,
-                onOpenAt = onOpenAt?.let { open -> { ms -> open(item.hit.file, ms) } },
-              )
+              is FeedItem.Cell -> {
+                val file = item.hit.file
+                val momentMs = (item.hit.locator as? Locator.Time)?.startMs
+                val cellOpen = remember(file, momentMs, onOpen) { { onOpen(file, momentMs) } }
+                val cellShare = remember(file, onShare) { { onShare(file) } }
+                val cellToggle = remember(file, onToggle) { { onToggle(file) } }
+                val cellPeek = remember(file, momentMs, onPeek) {
+                  if (momentMs != null && onPeek != null) ({ onPeek(file, momentMs) }) else null
+                }
+                MediaCell(
+                  item.hit,
+                  onOpen = cellOpen,
+                  onShare = cellShare,
+                  onToggle = cellToggle,
+                  modifier = motion,
+                  icons = gridIcons,
+                  selecting = selecting,
+                  selected = file.id in state.selected,
+                  onPeek = cellPeek,
+                )
+              }
+              is FeedItem.Row -> {
+                val file = item.hit.file
+                val momentMs = (item.hit.locator as? Locator.Time)?.startMs
+                val rowOpen = remember(file, momentMs, onOpen) { { onOpen(file, momentMs) } }
+                val rowShare = remember(file, onShare) { { onShare(file) } }
+                val rowCopy = remember(file, onCopy) { { onCopy(file) } }
+                val rowToggle = remember(file, onToggle) { { onToggle(file) } }
+                val rowOpenAt = remember(file, onOpenAt) {
+                  onOpenAt?.let { open -> { ms: Long -> open(file, ms) } }
+                }
+                FileRow(
+                  item.hit,
+                  onOpen = rowOpen,
+                  onShare = rowShare,
+                  onCopy = rowCopy,
+                  onToggle = rowToggle,
+                  modifier = motion,
+                  compact = compactItem,
+                  selecting = selecting,
+                  selected = file.id in state.selected,
+                  onOpenAt = rowOpenAt,
+                  sort = state.sort,
+                  listMode = isListMode,
+                )
+              }
               is FeedItem.WeakToggle -> WeakToggle(item, onToggleWeak, motion)
             }
           }
@@ -863,11 +997,17 @@ private fun Results(
  * A 24 dp fade into the page at the list's bottom edge while more lies below: a row cut by the search box then reads as "more below",
  * not as a sliced row (UI audit P4, D12). Drawing only: nothing moves, and at the end of the list there is no fade.
  */
-private fun Modifier.fadeAtBottom(state: LazyGridState, page: Color): Modifier = drawWithContent {
-  drawContent()
-  if (state.canScrollForward) {
-    val h = BOTTOM_FADE.toPx().coerceAtMost(size.height)
-    drawRect(Brush.verticalGradient(listOf(page.copy(alpha = 0f), page), startY = size.height - h, endY = size.height), topLeft = Offset(0f, size.height - h), size = Size(size.width, h))
+private fun Modifier.fadeAtBottom(state: LazyGridState, page: Color): Modifier = drawWithCache {
+  val h = BOTTOM_FADE.toPx().coerceAtMost(size.height)
+  val top = size.height - h
+  val brush = Brush.verticalGradient(listOf(page.copy(alpha = 0f), page), startY = top, endY = size.height)
+  val topLeft = Offset(0f, top)
+  val rectSize = Size(size.width, h)
+  onDrawWithContent {
+    drawContent()
+    if (state.canScrollForward) {
+      drawRect(brush, topLeft = topLeft, size = rectSize)
+    }
   }
 }
 

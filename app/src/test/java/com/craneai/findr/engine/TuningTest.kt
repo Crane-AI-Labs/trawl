@@ -10,6 +10,35 @@ class TuningTest {
     littleCores = 6, littleMaxMhz = 1_800, hasOpenCl = true, npuModelSuffix = null,
   )
 
+  @Test fun moderateChargerCapsOnlySpeechThreadsWithoutChangingOtherTuning() {
+    val base = Tuning.DEFAULT.copy(asrThreads = 4, textThreadsOn = 6, textThreadsOff = 8, audioThreads = 8)
+    assertEquals(base.copy(asrThreads = 2), base.withThermalLimit(true))
+    assertEquals(base, base.withThermalLimit(false))
+  }
+
+  @Test fun thermalThreadCapNeverRaisesALowerThreadSetting() {
+    val base = Tuning.DEFAULT.copy(textThreadsOn = 1, textThreadsOff = 1, audioThreads = 1, asrThreads = 1)
+    assertEquals(base, base.withThermalLimit(true))
+  }
+
+  @Test fun workerThermalLimitSurvivesSpeedChangesAndCoolingRestoresTheProfile() {
+    val overrides = mapOf("textThreadsOn" to "6", "textThreadsOff" to "8", "asrThreads" to "4")
+    try {
+      Tuning.install(phone, overrides)
+      val base = Tuning.current
+      Tuning.useThermal(true)
+      assertEquals(base.withThermalLimit(true), Tuning.current)
+      Tuning.useSpeed(com.craneai.findr.core.LearningSpeed.FAST, roomy = true)
+      val fast = LearningProfile.tuning(base, com.craneai.findr.core.LearningSpeed.FAST, roomy = true)
+      assertEquals(fast.withThermalLimit(true), Tuning.current)
+      Tuning.useThermal(false)
+      assertEquals(fast, Tuning.current)
+    } finally {
+      Tuning.useThermal(false)
+      Tuning.install(phone)
+    }
+  }
+
   @Test fun defaultIsWhatEveryPhoneRanBeforeProfiles() {
     val t = Tuning.DEFAULT
     assertNull("LiteRT-LM's default text threads while the screen is on", t.textThreadsOn)
@@ -23,6 +52,7 @@ class TuningTest {
     assertEquals(20, t.newFilesPerRun)
     assertEquals(2 * 60_000L, t.newEncodeMsPerRun)
     assertEquals(2, t.clipImageThreads); assertEquals(2, t.privacyThreads); assertEquals(2, t.asrThreads)
+    assertEquals(Tuning.DEFAULT_AUDIO_THREADS, t.audioThreads)
     assertEquals(true, t.visionGpu)
   }
 
@@ -32,8 +62,43 @@ class TuningTest {
     assertEquals(IndexPolicy.Tier.WORDS_ONLY, IndexPolicy.decide(false, 29, 0, false, false).tier)
   }
 
-  @Test fun noProfileYetMeansNoChange() {
-    assertEquals(Tuning.DEFAULT, Tuning.forDevice(phone))
+  @Test fun forDeviceMatchesThreadsToPerformanceCores() {
+    // 2-perf-core Helio G85/G99 stays at 2 threads for screen-on text and audio.
+    assertEquals(Tuning.DEFAULT.copy(textThreadsOn = 2, audioThreads = 2), Tuning.forDevice(phone))
+
+    // 6-perf-core Snapdragon 8 Gen 3 (1+3+2+2) caps at 4 threads.
+    val s24 = DeviceProfile(
+      model = "S24U", socManufacturer = "Qualcomm", socModel = "SM8650", ramMb = 12_000,
+      bigCores = 6, bigMaxMhz = 3_400, littleCores = 2, littleMaxMhz = 2_270,
+      hasOpenCl = true, npuModelSuffix = "Qualcomm_SM8650", perfCores = 6,
+    )
+    assertEquals(Tuning.DEFAULT.copy(textThreadsOn = 4, audioThreads = 4), Tuning.forDevice(s24))
+
+    // Uniform quad-core (e.g. itel A669W 4x A7): leaves half the cores free for UI/system.
+    val quad = phone.copy(bigCores = 4, littleCores = 0, perfCores = 4, bigMaxMhz = 1_300, littleMaxMhz = 0)
+    assertEquals(Tuning.DEFAULT.copy(textThreadsOn = 2, audioThreads = 2), Tuning.forDevice(quad))
+
+    // Unknown topology (0 perf cores) keeps DEFAULT unchanged.
+    val unknown = phone.copy(bigCores = 0, littleCores = 0, perfCores = 0)
+    assertEquals(Tuning.DEFAULT, Tuning.forDevice(unknown))
+
+    // Pure helpers across core counts.
+    assertEquals(2, Tuning.recommendedTextThreads(1))
+    assertEquals(2, Tuning.recommendedTextThreads(2))
+    assertEquals(3, Tuning.recommendedTextThreads(3))
+    assertEquals(4, Tuning.recommendedTextThreads(4))
+    assertEquals(4, Tuning.recommendedTextThreads(6))
+    assertEquals(4, Tuning.recommendedTextThreads(0))
+    assertEquals(2, Tuning.recommendedAudioThreads(2))
+    assertEquals(4, Tuning.recommendedAudioThreads(6))
+    assertEquals(4, Tuning.recommendedAudioThreads(0))
+  }
+
+  @Test fun audioThreadsKnobAppliesAndRejectsOutOfRange() {
+    assertEquals(6, Tuning.apply(Tuning.DEFAULT, mapOf("audioThreads" to "6")).audioThreads)
+    assertEquals(Tuning.DEFAULT.audioThreads, Tuning.apply(Tuning.DEFAULT, mapOf("audioThreads" to "0")).audioThreads)
+    assertEquals(Tuning.DEFAULT.audioThreads, Tuning.apply(Tuning.DEFAULT, mapOf("audioThreads" to "99")).audioThreads)
+    assertEquals(Tuning.DEFAULT.audioThreads, Tuning.apply(Tuning.DEFAULT, mapOf("audioThreads" to "abc")).audioThreads)
   }
 
   @Test fun overridesReplaceOnlyWhatTheyName() {
@@ -111,5 +176,40 @@ class TuningTest {
   @Test fun knobFileParses() {
     val m = Tuning.parse("# a comment\n\ntextThreadsOff = 8\nwarmC=42.5\nnot a setting\n")
     assertEquals(mapOf("textThreadsOff" to "8", "warmC" to "42.5"), m)
+  }
+
+  @Test fun clipEncoderFollowsLiveLearningSpeedAndHonorsExplicitOverride() {
+    val s24 = DeviceProfile(
+      model = "S24U", socManufacturer = "Qualcomm", socModel = "SM8650", ramMb = 12_000,
+      bigCores = 6, bigMaxMhz = 3_400, littleCores = 2, littleMaxMhz = 2_270,
+      hasOpenCl = true, npuModelSuffix = "Qualcomm_SM8650", perfCores = 6,
+    )
+    val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.Unconfined)
+    try {
+      Tuning.install(s24)
+      // Constructed before LearningSpeed is applied (mirrors FindrEngine initialization order).
+      val clip = ClipEncoder(java.io.File("."), lazyOf(null), scope)
+      assertEquals(2, clip.resolvedImageThreads())
+      assertEquals(4, clip.textThreads())
+
+      Tuning.useSpeed(com.craneai.findr.core.LearningSpeed.GENTLE, roomy = true)
+      assertEquals(1, clip.resolvedImageThreads())
+
+      Tuning.useSpeed(com.craneai.findr.core.LearningSpeed.FAST, roomy = true)
+      assertEquals(4, clip.resolvedImageThreads())
+
+      // Mid-range 2-big-core Helio stays at 2 threads even in FAST mode.
+      Tuning.install(phone)
+      Tuning.useSpeed(com.craneai.findr.core.LearningSpeed.FAST, roomy = false)
+      assertEquals(2, clip.resolvedImageThreads())
+      assertEquals(2, clip.textThreads())
+
+      // Explicit bench override stays fixed regardless of Tuning changes.
+      val fixed = ClipEncoder(java.io.File("."), lazyOf(null), scope, imageThreads = 3)
+      assertEquals(3, fixed.resolvedImageThreads())
+    } finally {
+      Tuning.useThermal(false)
+      Tuning.install(phone)
+    }
   }
 }

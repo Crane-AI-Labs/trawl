@@ -66,12 +66,18 @@ class PrivacyOnDemand(private val context: Context, private val engine: FindrEng
 
   /** A score was saved for [id] (negative: unreadable): the thumbnails waiting for it get it now. */
   fun saved(id: Long, score: Float, via: String) {
+    if (fresh.size >= MAX_FRESH) fresh.clear()
     fresh[id] = score
     if (Log.detail) Log.i(TAG, "privacy saved id=$id via=$via private=${PrivateLook.blurs(score)} unreadable=${score < 0f}")
     queue.offer(Ask(id, null), score)
   }
 
-  /** Every score was cleared (the pack removed, or the model changed): forget the ones kept here too. */
+  /** Files were deleted, skipped, or reset during crawl: drop any cached privacy scores for those IDs immediately. */
+  fun evict(ids: Collection<Long>) {
+    for (id in ids) fresh.remove(id)
+  }
+
+  /** Every score was cleared (the pack removed, index deleted, or model changed): forget the ones kept here too. */
   fun forget() {
     fresh.clear()
     modelChecked = false
@@ -105,5 +111,6 @@ class PrivacyOnDemand(private val context: Context, private val engine: FindrEng
     const val HOLD_POLL_MS = 100L
     const val AVAILABLE_MS = 5_000L
     const val RELEASE_AFTER_MS = 30_000L
+    const val MAX_FRESH = 2_048
   }
 }

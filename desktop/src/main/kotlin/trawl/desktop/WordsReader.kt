@@ -48,7 +48,7 @@ class WordsReader(private val store: IndexStore, private val ocr: () -> Ocr?) {
       }
       FileKind.IMAGE, FileKind.SCREENSHOT -> {
         val o = ocr() ?: return emptyList<Segment>() to null   // no text reader on this computer: the picture is found by its name
-        val text = Indexer.readable(o.read(path.toFile()))
+        val text = Indexer.readable(o.readLines(path.toFile()))
         listOfNotNull(text?.let { Segment(SegmentKind.OCR, Modality.NONE, text = it) }) to null
       }
       else -> emptyList<Segment>() to null

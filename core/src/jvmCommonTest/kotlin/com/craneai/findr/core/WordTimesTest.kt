@@ -103,4 +103,31 @@ class WordTimesTest {
   @Test fun aRepeatedWordIsCutToFourCaseInsensitively() {
     assertEquals("the The the THE", WordTimes.clean("the The the THE the the", seconds = 5.0))
   }
+
+  // A speech pack's own frame and lateness (its pack.json: engine/SpeechPack.kt), against Parakeet's 80 ms and 130 ms.
+  @Test fun aPacksOwnFrameAndLatenessMoveTheTimes() {
+    val toks = listOf("▁nze", "▁nja", "▁kuj", "ja")
+    val ts = floatArrayOf(0.5f, 1.0f, 1.5f, 1.75f)
+    val w = WordTimes.fromTokens(toks, ts, seconds = 3.0, baseMs = 0, frameMs = 40, lateBiasMs = 170)
+    assertEquals(listOf("nze", "nja", "kujja"), w.map { it.text })
+    assertEquals("each start is the token's second less 170 ms", listOf(330L, 830L, 1330L), w.map { it.startMs })
+    // "nze": 500 - 170 + 40 = 370; "nja": 1000 - 170 + 40 = 870; "kujja": last token 1750 - 170 + 40 = 1620
+    assertEquals(listOf(370L, 870L, 1620L), w.map { it.endMs })
+    // the same tokens read with Parakeet's constants land elsewhere, so the parameters are really used
+    val parakeet = WordTimes.fromTokens(toks, ts, seconds = 3.0, baseMs = 0)
+    assertEquals(listOf(370L, 870L, 1370L), parakeet.map { it.startMs })
+    assertEquals("370 + one 80 ms frame", 450L, parakeet[0].endMs)
+  }
+
+  /** A token that is only a space ends a word: the next token begins a new one, as in the text sherpa writes. */
+  @Test fun aSpaceOnlyTokenStartsANewWordEvenWhenTheNextTokenHasNoMarker() {
+    val w = WordTimes.fromTokens(listOf("▁nze", "▁", "nja"), floatArrayOf(0.5f, 0.625f, 0.75f), seconds = 2.0, baseMs = 0)
+    assertEquals(listOf("nze", "nja"), w.map { it.text })
+  }
+
+  @Test fun forTextTakesAPacksFrameAndLatenessToo() {
+    val w = WordTimes.forText("weebale nnyo", listOf("▁weebale", "▁nnyo"), floatArrayOf(0.5f, 1.0f), 2.0, 0, frameMs = 80, lateBiasMs = 170)
+    assertEquals(listOf(330L, 830L), w.map { it.startMs })
+    assertEquals(listOf(410L, 910L), w.map { it.endMs })
+  }
 }

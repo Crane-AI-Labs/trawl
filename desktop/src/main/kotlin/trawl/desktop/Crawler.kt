@@ -116,6 +116,29 @@ object Crawler {
   }
 
   /**
+   * The file's creation/capture date stored in `files.date_ms`: EXIF DateTimeOriginal for JPEG photos when present,
+   * otherwise [BasicFileAttributes.creationTime] (true Date Created on macOS/Windows), falling back to [BasicFileAttributes.lastModifiedTime].
+   */
+  internal fun createdOf(file: Path, name: String, kind: FileKind, attrs: BasicFileAttributes): Long {
+    val exif = takenOf(file, name, kind)
+    if (exif > 0L) return exif
+    val created = runCatching { attrs.creationTime()?.toMillis() ?: 0L }.getOrDefault(0L)
+    return if (created > 0L) created else attrs.lastModifiedTime().toMillis()
+  }
+
+  /** Inspects a single explicitly added file (never walks its parent directory or sibling files). */
+  fun inspectFile(file: Path): Found? {
+    val norm = file.toAbsolutePath().normalize()
+    val attrs = runCatching { Files.readAttributes(norm, BasicFileAttributes::class.java) }.getOrNull() ?: return null
+    if (!attrs.isRegularFile) return null
+    val name = norm.fileName?.toString()?.takeIf { it.isNotBlank() } ?: return null
+    val rel = norm.parent?.fileName?.toString()?.takeIf { it.isNotBlank() }?.let { "$it/" } ?: ""
+    val kind = DocFormats.classify(norm, name, rel)
+    if (kind !in KINDS) return null
+    return Found(norm, rel, name, kind, attrs.size(), attrs.lastModifiedTime().toMillis(), createdOf(norm, name, kind, attrs))
+  }
+
+  /**
    * Walks [dir] (all the way down when [recursive], else its own files only) and hands each kept file to [onFound]. [root] is the
    * chosen folder the relative paths are taken from. A folder that cannot be read is recorded in the result and the walk goes on around
    * it; a file that disappears while the walk is on is not a failure. A folder in [skipped] (the person's "skipped folders") is not
@@ -124,7 +147,7 @@ object Crawler {
    * [stop] is asked before each folder is entered (never before [dir] itself, so every call makes progress). When it says yes the folder
    * is not entered but listed in [WalkResult.pending]; walking those again later continues where this one stopped instead of starting over.
    */
-  fun walk(root: Path, dir: Path, recursive: Boolean, skipped: List<Path> = emptyList(), stop: () -> Boolean = { false }, onFound: (Found) -> Unit): WalkResult {
+  fun walk(root: Path, dir: Path, recursive: Boolean, skipped: List<Path> = emptyList(), stop: () -> Boolean = { false }, skippedFiles: Set<Path> = emptySet(), onFound: (Found) -> Unit): WalkResult {
     val unreadable = ArrayList<UnreadablePlace>()
     val pending = ArrayList<Path>()
     var vanished = 0
@@ -139,12 +162,12 @@ object Crawler {
       }
 
       override fun visitFile(file: Path, attrs: BasicFileAttributes): FileVisitResult {
-        if (!attrs.isRegularFile || isHidden(file)) return FileVisitResult.CONTINUE
+        if (!attrs.isRegularFile || isHidden(file) || Scope.isSkippedFile(file, skippedFiles)) return FileVisitResult.CONTINUE
         Counters.files.increment()
         val rel = relOf(root, file)
         val name = file.fileName.toString()
         val kind = DocFormats.classify(file, name, rel)   // hook (Package C): Rules.classify plus first-bytes sniffing and the .log type, as on the phone
-        if (kind in KINDS) onFound(Found(file.toAbsolutePath().normalize(), rel, name, kind, attrs.size(), attrs.lastModifiedTime().toMillis(), takenOf(file, name, kind)))
+        if (kind in KINDS) onFound(Found(file.toAbsolutePath().normalize(), rel, name, kind, attrs.size(), attrs.lastModifiedTime().toMillis(), createdOf(file, name, kind, attrs)))
         return FileVisitResult.CONTINUE
       }
 

@@ -3,6 +3,8 @@ package com.craneai.findr.engine
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 import java.security.DigestInputStream
 import java.security.MessageDigest
 import java.util.zip.ZipEntry
@@ -145,12 +147,14 @@ class AsrModelInstaller(
     try {
       val digest = MessageDigest.getInstance("SHA-256")
       var n = 0L
-      val buffer = ByteArray(1 shl 20)
+      val buffer = ByteArray(64 * 1024)
       DigestInputStream(input, digest).use { src ->
         part.outputStream().use { out ->
           while (true) {
             val read = src.read(buffer)
             if (read < 0) break
+            // Enforce the pinned size inside the read loop so a zip bomb cannot fill storage before rejection.
+            if (n + read > f.size) throw IOException("size exceeds expected ${f.size}")
             out.write(buffer, 0, read)
             n += read
             onBytes(n)
@@ -160,8 +164,7 @@ class AsrModelInstaller(
       if (n != f.size) throw IOException("size $n, expected ${f.size}")
       val got = digest.digest().joinToString("") { "%02x".format(it) }
       if (got != f.sha256) throw IOException("checksum mismatch")
-      target.delete()
-      if (!part.renameTo(target)) throw IOException("could not move into place")
+      Files.move(part.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING)
     } finally {
       part.delete()   // gone after a rename; removes a failed copy
     }

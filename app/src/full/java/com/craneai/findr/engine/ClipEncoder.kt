@@ -36,11 +36,12 @@ class ClipEncoder(
   private val dir: File,
   private val tokenizer: Lazy<ClipTokenizer?>,
   private val scope: CoroutineScope,
-  /** ONNX Runtime threads for the image tower (benches compare settings; the app uses [IMAGE_THREADS]). */
-  private val imageThreads: Int = Tuning.current.clipImageThreads,
+  /** Optional fixed ONNX Runtime thread count for the image tower (benches pass a value; null follows [Tuning.current.clipImageThreads]). */
+  private val imageThreads: Int? = null,
 ) {
   private val imageLock = Any()
   private var imageSession: OrtSession? = null
+  private var loadedImageThreads = 0
   private val textLock = Mutex()
   private var textSession: OrtSession? = null
   private var textRelease: Job? = null
@@ -70,7 +71,12 @@ class ClipEncoder(
     bitmap.getPixels(argb, 0, w, 0, 0, w, h)
     ClipImage.prepare(argb, w, h, pixels)
     val t1 = System.nanoTime()
-    val session = imageSession ?: createSession(imageFile, imageThreads).also { imageSession = it }
+    val threads = resolvedImageThreads()
+    if (imageSession != null && loadedImageThreads != threads) {
+      imageSession?.close()
+      imageSession = null
+    }
+    val session = imageSession ?: createSession(imageFile, threads).also { imageSession = it; loadedImageThreads = threads }
     val env = environment()
     val out = OnnxTensor.createTensor(env, FloatBuffer.wrap(pixels), longArrayOf(1, 3, ClipImage.SIZE.toLong(), ClipImage.SIZE.toLong())).use { input ->
       session.run(mapOf(IMAGE_INPUT to input)).use { result -> features(result) }
@@ -83,51 +89,66 @@ class ClipEncoder(
   /** The query's vector in the quick-look space, or null when the tokenizer can't load. */
   suspend fun query(text: String): FloatArray? = withContext(Dispatchers.Default) {
     val tok = tokenizer.value ?: return@withContext null
-    val vector = textLock.withLock {
-      val session = textSession ?: createSession(textFile, TEXT_THREADS).also { textSession = it }
+    textLock.withLock {
+      textRelease?.cancel()
+      textRelease = null
+      val session = textSession ?: createSession(textFile, textThreads()).also { textSession = it }
       val ids = tok.encode(text)
       val env = environment()
-      OnnxTensor.createTensor(env, LongBuffer.wrap(ids), longArrayOf(1, ClipTokenizer.CONTEXT.toLong())).use { input ->
+      val vector = OnnxTensor.createTensor(env, LongBuffer.wrap(ids), longArrayOf(1, ClipTokenizer.CONTEXT.toLong())).use { input ->
         session.run(mapOf(TEXT_INPUT to input)).use { result -> features(result) }
       }
+      scheduleTextReleaseLocked()
+      vector
     }
-    scheduleTextRelease()
-    vector
   }
 
   /** Loads the text tower now (the search box got focus), so the first query doesn't pay for it. */
   suspend fun warmText() = withContext(Dispatchers.Default) {
     if (!available() || tokenizer.value == null) return@withContext
-    textLock.withLock { if (textSession == null) textSession = createSession(textFile, TEXT_THREADS) }
-    scheduleTextRelease()
+    textLock.withLock {
+      textRelease?.cancel()
+      textRelease = null
+      if (textSession == null) textSession = createSession(textFile, textThreads())
+      scheduleTextReleaseLocked()
+    }
   }
 
   /** The first pass is over: give the image tower's memory back. */
   fun releaseImage() = synchronized(imageLock) {
     imageSession?.close()
     imageSession = null
+    loadedImageThreads = 0
   }
 
   /** Both towers closed (the pack is about to be removed). */
   suspend fun release() {
     releaseImage()
-    textRelease?.cancel()
     textLock.withLock {
+      textRelease?.cancel()
+      textRelease = null
       textSession?.close()
       textSession = null
     }
   }
 
-  private fun scheduleTextRelease() {
+  private fun scheduleTextReleaseLocked() {
     textRelease?.cancel()
     textRelease = scope.launch {
       delay(TEXT_IDLE_MS)
       textLock.withLock {
         textSession?.close()
         textSession = null
+        textRelease = null
       }
     }
   }
+
+  /** Image-tower ONNX thread count: bench override if given, else live [Tuning.current.clipImageThreads] (follows LearningSpeed changes). */
+  internal fun resolvedImageThreads(): Int = (imageThreads ?: Tuning.current.clipImageThreads).coerceIn(1, 8)
+
+  /** Match the device's screen-on performance core budget (2 on 2-big-core Helio chips, 4 on 4+ perf-core flagships). */
+  internal fun textThreads(): Int = (Tuning.current.textThreadsOn ?: TEXT_THREADS).coerceIn(1, TEXT_THREADS)
 
   private fun createSession(file: File, threads: Int): OrtSession {
     val t0 = System.nanoTime()

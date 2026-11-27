@@ -9,4 +9,7 @@
   <string name="colours_wallpaper">Langi z\'ekifaananyi eky\'emabega</string>
   <string name="colours_wallpaper_hint">Ekozesa langi z\'ekifaananyi kyo eky\'emabega, era zikyuka bwe kikyuka.</string>
   <string name="settings_brightness">Ekitangaavu oba ezikirivu</string>
+  <string name="notif_waiting_other_app">Erinda ng\'okozesa app endala</string>
+  <string name="preview_checking">ekikebero kikwekeddwa okutuusa nga kikebereddwa</string>
+  <string name="preview_checking_words">Ekebera · nyiga olabe</string>
 </resources>

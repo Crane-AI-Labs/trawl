@@ -313,6 +313,25 @@ class UnderstandingStepTest {
     assertWords()
   }
 
+  @Test fun longDocumentsCapMeaningVectorsAtCeilingWhileKeepingAllWordsSearchable() = runTest {
+    val totalPages = DocMeaningCap.DOC_MAX_CHUNKS + 25
+    pages = List(totalPages) { "chunk${it + 1} words" }
+    embedder.delayMs = 0
+    var r = step(2_000)
+    assertFalse(r.finished)
+    assertEquals(FileProcessor.CHUNKS_PER_STEP, r.next)
+    assertVectors(FileProcessor.CHUNKS_PER_STEP)
+    assertWords()
+    var guard = 0
+    while (!r.finished && guard++ < 30) r = step(2_000)
+    assertTrue(r.finished)
+    assertEquals(FileState.UNDERSTOOD, state().first)
+    assertVectors(DocMeaningCap.DOC_MAX_CHUNKS)
+    assertWords()
+    assertEquals(totalPages, store.storedChunkCount(fileId))
+    assertEquals(1, reads)
+  }
+
   companion object {
     private fun vector(page: Int) = FloatArray(Fp16.DIM) { if (it == page) 1f else 0f }
   }

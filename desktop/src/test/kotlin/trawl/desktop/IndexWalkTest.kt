@@ -59,7 +59,9 @@ class IndexWalkTest {
         waitFor("the deleted file to leave") { ix.known() == 3 }
         assertEquals(1, ix.countUnder(locked), "the row under the locked folder is untouched: its absence says nothing")
         assertEquals(1, ix.ui.value.blocked.total)
-        assertEquals(mapOf(Place.OTHER to 1), ix.ui.value.blocked.where, "a kind of place, never a name")
+        // The kind of place the folder is in, by the same rule the service uses: a temp folder under /mnt (the build box puts test temp files there) is a
+        // "drive", one under /tmp is "other". The point is that the summary holds a kind, with a count, and no name.
+        assertEquals(mapOf(Place.of(locked.toPath(), java.nio.file.Paths.get(System.getProperty("user.home"))) to 1), ix.ui.value.blocked.where, "a kind of place, never a name")
 
         // A second scan changes nothing and says nothing new.
         ix.rescan()

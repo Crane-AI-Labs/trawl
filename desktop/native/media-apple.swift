@@ -78,8 +78,10 @@ func frame(_ path: String, _ ms: Int64, _ maxSide: Int) async {
         let videoTracks = try? await asset.loadTracks(withMediaType: .video), !videoTracks.isEmpty else { return fail("no picture in it") }
   let gen = AVAssetImageGenerator(asset: asset)
   gen.appliesPreferredTrackTransform = true            // upright, as the person sees it
-  gen.requestedTimeToleranceBefore = .positiveInfinity // the nearest keyframe: much faster than the exact frame, and the phone does the same
-  gen.requestedTimeToleranceAfter = .positiveInfinity
+  // 0.25 s tolerance stays hardware-fast while preventing jumps backwards to distant 5-10 s keyframes during scrubbing/playback.
+  let tol = CMTime(value: 250, timescale: 1000)
+  gen.requestedTimeToleranceBefore = tol
+  gen.requestedTimeToleranceAfter = tol
   let side = CGFloat(max(32, maxSide))
   gen.maximumSize = CGSize(width: side, height: side)  // a bounding box: the picture keeps its shape
   var at = CMTime(value: max(0, ms), timescale: 1000)

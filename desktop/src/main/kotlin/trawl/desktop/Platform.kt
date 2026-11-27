@@ -82,7 +82,7 @@ object Platform {
     Os.LINUX -> listOf(
       "dbus-send", "--session", "--print-reply", "--dest=org.freedesktop.FileManager1", "--type=method_call",
       "/org/freedesktop/FileManager1", "org.freedesktop.FileManager1.ShowItems",
-      "array:string:${File(path).toURI().toASCIIString().replaceFirst("file:/", "file:///")}", "string:",
+      "array:string:${File(path).toURI().toASCIIString().replaceFirst("file:/", "file:///").replace(",", "%2C")}", "string:",
     )
   }
 
@@ -99,6 +99,18 @@ object Platform {
 
   /** Opens a link (a `mailto:` one, for the report email) with the system's default app for it. False when nothing could be started. */
   fun openUri(uri: String): Boolean = run(openCommand(uri), exitMatters = os != Os.WINDOWS)
+
+  /** Hands an external web URL to the system's default browser (zero network sockets opened inside Trawl, D43). */
+  fun openBrowser(url: String): Boolean {
+    val viaDesktop = runCatching {
+      val d = java.awt.Desktop.getDesktop()
+      if (java.awt.Desktop.isDesktopSupported() && d.isSupported(java.awt.Desktop.Action.BROWSE)) {
+        d.browse(java.net.URI(url))
+        true
+      } else false
+    }.getOrDefault(false)
+    return viaDesktop || openUri(url)
+  }
 
   fun open(file: File): Boolean = run(openCommand(file.absolutePath), exitMatters = os != Os.WINDOWS)
 

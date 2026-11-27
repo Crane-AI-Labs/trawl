@@ -76,16 +76,24 @@ class HotkeyX11(
       val d = x.XOpenDisplay(null)
       if (d == null) { answer.complete(HotkeyResult.Unsupported(false, "no X server to connect to")); return@Thread }
       try {
-        previous = x.XSetErrorHandler(handler)
         val root = x.XDefaultRootWindow(d)
         val keycode = x.XKeysymToKeycode(d, HotkeyCodes.xKeysym(h.key))
         if (keycode == 0) { answer.complete(HotkeyResult.Failed("this keyboard has no ${h.key} key")); return@Thread }
         val base = HotkeyCodes.xMods(h)
-        // No XSelectInput: a grab delivers its KeyPress to the grabbing client on its own. Selecting KeyPress on the root window would
-        // also deliver EVERY key typed while no window has the focus (found with Xvfb), and the panel would open on any key.
-        for (lock in HotkeyCodes.xLockVariants()) x.XGrabKey(d, keycode, base or lock, root, 0, GRAB_MODE_ASYNC, GRAB_MODE_ASYNC)
-        x.XSync(d, 0)   // the server's BadAccess, if any, reaches the handler before this returns
-        val failed = failure
+        // Install process-global XSetErrorHandler ONLY across XGrabKey + XSync under a shared lock with PanelRaiseNative,
+        // restoring previous immediately so AWT's handler and PanelRaiseNative never race a freed callback trampoline.
+        val failed = synchronized(PanelRaiseNative.x11ErrorHandlerLock) {
+          previous = x.XSetErrorHandler(handler)
+          try {
+            // No XSelectInput: a grab delivers its KeyPress to the grabbing client on its own. Selecting KeyPress on the root window would
+            // also deliver EVERY key typed while no window has the focus (found with Xvfb), and the panel would open on any key.
+            for (lock in HotkeyCodes.xLockVariants()) x.XGrabKey(d, keycode, base or lock, root, 0, GRAB_MODE_ASYNC, GRAB_MODE_ASYNC)
+            x.XSync(d, 0)   // the server's BadAccess, if any, reaches the handler before this returns
+            failure
+          } finally {
+            x.XSetErrorHandler(previous)
+          }
+        }
         if (failed != null) {
           for (lock in HotkeyCodes.xLockVariants()) x.XUngrabKey(d, keycode, base or lock, root)
           x.XSync(d, 0)
@@ -101,9 +109,9 @@ class HotkeyX11(
           c.poll(fd, 1, POLL_MS)
           while (x.XPending(d) > 0) {
             x.XNextEvent(d, event)
-            // Belt and braces: only our chord (XKeyEvent: state at byte 80, keycode at 84), ignoring Caps Lock and Num Lock.
+            // Mask strictly to Shift/Ctrl/Mod1/Mod4 (0x4D) so Caps/NumLock, XKB 2nd-layout group bits (0x6000), and mouse button bits (0x1F00) are ignored.
             if (event.getInt(0) == KEY_PRESS && event.getInt(KEYCODE_OFFSET) == keycode &&
-              (event.getInt(STATE_OFFSET) and LOCKS.inv()) == base) {
+              (event.getInt(STATE_OFFSET) and RELEVANT_MODS) == base) {
               val now = System.nanoTime() / 1_000_000
               if (now - lastMs > DEBOUNCE_MS) { lastMs = now; runCatching(onPressed) }
             }
@@ -112,7 +120,6 @@ class HotkeyX11(
         for (lock in HotkeyCodes.xLockVariants()) x.XUngrabKey(d, keycode, base or lock, root)
         x.XSync(d, 0)
       } finally {
-        x.XSetErrorHandler(previous)
         x.XCloseDisplay(d)
         if (!answer.isDone) answer.complete(HotkeyResult.Failed("the key grab stopped early"))
       }
@@ -136,8 +143,8 @@ class HotkeyX11(
     const val KEY_PRESS = 2
     const val STATE_OFFSET = 80L
     const val KEYCODE_OFFSET = 84L
-    /** LockMask (Caps Lock) and Mod2Mask (Num Lock). */
-    const val LOCKS = 0x2 or 0x10
+    /** ShiftMask (0x1), ControlMask (0x4), Mod1Mask (0x8), Mod4Mask (0x40): ignores Caps/NumLock, XKB layout groups, and mouse buttons. */
+    const val RELEVANT_MODS = 0x01 or 0x04 or 0x08 or 0x40
     const val GRAB_MODE_ASYNC = 1
     const val BAD_ACCESS = 10
     /** XErrorEvent: type int, display ptr, resourceid ulong, serial ulong, error_code uchar. */

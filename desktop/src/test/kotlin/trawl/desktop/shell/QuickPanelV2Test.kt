@@ -218,10 +218,20 @@ class PanelRaiserTest {
 }
 
 class QuickKeyV2Test {
-  @Test fun spaceOnAnEmptyQueryTogglesThePreviewAndOtherwiseTypes() {
+  @Test fun spaceOnAnEmptyQueryOrSelectedRowTogglesThePreviewAndOtherwiseTypes() {
     assertEquals(QuickKey.TOGGLE_PREVIEW, quickKeyFor(Key.Spacebar, true, false, false, Os.LINUX, queryBlank = true))
-    assertNull(quickKeyFor(Key.Spacebar, true, false, false, Os.LINUX, queryBlank = false), "a space inside a query is a space")
+    assertEquals(QuickKey.TOGGLE_PREVIEW, quickKeyFor(Key.Spacebar, true, false, false, Os.MAC, queryBlank = false, rowSelected = true))
+    assertEquals(QuickKey.TOGGLE_PREVIEW, quickKeyFor(Key.Spacebar, true, false, false, Os.MAC, queryBlank = false, previewOpen = true, rowSelected = false))
+    assertNull(quickKeyFor(Key.Spacebar, true, false, false, Os.LINUX, queryBlank = false, rowSelected = false), "a space inside a query is a space")
     assertNull(quickKeyFor(Key.Spacebar, false, false, false, Os.LINUX, queryBlank = true), "key up does nothing")
+  }
+
+  @Test fun modifierCCopiesSelectedOrRecentRowWithoutBreakingSearchTextCopy() {
+    assertEquals(QuickKey.COPY, quickKeyFor(Key.C, true, ctrl = false, meta = true, os = Os.MAC, queryBlank = true))
+    assertEquals(QuickKey.COPY, quickKeyFor(Key.C, true, ctrl = false, meta = true, os = Os.MAC, queryBlank = false, rowSelected = true))
+    assertEquals(QuickKey.COPY, quickKeyFor(Key.C, true, ctrl = true, meta = false, os = Os.LINUX, queryBlank = false, previewOpen = true))
+    assertNull(quickKeyFor(Key.C, true, ctrl = false, meta = true, os = Os.MAC, queryBlank = false, rowSelected = false, previewOpen = false))
+    assertNull(quickKeyFor(Key.C, true, ctrl = false, meta = false, os = Os.MAC, queryBlank = true))
   }
 
   @Test fun modifierYTogglesThePreviewAnywhereAndWithShiftAsksForTheFullPreview() {
@@ -244,10 +254,12 @@ class QuickKeyV2Test {
 /** A search whose preview and system preview are fakes, so the panel's preview rules are tested without a screen. */
 private class PreviewSearch(private val files: List<IndexedFile>, val full: FakeFull = FakeFull(true)) : QuickSearchApi {
   val lock = MutableStateFlow(false)
+  val copied = mutableListOf<IndexedFile>()
   override val locked: StateFlow<Boolean> get() = lock
   override fun search(query: String): Flow<List<QuickHit>> = flow { emit(files.map { QuickHit(it, null) }) }
   override fun open(file: IndexedFile) {}
   override fun showInFolder(file: IndexedFile) {}
+  override fun copy(file: IndexedFile) { copied += file }
   override val preview: QuickPreviewApi = object : QuickPreviewApi {
     override suspend fun picture(file: IndexedFile, side: Int, blurred: Boolean): ImageBitmap? = null
     override suspend fun frame(file: IndexedFile, momentMs: Long, side: Int): ImageBitmap? = null
@@ -294,6 +306,14 @@ class QuickPanelPreviewTest {
     assertEquals("secret-selfie.jpg", st.current?.file?.name)
     st.onKey(QuickKey.TOGGLE_PREVIEW)
     assertFalse(st.previewing.value)
+  }
+
+  @Test fun copyCopiesSelectedFileWithoutClosingPanel() = rig { st, api, closed ->
+    st.onKey(QuickKey.DOWN)
+    st.onKey(QuickKey.COPY)
+    assertEquals(listOf("secret-selfie.jpg"), api.copied.map { it.name })
+    assertEquals(0, closed[0], "copying leaves the panel open")
+    assertTrue(st.copiedTick.value >= 1)
   }
 
   @Test fun escClosesThePreviewBeforeThePanel() = rig { st, _, closed ->
@@ -358,6 +378,44 @@ class QuickPanelPreviewTest {
     st.dismissPreviews()
     assertFalse(st.previewing.value)
     assertTrue(api.full.closes >= 1)
+  }
+
+  @Test fun persistentSpacePreviewStaysOpenAcrossArrowsAndNeverDropsSelectionOnUpAtRowZero() = runBlocking {
+    val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    val api = PreviewSearch(files)
+    val st = QuickPanelState(api, scope, onClose = {}, debounceMs = 10, onOpenFullSearch = {})
+    try {
+      eventually("recent") { st.hits.value.size == 3 }
+      st.setQuery("i")
+      eventually("answered") { st.answered.value == "i" }
+      st.onKey(QuickKey.DOWN)
+      assertTrue(st.userSelectedRow.value)
+      assertEquals(0, st.selected.value)
+
+      // Open Space preview, arrow across files, and press UP at row 0: preview and row selection must stay active!
+      st.onKey(QuickKey.TOGGLE_PREVIEW)
+      assertTrue(st.previewing.value)
+      st.onKey(QuickKey.UP)
+      assertTrue(st.previewing.value, "UP at row 0 must keep preview open")
+      assertTrue(st.userSelectedRow.value, "UP at row 0 while previewing must not unselect row 0")
+      assertEquals(0, st.selected.value)
+
+      st.onKey(QuickKey.DOWN)
+      assertEquals(1, st.selected.value)
+      assertTrue(st.previewing.value)
+      st.onKey(QuickKey.LAST)
+      assertEquals(2, st.selected.value)
+      assertTrue(st.previewing.value)
+      st.onKey(QuickKey.FIRST)
+      assertEquals(0, st.selected.value)
+      assertTrue(st.previewing.value)
+
+      // Space toggles preview off cleanly.
+      st.onKey(QuickKey.TOGGLE_PREVIEW)
+      assertFalse(st.previewing.value)
+    } finally {
+      scope.cancel()
+    }
   }
 }
 
@@ -535,6 +593,132 @@ class PreviewPlayerTest {
     assertEquals(PlayState.Done, p.state.value)
     assertTrue(out1.closed && dec1.closed)
     assertEquals(5_000, dec2.startedAt)
+  }
+
+  @Test fun matchPlayStartAppliesPreRollAndClampsAtZero() {
+    assertEquals(8_500L, PreviewPlayer.matchPlayStartMs(10_000L))
+    assertEquals(81_500L, PreviewPlayer.matchPlayStartMs(83_000L))
+    assertEquals(0L, PreviewPlayer.matchPlayStartMs(1_500L))
+    assertEquals(0L, PreviewPlayer.matchPlayStartMs(800L))
+    assertEquals(0L, PreviewPlayer.matchPlayStartMs(0L))
+  }
+
+  @Test fun stopDuringLoadingPreventsBackgroundPlaybackAndClosesResources() {
+    val decEntering = java.util.concurrent.CountDownLatch(1)
+    val releaseDec = java.util.concurrent.CountDownLatch(1)
+    val out = FakeOut()
+    val dec = FakeDecoder(5)
+    val p = PreviewPlayer(
+      decoder = {
+        decEntering.countDown()
+        val deadline = System.currentTimeMillis() + 2_000
+        while (releaseDec.count > 0 && System.currentTimeMillis() < deadline) {
+          try { releaseDec.await(50, java.util.concurrent.TimeUnit.MILLISECONDS) } catch (_: InterruptedException) {}
+        }
+        dec
+      },
+      output = { out },
+    )
+    p.play(File("/tmp/video.mp4"), 10_000)
+    assertTrue(decEntering.await(2, java.util.concurrent.TimeUnit.SECONDS))
+    assertEquals(PlayState.Loading, p.state.value)
+
+    // User presses Esc while decoder is still opening.
+    p.stop()
+    assertEquals(PlayState.Idle, p.state.value)
+    releaseDec.countDown()
+
+    val end = System.currentTimeMillis() + 2_000
+    while (!dec.closed && System.currentTimeMillis() < end) Thread.sleep(10)
+    assertTrue(dec.closed, "decoder opened after stop() must be closed immediately")
+    assertEquals(0, out.written.get(), "stopped clip must never write PCM audio in the background")
+    assertEquals(PlayState.Idle, p.state.value)
+  }
+
+  @Test fun quickPanelDismissEscSpaceSelectionChangeAndLockAllStopPlaybackImmediately() {
+    val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.SupervisorJob() + kotlinx.coroutines.Dispatchers.Unconfined)
+    try {
+      var gate = java.util.concurrent.CountDownLatch(1)
+      var activeDec: FakeDecoder? = null
+      var activeOut: FakeOut? = null
+      val player = PreviewPlayer(
+        decoder = { FakeDecoder(10, block = gate).also { activeDec = it } },
+        output = { FakeOut().also { activeOut = it } },
+      )
+      val f1 = com.craneai.findr.core.IndexedFile(id = 1L, uri = "file:///tmp/a.mp4", name = "a.mp4", relativePath = "tmp", kind = FileKind.VIDEO, mimeType = "video/mp4", sizeBytes = 1000L, modifiedMillis = 1000L, durationMs = 20_000L)
+      val f2 = com.craneai.findr.core.IndexedFile(id = 2L, uri = "file:///tmp/b.mp4", name = "b.mp4", relativePath = "tmp", kind = FileKind.VIDEO, mimeType = "video/mp4", sizeBytes = 1000L, modifiedMillis = 1000L, durationMs = 20_000L)
+      val locked = kotlinx.coroutines.flow.MutableStateFlow(false)
+      val api = object : QuickSearchApi {
+        override val locked = locked
+        override val preview = object : QuickPreviewApi {
+          override val player = player
+          override suspend fun picture(file: com.craneai.findr.core.IndexedFile, side: Int, blurred: Boolean) = null
+          override suspend fun frame(file: com.craneai.findr.core.IndexedFile, momentMs: Long, side: Int) = null
+          override suspend fun lead(file: com.craneai.findr.core.IndexedFile) = null
+        }
+        override fun search(query: String) = kotlinx.coroutines.flow.flowOf(listOf(QuickHit(f1, null), QuickHit(f2, null)))
+        override fun open(file: com.craneai.findr.core.IndexedFile) {}
+        override fun showInFolder(file: com.craneai.findr.core.IndexedFile) {}
+      }
+      var closedCalls = 0
+      val state = QuickPanelState(api, scope, onClose = { closedCalls++ }, debounceMs = 0L)
+      state.reset()
+      val waitHits = System.currentTimeMillis() + 2_000
+      while (state.hits.value.size < 2 && System.currentTimeMillis() < waitHits) Thread.sleep(10)
+      assertEquals(2, state.hits.value.size)
+
+      fun startPlaying() {
+        gate = java.util.concurrent.CountDownLatch(1)
+        player.play(File("/tmp/a.mp4"), 0)
+        waitFor(player, "playing") { it is PlayState.Playing }
+      }
+      fun assertStopped(label: String) {
+        assertEquals(PlayState.Idle, player.state.value, "$label must reset PlayState to Idle immediately")
+        gate.countDown()
+        val end = System.currentTimeMillis() + 2_000
+        while ((activeDec?.closed != true || activeOut?.closed != true) && System.currentTimeMillis() < end) Thread.sleep(10)
+        assertTrue(activeDec?.closed == true && activeOut?.closed == true, "$label must close decoder & audio line")
+      }
+
+      // 1. Space opens preview -> Play -> 1st Esc stops audio & closes preview -> 2nd Esc dismisses Quick Panel!
+      state.onKey(QuickKey.TOGGLE_PREVIEW)
+      assertTrue(state.previewing.value)
+      startPlaying()
+      state.onKey(QuickKey.CLOSE)
+      assertFalse(state.previewing.value)
+      assertEquals(0, closedCalls, "First Esc while previewing closes preview only")
+      assertStopped("Esc closing Quick Preview")
+      state.onKey(QuickKey.CLOSE)
+      assertEquals(1, closedCalls, "Second Esc MUST dismiss Quick Panel immediately")
+
+      // 2. Space toggles preview off -> stops audio
+      state.onKey(QuickKey.TOGGLE_PREVIEW)
+      startPlaying()
+      state.onKey(QuickKey.TOGGLE_PREVIEW)
+      assertFalse(state.previewing.value)
+      assertStopped("Space toggling Quick Preview off")
+
+      // 3. Switching selected file via DOWN -> stops audio
+      state.onKey(QuickKey.TOGGLE_PREVIEW)
+      startPlaying()
+      state.onKey(QuickKey.DOWN)
+      assertEquals(1, state.selected.value)
+      assertStopped("DOWN switching selected file")
+
+      // 4. dismissPreviews() (panel hidden / focus lost) -> stops audio even without UI recomposition
+      startPlaying()
+      state.dismissPreviews()
+      assertFalse(state.previewing.value)
+      assertStopped("dismissPreviews() on panel hide")
+
+      // 5. Locking app -> stops audio immediately
+      state.onKey(QuickKey.TOGGLE_PREVIEW)
+      startPlaying()
+      locked.value = true
+      assertStopped("App lock while previewing")
+    } finally {
+      scope.coroutineContext[kotlinx.coroutines.Job]?.cancel()
+    }
   }
 }
 

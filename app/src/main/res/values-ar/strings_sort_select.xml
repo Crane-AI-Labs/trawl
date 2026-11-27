@@ -5,6 +5,14 @@
   <string name="sort_oldest">الأقدم</string>
   <string name="sort_largest">الأكبر</string>
   <string name="sort_name">الاسم أبجديًا</string>
+  <string name="sort_chip_best">الأقرب</string>
+  <string name="sort_chip_newest">الأحدث</string>
+  <string name="sort_chip_oldest">الأقدم</string>
+  <string name="sort_chip_created_newest">الإنشاء</string>
+  <string name="sort_chip_created_oldest">الإنشاء</string>
+  <string name="sort_chip_largest">الأكبر</string>
+  <string name="sort_chip_smallest">الأصغر</string>
+  <string name="sort_chip_name">الاسم</string>
   <string name="sort_group">الترتيب حسب</string>
   <string name="date_any_time">أي وقت</string>
   <string name="date_group">التاريخ</string>
@@ -121,4 +129,20 @@
   <string name="snack_marked_sensitive_many">تم تعليمها كحساسة. وهي مخفية الآن من النتائج.</string>
   <string name="snack_unmarked_sensitive_many">أزيلت علامة الحساسية. يمكن أن تظهر في النتائج مجددًا.</string>
   <string name="nothing_in_dates">لم يتم العثور على شيء في %1$s. جرّب تاريخًا آخر.</string>
+  <string name="sort_created_newest">تاريخ الإنشاء (الأحدث)</string>
+  <string name="sort_created_oldest">تاريخ الإنشاء (الأقدم)</string>
+  <string name="sort_smallest">الأصغر</string>
+  <string name="subtype_group">نوع الملف</string>
+  <string name="subtype_all">كل الأنواع</string>
+  <string name="subtype_remove">إزالة فلتر نوع الملف</string>
+  <string name="subtype_spreadsheet_menu">Excel وCSV (.xlsx, .csv)</string>
+  <string name="subtype_text_menu">نص وMarkdown (.txt, .md)</string>
+  <string name="subtype_text_chip">نص / MD</string>
+  <string name="subtype_code_menu">شيفرة وبيانات (.json, .xml, …)</string>
+  <string name="subtype_code_chip">شيفرة / بيانات</string>
+  <string name="view_mode_group">وضع العرض</string>
+  <string name="view_grid">شبكة</string>
+  <string name="view_list">قائمة</string>
+  <string name="label_modified_short">تعديل %1$s</string>
+  <string name="label_created_short">إنشاء %1$s</string>
 </resources>

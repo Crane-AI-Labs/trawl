@@ -298,6 +298,8 @@
   <string name="settings_about_model">Tafuta hutumia EmbeddingGemma 2 kutoka Google (Apache 2.0), yote kwenye simu hii.</string>
   <string name="settings_about_private"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> haina ruhusa ya intaneti. Mafaili yako na yale inayojifunza kutoka kwayo hayatoki kamwe kwenye simu.</string>
   <string name="settings_about_maker">Imetengenezwa na Crane AI Labs.</string>
+  <string name="settings_check_updates">Angalia masasisho</string>
+  <string name="settings_check_updates_hint">Hufungua ukurasa wa upakuaji kwenye kivinjari chako.</string>
   <string name="settings_licences">Leseni na shukrani</string>
   <string name="licences_title">Leseni na shukrani</string>
   <string name="licences_intro"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> imeundwa kwa kazi iliyo hapa chini. Ilani hizi zinahitajika na leseni, na pia ndiyo njia yetu ya kutoa shukrani.</string>
@@ -471,4 +473,7 @@
     <item quantity="one">Faili %1$d halikuweza kusomwa (limeharibika, au ni umbizo ambalo simu hii haiwezi kufungua). Bado unaweza kulipata kwa jina.</item>
     <item quantity="other">Mafaili %1$d hayakuweza kusomwa (yameharibika, au ni umbizo ambalo simu hii haiwezi kufungua). Bado unaweza kuyapata kwa jina.</item>
   </plurals>
+  <string name="addons_download_browser">Pakua kwenye kivinjari</string>
+  <string name="addons_download_return_hint">Faili ikimaliza kupakuliwa kwenye Vipakuliwa, rudi hapa kisha gusa Sakinisha.</string>
+  <string name="addons_no_browser">Hakuna kivinjari kilichopatikana kufungua kiungo cha kupakua.</string>
 </resources>

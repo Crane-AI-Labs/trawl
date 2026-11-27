@@ -7,4 +7,6 @@
   <string name="open_problem_memory">የስልኩ ማህደረ ትውስታ አንሷል። ትንሽ ቆይቶ እንደገና ይሞክራል።</string>
   <string name="open_problem_other">ትንሽ ቆይቶ እንደገና ይሞክራል።</string>
   <string name="open_problem_detail">ቀዳሚ ውጤቶችህ ደህንነታቸው የተጠበቀ ነው፣ ምንም አልጠፋም። በራሱ እንደገና ይሞክራል፤ ወይም እንደገና ሞክር የሚለውን ንካ።</string>
+  <string name="index_opening_title">መረጃ ጠቋሚዎን በመክፈት ላይ</string>
+  <string name="index_opening_detail">መረጃ ጠቋሚው ሲዘጋጅ ውጤቶች ይታያሉ።</string>
 </resources>

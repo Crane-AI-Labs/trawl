@@ -49,6 +49,7 @@ object SettingsCodec {
         // Speech to text is on by default in every build (D3); it takes effect once the speech models are installed. Settings saved
         // before version 2 stored the old default (off in release builds) without anyone having been able to choose it.
         speechToText = if (lite) o.optBoolean("speechToText", false) else o.optInt("version", 1) < 2 || o.optBoolean("speechToText", true),
+        speechPack = o.optString("speechPack", "").takeIf { it in PackIds.SPEECH_PACKS },
         quickLook = o.optBoolean("quickLook", true),
         blurPrivatePreviews = o.optBoolean("blurPrivatePreviews", true),
         privateScoring = o.optBoolean("privateScoring", true),
@@ -67,7 +68,7 @@ object SettingsCodec {
     .put("learningSpeed", s.learningSpeed.key).put("onlyWhileCharging", s.onlyWhileCharging).put("fullOnBattery", s.fullOnBattery).put("indexPhotos", s.indexPhotos)
     .put("indexScreenshots", s.indexScreenshots).put("indexVideos", s.indexVideos)
     .put("indexDocuments", s.indexDocuments).put("indexRecordings", s.indexRecordings).put("indexAudio", s.indexAudio)
-    .put("speechToText", s.speechToText)
+    .put("speechToText", s.speechToText).put("speechPack", s.speechPack ?: "")
     .put("quickLook", s.quickLook).put("blurPrivatePreviews", s.blurPrivatePreviews)
     .put("privateScoring", s.privateScoring).put("version", VERSION)
     .put("excludedFolders", JSONArray(s.excludedFolders.toList()))

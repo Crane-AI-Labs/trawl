@@ -28,7 +28,7 @@ class SchemaMigrationTest {
   private fun layout(store: IndexStore): String = store.read { db ->
     val out = ArrayList<String>()
     db.query(
-      "SELECT sql FROM sqlite_master WHERE sql IS NOT NULL AND name NOT LIKE 'sqlite_%' AND name NOT LIKE 'fts_%' ORDER BY type, name",
+      "SELECT sql FROM sqlite_master WHERE sql IS NOT NULL AND name NOT LIKE 'sqlite_%' AND name NOT LIKE 'fts_%' AND name NOT LIKE 'sees_fts_%' ORDER BY type, name",
     ) { out += it.getText(0).trim() }
     out.joinToString(";\n\n") + ";\n"
   }

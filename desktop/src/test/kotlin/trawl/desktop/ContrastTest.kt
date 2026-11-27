@@ -70,6 +70,65 @@ class ContrastTest {
   @Test fun highContrastLightMeetsAAA() = check(dark = false, high = true, text = 7.0, nonText = 4.5)
   @Test fun highContrastDarkMeetsAAA() = check(dark = true, high = true, text = 7.0, nonText = 4.5)
 
+  @Test fun fileTypeVisualAccentsMeetWcagAAOnBadgeTint() {
+    fun blend(fg: Color, alpha: Float, bg: Color) = Color(
+      red = fg.red * alpha + bg.red * (1f - alpha),
+      green = fg.green * alpha + bg.green * (1f - alpha),
+      blue = fg.blue * alpha + bg.blue * (1f - alpha),
+      alpha = 1f,
+    )
+    val samples = listOf(
+      "a.pdf" to com.craneai.findr.core.FileKind.PDF,
+      "a.docx" to com.craneai.findr.core.FileKind.DOCUMENT,
+      "a.xlsx" to com.craneai.findr.core.FileKind.DOCUMENT,
+      "a.pptx" to com.craneai.findr.core.FileKind.DOCUMENT,
+      "a.md" to com.craneai.findr.core.FileKind.DOCUMENT,
+      "a.kt" to com.craneai.findr.core.FileKind.DOCUMENT,
+      "a.mp4" to com.craneai.findr.core.FileKind.VIDEO,
+      "a.wav" to com.craneai.findr.core.FileKind.AUDIO,
+    )
+    for (dark in listOf(false, true)) {
+      val tk = sunlightTokens(dark, false)
+      for ((name, kind) in samples) {
+        val style = trawl.desktop.ui.FileTypeVisual.of(name, kind)!!
+        val accent = style.accent(dark)
+        for ((surfaceName, surface) in listOf("paper" to tk.paper, "paper2" to tk.paper2)) {
+          val badgeBg = blend(accent, 0.14f, surface)
+          val r = ratio(accent, badgeBg)
+          assertTrue(r >= 4.5, "${style.tag} dark=$dark on $surfaceName+14% tint contrast=${"%.2f".format(r)} < 4.5:1")
+        }
+      }
+      // Red danger button (e.g., Remove from index): text & icon over 8% danger hover tint must remain >= 4.5:1 AA
+      for ((surfaceName, surface) in listOf("paper" to tk.paper, "paper2" to tk.paper2)) {
+        val hoverBg = blend(tk.danger, 0.08f, surface)
+        val r = ratio(tk.danger, hoverBg)
+        assertTrue(r >= 4.5, "danger button dark=$dark on $surfaceName+8% hover tint contrast=${"%.2f".format(r)} < 4.5:1")
+      }
+    }
+  }
+
+  @Test fun syntaxPaletteColorsMeetWcagAAOnPaperAndPaper2() {
+    for (dark in listOf(false, true)) {
+      val tk = sunlightTokens(dark, false)
+      val p = trawl.desktop.ui.SyntaxPalette.of(dark)
+      val tokens = listOf(
+        "key" to p.key,
+        "string" to p.string,
+        "number" to p.number,
+        "literal" to p.literal,
+        "comment" to p.comment,
+        "tag" to p.tag,
+        "punct" to p.punct,
+      )
+      for ((name, color) in tokens) {
+        for ((surfaceName, bg) in listOf("paper" to tk.paper, "paper2" to tk.paper2)) {
+          val r = ratio(color, bg)
+          assertTrue(r >= 4.5, "SyntaxPalette.$name dark=$dark on $surfaceName contrast=${"%.2f".format(r)} < 4.5:1")
+        }
+      }
+    }
+  }
+
   @Test fun theRatioIsTheWcagOne() {
     assertEquals(21.0, ratio(Color.Black, Color.White), 0.001)
     assertEquals(1.0, ratio(Color.White, Color.White), 0.001)

@@ -2,6 +2,7 @@ package com.craneai.findr.engine
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -13,6 +14,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import com.craneai.findr.FindrApp
+import com.craneai.findr.MainActivity
 import com.craneai.findr.R
 import com.craneai.findr.core.FileKind
 import com.craneai.findr.core.FindrLog as Log
@@ -30,6 +32,9 @@ import com.craneai.findr.index.PendingFile
 import com.craneai.findr.index.Rules
 import com.craneai.findr.index.Segment
 import com.craneai.findr.index.SegmentKind
+import com.craneai.findr.core.FormatNotReadable
+import com.craneai.findr.index.SoundtrackCatchUp
+import com.craneai.findr.index.SeesCatchUp
 import com.craneai.findr.index.VideoCatchUp
 import com.craneai.findr.ui.common.appString
 import kotlinx.coroutines.CancellationException
@@ -103,7 +108,7 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
   }
 
   override suspend fun doWork(): Result {
-    val engine = (applicationContext as FindrApp).engine as? FindrEngine ?: return Result.success()
+    val engine = (applicationContext as FindrApp).awaitEngine() as? FindrEngine ?: return Result.success()
     host = engine
     protection = engine.protectionGate()
     runId = Diag.runs()?.begin(runKind(tags), android.os.Process.myPid(), engine.isCharging(), engine.batteryPercent()) ?: 0L
@@ -212,10 +217,12 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
       }
     }
     try {
+      Tuning.useThermal(engine.policy().reducedThreads)
       return run(engine)
     } finally {
       screenOffTicker.cancel()
       guard.cancel()
+      Tuning.useThermal(false)
       engine.workerLock.unlock()
     }
   }
@@ -226,7 +233,7 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
    * ([MidRunWords]). Skipped while the phone is polite, hot or the run is stopping: those rules hold the words pass back too.
    */
   private suspend fun wordsForNewFiles(engine: FindrEngine, processor: FileProcessor, watch: MidRunWords) {
-    if (mustStop() || engine.paused || engine.polite() || batteryTemperature() >= Tuning.current.hotStopC) return
+    if (mustStop() || engine.paused || engine.polite() || engine.thermalDecision(engine.batteryCelsius()).action == HeatPace.Action.COOL_DOWN) return
     val n = watch.between(
       crawl = { engine.crawl(forceFull = false) },
       wordsWaiting = { engine.wordsWaiting() },
@@ -278,7 +285,9 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
       if (isStopped) {
         runCatching { engine.store.setMeta("last_worker_stop", "stopped by the system (reason $stopReason) at ${java.time.Instant.now()}") }
       }
-      engine.workerState = engine.workerState.copy(running = false, currentFile = null)
+      engine.workerState = engine.workerState.let { w ->
+        w.copy(running = false, currentFile = null, pauseReason = w.pauseReason.takeUnless { it == PauseReason.TOO_HOT })
+      }
     }
   }
 
@@ -332,8 +341,11 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
       }
       return Result.success()
     } finally {
-      withContext(NonCancellable) { quickJob?.let { if (isStopped) it.cancelAndJoin() else it.join() } }
-      engine.workerState = engine.workerState.copy(running = false, currentFile = null)
+      val cancelLanes = isStopped || engine.polite() || engine.paused
+      withContext(NonCancellable) { quickJob?.let { if (cancelLanes) it.cancelAndJoin() else it.join() } }
+      engine.workerState = engine.workerState.let { w ->
+        w.copy(running = false, currentFile = null, pauseReason = w.pauseReason.takeUnless { it == PauseReason.TOO_HOT })
+      }
       withContext(NonCancellable) { engine.store.trimWal() }
       engine.refreshStatus()
     }
@@ -490,9 +502,10 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
       retryFailuresAfterUpdate(engine)
       engine.store.recoverInflight()?.let {
         Log.w(TAG, "the process died twice inside step ${it.step} of file #${it.fileId}: " +
-          if (it.skippedWindow) "that window is left out, the rest is read" else "file marked failed (too large for this phone's memory)")
+          if (it.skippedWindow) "that window is left out, the rest is read" else "file marked failed (${it.detail})")
       }
       rereadDocumentsAfterExtractorChange(engine)
+      syncSpeechPack(engine)
       if (engine.settings.value.speechToText && engine.asr.available()) {
         val n = engine.store.retryMissingSpeech()
         if (n > 0) Log.i(TAG, "speech models are in: $n files get their soundtrack read")
@@ -560,11 +573,18 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
         if (engine.paused) { runEnd = RunEnd.PAUSED; return Result.success() }
         wordsForNewFiles(engine, processor, midRun)   // a file that landed since the last look is searchable by its words now
         val decision = engine.policy()
+        Tuning.useThermal(decision.reducedThreads)
         engine.embeddingNow = false
         // The mode the app believes it is in (read by the learn-control study): once per change, not once per loop.
         val tierLine = "tier: ${decision.tier} speed=${settings.learningSpeed.key} charging=${engine.isCharging()} battery=${engine.batteryPercent()}% " +
-          "thermal=${engine.thermalStatus()} polite=${engine.polite()}"
-        if (tierLine != lastTierLine) { lastTierLine = tierLine; Log.i(TAG, tierLine) }
+          "thermal=${engine.thermalStatus()} headroom=${engine.thermalHeadroom().let { if (it.isNaN()) "-" else "%.1f".format(java.util.Locale.ROOT, it) }} reducedThreads=${decision.reducedThreads} polite=${engine.polite()}" +
+          (if (decision.thermalStale) " thermal status stale" else "")
+        if (tierLine != lastTierLine) {
+          lastTierLine = tierLine
+          Log.i(TAG, tierLine)
+          // Android said SEVERE or worse, the battery and the headroom did not agree (IndexPolicy.corroborate, D48/D51): decided as no heat.
+          if (decision.thermalStale) Log.i(TAG, "thermal status stale: Android ${engine.thermalStatus()}, battery ${engine.batteryCelsius()} °C, headroom ${engine.thermalHeadroom()}: decided as none, fewer threads ${decision.reducedThreads}")
+        }
         if (decision.tier == IndexPolicy.Tier.WORDS_ONLY) {
           // Names and words are in. Everything heavier waits: for the charger (the charging-constrained requests, the hourly
           // light crawl and opening the app start the next run; not retry(): each retry doubled WorkManager's backoff, up to
@@ -575,10 +595,11 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
           runEnd = heldEnd(decision.heldBy)
           return Result.success()
         }
-        val temp = batteryTemperature()
-        if (temp >= Tuning.current.hotStopC) {
+        val temp = engine.batteryCelsius()
+        val heat = engine.thermalDecision(temp)
+        if (heat.action == HeatPace.Action.COOL_DOWN) {
           engine.workerState = engine.workerState.copy(pauseReason = PauseReason.TOO_HOT, currentFile = null)
-          Log.i(TAG, "battery at $temp °C: cooling down")
+          Log.i(TAG, "cooling down (${heat.reason}): battery $temp °C, thermal ${engine.thermalStatus()}, headroom ${engine.thermalHeadroom()}")
           coolDowns++
           coolMs += Tuning.current.coolDownMs
           delay(Tuning.current.coolDownMs)
@@ -605,10 +626,11 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
                 while (engine.userInteracting && !isStopped) delay(250)
                 val t0 = System.nanoTime()
                 understand(engine, processor, p, settings.indexAudio, settings.speechToText)
-                newEncodeMs += (System.nanoTime() - t0) / 1_000_000
+                val fileMs = (System.nanoTime() - t0) / 1_000_000
+                newEncodeMs += fileMs
                 newFiles++
                 if (tight) unloadSoundModels(engine, p, fresh.getOrNull(i + 1), endOfMediaTurn = i == fresh.lastIndex)
-                rest(engine)
+                if (rest(engine, fileMs)) break
                 wordsForNewFiles(engine, processor, midRun)
               }
               engine.store.trimWal(WAL_TRIM_BYTES)
@@ -642,18 +664,25 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
         // the later steps of long files: those are searchable by every word already and can take hours (a 1,000-page PDF), a catch-up is
         // seconds a video (VideoCatchUp).
         val pending = if (mediaTurn) media else other
+        if (pending.isEmpty() && catchUpOldSees(engine, processor, kinds)) continue
         if (pending.isEmpty() && catchUpOldVideo(engine, processor, kinds)) continue
+        if (pending.isEmpty() && catchUpOldSoundtrack(engine, processor, kinds)) continue
         val batch = pending.ifEmpty { engine.store.nextPartial(4, kinds) }
         if (batch.isEmpty()) break
         Log.i(TAG, "pick: ${batch.size} ${kindCounts(batch.map { it.file.kind })} left ${kindCounts(null, engine)}")   // log-safe: counts per kind, no names
+        syncSpeechPack(engine)
         for ((i, p) in batch.withIndex()) {
           if (mustStop() || fgsBudgetSpent || engine.polite()) break   // polite: the loop above waits it out; a spent budget ends the run at the top
           while (engine.userInteracting && !isStopped) delay(250)   // the user is scrolling: let the UI have the CPU
+          val fileDecision = engine.policy()
+          Tuning.useThermal(fileDecision.reducedThreads)
+          if (!fileDecision.bulkAllowed) break
           val t0 = System.nanoTime()
           understand(engine, processor, p, settings.indexAudio, settings.speechToText)
-          mediaShare.record(p.file.kind in MediaShare.MEDIA_KINDS, (System.nanoTime() - t0) / 1_000_000, p.file.kind)
+          val fileMs = (System.nanoTime() - t0) / 1_000_000
+          mediaShare.record(p.file.kind in MediaShare.MEDIA_KINDS, fileMs, p.file.kind)
           if (tight) unloadSoundModels(engine, p, batch.getOrNull(i + 1), endOfMediaTurn = mediaTurn && i == batch.lastIndex)
-          rest(engine)
+          if (rest(engine, fileMs)) break
           wordsForNewFiles(engine, processor, midRun)   // between files, not between batches: a batch of photos takes a minute or more
           // A video or recording is owed its turn: end this batch of photos early rather than after all eight.
           if (!mediaTurn && media.isNotEmpty() && mediaShare.mediaTurn(true, true)) break
@@ -680,9 +709,10 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
     } finally {
       // Stopped: the quick pass stops too. Otherwise it finishes its batch (it checks charging and pause itself), at full speed.
       engine.embeddingNow = false
+      val cancelLanes = isStopped || engine.polite() || engine.paused
       withContext(NonCancellable) {
-        quickJob?.let { if (isStopped) it.cancelAndJoin() else it.join() }
-        privacyJob?.let { if (isStopped) it.cancelAndJoin() else it.join() }
+        quickJob?.let { if (cancelLanes) it.cancelAndJoin() else it.join() }
+        privacyJob?.let { if (cancelLanes) it.cancelAndJoin() else it.join() }
       }
       if (isStopped) {
         // Why the system stopped us (quota, FGS timeout, constraints…): recorded so overnight runs can be diagnosed.
@@ -690,7 +720,10 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
         Log.i(TAG, why)
         runCatching { engine.store.setMeta("last_worker_stop", why) }
       }
-      engine.workerState = engine.workerState.copy(running = false, currentFile = null)
+      engine.workerState = engine.workerState.let { w ->
+        w.copy(running = false, currentFile = null, pauseReason = w.pauseReason.takeUnless { it == PauseReason.TOO_HOT })
+      }
+      engine.asr.releaseLocal()   // the speech pack's model is kept between files of a run, not after it
       withContext(NonCancellable) { engine.store.trimWal() }   // the run's last writes are in the log: fold them in and give the space back
       if (engine.keepModelsResident()) {
         Log.i(TAG, "run over: memory is roomy, models stay loaded for the next search or run")
@@ -798,7 +831,7 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
   private fun rereadDocumentsAfterExtractorChange(engine: FindrEngine) {
     val version = DocumentTextExtractor.VERSION.toString()
     if (engine.store.meta(EXTRACTOR_KEY) == version) return
-    val n = engine.store.requeueRead(listOf(FileKind.DOCUMENT, FileKind.PDF), DocumentTextExtractor.VERSION_AFFECTS, mimePrefix = "text/")
+    val n = engine.store.requeueRead(listOf(FileKind.DOCUMENT, FileKind.PDF), DocumentTextExtractor.VERSION_AFFECTS)
     engine.store.setMeta(EXTRACTOR_KEY, version)
     if (n > 0) Log.i(TAG, "document reader v$version: reading $n documents again")
   }
@@ -808,9 +841,7 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
     val timedOut = engine.store.retryTimedOut()
     if (timedOut > 0) Log.i(TAG, "continuing $timedOut files that previously took too long")
     val build = applicationContext.packageManager.getPackageInfo(applicationContext.packageName, 0).lastUpdateTime.toString()
-    if (engine.store.meta(RETRY_KEY) == build) return
-    val n = engine.store.retryFailed()
-    engine.store.setMeta(RETRY_KEY, build)
+    val n = engine.store.retryFailedAfterUpdate(build)
     if (n > 0) Log.i(TAG, "retrying $n files that failed under an earlier build")
   }
 
@@ -841,7 +872,7 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
       // A recording can take hours: the charger coming out, a low battery or a hot phone ends the run between two windows (D12). The
       // windows saved so far stay, and the file goes on from the next one in the next bulk run.
       if (engine.paused || !engine.policy().bulkAllowed) return
-      rest(engine)
+      if (rest(engine, (done.seconds * 1000).toLong())) return
       step = PendingFile(p.file, FileState.PARTIAL, listOfNotNull("next=${done.next}", done.carry).joinToString(" "))
     }
   }
@@ -880,7 +911,7 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
     // sync (FgsPolicy), each type with its own 6 hours on Android 15+.
     if (!foregroundDenied) startForeground(notificationLine(file.kind), FgsPolicy.preferred(file.kind, android.os.Build.VERSION.SDK_INT, Edition.MEDIA_PROCESSING_FGS))
     val started = System.nanoTime()
-    engine.store.markInflight(file.id, from, windowed)   // a process death inside this step is counted at the next start (kill-loop breaker)
+    engine.markInflight(file.id, from, windowed)   // a process death inside this step is counted at the next start (kill-loop breaker)
     try {
       val result = UnderstandingStep(engine.store, processor).process(p, withAudio, withSpeech, timeoutFor(file.kind), engine.embedder.imagesByEmbeddingGemma)
       val segments = result.segments
@@ -925,10 +956,24 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
     if (batch.isEmpty()) return false
     engine.workerState = engine.workerState.copy(currentFile = "text of recordings and videos")
     while (engine.userInteracting && !isStopped) delay(250)
+    val t0 = System.nanoTime()
     val vectors = batch.map { it.segmentId to engine.embedder.document(it.text) }
     engine.store.replaceTextVectors(vectors, through = batch.last().segmentId)
     batch.map { it.fileId }.distinct().forEach(engine::onFileIndexed)
-    rest(engine)
+    rest(engine, (System.nanoTime() - t0) / 1_000_000)
+    return true
+  }
+
+  private suspend fun catchUpOldSees(engine: FindrEngine, processor: FileProcessor, kinds: Set<FileKind>): Boolean {
+    if (!SeesCatchUp.allowed(FileKind.VIDEO in kinds, !Edition.GO && engine.embedder.imagesByEmbeddingGemma, engine.isCharging())) return false
+    val file = engine.store.nextOldSees(1).firstOrNull()?.file ?: return false
+    if (mustStop() || !engine.policy().bulkAllowed) return false
+    engine.workerState = engine.workerState.copy(currentFile = if (engine.store.isSensitive(file.id)) null else file.name)
+    val started = System.nanoTime()
+    val saved = processor.seesWords(engine.store, file.id)
+    val elapsedMs = (System.nanoTime() - started) / 1_000_000
+    Log.i(TAG, "Sees reading v${SeesCatchUp.VERSION}: stored frames ${if (saved) "saved" else "changed meanwhile"}, $elapsedMs ms")
+    rest(engine, elapsedMs)
     return true
   }
 
@@ -989,32 +1034,108 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
     } finally {
       runCatching { engine.store.endVideoCatchUp() }
     }
-    rest(engine)
+    rest(engine, (System.nanoTime() - started) / 1_000_000)
     return true
   }
 
   /**
-   * Between files: a short rest when the battery is warm, so the phone doesn't cook on the charger. Temperature only:
-   * per-file times can't signal slowdown (a 10-chunk document is slower than a 2-chunk one, which made the worker
-   * rest after nearly every document and say "Cooling down" at 38 °C), and the A06 reports battery heat reliably.
+   * One video or recording whose speech an earlier build read, brought up to today's reading of its soundtrack ([SoundtrackCatchUp]): the
+   * speech model's words read again, through today's language gate, and nothing else of the file touched (pictures, their vectors and words,
+   * sound labels and audio vectors stay). First, every queued file the change cannot alter is stamped without being opened. Then, in the bulk
+   * tier like [catchUpOldVideo] (after new files, on the charger unless the person asked for full indexing on battery), one file per turn
+   * of the loop, so every check of the loop runs between two files. Only while speech to text is on and its model is available: a file
+   * is never stamped by a catch-up that could not read it. A stop loses only the file in hand, read again next time. False when none is left.
    */
-  private suspend fun rest(engine: FindrEngine) {
-    val temp = batteryTemperature()
-    val ms = when {
-      temp >= Tuning.current.hotStopC -> 0L   // the loop's cool-down handles it
-      temp >= Tuning.current.warmC -> Tuning.current.warmRestMs
-      else -> 0L
+  private suspend fun catchUpOldSoundtrack(engine: FindrEngine, processor: FileProcessor, kinds: Set<FileKind>): Boolean {
+    if (!(engine.settings.value.speechToText && engine.asr.available())) return false
+    val kindsHere = kinds.intersect(setOf(FileKind.VIDEO, FileKind.AUDIO))
+    if (kindsHere.isEmpty()) return false
+    syncSpeechPack(engine)
+    val skipped = engine.store.stampUnaffectedSoundtracks()
+    if (skipped > 0) Log.i(TAG, "soundtrack reading v${SoundtrackCatchUp.VERSION}: $skipped files the change cannot alter were stamped without being read")
+    val found = engine.store.nextOldSoundtracks(1, kindsHere).firstOrNull()?.file ?: return false
+    val file = if (found.durationMs == null) probedLength(found.uri)?.let { found.copy(durationMs = it) } ?: found else found
+    if (!engine.store.beginSoundtrackCatchUp(file.id)) {
+      Log.w(TAG, "the process died twice while an older soundtrack was read again: it keeps the reading it has")
+      return true
     }
-    if (ms > 0) {
-      engine.workerState = engine.workerState.copy(pauseReason = PauseReason.TOO_HOT)
-      delay(ms)
-      engine.workerState = engine.workerState.copy(pauseReason = null)
+    engine.workerState = engine.workerState.copy(currentFile = if (engine.store.isSensitive(file.id)) null else file.name)
+    if (!foregroundDenied) startForeground(notificationLine(file.kind), FgsPolicy.preferred(file.kind, android.os.Build.VERSION.SDK_INT, Edition.MEDIA_PROCESSING_FGS))
+    val started = System.nanoTime()
+    try {
+      val windows = FileProcessor.windowCount(file.durationMs)
+      val read = withTimeout(timeoutFor(file.kind) * windows) { processor.soundtrackWords(file) }
+      val transcript = read.pieces.filter { it.second.kind == PieceKind.TRANSCRIPT }.map { (window, piece) -> piece.toSegment(late = window > 0) }
+      // Every window's sounds line, as a fresh read saves them (a long file has one per window), not only the first.
+      val sounds = if (!SoundtrackCatchUp.REFRESH_SOUNDS) emptyList() else read.pieces.filter { it.second.kind == PieceKind.SOUND }.map { (window, piece) -> piece.toSegment(late = window > 0) }
+      val saved = engine.store.saveSoundtrackCatchUp(file.id, transcript, sounds)
+      if (saved) engine.onFileIndexed(file.id)   // new text vectors: the vector index reloads the file
+      val (left, leftMs) = engine.store.oldSoundtracksLeft()
+      // Counts and times only (the name is redacted in a release build): what the research notes time per audio minute.
+      Log.i(TAG, "older soundtrack caught up: ${redact(file.name)} in ${"%.1f".format((System.nanoTime() - started) / 1e9)} s " +
+        "(recogniser ${"%.1f".format(read.asrMs / 1e3)} s), ${"%.1f".format((file.durationMs ?: 0L) / 1e3)} s of sound, ${read.windows} windows: " +
+        "${transcript.size} transcript pieces" + (if (!saved) ", not saved (the file changed meanwhile)" else "") + "; $left older soundtracks left (${leftMs / 60_000} min)")
+    } catch (e: UserYield.DeferredForUser) {
+      Log.i(TAG, "older soundtrack deferred: the user kept scrolling or is in another app")   // read again from the start next turn
+    } catch (e: TimeoutCancellationException) {
+      engine.store.stampSoundtrack(file.id)
+      Log.i(TAG, "an older soundtrack took too long to read again: it keeps the reading it has")
+    } catch (e: CancellationException) {
+      throw e   // stopped: nothing was saved, and the file is read again next time
+    } catch (e: EngineUnhealthyException) {
+      throw e
+    } catch (e: FormatNotReadable) {
+      engine.store.stampSoundtrack(file.id)   // it cannot be opened now: it keeps the reading it has
+    } catch (t: Throwable) {
+      if (com.craneai.findr.index.StorageFull.isFull(t)) throw StorageFullException(t)
+      Log.w(TAG, "an older soundtrack was not read again: it keeps the reading it has", t)
+      com.craneai.findr.diag.Diag.handled(com.craneai.findr.diag.HandledKind.WORKER, t)
+      engine.store.stampSoundtrack(file.id)
+    } finally {
+      runCatching { engine.store.endSoundtrackCatchUp() }
+    }
+    rest(engine, (System.nanoTime() - started) / 1_000_000)
+    return true
+  }
+
+  /**
+   * Tells the index which speech pack is in use (its `<pack_id>@<pack_version>`, or none): fresh reads of a soundtrack are stamped with it,
+   * and the soundtrack catch-up queues the not-English voice notes and videos read without it ([SoundtrackCatchUp.PACK_KEY]). Called at the
+   * start of a run, before each batch and before each catch-up turn, so a pack chosen or removed mid-run takes effect at the next file.
+   */
+  private fun syncSpeechPack(engine: FindrEngine) {
+    val stamp = engine.asr.localStamp().takeIf { engine.settings.value.speechToText && !Edition.GO }
+    if (stamp != engine.store.speechPackStamp) {
+      engine.store.speechPackStamp = stamp
+      val (left, leftMs) = engine.store.oldSoundtracksLeft()
+      Log.i(TAG, "speech pack ${stamp ?: "none"}: $left soundtracks to read (again) for it and today's reading (${leftMs / 60_000} min)")
     }
   }
 
-  private fun batteryTemperature(): Double {
-    val intent = applicationContext.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED)) ?: return 0.0
-    return intent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, 0) / 10.0
+  /**
+   * Between files: proportional rest when ADPF thermal headroom, corroborated OS thermal status, battery temperature, or CPU clock cap
+   * says the phone is warming up ([HeatPace.decide]). Returns true when a full cool-down is needed so an inner batch loop
+   * can break straight to the main loop's cool-down pause.
+   */
+  private suspend fun rest(engine: FindrEngine, workMs: Long = 0L): Boolean {
+    val temp = engine.batteryCelsius()
+    val heat = engine.thermalDecision(temp)
+    if (heat.action == HeatPace.Action.COOL_DOWN) return true
+    if (heat.action != HeatPace.Action.PACE) return false
+    val ms = if (workMs > 0L) HeatPace.restMs(workMs, hot = true, duty = heat.duty)
+    else if (!temp.isNaN() && temp >= Tuning.current.warmC) Tuning.current.warmRestMs
+    else 0L
+    if (ms > 0L) {
+      engine.workerState = engine.workerState.copy(pauseReason = PauseReason.TOO_HOT)
+      try {
+        delay(ms)
+      } finally {
+        engine.workerState = engine.workerState.let { w ->
+          w.copy(pauseReason = w.pauseReason.takeUnless { it == PauseReason.TOO_HOT })
+        }
+      }
+    }
+    return false
   }
 
   private fun foregroundInfo(@StringRes text: Int, type: FgsType = FgsType.DATA_SYNC): ForegroundInfo {
@@ -1022,15 +1143,7 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
     if (nm.getNotificationChannel(CHANNEL) == null) {
       nm.createNotificationChannel(NotificationChannel(CHANNEL, applicationContext.getString(R.string.notif_channel_name), NotificationManager.IMPORTANCE_LOW))
     }
-    val notification = NotificationCompat.Builder(applicationContext, CHANNEL)
-      .setSmallIcon(android.R.drawable.ic_popup_sync)
-      .setContentTitle(applicationContext.appString(R.string.notif_title))
-      .setContentText(applicationContext.getString(text))
-      .setOngoing(true)
-      .setSilent(true)
-      .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)   // details hidden on a locked screen
-      .build()
-    return ForegroundInfo(NOTIFICATION_ID, notification, serviceType(type))
+    return ForegroundInfo(NOTIFICATION_ID, buildNotification(applicationContext, text), serviceType(type))
   }
 
   /** The ending of a run because no foreground-service type has room: a plain rerun finishes the day's work (the ledger sends it plain). */
@@ -1088,7 +1201,6 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
     const val RESUME = "findr-index-resume"   // a run that left its foreground service (polite wait, 6-hour limit) asks to be run again (RunHandoff)
     /** After the system ended a run for the foreground-service limit: how soon the plain rerun is asked for. */
     private const val RESUME_LOCK_WAIT_MS = 120_000L
-    private const val RETRY_KEY = "retried_failures_for_build"
     private const val EXTRACTOR_KEY = "document_reader_version"
     private const val GATE_KEY = "speech_language_gate_version"
     private const val RULES_KEY = "file_kind_rules_version"
@@ -1146,5 +1258,32 @@ class IndexWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
      * too. Wording only: when the work waits is PolitePolicy's rule, unchanged (1.0.6, the background status lines).
      */
     @StringRes fun politeLine(keyguardLocked: Boolean): Int = if (keyguardLocked) R.string.notif_waiting_polite else R.string.notif_waiting_other_app
+
+    /** Tap target for the ongoing indexing notification: opens or foregrounds [MainActivity] without stacking a duplicate task. */
+    internal fun openAppIntent(context: Context): PendingIntent {
+      val intent = Intent(context, MainActivity::class.java).apply {
+        action = Intent.ACTION_MAIN
+        addCategory(Intent.CATEGORY_LAUNCHER)
+        flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+      }
+      return PendingIntent.getActivity(
+        context,
+        NOTIFICATION_ID,
+        intent,
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+      )
+    }
+
+    /** Builds the ongoing foreground-service notification; always attaches [openAppIntent] and keeps details private on the lock screen. */
+    internal fun buildNotification(context: Context, @StringRes text: Int): android.app.Notification =
+      NotificationCompat.Builder(context, CHANNEL)
+        .setSmallIcon(android.R.drawable.ic_popup_sync)
+        .setContentTitle(context.appString(R.string.notif_title))
+        .setContentText(context.getString(text))
+        .setContentIntent(openAppIntent(context))
+        .setOngoing(true)
+        .setSilent(true)
+        .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)   // details hidden on a locked screen
+        .build()
   }
 }

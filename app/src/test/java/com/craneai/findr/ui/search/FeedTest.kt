@@ -3,9 +3,11 @@ package com.craneai.findr.ui.search
 import com.craneai.findr.R
 import com.craneai.findr.core.FileKind
 import com.craneai.findr.core.IndexedFile
+import com.craneai.findr.core.KindFilter
 import com.craneai.findr.core.MatchReason
 import com.craneai.findr.core.SearchHit
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -188,5 +190,53 @@ class FeedTest {
     val shots = (1L..5L).map { hit(it, FileKind.SCREENSHOT, "«momo»") }
     val feed = buildResultFeed(shots + photos(11L..13L), strongCount = 8, weakExpanded = false)
     assertEquals("HRRRRPCCCR", feed.shape())
+  }
+
+  @Test fun imagesAndDocumentsAppearBeforeVideosAndAudioInGridAndList() {
+    val hits = listOf(
+      hit(1, FileKind.VIDEO),
+      hit(2, FileKind.AUDIO, "«meeting»"),
+      hit(3, FileKind.IMAGE),
+      hit(4, FileKind.PDF, "«invoice»"),
+      hit(5, FileKind.SCREENSHOT),
+      hit(6, FileKind.DOCUMENT, "«budget»"),
+    )
+    val gridIds = buildResultFeed(hits, strongCount = 6, weakExpanded = false, listMode = false).shownFiles().map { it.id }
+    val listIds = buildResultFeed(hits, strongCount = 6, weakExpanded = false, listMode = true).shownFiles().map { it.id }
+    // All Images (3, 5) & Documents (4, 6) appear before Video (1) & Audio (2)
+    assertEquals(setOf(3L, 4L, 5L, 6L), gridIds.take(4).toSet())
+    assertEquals(setOf(1L, 2L), gridIds.drop(4).toSet())
+    assertEquals(listOf(3L, 4L, 5L, 6L, 1L, 2L), listIds)
+  }
+
+  @Test fun explicitVideoOrAudioQueryKeepsVideosAndAudioFirst() {
+    assertTrue(shouldPrioritizeImagesAndDocuments("invoice", KindFilter.ALL))
+    assertFalse(shouldPrioritizeImagesAndDocuments("wedding video", KindFilter.ALL))
+    assertFalse(shouldPrioritizeImagesAndDocuments("voice recording", KindFilter.ALL))
+    assertFalse(shouldPrioritizeImagesAndDocuments("invoice", KindFilter.VIDEOS))
+    assertFalse(shouldPrioritizeImagesAndDocuments("invoice", KindFilter.AUDIO))
+
+    val hits = listOf(hit(1, FileKind.VIDEO), hit(2, FileKind.IMAGE), hit(3, FileKind.PDF, "«a»"))
+    val feed = buildResultFeed(hits, strongCount = 3, weakExpanded = false, prioritizeImagesAndDocs = false)
+    assertEquals(1L, feed.shownFiles().first().id)
+  }
+
+  @Test fun weakImagesNeverOutrankStrongVideoOrAudio() {
+    val hits = listOf(
+      hit(1, FileKind.VIDEO),
+      hit(2, FileKind.PDF, "«a»"),
+      hit(3, FileKind.AUDIO, "«b»"),
+      hit(4, FileKind.IMAGE),
+    )
+    // Strong = [VIDEO(1), PDF(2)], Weak = [AUDIO(3), IMAGE(4)]
+    val ordered = prioritizeSearchResults(hits, strongCount = 2, query = "project", filter = KindFilter.ALL)
+    assertEquals(listOf(2L, 1L, 4L, 3L), ordered.map { it.file.id })
+  }
+
+  @Test fun recentDocumentsPrioritizeDocsAheadOfAudio() {
+    val files = (1L..6L).map { file(it, FileKind.AUDIO) } + listOf(file(7, FileKind.PDF), file(8, FileKind.DOCUMENT))
+    val feed = buildRecentFeed(files)
+    val rowIds = feed.filterIsInstance<FeedItem.Row>().map { it.hit.file.id }
+    assertEquals(listOf(7L, 8L), rowIds.take(2))
   }
 }

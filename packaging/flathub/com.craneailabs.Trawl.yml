@@ -1,0 +1,54 @@
+app-id: com.craneailabs.Trawl
+runtime: org.freedesktop.Platform
+runtime-version: "24.08"
+sdk: org.freedesktop.Sdk
+command: trawl
+# Explicitly omit `--share=network` so Flathub displays the "No network access" privacy badge (D43).
+finish-args:
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --share=ipc
+  - --device=dri
+  - --socket=pulseaudio
+  - --filesystem=xdg-documents:ro
+  - --filesystem=xdg-pictures:ro
+  - --filesystem=xdg-download:ro
+  - --filesystem=xdg-videos:ro
+  - --filesystem=xdg-music:ro
+  - --talk-name=org.freedesktop.FileManager1
+  - --talk-name=org.freedesktop.Notifications
+  - --talk-name=org.kde.StatusNotifierWatcher
+  - --env=TRAWL_FLATPAK=1
+
+modules:
+  - name: trawl
+    buildsystem: simple
+    build-commands:
+      - mkdir -p /app/trawl /app/bin
+      - cp -a Trawl/* /app/trawl/
+      - ln -s /app/trawl/bin/Trawl /app/bin/trawl
+      - install -Dm644 com.craneailabs.Trawl.metainfo.xml /app/share/metainfo/com.craneailabs.Trawl.metainfo.xml
+      - install -Dm644 trawl.png /app/share/icons/hicolor/256x256/apps/com.craneailabs.Trawl.png
+      - install -Dm644 com.craneailabs.Trawl.desktop /app/share/applications/com.craneailabs.Trawl.desktop
+    sources:
+      # Replace with the release tarball produced from `desktop/build/compose/binaries/main/app/Trawl`
+      # on Linux x86_64/aarch64 (carrying the pinned Temurin 21 runtime & zero-telemetry natives).
+      - type: archive
+        url: https://github.com/Crane-AI-Labs/trawl/releases/download/desktop-1.1.0/Trawl-1.1.0-linux-x64.tar.gz
+        sha256: REPLACE_WITH_RELEASE_LINUX_TARBALL_SHA256
+      - type: file
+        path: com.craneailabs.Trawl.metainfo.xml
+      - type: file
+        path: ../../desktop/packaging/trawl.png
+      - type: inline
+        dest-filename: com.craneailabs.Trawl.desktop
+        contents: |
+          [Desktop Entry]
+          Type=Application
+          Name=Trawl
+          Comment=Search your own files by meaning, offline
+          Exec=trawl %U
+          Icon=com.craneailabs.Trawl
+          Terminal=false
+          Categories=Utility;FileTools;
+          StartupWMClass=trawl-Trawl

@@ -66,7 +66,7 @@ object FileActions {
   internal const val EXTRA_POSITION = "position"
 
   /** The player starts this far before the moment, so the first word or the start of the scene isn't clipped. */
-  internal const val OPEN_LEAD_MS = 1_000L
+  internal const val OPEN_LEAD_MS = 1_500L
 
   /**
    * The start position to pass for a result at [atMs]: [OPEN_LEAD_MS] before it (not before 0), only for a video or recording, and only

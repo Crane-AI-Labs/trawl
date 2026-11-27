@@ -36,20 +36,73 @@ class ResultNavTest {
     assertEquals(listOf(Group.DOCUMENTS to 1, Group.PHOTOS to 2), mixed.entries.filterIsInstance<Entry.Header>().map { it.group to it.count })
   }
 
-  @Test fun videosAndRecordingsAreNotLabelledDocumentsAndPdfs() {
-    fun mixOf(vararg r: ResultRow) = ResultsLayout.build(r.toList() + photo(99), showWeak = false, cols = 3).entries.filterIsInstance<Entry.Header>().first { it.group == Group.DOCUMENTS }.mix
-    assertEquals(Mix.DOCUMENTS, mixOf(doc(1), row(2, FileKind.PDF)))
-    assertEquals(Mix.MEDIA, mixOf(row(1, FileKind.VIDEO), row(2, FileKind.AUDIO)))
-    assertEquals(Mix.BOTH, mixOf(doc(1), row(2, FileKind.VIDEO)))
+  @Test fun videosAndRecordingsGetTheirOwnDedicatedSections() {
+    val mixed = ResultsLayout.build(
+      listOf(doc(1), row(2, FileKind.PDF), row(3, FileKind.VIDEO), row(4, FileKind.AUDIO), photo(99)),
+      showWeak = false, cols = 3,
+    )
+    assertEquals(
+      listOf(Group.DOCUMENTS to 2, Group.PHOTOS to 1, Group.VIDEOS to 1, Group.AUDIO to 1),
+      mixed.entries.filterIsInstance<Entry.Header>().map { it.group to it.count },
+    )
     Strings.use(java.util.Locale.ENGLISH)
     assertEquals("Documents and PDFs", groupTitle(Group.DOCUMENTS, Mix.DOCUMENTS))
+    assertEquals("Videos", groupTitle(Group.VIDEOS))
+    assertEquals("Audio", groupTitle(Group.AUDIO))
+    assertEquals("Photos", groupTitle(Group.PHOTOS))
     assertEquals("Videos and recordings", groupTitle(Group.DOCUMENTS, Mix.MEDIA))
     assertEquals("Documents, videos and recordings", groupTitle(Group.DOCUMENTS, Mix.BOTH))
-    assertEquals("Photos", groupTitle(Group.PHOTOS, Mix.MEDIA))
     // the Recent feed's "show more" row and header say the same
     val feed = ResultsLayout.build(List(8) { row(it + 1L, FileKind.VIDEO) } + photo(50), showWeak = false, cols = 3, style = ListStyle.RECENT)
     assertEquals(Mix.MEDIA, feed.entries.filterIsInstance<Entry.Header>().first().mix)
     assertEquals(Mix.MEDIA, feed.entries.filterIsInstance<Entry.More>().single().mix)
+  }
+
+  @Test fun leadingDocumentSectionIsCappedCleanlyWithoutSplittingAroundPhotos() {
+    val rows = List(10) { doc(it + 1L) } + listOf(photo(50), row(60, FileKind.AUDIO))
+    val capped = ResultsLayout.build(rows, showWeak = false, cols = 3, recentDocRows = 6)
+    assertTrue(capped.entries.none { it is Entry.Peek }, "documents must never be split in half around photos")
+    assertEquals(listOf(Group.DOCUMENTS, Group.PHOTOS, Group.AUDIO), capped.entries.filterIsInstance<Entry.Header>().map { it.group })
+    val more = capped.entries.filterIsInstance<Entry.More>().single()
+    assertEquals(Group.DOCUMENTS, more.group)
+    assertEquals(4, more.hidden)
+    val expanded = ResultsLayout.build(rows, showWeak = false, cols = 3, recentDocRows = Int.MAX_VALUE)
+    assertTrue(expanded.entries.none { it is Entry.More })
+    assertEquals(10, expanded.entries.filterIsInstance<Entry.Doc>().count { it.row.file.kind == FileKind.DOCUMENT })
+  }
+
+  @Test fun imagesAndDocumentsLeadBeforeVideosAndAudioUnlessQueryAsksForMedia() {
+    val rows = listOf(
+      row(1, FileKind.VIDEO),
+      row(2, FileKind.AUDIO),
+      photo(3),
+      doc(4),
+      row(5, FileKind.SCREENSHOT),
+      row(6, FileKind.PDF),
+    )
+    // General query: Images (Photos/Screenshots) and Documents appear FIRST, ordered by best hit between them; Videos & Audio follow.
+    val general = ResultsLayout.build(rows, showWeak = false, cols = 3, query = "kampala")
+    assertEquals(
+      listOf(Group.PHOTOS to 2, Group.DOCUMENTS to 2, Group.VIDEOS to 1, Group.AUDIO to 1),
+      general.entries.filterIsInstance<Entry.Header>().map { it.group to it.count },
+    )
+    assertEquals(listOf(3L, 5L, 4L, 6L, 1L, 2L), general.ids)
+
+    // List view on general search also prioritizes Images & Documents before Videos & Audio
+    val generalList = ResultsLayout.build(rows, showWeak = false, cols = 3, forceList = true, query = "kampala")
+    assertEquals(listOf(3L, 4L, 5L, 6L, 1L, 2L), generalList.ids)
+
+    // Explicit media query keeps top Video/Audio match first
+    val videoQuery = ResultsLayout.build(rows, showWeak = false, cols = 3, query = "wedding video")
+    assertEquals(
+      listOf(Group.VIDEOS to 1, Group.AUDIO to 1, Group.PHOTOS to 2, Group.DOCUMENTS to 2),
+      videoQuery.entries.filterIsInstance<Entry.Header>().map { it.group to it.count },
+    )
+    assertEquals(listOf(1L, 2L, 3L, 5L, 4L, 6L), videoQuery.ids)
+
+    // Explicit SortOrder (ListStyle.SORTED) preserves exact sorted order without re-bucketing
+    val sorted = ResultsLayout.build(rows, showWeak = false, cols = 3, style = ListStyle.SORTED, forceList = true, query = "kampala")
+    assertEquals(listOf(1L, 2L, 3L, 4L, 5L, 6L), sorted.ids)
   }
 
   @Test fun theGroupHoldingTheBestHitLeads() {
@@ -86,6 +139,29 @@ class ResultNavTest {
 
   @Test fun zeroColumnsIsTreatedAsOne() {
     assertEquals(1, ResultsLayout.build(listOf(photo(1), photo(2)), false, 0).cols)
+  }
+
+  @Test fun forceListRendersEveryFileIncludingPhotosAndScreenshotsAsDocRows() {
+    val mixed = listOf(
+      photo(1),
+      row(2, FileKind.SCREENSHOT),
+      doc(3),
+      row(4, FileKind.VIDEO),
+      row(5, FileKind.AUDIO),
+      photo(6, strong = false),
+    )
+    for (style in ListStyle.entries) {
+      val collapsed = ResultsLayout.build(mixed, showWeak = false, cols = 4, style = style, forceList = true)
+      assertTrue(collapsed.entries.none { it is Entry.Tiles }, "$style with forceList must emit zero Entry.Tiles")
+      assertTrue(collapsed.sections.all { !it.grid }, "$style with forceList must have non-grid sections only")
+      val expectedIds = if (style == ListStyle.RECENT) listOf(1L, 2L, 3L, 4L, 5L, 6L) else listOf(1L, 2L, 3L, 4L, 5L)
+      assertEquals(expectedIds, collapsed.ids, "$style ids")
+      if (style != ListStyle.RECENT) {
+        val expanded = ResultsLayout.build(mixed, showWeak = true, cols = 4, style = style, forceList = true)
+        assertTrue(expanded.entries.none { it is Entry.Tiles })
+        assertEquals(listOf(1L, 2L, 3L, 4L, 5L, 6L), expanded.ids)
+      }
+    }
   }
 
   // --- arrow keys ---
@@ -165,10 +241,27 @@ class ResultNavTest {
 
   @Test fun aNewQuerySelectsItsBestHitAndARefreshKeepsTheSelection() {
     val ids = listOf(7L, 8L, 9L)
-    assertEquals(7L, ResultNav.reconcile(9, "cake", "cakes", ids))
-    assertEquals(9L, ResultNav.reconcile(9, "cake", " cake ", ids), "same query apart from spaces")
-    assertEquals(7L, ResultNav.reconcile(5, "cake", "cake", ids), "the selection left the list")
-    assertEquals(7L, ResultNav.reconcile(null, "cake", "cake", ids))
-    assertNull(ResultNav.reconcile(7, "cake", "cake", emptyList()))
+    assertEquals(7L, ResultNav.reconcile(9, "cake", "cakes", ids, userMoved = true))
+    assertEquals(9L, ResultNav.reconcile(9, "cake", " cake ", ids, userMoved = true), "same query apart from spaces")
+    assertEquals(7L, ResultNav.reconcile(5, "cake", "cake", ids, userMoved = true), "the selection left the list")
+    assertEquals(7L, ResultNav.reconcile(null, "cake", "cake", ids, userMoved = true))
+    assertNull(ResultNav.reconcile(7, "cake", "cake", emptyList(), userMoved = true))
+  }
+
+  // Closeout check F1: the words arrive first and select their best hit; when meaning lands the same query is re-ranked, and Enter must open
+  // the new best hit, not the words-phase one, unless the person has chosen a row themselves since.
+  @Test fun meaningLandingOnTheWordsMovesTheSelectionToTheNewBestHit() {
+    // Row 5 (the 4th row selected), row 8 (a document selected under a photo that became first), row 16 (the 3rd row selected).
+    val cases = listOf(
+      Triple(listOf(40L, 41L, 42L, 43L, 44L), 43L, listOf(44L, 40L, 41L, 42L, 43L)),
+      Triple(listOf(50L, 51L, 52L), 52L, listOf(53L, 50L, 51L, 52L)),
+      Triple(listOf(60L, 61L, 62L, 63L), 62L, listOf(63L, 60L, 61L, 62L)),
+    )
+    for ((_, wordsHit, reRanked) in cases) {
+      assertEquals(reRanked.first(), ResultNav.reconcile(wordsHit, "the month", "the month", reRanked, userMoved = false), "follows the new best hit")
+      assertEquals(wordsHit, ResultNav.reconcile(wordsHit, "the month", "the month", reRanked, userMoved = true), "a row the person chose stays chosen")
+    }
+    assertEquals(7L, ResultNav.reconcile(9, "cake", "cakes", listOf(7L, 8L, 9L), userMoved = true), "a new query still starts at its best hit")
+    assertEquals(9L, ResultNav.reconcile(9, "cake", "cake", listOf(9L, 7L), userMoved = false), "already the best hit: unchanged")
   }
 }

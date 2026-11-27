@@ -7,6 +7,7 @@ package com.craneai.findr.core
  * Parakeet (sherpa-onnx, CTC head) returns the tokens it wrote and, for each, the second of the audio it was emitted at, on a grid of
  * its frame length (80 ms). A token that begins a word carries a leading space ("▁" in the model's file). The first token of a word
  * gives the word's start; the last one's frame, plus one frame, its end. Both are moved [LATE_BIAS_MS] earlier, as the model is late.
+ * A model with another frame length and lateness (a speech pack: its pack.json, see engine/SpeechPack.kt) passes its own.
  */
 object WordTimes {
   /** Parakeet's frame: 8x subsampling of 10 ms features. A word lasts at least this long after its last token. */
@@ -26,17 +27,22 @@ object WordTimes {
    * audio's length. Empty when the model gave no times (tokens and timestamps differ in number), so the caller keeps the whole
    * stretch's one time.
    */
-  fun fromTokens(tokens: List<String>, timestamps: FloatArray, seconds: Double, baseMs: Long): List<SpokenWord> {
+  fun fromTokens(
+    tokens: List<String>, timestamps: FloatArray, seconds: Double, baseMs: Long,
+    frameMs: Long = FRAME_MS, lateBiasMs: Long = LATE_BIAS_MS,
+  ): List<SpokenWord> {
     if (tokens.isEmpty() || tokens.size != timestamps.size) return emptyList()
     val texts = ArrayList<String>()
     val starts = ArrayList<Long>()
     val lasts = ArrayList<Long>()
     val sb = StringBuilder()
+    var gap = false   // a token that is only a space: the next token starts a word, as it does in the text sherpa writes
     for (i in tokens.indices) {
       val piece = tokens[i].replace('▁', ' ')
-      if (piece.isBlank()) continue
-      val ms = ((timestamps[i] * 1000f).toLong() - LATE_BIAS_MS).coerceAtLeast(0)
-      if (sb.isEmpty() || piece[0].isWhitespace()) {
+      if (piece.isBlank()) { gap = true; continue }
+      val ms = ((timestamps[i] * 1000f).toLong() - lateBiasMs).coerceAtLeast(0)
+      if (sb.isEmpty() || gap || piece[0].isWhitespace()) {
+        gap = false
         if (sb.isNotEmpty()) texts += sb.toString()
         sb.setLength(0)
         starts += ms
@@ -48,7 +54,7 @@ object WordTimes {
     val limit = (seconds * 1000).toLong()
     return texts.indices.map { i ->
       val next = if (i + 1 < texts.size) starts[i + 1] else limit
-      val end = minOf(lasts[i] + FRAME_MS, maxOf(next, starts[i]))
+      val end = minOf(lasts[i] + frameMs, maxOf(next, starts[i]))
       SpokenWord(texts[i], baseMs + starts[i], baseMs + end)
     }
   }
@@ -76,9 +82,12 @@ object WordTimes {
    * The words of a cleaned stretch of speech: [tokens] and [timestamps] as the model gave them, cleaned by the same rule as the text.
    * Empty unless they spell exactly [text] when joined by spaces, so a mark's offset is always a place in the stored text.
    */
-  fun forText(text: String, tokens: List<String>, timestamps: FloatArray, seconds: Double, baseMs: Long): List<SpokenWord> {
+  fun forText(
+    text: String, tokens: List<String>, timestamps: FloatArray, seconds: Double, baseMs: Long,
+    frameMs: Long = FRAME_MS, lateBiasMs: Long = LATE_BIAS_MS,
+  ): List<SpokenWord> {
     if (text.isEmpty()) return emptyList()
-    val words = clean(fromTokens(tokens, timestamps, seconds, baseMs), seconds) { it.text }
+    val words = clean(fromTokens(tokens, timestamps, seconds, baseMs, frameMs, lateBiasMs), seconds) { it.text }
     return if (words.joinToString(" ") { it.text } == text) words else emptyList()
   }
 }

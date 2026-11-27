@@ -15,8 +15,8 @@ class KeyMapTest {
   private fun ctx(
     screen: Screen = Screen.MAIN, zone: FocusZone = FocusZone.SEARCH, quickLook: Boolean = false, queryBlank: Boolean = false,
     hasResults: Boolean = true, isMac: Boolean = false, inGrid: Boolean = false, atStart: Boolean = true, atEnd: Boolean = true,
-    picked: Boolean = false, textSelected: Boolean = false,
-  ) = KeyContext(screen, zone, quickLook, queryBlank, hasResults, isMac, inGrid, atStart, atEnd, picked, textSelected)
+    picked: Boolean = false, textSelected: Boolean = false, similar: Boolean = false, canHide: Boolean = false,
+  ) = KeyContext(screen, zone, quickLook, queryBlank, hasResults, isMac, inGrid, atStart, atEnd, picked, textSelected, similar, canHide)
 
   private fun key(k: K, char: Int = 0, ctrl: Boolean = false, meta: Boolean = false, shift: Boolean = false) = Keystroke(k, char, ctrl, meta, shift)
 
@@ -127,6 +127,27 @@ class KeyMapTest {
     assertEquals(KeyAction.FocusSearch, map(key(K.ESCAPE), ctx(zone = FocusZone.OTHER)))
   }
 
+  @Test fun commandRShowsInFolderLikeCommandEnterOnEverySystem() {
+    assertEquals(KeyAction.ShowInFolder, map(key(K.LETTER_R, 'r'.code, ctrl = true), ctx(isMac = false)))
+    assertEquals(KeyAction.ShowInFolder, map(key(K.LETTER_R, 'r'.code, meta = true), ctx(isMac = true)))
+    assertNull(map(key(K.LETTER_R, 'r'.code, ctrl = true), ctx(isMac = true)), "Ctrl R on a Mac is not ours")
+    assertNull(map(key(K.LETTER_R, 'r'.code, ctrl = true), ctx(hasResults = false)))
+    assertNull(map(key(K.LETTER_R, 'r'.code, ctrl = true, shift = true)), "Ctrl+Shift+R is left alone")
+    assertEquals(KeyAction.ShowInFolder, map(key(K.LETTER_R, 'r'.code, ctrl = true), ctx(zone = FocusZone.LIST)))
+    assertEquals(KeyAction.TypeIntoSearch('r'.code), map(key(K.LETTER_R, 'r'.code), ctx(zone = FocusZone.LIST)), "a bare R typed on the list goes to the search box")
+    assertNull(map(key(K.LETTER_R, 'r'.code), ctx(zone = FocusZone.SEARCH)), "and in the box it is a letter")
+  }
+
+  @Test fun escapeHidesTheWindowOnlyWhenNothingIsLeftToClearAndItCanComeBack() {
+    assertEquals(KeyAction.ClearQuery, map(key(K.ESCAPE), ctx(zone = FocusZone.SEARCH, queryBlank = false, canHide = true)), "a query is cleared first")
+    assertEquals(KeyAction.ClearSimilar, map(key(K.ESCAPE), ctx(zone = FocusZone.SEARCH, queryBlank = true, similar = true, canHide = true)), "Find similar exits before hiding")
+    assertEquals(KeyAction.HideWindow, map(key(K.ESCAPE), ctx(zone = FocusZone.SEARCH, queryBlank = true, canHide = true)))
+    assertNull(map(key(K.ESCAPE), ctx(zone = FocusZone.SEARCH, queryBlank = true, canHide = false)), "with no tray to come back from nothing happens")
+    assertEquals(KeyAction.FocusSearch, map(key(K.ESCAPE), ctx(zone = FocusZone.LIST, canHide = true)), "from the list Esc goes to the box first")
+    assertEquals(KeyAction.ClearPicked, map(key(K.ESCAPE), ctx(zone = FocusZone.SEARCH, queryBlank = true, picked = true, canHide = true)), "a choice is let go of before anything")
+    assertEquals(KeyAction.CloseQuickLook, map(key(K.ESCAPE), ctx(zone = FocusZone.LIST, quickLook = true, canHide = true)), "the preview closes before the window hides")
+  }
+
   @Test fun quickLookHasItsOwnKeysAndSwallowsTheRest() {
     val q = ctx(quickLook = true, zone = FocusZone.LIST)
     assertEquals(KeyAction.CloseQuickLook, map(key(K.ESCAPE), q))
@@ -166,6 +187,20 @@ class KeyMapTest {
       assertNull(map(key(K.COMMA, ctrl = true), ctx(screen = s)))
     }
     assertNull(map(key(K.ESCAPE), ctx(screen = Screen.FIRST_RUN)))
+  }
+
+  @Test fun commandShiftSStartsFindSimilarWithoutStealingPlainS() {
+    assertEquals(KeyAction.FindSimilar, map(key(K.LETTER_S, 's'.code, meta = true, shift = true), ctx(isMac = true, zone = FocusZone.SEARCH)))
+    assertEquals(KeyAction.FindSimilar, map(key(K.LETTER_S, 's'.code, meta = true, shift = true), ctx(isMac = true, zone = FocusZone.LIST)))
+    assertEquals(KeyAction.FindSimilar, map(key(K.LETTER_S, 's'.code, ctrl = true, shift = true), ctx(isMac = false, zone = FocusZone.SEARCH)))
+    assertEquals(KeyAction.FindSimilar, map(key(K.LETTER_S, 's'.code, ctrl = true, shift = true), ctx(isMac = false, zone = FocusZone.LIST)))
+    assertEquals(KeyAction.FindSimilar, map(key(K.LETTER_S, 's'.code, meta = true, shift = true), ctx(isMac = true, quickLook = true, zone = FocusZone.LIST)))
+    assertNull(map(key(K.LETTER_S, 's'.code, ctrl = true, shift = true), ctx(isMac = true)), "Ctrl+Shift+S on a Mac is not ours")
+    assertNull(map(key(K.LETTER_S, 's'.code, meta = true), ctx(isMac = true)), "plain Cmd+S is left alone")
+    assertNull(map(key(K.LETTER_S, 's'.code, ctrl = true), ctx(isMac = false)), "plain Ctrl+S is left alone")
+    assertNull(map(key(K.LETTER_S, 's'.code, meta = true, shift = true), ctx(isMac = true, hasResults = false)))
+    assertEquals(KeyAction.TypeIntoSearch('s'.code), map(key(K.LETTER_S, 's'.code), ctx(zone = FocusZone.LIST)), "bare s on the list types into search")
+    assertNull(map(key(K.LETTER_S, 's'.code), ctx(zone = FocusZone.SEARCH)), "bare s in the search field stays a letter")
   }
 
   // ---- TEXT SIZE (H3) ----

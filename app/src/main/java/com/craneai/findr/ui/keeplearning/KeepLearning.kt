@@ -3,6 +3,7 @@ package com.craneai.findr.ui.keeplearning
 import com.craneai.findr.core.IndexPhase
 import com.craneai.findr.core.IndexStatus
 import com.craneai.findr.core.PauseReason
+import com.craneai.findr.engine.IndexPolicy
 
 /**
  * "Keep learning": a dark, dimmed screen that keeps Trawl in front while it indexes. On TECNO, Infinix and itel phones the
@@ -20,7 +21,7 @@ object KeepLearning {
   /** Battery temperature at which the screen stops. Below the worker's own cool-down (44 °C), so the phone never gets there. */
   const val HOT_C = 42.0
 
-  /** Android's PowerManager.THERMAL_STATUS_SEVERE: at this status or above the screen stops. */
+  /** Android's PowerManager.THERMAL_STATUS_SEVERE: at this status or above the screen stops, when the battery or the headroom agrees (IndexPolicy.corroborate). */
   const val THERMAL_SEVERE = 3
 
   /** Without Transsion's freezing, a backlog this large (an hour or more on a budget phone) is reason enough to offer it. */
@@ -49,17 +50,19 @@ object KeepLearning {
     val noProgressForMs: Long,
     val plugged: Boolean,
     val batteryPct: Int,
-    val batteryTempC: Double,
+    val batteryTempC: Double,   // NaN when the phone does not say
     val thermalStatus: Int,
     val startedOnCharger: Boolean,
     val unpluggedForMs: Long,
+    /** `PowerManager.getThermalHeadroom`; NaN when the phone gives none. */
+    val headroom: Float = Float.NaN,
   )
 
   private val CANT_LEAVE = setOf(PauseReason.USER, PauseReason.NO_PERMISSION, PauseReason.STORAGE_LOW)
 
   /** Why the screen should stop now, or null to keep going. Safety first: heat and battery before anything else. */
   fun stopReason(i: Inputs): Stop? = when {
-    i.thermalStatus >= THERMAL_SEVERE || i.batteryTempC >= HOT_C -> Stop.HOT
+    IndexPolicy.corroborate(i.thermalStatus, i.batteryTempC, i.headroom) >= THERMAL_SEVERE || i.batteryTempC >= HOT_C -> Stop.HOT
     !i.plugged && i.batteryPct in 0 until LOW_BATTERY_PCT -> Stop.LOW_BATTERY
     i.startedOnCharger && !i.plugged && i.unpluggedForMs >= UNPLUG_GRACE_MS -> Stop.UNPLUGGED
     i.phase == IndexPhase.UP_TO_DATE && i.sameStateForMs >= DONE_HOLD_MS -> Stop.DONE

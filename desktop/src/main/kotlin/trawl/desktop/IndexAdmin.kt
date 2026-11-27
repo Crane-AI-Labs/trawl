@@ -147,6 +147,31 @@ object IndexAdmin {
     return n
   }
 
+  const val LEGACY_WORKBOOKS_KEY = "desktop_formats_xls_v1"
+
+  /**
+   * Legacy Excel workbooks (.xls), which builds before 1.1.0 knew by name only (core XlsText reads them now), go back in the queue once
+   * per index, as [rereadNewFormats] did for the first formats; no other file is touched. Its own note, so an index that already ran
+   * that clean-up runs this one too. A failure here is not allowed to stop the index opening. Returns how many files went back.
+   */
+  fun rereadLegacyWorkbooks(store: IndexStore, log: (String) -> Unit = {}): Int {
+    if (store.meta(LEGACY_WORKBOOKS_KEY) != null) return 0
+    val which = "kind = 'DOCUMENT' AND state != 'skipped' AND lower(name) LIKE '%.xls'"
+    val n = try {
+      store.write { db ->
+        val docs = db.long("SELECT COUNT(*) FROM files WHERE $which") ?: 0L
+        if (docs > 0) db.run("UPDATE files SET state = 'searchable', detail = NULL WHERE $which")
+        docs.toInt()
+      }
+    } catch (t: Throwable) {
+      log("legacy workbook clean-up skipped: ${t.javaClass.simpleName}")
+      return 0
+    }
+    store.setMeta(LEGACY_WORKBOOKS_KEY, "1")
+    if (n > 0) log("$n legacy Excel workbooks go back in the queue: this build reads them")
+    return n
+  }
+
   /** The note that says the false-video clean-up ([dropFalseTransportStreams]) has run on this index. */
   const val TRANSPORT_KEY = "ts-not-video-cleanup-v1"
 

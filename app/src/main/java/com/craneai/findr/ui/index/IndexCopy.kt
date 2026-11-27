@@ -17,7 +17,7 @@ import com.craneai.findr.ui.common.formatCount
 
 @Composable
 fun IndexStatus.headline(): String = when (phase) {
-  IndexPhase.NOT_STARTED -> stringResource(R.string.meter_title_not_started)
+  IndexPhase.NOT_STARTED -> stringResource(if (indexOpening) R.string.index_opening_title else R.string.meter_title_not_started)
   IndexPhase.SCANNING -> stringResource(R.string.meter_title_scanning)
   IndexPhase.INDEXING -> stringResource(if (waitingForModels) R.string.meter_title_needs_models else R.string.meter_title_indexing)
   IndexPhase.PAUSED -> pauseReason?.let { stringResource(it.titleRes) } ?: stringResource(R.string.pause_user)
@@ -56,7 +56,7 @@ fun IndexStatus.subline(): String {
   val understood = formatCount(filesUnderstood)
   val readable = formatCount(filesReadable)   // what "understood" is out of: files that could not be read are final and counted apart
   return when (phase) {
-    IndexPhase.NOT_STARTED -> appString(R.string.meter_sub_not_started)
+    IndexPhase.NOT_STARTED -> if (indexOpening) stringResource(R.string.index_opening_detail) else appString(R.string.meter_sub_not_started)
     IndexPhase.SCANNING -> stringResource(R.string.meter_sub_scanning, known)
     IndexPhase.INDEXING -> {
       val eta = etaLabel(etaSeconds)

@@ -7,8 +7,8 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class SpeechLanguageGateTest {
-  private val words = File("src/main/assets/${SpeechLanguageGate.ASSET}").inputStream().use { EnglishWords.fromGzip(it) }
-  private val common = File("src/main/assets/${SpeechLanguageGate.COMMON_ASSET}").inputStream().use { EnglishWords.fromGzip(it) }
+  private val words = File("src/full/assets/${SpeechLanguageGate.ASSET}").inputStream().use { EnglishWords.fromGzip(it) }
+  private val common = File("src/full/assets/${SpeechLanguageGate.COMMON_ASSET}").inputStream().use { EnglishWords.fromGzip(it) }
   private val gate = SpeechLanguageGate(lazyOf(words), lazyOf(common))
   private fun kept(text: String) = gate.judge(text).english
 
@@ -98,6 +98,35 @@ class SpeechLanguageGateTest {
     assertTrue(pieces.all { it.text.length <= 100 && it.startMs == null && it.endMs == null && it.marks == null })
     assertEquals(text, pieces.joinToString(" ") { it.text })
     assertTrue(TranscriptPieces.ofText("").isEmpty())
+  }
+
+  private fun seg(at: Long, text: String, sung: Boolean = false) =
+    com.craneai.findr.core.SpeechSegment(at, at + 1000, text, sung = sung)
+  private fun tx(vararg s: com.craneai.findr.core.SpeechSegment) = com.craneai.findr.core.AudioTranscript(s.toList(), emptyList(), 10.0)
+
+  /** Nothing sung: keep() is exactly the one-pool judgement (same verdict, same pieces), so speech-only files index as before. */
+  @Test fun withNothingSungKeepIsTheOldJudgement() {
+    val english = tx(seg(0, "I'm at the market, I'll call you when I'm done"), seg(2000, "it's nearly nine and the bus is late"))
+    val k = gate.keep(english)
+    assertTrue(k.verdict.english)
+    assertEquals(TranscriptPieces.speech(english).map { it.text }, k.speech.map { it.text })
+    val junk = tx(seg(0, "Ekku Kamoldavva, Kitiwa, Tishin Shina Holy de me They won' get of dom Nala shall it to sing"))
+    assertEquals(gate.judge(junk.speech[0].text).share, gate.keep(junk).verdict.share, 1e-9)
+    val old = gate.judge(junk.speech[0].text)
+    assertFalse(old.english)
+    assertEquals(TranscriptPieces.ofText(old.partial).map { it.text }, gate.keep(junk).speech.map { it.text })
+  }
+
+  /** Sung and spoken words are judged apart: English lyrics survive non-English talk around them, and junk lyrics do not ride on English speech. */
+  @Test fun sungAndSpokenPoolsAreJudgedApart() {
+    val talk = "Ekku Kamoldavva Kitiwa Tishin Shina Holy de me Nala Baggano Pocononia Eblla Italin nonji Aza oulated"
+    val lyric = "good morning my friends the sun is up and we are glad to see the day"   // made up for this test
+    val k = gate.keep(tx(seg(0, talk), seg(5000, lyric, sung = true)))
+    assertFalse(k.verdict.english)
+    assertEquals(listOf(lyric), k.speech.map { it.text })
+    val k2 = gate.keep(tx(seg(0, "I'm at the market, I'll call you when I'm done, it's nearly nine"), seg(5000, talk, sung = true)))
+    assertEquals(1, k2.speech.size)
+    assertFalse(k2.speech[0].text.contains("Kamoldavva"))
   }
 
   /** The Mac eval's twin (the experiment code) wrote this file: every line must come out the same on the phone's code. */

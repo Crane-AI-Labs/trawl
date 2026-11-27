@@ -9,4 +9,7 @@
   <string name="colours_wallpaper">ألوان خلفية الشاشة</string>
   <string name="colours_wallpaper_hint">يأخذ ألوانه من خلفية الشاشة، ويتغيّر بتغيّرها.</string>
   <string name="settings_brightness">فاتح أم داكن</string>
+  <string name="notif_waiting_other_app">في الانتظار أثناء استخدامك تطبيقاً آخر</string>
+  <string name="preview_checking">المعاينة مخفية حتى يتم الفحص</string>
+  <string name="preview_checking_words">جارٍ الفحص · اضغط للعرض</string>
 </resources>

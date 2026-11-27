@@ -78,13 +78,12 @@ object EngineFingerprint {
 
   /**
    * Name, size, modification time in nanoseconds (a whole-second or millisecond clock let a file rebuilt in the same tick look
-   * unchanged) and a short hash of the first and last bytes, for the model's xnnpack cache files and the model file itself, in
-   * name order; empty when the model has no cache file yet. Only our own file names, numbers and a hash: nothing about the
-   * person's files.
+   * unchanged) and a short hash of the first and last bytes, for the model's XNNPACK and ML Drift GPU cache files and the model
+   * file itself, in name order; empty when the model has no cache file yet. Only our own file names, numbers and a hash: nothing
+   * about the person's files.
    */
   fun of(cacheDir: File, modelFile: File): String {
-    val caches = cacheDir.listFiles { f -> f.isFile && f.name.startsWith("${modelFile.name}_") && f.name.endsWith(".xnnpack_cache") }
-      ?.sortedBy { it.name }.orEmpty()
+    val caches = EngineCache.list(cacheDir, modelFile.name)
     if (caches.isEmpty()) return ""
     return (listOf(modelFile) + caches).joinToString("|") { "${it.name}:${it.length()}:${modifiedNanos(it)}:${edgeHash(it)}" }
   }

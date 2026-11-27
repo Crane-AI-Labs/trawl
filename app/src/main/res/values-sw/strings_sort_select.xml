@@ -5,6 +5,14 @@
   <string name="sort_oldest">Ya zamani zaidi</string>
   <string name="sort_largest">Kubwa zaidi</string>
   <string name="sort_name">Jina A hadi Z</string>
+  <string name="sort_chip_best">Kulingana</string>
+  <string name="sort_chip_newest">Mpya</string>
+  <string name="sort_chip_oldest">Zamani</string>
+  <string name="sort_chip_created_newest">Tarehe</string>
+  <string name="sort_chip_created_oldest">Tarehe</string>
+  <string name="sort_chip_largest">Kubwa</string>
+  <string name="sort_chip_smallest">Ndogo</string>
+  <string name="sort_chip_name">Jina</string>
   <string name="sort_group">Panga kwa</string>
   <string name="date_any_time">Wakati wowote</string>
   <string name="date_group">Tarehe</string>
@@ -85,4 +93,20 @@
   <string name="snack_marked_sensitive_many">Yamewekewa alama kuwa nyeti. Sasa yamefichwa kwenye matokeo.</string>
   <string name="snack_unmarked_sensitive_many">Alama zimeondolewa. Yanaweza kuonekana tena kwenye matokeo.</string>
   <string name="nothing_in_dates">Hakuna kilichopatikana katika kipindi cha %1$s. Jaribu tarehe nyingine.</string>
+  <string name="sort_created_newest">Tarehe ya kuundwa (mpya zaidi)</string>
+  <string name="sort_created_oldest">Tarehe ya kuundwa (za zamani zaidi)</string>
+  <string name="sort_smallest">Ndogo zaidi</string>
+  <string name="subtype_group">Aina ya faili</string>
+  <string name="subtype_all">Aina zote</string>
+  <string name="subtype_remove">Ondoa kichujio cha aina ya faili</string>
+  <string name="subtype_spreadsheet_menu">Excel na CSV (.xlsx, .csv)</string>
+  <string name="subtype_text_menu">Maandishi na Markdown (.txt, .md)</string>
+  <string name="subtype_text_chip">Maandishi / MD</string>
+  <string name="subtype_code_menu">Msimbo na data (.json, .xml, …)</string>
+  <string name="subtype_code_chip">Msimbo / Data</string>
+  <string name="view_mode_group">Mpangilio wa mwonekano</string>
+  <string name="view_grid">Gridi</string>
+  <string name="view_list">Orodha</string>
+  <string name="label_modified_short">Ilisasishwa %1$s</string>
+  <string name="label_created_short">Iliundwa %1$s</string>
 </resources>

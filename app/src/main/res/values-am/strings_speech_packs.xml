@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="pack_speech_lg_name">በሉጋንዳ ንግግር</string>
+  <string name="pack_speech_nyn_name">በሩንያንኮሌ ንግግር</string>
+  <string name="pack_speech_ach_name">በአቾሊ ንግግር</string>
+  <string name="pack_speech_sw_name">በስዋሂሊ ንግግር</string>
+  <string name="pack_speech_xog_name">በሉሶጋ ንግግር (ቤታ)</string>
+  <string name="speech_language_lg">ሉጋንዳ</string>
+  <string name="speech_language_nyn">ሩንያንኮሌ</string>
+  <string name="speech_language_ach">አቾሊ</string>
+  <string name="speech_language_sw">ስዋሂሊ</string>
+  <string name="speech_language_xog">ሉሶጋ</string>
+  <string name="pack_speech_language_benefit">የእንግሊዝኛ ንግግር ፍለጋ ማንበብ የማይችለውን በ%1$s የድምፅ ማስታወሻዎችና ቪዲዮዎች ውስጥ የተነገረውን ያገኛል። በፈተናዎቻችን ትክክለኛው የድምፅ ማስታወሻ %2$d%% ጊዜ መጀመሪያ ላይ መጥቷል፣ ያለ እሱ %3$d%% ነበር።</string>
+  <string name="pack_speech_language_cost">እንግሊዝኛ ያልሆነ ንግግርን በድጋሚ ያነባል፣ ስለዚህ እነዚያ ፋይሎች ለመነበብ ረዘም ያለ ጊዜ ይወስዳሉ፣ እና ፍጹም አይደለም፦ አንዳንድ የተሳሳቱ ቃላት ይጠብቁ። የእንግሊዝኛ ንግግር እንደቀድሞው ይነበባል። በአንድ ጊዜ አንድ የንግግር ቋንቋ ብቻ፤ ተጨማሪ ማህደረ ትውስታ የሚፈልገው ሲሰራ ብቻ ነው።</string>
+</resources>

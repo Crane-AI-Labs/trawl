@@ -71,3 +71,8 @@ dist/
 # sherpa-onnx native jars for the desktop: fetched at build time from the pinned release tag (desktop/settings.gradle.kts, checked against desktop/libs/SHA256SUMS)
 desktop/libs/repo/**/sherpa-onnx-native-lib-*.jar
 desktop/libs/repo/**/*.part
+
+# Staged real model weights inside Play Asset Delivery modules (never commit heavy binaries; staged by scripts/pack-speech-packs.sh --stage-pad)
+asset-packs/*/src/main/assets/trawl-*/
+asset-packs/*/src/main/assets/findr-*/
+asset-packs/*/src/main/assets/*.onnx

@@ -28,7 +28,34 @@ sealed interface Entry {
   data class More(val group: Group, val hidden: Int, val mix: Mix = Mix.DOCUMENTS) : Entry { override val key get() = "more-${group.name}" }
 }
 
-enum class Group { DOCUMENTS, PHOTOS }
+enum class Group { DOCUMENTS, PHOTOS, VIDEOS, AUDIO }
+
+private val MEDIA_QUERY_TOKENS = setOf(
+  "video", "videos", "movie", "movies", "clip", "clips", "film", "films", "mp4", "mov", "mkv", "avi", "webm", "m4v",
+  "audio", "voice", "voices", "recording", "recordings", "podcast", "podcasts", "song", "songs", "music", "call", "calls",
+  "mp3", "m4a", "wav", "flac", "ogg", "aac", "opus", "amr",
+)
+
+private val QUERY_WORD_SPLIT = Regex("[^\\p{L}\\p{N}]+")
+
+/** True when [query] explicitly asks for video or audio files/recordings, keeping media hits at the top. */
+fun isMediaSpecificQuery(query: String): Boolean =
+  query.isNotBlank() && query.lowercase().split(QUERY_WORD_SPLIT).any { it in MEDIA_QUERY_TOKENS }
+
+/** Primary search kinds (Images & Documents) prioritized ahead of Videos/Audio/Other on general queries. */
+fun isPrimarySearchKind(kind: com.craneai.findr.core.FileKind): Boolean =
+  kind == com.craneai.findr.core.FileKind.IMAGE ||
+    kind == com.craneai.findr.core.FileKind.SCREENSHOT ||
+    kind == com.craneai.findr.core.FileKind.DOCUMENT ||
+    kind == com.craneai.findr.core.FileKind.PDF
+
+/** Maps each result row to its dedicated All-view section (Photos, Documents, Videos, Audio). */
+fun groupOf(row: ResultRow): Group = when (row.file.kind) {
+  com.craneai.findr.core.FileKind.IMAGE, com.craneai.findr.core.FileKind.SCREENSHOT -> Group.PHOTOS
+  com.craneai.findr.core.FileKind.VIDEO -> Group.VIDEOS
+  com.craneai.findr.core.FileKind.AUDIO -> Group.AUDIO
+  else -> Group.DOCUMENTS
+}
 
 /**
  * What the non-picture group holds, so its label does not call a video a document: only documents and PDFs, only videos and recordings,
@@ -76,26 +103,62 @@ object ResultsLayout {
   /**
    * Strong matches first, grouped into documents and photos with whichever group holds the best hit leading; then, when there are
    * weaker matches, a toggle and (if expanded) those, grouped the same way. Nothing is reordered inside a group: ranking is the searcher's.
+   * When [forceList] is true, every file (including photos and screenshots) renders as an [Entry.Doc] table row instead of [Entry.Tiles].
    * A file appears once.
    */
-  fun build(rows: List<ResultRow>, showWeak: Boolean, cols: Int, style: ListStyle = ListStyle.RESULTS, recentDocRows: Int = RECENT_DOC_ROWS): BuiltResults {
+  fun build(
+    rows: List<ResultRow>,
+    showWeak: Boolean,
+    cols: Int,
+    style: ListStyle = ListStyle.RESULTS,
+    recentDocRows: Int = RECENT_DOC_ROWS,
+    forceList: Boolean = false,
+    query: String = "",
+  ): BuiltResults {
     val c = cols.coerceAtLeast(1)
     val entries = mutableListOf<Entry>()
     val sections = mutableListOf<NavSection>()
     val unique = rows.distinctBy { it.file.id }
+    val preferMedia = isMediaSpecificQuery(query)
+    if (forceList) {
+      if (style == ListStyle.RECENT) {
+        flat(unique, c, entries, sections, forceList = true)
+        return BuiltResults(entries, sections, c)
+      }
+      val orderRows: (List<ResultRow>) -> List<ResultRow> = { list ->
+        if (style == ListStyle.RESULTS && !preferMedia) {
+          val (primary, secondary) = list.partition { isPrimarySearchKind(it.file.kind) }
+          primary + secondary
+        } else list
+      }
+      val strong = orderRows(unique.filter { it.strong })
+      val weak = orderRows(unique.filterNot { it.strong })
+      flat(strong, c, entries, sections, forceList = true)
+      if (weak.isNotEmpty()) {
+        entries += Entry.Weak(weak.size, showWeak)
+        if (showWeak) flat(weak, c, entries, sections, forceList = true)
+      }
+      return BuiltResults(entries, sections, c)
+    }
     if (style == ListStyle.RECENT) { recent(unique, c, recentDocRows, entries, sections); return BuiltResults(entries, sections, c) }
     val strong = unique.filter { it.strong }
     val weak = unique.filterNot { it.strong }
-    if (style == ListStyle.SORTED) flat(strong, c, entries, sections) else addGroups(strong, c, entries, sections, headers = true)
+    if (style == ListStyle.SORTED) flat(strong, c, entries, sections) else addGroups(strong, c, entries, sections, headers = true, sectionCap = recentDocRows, preferMediaFirst = preferMedia)
     if (weak.isNotEmpty()) {
       entries += Entry.Weak(weak.size, showWeak)
-      if (showWeak) { if (style == ListStyle.SORTED) flat(weak, c, entries, sections) else addGroups(weak, c, entries, sections, headers = false) }
+      if (showWeak) { if (style == ListStyle.SORTED) flat(weak, c, entries, sections) else addGroups(weak, c, entries, sections, headers = false, sectionCap = Int.MAX_VALUE, preferMediaFirst = preferMedia) }
     }
     return BuiltResults(entries, sections, c)
   }
 
-  /** Items in exactly the order given: documents as rows, a run of pictures as grid rows, no groups and no headings. */
-  private fun flat(rows: List<ResultRow>, cols: Int, entries: MutableList<Entry>, sections: MutableList<NavSection>) {
+  /** Items in exactly the order given: documents as rows, a run of pictures as grid rows (or all rows when [forceList]), no groups and no headings. */
+  private fun flat(rows: List<ResultRow>, cols: Int, entries: MutableList<Entry>, sections: MutableList<NavSection>, forceList: Boolean = false) {
+    if (rows.isEmpty()) return
+    if (forceList) {
+      rows.forEach { entries += Entry.Doc(it) }
+      sections += NavSection(grid = false, ids = rows.map { it.file.id })
+      return
+    }
     var i = 0
     while (i < rows.size) {
       val tiles = isTile(rows[i])
@@ -126,49 +189,49 @@ object ResultsLayout {
     }
   }
 
-  private fun addGroups(rows: List<ResultRow>, cols: Int, entries: MutableList<Entry>, sections: MutableList<NavSection>, headers: Boolean) {
+  private fun addGroups(
+    rows: List<ResultRow>,
+    cols: Int,
+    entries: MutableList<Entry>,
+    sections: MutableList<NavSection>,
+    headers: Boolean,
+    sectionCap: Int = Int.MAX_VALUE,
+    preferMediaFirst: Boolean = false,
+  ) {
     if (rows.isEmpty()) return
-    val docs = rows.filterNot(::isTile)
-    val photos = rows.filter(::isTile)
-    val photosFirst = isTile(rows.first())
-    val mixed = docs.isNotEmpty() && photos.isNotEmpty()
-    // The photo peek: documents lead, both kinds are strong, and there are more than a screenful of document rows. The top photos are lifted
-    // to just after the first rows so a photo query whose answer is a photo shows it on the first screen. No hit moves within its own group
-    // and a file appears once (the rest of the photos follow under the usual heading).
-    val peek = mixed && headers && !photosFirst && docs.size > PEEK_AFTER_ROWS
-    fun docsOut() {
-      if (docs.isEmpty()) return
-      if (mixed && headers) entries += Entry.Header(Group.DOCUMENTS, docs.size, Mix.of(docs))
-      if (peek) {
-        val take = cols.coerceIn(1, PEEK_MAX_CELLS)
-        val top = photos.take(take)
-        val rest = photos.drop(take)
-        val head = docs.take(PEEK_AFTER_ROWS)
-        val tail = docs.drop(PEEK_AFTER_ROWS)
-        head.forEach { entries += Entry.Doc(it) }
-        sections += NavSection(grid = false, ids = head.map { it.file.id })
-        entries += Entry.Peek(photos.size, more = rest.isNotEmpty())
-        entries += Entry.Tiles(top)
-        sections += NavSection(grid = true, ids = top.map { it.file.id })
-        tail.forEach { entries += Entry.Doc(it) }
-        sections += NavSection(grid = false, ids = tail.map { it.file.id })
-        if (rest.isNotEmpty()) {
-          entries += Entry.Header(Group.PHOTOS, rest.size)
-          rest.chunked(cols).forEach { entries += Entry.Tiles(it) }
-          sections += NavSection(grid = true, ids = rest.map { it.file.id })
-        }
-        return
+    // Partition into unbroken sections (Photos, Documents and PDFs, Videos, Audio), preserving within-group relevance order.
+    // On general queries, Images (Photos/Screenshots) and Documents ALWAYS appear first (ordered between themselves by best hit),
+    // followed by Videos and Audio; media-specific queries keep pure first-hit section order so top video/audio hits lead.
+    val buckets = LinkedHashMap<Group, MutableList<ResultRow>>()
+    for (r in rows) buckets.getOrPut(groupOf(r)) { ArrayList() }.add(r)
+    val ordered = if (preferMediaFirst) {
+      buckets.entries.toList()
+    } else {
+      val (primary, secondary) = buckets.entries.partition { it.key == Group.PHOTOS || it.key == Group.DOCUMENTS }
+      primary + secondary
+    }
+    val multiple = ordered.size > 1
+    // When multiple sections are present and the leading non-photo section has many rows, cap it cleanly with a "Show N more" toggle
+    // instead of splitting the section in half around Photos, so Photos / Videos / Audio are all immediately visible below it.
+    val capLeading = multiple && headers && sectionCap < Int.MAX_VALUE && ordered.first().key != Group.PHOTOS
+
+    for ((index, entry) in ordered.withIndex()) {
+      val (group, list) = entry
+      if (group == Group.PHOTOS) {
+        if (multiple && headers) entries += Entry.Header(Group.PHOTOS, list.size)
+        list.chunked(cols).forEach { entries += Entry.Tiles(it) }
+        sections += NavSection(grid = true, ids = list.map { it.file.id })
+        continue
       }
-      docs.forEach { entries += Entry.Doc(it) }
-      sections += NavSection(grid = false, ids = docs.map { it.file.id })
+      val mix = if (group == Group.DOCUMENTS) Mix.DOCUMENTS else Mix.MEDIA
+      if (multiple && headers) entries += Entry.Header(group, list.size, mix)
+      val shown = if (capLeading && index == 0 && list.size > sectionCap) list.take(sectionCap) else list
+      shown.forEach { entries += Entry.Doc(it) }
+      sections += NavSection(grid = false, ids = shown.map { it.file.id })
+      if (shown.size < list.size) {
+        entries += Entry.More(group, list.size - shown.size, mix)
+      }
     }
-    fun photosOut() {
-      if (photos.isEmpty()) return
-      if (mixed && headers) entries += Entry.Header(Group.PHOTOS, photos.size)
-      photos.chunked(cols).forEach { entries += Entry.Tiles(it) }
-      sections += NavSection(grid = true, ids = photos.map { it.file.id })
-    }
-    if (photosFirst) { photosOut(); docsOut() } else docsOut().also { if (!peek) photosOut() }
   }
 }
 
@@ -242,12 +305,14 @@ object ResultNav {
   }
 
   /**
-   * Which result is selected after the list changed. A new query selects its best hit, so type then Enter opens it. The same query (the
-   * list was refreshed while the index grew) keeps the selection by id, or falls back to the first result if it is gone.
+   * Which result is selected after the list changed. A new query selects its best hit, so type then Enter opens it. The same query
+   * refreshed (meaning landing on the words, the index growing) keeps the selection by id only when [userMoved]: the person has since
+   * chosen a row (arrow key, click) or scrolled away. Otherwise the selection was only ever the best hit of the earlier list, so it
+   * follows the new best hit. It falls back to the first result if the selected one is gone.
    */
-  fun reconcile(prev: Long?, prevQuery: String, newQuery: String, ids: List<Long>): Long? {
+  fun reconcile(prev: Long?, prevQuery: String, newQuery: String, ids: List<Long>, userMoved: Boolean): Long? {
     if (ids.isEmpty()) return null
-    if (prevQuery.trim() == newQuery.trim() && prev != null && prev in ids) return prev
+    if (userMoved && prevQuery.trim() == newQuery.trim() && prev != null && prev in ids) return prev
     return ids.first()
   }
 }

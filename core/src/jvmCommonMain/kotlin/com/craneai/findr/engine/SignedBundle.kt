@@ -81,7 +81,7 @@ data class BundleManifest(val bundle: String, val bundleClass: BundleClass, val 
           (role == BundleRole.FULL || files.all { '/' in it.path })
         val ok = roleOk && files.isNotEmpty() && files.map { it.path }.toSet().size == files.size &&
           files.all { it.size >= 0 && HEX.matches(it.sha256) && it.path != ENTRY && it.path != SIGNATURE_ENTRY && safePath(it.path) }
-        if (ok) BundleManifest(o.getString("bundle"), cls!!, o.getInt("version"), files, role!!) else null
+        if (ok) BundleManifest(o.getString("bundle"), cls, o.getInt("version"), files, role) else null
       }
     } catch (_: Exception) {
       null
@@ -331,7 +331,7 @@ class SignedBundleInstaller(
       }
       if (n != f.size) return BundleResult.Refused(Refusal.DAMAGED, "file shorter than its manifest size", m)
       if (hex(md.digest()) != f.sha256) return BundleResult.Refused(Refusal.DAMAGED, "SHA-256 mismatch", m)
-      if (part != null && target != null) moves += part to target
+      if (part != null) moves += part to target
     }
     if (seen.size != m.files.size) return BundleResult.Refused(Refusal.DAMAGED, "${m.files.size - seen.size} listed files missing", m)
     // 6. everything is proven: move into place, the model last (the engine starts when it appears), then the record.

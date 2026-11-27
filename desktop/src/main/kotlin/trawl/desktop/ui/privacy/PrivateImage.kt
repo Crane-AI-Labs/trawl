@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -16,10 +17,17 @@ import androidx.compose.ui.layout.ContentScale
 import com.craneai.findr.core.IndexedFile
 import java.io.File
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import trawl.desktop.privacy.LocalPreviewBlur
 import trawl.desktop.privacy.PrivateThumbnails
 import androidx.compose.runtime.CompositionLocalProvider
+
+/** Bounded decode pool so scrolling photo grids never fans out 64 concurrent ImageIO decodes on Dispatchers.IO. */
+@OptIn(ExperimentalCoroutinesApi::class)
+private val privateThumbDispatcher = Dispatchers.IO.limitedParallelism(4)
 
 /**
  * A picture for the grid or the preview pane that is blurred when [LocalPreviewBlur] says so. Use it where `Thumbnails.load` was called.
@@ -40,16 +48,33 @@ fun PrivateImage(
 ) {
   val blur = LocalPreviewBlur.current
   val hidden = blur.hides(row)
+  val mod = row.modifiedMillis
   // Start from the picture if it is already decoded (a tile scrolling back into view must not flash empty), else from the placeholder.
-  var bitmap by remember(row.id, file, hidden, side) { mutableStateOf(PrivateThumbnails.peek(file, side, blurred = hidden)) }
-  LaunchedEffect(row.id, file, hidden, side) {
+  var bitmap by remember(row.id, file, hidden, side, mod) { mutableStateOf(PrivateThumbnails.peek(file, side, blurred = hidden, modifiedMillis = mod)) }
+  LaunchedEffect(row.id, file, hidden, side, mod) {
     if (hidden) blur.blurShown()
-    if (bitmap == null) bitmap = withContext(Dispatchers.IO) { runCatching { PrivateThumbnails.load(file, side, blurred = hidden) }.getOrNull() }
+    if (bitmap == null) {
+      val loaded = withContext(privateThumbDispatcher) {
+        currentCoroutineContext().ensureActive()
+        runCatching { PrivateThumbnails.load(file, side, blurred = hidden, modifiedMillis = mod) }.getOrNull()
+      }
+      currentCoroutineContext().ensureActive()
+      bitmap = loaded
+    }
   }
   val shown = bitmap
-  // The placeholder (a tinted tile and the kind's icon) fades into the picture rather than snapping, and is never an empty white box.
-  Crossfade(shown, modifier, animationSpec = tween(120), label = "thumb") { b ->
-    if (b != null) Image(b, contentDescription, Modifier.fillMaxSize(), contentScale = contentScale) else placeholder()
+  // When hidden is true (or transitions false -> true), snap immediately with ZERO Crossfade animation so sharp pixels
+  // can never remain visible for 120ms after "Hide again".
+  if (hidden) {
+    androidx.compose.foundation.layout.Box(modifier) {
+      if (shown != null) Image(shown, contentDescription, Modifier.fillMaxSize(), contentScale = contentScale) else placeholder()
+    }
+  } else {
+    key(row.id, hidden) {
+      Crossfade(shown, modifier, animationSpec = tween(120), label = "thumb") { b ->
+        if (b != null) Image(b, contentDescription, Modifier.fillMaxSize(), contentScale = contentScale) else placeholder()
+      }
+    }
   }
 }
 

@@ -95,8 +95,8 @@ class QuickLookMac(
   @Synchronized override fun close() {
     val p = proc ?: return
     runCatching { p.closeInput() }
-    // The helper closes the panel and exits on its own; the reader thread above then clears the state. A helper that does not go is killed.
-    Thread({ Thread.sleep(1500); runCatching { p.destroy() } }, "trawl-quicklook-kill").apply { isDaemon = true }.start()
+    // The helper closes the panel and exits on its own; a helper that does not go immediately is killed forcibly.
+    Thread({ Thread.sleep(300); runCatching { p.destroy() } }, "trawl-quicklook-kill").apply { isDaemon = true }.start()
   }
 
   companion object {
@@ -114,12 +114,14 @@ class QuickLookMac(
     }
 
     private fun startProcess(cmd: List<String>): QuickLookProcess {
-      val p = ProcessBuilder(cmd).redirectError(ProcessBuilder.Redirect.DISCARD).start()
+      val p = trawl.desktop.Politeness.Cpu.track(ProcessBuilder(cmd).redirectError(ProcessBuilder.Redirect.DISCARD).start())
+      // Quick Look is an interactive preview triggered by the user: never inherit PRIO_DARWIN_BG.
+      runCatching { trawl.desktop.Qos.Process.restorePid(p.pid()) }
       val out = p.inputStream.bufferedReader()
       return object : QuickLookProcess {
         override fun readLine(): String? = runCatching { out.readLine() }.getOrNull()
         override fun closeInput() { runCatching { p.outputStream.close() } }
-        override fun destroy() { p.destroy() }
+        override fun destroy() { p.destroyForcibly() }
       }
     }
   }

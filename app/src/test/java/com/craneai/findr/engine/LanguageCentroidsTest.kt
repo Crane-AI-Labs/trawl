@@ -18,7 +18,7 @@ import org.junit.Test
  * reaches the same class on every one of them.
  */
 class LanguageCentroidsTest {
-  private val assets = File("src/main/assets/${LanguageCentroids.ASSET_DIR}")
+  private val assets = File("src/full/assets/${LanguageCentroids.ASSET_DIR}")
   private val dir = File(assets, "stock-eg2-text")
 
   private fun centroids() = LanguageCentroids.fromBytes(File(dir, LanguageCentroids.CENTROIDS).readBytes(), File(dir, LanguageCentroids.LANGS).readText())

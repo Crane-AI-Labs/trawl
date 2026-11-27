@@ -24,7 +24,7 @@ enum class FileState(val db: String) {
 
 enum class SegmentKind(val db: String) {
   NAME("name"), CHUNK("chunk"), PAGE("page"), IMAGE("image"), FRAME("frame"), AUDIO("audio"), OCR("ocr"),
-  TRANSCRIPT("transcript"), SOUND("sound");   // what the speech model heard, and the sounds it labelled
+  TRANSCRIPT("transcript"), SOUND("sound"), SEES("sees");   // what the speech model heard, and the sounds it labelled
 
   companion object {
     fun of(db: String?): SegmentKind = entries.firstOrNull { it.db == db } ?: NAME
@@ -128,7 +128,7 @@ data class IndexStats(
    * EmbeddingGemma. Understood, skipped and failed files are left out: those are counted by their own state.
    */
   val quickUnreadable: Map<FileKind, Int> = emptyMap(),
-  /** Files given up on because the process died inside them twice (see IndexStore.recoverInflight). */
+  /** Files given up on after repeated deaths with memory pressure recorded (see IndexStore.recoverInflight). */
   val tooLarge: Int = 0,
 ) {
   fun count(kind: FileKind, state: FileState): Int = byKindAndState[kind]?.get(state) ?: 0

@@ -217,6 +217,36 @@ class TwoStageScanTest {
     assertEquals(a.hits.first().score, b.hits.first().score, 1e-6)
   }
 
+  @Test fun stageOnePreservesImageAndAudioCandidatesDespiteHigherTextCosines() {
+    // Reproduces the multimodal cosine-level gap: text-to-text cosines sit higher (~0.8) than text-to-image (~0.35)
+    // and text-to-audio (~0.25). Per-modality TopK ensures photos and audio survive stage 1 in "All" search.
+    val idx = index(TwoStage(stageDim = stage, candidates = 20, minRows = 0, scaleSample = 200), backed = true)
+    val q = FloatArray(Fp16.DIM) { if (it == 0) 1f else 0f }
+    fun vecWithCosine(cos: Float, orthDim: Int): FloatArray {
+      val sin = sqrt((1.0 - cos.toDouble() * cos.toDouble()).coerceAtLeast(0.0)).toFloat()
+      return FloatArray(Fp16.DIM) { when (it) { 0 -> cos; orthDim -> sin; else -> 0f } }
+    }
+    var seg = 1L
+    // 200 text rows all with high cosine 0.80..0.90 (easily overflowing candidates=20 if shared)
+    repeat(200) { i -> idx.add(seg++, 1000L + i, FileKind.DOCUMENT, Modality.TEXT, false, vecWithCosine(0.80f + (i % 10) * 0.01f, 1 + (i % 50))) }
+    // 40 image rows with lower cross-modal cosine 0.10..0.35, plus one standout image at 0.42
+    repeat(40) { i -> idx.add(seg++, 2000L + i, FileKind.IMAGE, Modality.IMAGE, false, vecWithCosine(0.10f + (i % 10) * 0.02f, 1 + (i % 50))) }
+    val bestImageSeg = seg++
+    idx.add(bestImageSeg, 2999L, FileKind.IMAGE, Modality.IMAGE, false, vecWithCosine(0.42f, 2))
+    // 40 sound rows with even lower cross-modal cosine 0.05..0.20, plus one standout sound at 0.30
+    repeat(40) { i -> idx.add(seg++, 3000L + i, FileKind.AUDIO, Modality.SOUND, false, vecWithCosine(0.05f + (i % 10) * 0.01f, 1 + (i % 50))) }
+    val bestSoundSeg = seg++
+    idx.add(bestSoundSeg, 3999L, FileKind.AUDIO, Modality.SOUND, false, vecWithCosine(0.30f, 3))
+
+    val cands = idx.stageCandidates(q, allowAll())
+    val candSegs = cands.map { idx.segmentId(it) }.toSet()
+    assertTrue("standout image must survive stage 1 despite 200 higher-cosine text rows", bestImageSeg in candSegs)
+    assertTrue("standout sound must survive stage 1 despite 200 higher-cosine text rows", bestSoundSeg in candSegs)
+    assertEquals(20, cands.count { idx.modalityOrdinal(it) == Modality.TEXT.ordinal })
+    assertEquals(20, cands.count { idx.modalityOrdinal(it) == Modality.IMAGE.ordinal })
+    assertEquals(20, cands.count { idx.modalityOrdinal(it) == Modality.SOUND.ordinal })
+  }
+
   private fun saveRows(s: IndexStore, n: Int): List<Long> {
     val random = Random(13)
     val out = ArrayList<Long>()

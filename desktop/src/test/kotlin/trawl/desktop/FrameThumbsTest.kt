@@ -1,7 +1,6 @@
 package trawl.desktop
 
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.runComposeUiTest
 import com.craneai.findr.core.FileKind
 import com.craneai.findr.core.IndexedFile
 import com.craneai.findr.ui.common.formatDuration

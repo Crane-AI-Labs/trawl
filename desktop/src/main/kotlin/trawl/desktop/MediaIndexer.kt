@@ -112,6 +112,6 @@ class MediaIndexer(
 
   companion object {
     private val SKIPPED = Regex("skipped=\\d+")
-    private val POOL = Executors.newCachedThreadPool { r -> Thread(r, "trawl-media-step").apply { isDaemon = true } }
+    private val POOL = Executors.newCachedThreadPool(LowPriority.factory("trawl-media-step"))
   }
 }

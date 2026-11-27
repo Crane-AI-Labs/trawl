@@ -24,9 +24,10 @@ class EditionTest {
   }
 
   @Test fun anEditionOnlyEverTurnsFeaturesOff() {
-    val all = FindrSettings(speechToText = true, quickLook = true, blurPrivatePreviews = true, privateScoring = true, indexAudio = true)
+    val all = FindrSettings(speechToText = true, speechPack = com.craneai.findr.core.PackIds.SPEECH_LG, quickLook = true, blurPrivatePreviews = true, privateScoring = true, indexAudio = true)
     val s = all.forEdition()
     assertTrue(!s.speechToText || Edition.SPEECH)
+    assertTrue("Go keeps no speech, speech packs included", s.speechPack == null || Edition.SPEECH)
     assertTrue(!s.quickLook || Edition.QUICK_LOOK)
     assertTrue(!s.blurPrivatePreviews || Edition.BLUR_PREVIEWS)
     assertTrue(!s.privateScoring || Edition.BLUR_PREVIEWS)

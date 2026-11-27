@@ -36,6 +36,6 @@ class PublishThrottle(private val minGapMs: Long = GAP_MS, private val now: () -
   @Synchronized fun msUntilDue(): Long? = if (!pending) null else (minGapMs - (now() - lastAt)).coerceAtLeast(0L)
 
   companion object {
-    const val GAP_MS = 1_000L
+    val GAP_MS: Long = BackgroundTuning.publishGapMs
   }
 }

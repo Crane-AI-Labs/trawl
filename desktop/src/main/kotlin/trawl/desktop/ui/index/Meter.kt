@@ -63,6 +63,8 @@ class IndexActions(
   val onPause: (() -> Unit)? = null,
   val onResume: (() -> Unit)? = null,
   val onReadOnBattery: (() -> Unit)? = null,
+  /** "Run anyway" for a heat or power-saving wait. */
+  val onRunAnyway: ((Hold) -> Unit)? = null,
   val onRetryOpen: (() -> Unit)? = null,
   val onRetryUnreadable: (() -> Unit)? = null,
 )
@@ -105,8 +107,11 @@ object MeterTexts {
       ix.phase == Phase.NOT_STARTED -> t("meter_title_not_started")
       ix.phase == Phase.PAUSED -> when (ix.hold) {
         Hold.BATTERY -> t("pause_not_charging")
+        Hold.LOW_BATTERY -> t("pause_low_battery")
         Hold.STORAGE_LOW -> t("pause_storage_low")
         Hold.NO_PERMISSION -> t("pause_no_permission")
+        Hold.THERMAL -> t("pause_hot")
+        Hold.LOW_POWER -> t("pause_low_power")
         else -> t("pause_user")
       }
       ix.phase == Phase.SCANNING -> t("meter_title_scanning")
@@ -117,14 +122,17 @@ object MeterTexts {
       else -> t("meter_title_up_to_date")
     }
     val sub = when {
-      ix.openProblem != null -> t("open_problem_detail")
+      ix.openProblem != null -> problemDetail(ix.openProblem, ix.openStopped)
       ix.opening -> t("index_opening_detail")
       ix.phase == Phase.ERROR -> ix.error ?: ""
       ix.phase == Phase.NOT_STARTED -> ""
       ix.phase == Phase.PAUSED -> when (ix.hold) {
         Hold.BATTERY -> t("pause_not_charging_detail")
+        Hold.LOW_BATTERY -> t("pause_low_battery_detail")
         Hold.STORAGE_LOW -> t("pause_storage_low_detail")
         Hold.NO_PERMISSION -> t(if (os == Os.MAC) "pause_no_permission_detail_mac" else "pause_no_permission_detail")
+        Hold.THERMAL -> t("pause_hot_detail")
+        Hold.LOW_POWER -> t(when (os) { Os.MAC -> "pause_low_power_detail_mac"; Os.WINDOWS -> "pause_low_power_detail_windows"; Os.LINUX -> "pause_low_power_detail_linux" })
         else -> t("pause_user_detail")
       }
       ix.phase == Phase.SCANNING -> tn("meter_sub_scanning", ix.scanned, formatCount(ix.scanned))
@@ -152,14 +160,26 @@ object MeterTexts {
     else -> Icons.Search
   }
 
-  /** The reason line of the calm card, one sentence per class of failure (the phone's wording). */
-  fun problem(p: IndexOpenProblem): String = t(
+  /**
+   * The reason line of the calm card, one sentence per class of failure (the phone's wording). [stopped]: Trawl has given up its quick
+   * retries (the same reason several times in a row), so the sentence says what to do instead of "it will try again shortly".
+   */
+  fun problem(p: IndexOpenProblem, stopped: Boolean = false): String = t(
     when (p) {
-      IndexOpenProblem.BUSY -> "open_problem_busy"
-      IndexOpenProblem.STORAGE_FULL -> "open_problem_storage_full"
-      IndexOpenProblem.IO -> "open_problem_io"
-      IndexOpenProblem.MEMORY -> "open_problem_memory"
-      IndexOpenProblem.OTHER -> "open_problem_other"
+      IndexOpenProblem.BUSY -> if (stopped) "open_problem_busy_stopped" else "open_problem_busy"
+      IndexOpenProblem.STORAGE_FULL -> if (stopped) "open_problem_storage_full_stopped" else "open_problem_storage_full"
+      IndexOpenProblem.IO -> if (stopped) "open_problem_io_stopped" else "open_problem_io"
+      IndexOpenProblem.MEMORY -> if (stopped) "open_problem_memory_stopped" else "open_problem_memory"
+      IndexOpenProblem.OTHER -> if (stopped) "open_problem_other_stopped" else "open_problem_other"
+    },
+  )
+
+  /** The line under the reason: that nothing was lost and what Trawl does next (it keeps trying, tries every 15 minutes, or waits to be asked). */
+  fun problemDetail(p: IndexOpenProblem, stopped: Boolean): String = t(
+    when {
+      !stopped -> "open_problem_detail"
+      p == IndexOpenProblem.MEMORY -> "open_problem_stopped_detail_asked"
+      else -> "open_problem_stopped_detail"
     },
   )
 
@@ -204,7 +224,7 @@ fun IndexMeter(c: AppController) {
     ix, detail = { c.service.detail() }, kindsOn = Scope.enabledKinds(settings),
     actions = IndexActions(
       onPause = { c.setPaused(true) }, onResume = { c.setPaused(false) },
-      onReadOnBattery = { c.setSpeed(com.craneai.findr.core.LearningSpeed.BALANCED) },
+      onReadOnBattery = { c.readOnBattery() }, onRunAnyway = { h -> c.runAnyway(h) },
       onRetryOpen = { c.service.retryOpen() }, onRetryUnreadable = { c.service.retryUnreadable() },
     ),
   )
@@ -214,7 +234,7 @@ fun IndexMeter(c: AppController) {
 @Composable
 fun IndexMeter(ix: IndexUi, detail: () -> trawl.desktop.IndexAdmin.Detail?, actions: IndexActions, kindsOn: Set<FileKind>? = null, startOpen: Boolean = false) {
   if (ix.openProblem != null) {
-    OpenProblemCard(ix.openProblem, actions.onRetryOpen)
+    OpenProblemCard(ix.openProblem, actions.onRetryOpen, stopped = ix.openStopped)
     return
   }
   val tk = LocalSunlight.current
@@ -266,7 +286,8 @@ fun IndexMeter(ix: IndexUi, detail: () -> trawl.desktop.IndexAdmin.Detail?, acti
       if (ix.phase == Phase.PAUSED) {
         Row(horizontalArrangement = Arrangement.spacedBy(Sun.S8)) {
           if (ix.hold == Hold.USER && actions.onResume != null) SunOutlinedButton(onClick = actions.onResume) { Text(t("action_resume"), style = SunType.Label) }
-          if (ix.hold == Hold.BATTERY && actions.onReadOnBattery != null) SunOutlinedButton(onClick = actions.onReadOnBattery) { Text(t("action_read_on_battery"), style = SunType.Label) }
+          if ((ix.hold == Hold.BATTERY || ix.hold == Hold.LOW_BATTERY) && actions.onReadOnBattery != null) SunOutlinedButton(onClick = actions.onReadOnBattery) { Text(t("action_read_on_battery"), style = SunType.Label) }
+          if ((ix.hold == Hold.THERMAL || ix.hold == Hold.LOW_POWER) && actions.onRunAnyway != null) SunOutlinedButton(onClick = { actions.onRunAnyway.invoke(ix.hold) }) { Text(t("action_run_anyway"), style = SunType.Label) }
         }
       }
       if (ix.phase == Phase.SCANNING) {
@@ -278,5 +299,11 @@ fun IndexMeter(ix: IndexUi, detail: () -> trawl.desktop.IndexAdmin.Detail?, acti
       }
     }
   }
-  if (open) IndexDetailDialog(ix, detail(), actions, kindsOn) { open = false }
+  if (open) {
+    var detailData by remember { mutableStateOf<trawl.desktop.IndexAdmin.Detail?>(null) }
+    androidx.compose.runtime.LaunchedEffect(ix, open) {
+      detailData = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { runCatching { detail() }.getOrNull() }
+    }
+    IndexDetailDialog(ix, detailData, actions, kindsOn) { open = false }
+  }
 }

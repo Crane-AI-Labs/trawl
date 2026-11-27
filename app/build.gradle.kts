@@ -10,6 +10,10 @@ val batteryExemptionRequest = providers.gradleProperty("batteryExemptionRequest"
 // See FGS_MEDIA_PROCESSING below. Default ON (sideload); a Play build sets -PmediaProcessingFgs=false until Play accepts the type.
 val mediaProcessingFgs = providers.gradleProperty("mediaProcessingFgs").orNull != "false"
 
+// Google Play Asset Delivery on-demand packs (models & East African speech packs). Default OFF (sideload APK stays lean at
+// 46 MB with zero Play Core dependency); Play AAB builds pass -PtrawlPlayAssetDelivery=true.
+val playAssetDelivery = providers.gradleProperty("trawlPlayAssetDelivery").orNull == "true"
+
 android {
   namespace = "com.craneai.findr"
   compileSdk = 37
@@ -18,8 +22,8 @@ android {
     applicationId = "com.craneai.findr"
     minSdk = 30   // MediaStore generations (the change journal Findr's crawler relies on) start at Android 11
     targetSdk = 36   // compile against 37, but keep 36 runtime behaviour until it's tested
-    versionCode = 10
-    versionName = "1.0.9"
+    versionCode = 13
+    versionName = "1.2.0"
     // Compose UI tests (src/androidTest): screenshot-free checks of the Sunlight components on a phone.
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     // The ABI is per edition (productFlavors below): the full app is 64-bit only, Trawl Go is 32-bit only.
@@ -62,6 +66,7 @@ android {
     // a Play build passes `-PmediaProcessingFgs=false` and everything runs under dataSync. The manifest half (the type and its
     // permission) is added only when this is on, from src/mediaProcessing, so the flag and the manifest cannot disagree.
     buildConfigField("boolean", "FGS_MEDIA_PROCESSING", mediaProcessingFgs.toString())
+    buildConfigField("boolean", "PLAY_ASSET_DELIVERY", playAssetDelivery.toString())
   }
 
   // The publishing key is the maintainers' and never enters the repo: a release build is signed with it only
@@ -93,10 +98,6 @@ android {
     sourceSets.getByName("debug").manifest.srcFile("src/batteryRequest/AndroidManifest.xml")
     sourceSets.getByName("release").manifest.srcFile("src/batteryRequest/AndroidManifest.xml")
   }
-  if (mediaProcessingFgs) {
-    sourceSets.maybeCreate("fullDebug").manifest.srcFile("src/mediaProcessing/AndroidManifest.xml")
-    sourceSets.maybeCreate("fullRelease").manifest.srcFile("src/mediaProcessing/AndroidManifest.xml")
-  }
   flavorDimensions += "edition"
   productFlavors {
     create("full") {
@@ -112,6 +113,31 @@ android {
       ndk { abiFilters += "armeabi-v7a" }
     }
   }
+  // Attach mediaProcessing to the `full` flavor sourceSet (which has no own AndroidManifest.xml) so it merges with
+  // src/fullDebug/AndroidManifest.xml instead of overwriting all debug/bench QA activities, and also covers fullRelease.
+  if (mediaProcessingFgs) {
+    sourceSets.getByName("full").manifest.srcFile("src/mediaProcessing/AndroidManifest.xml")
+  }
+  if (playAssetDelivery) {
+    val requestedGoBundle = gradle.startParameter.taskNames.any { it.contains("bundleGo", ignoreCase = true) }
+    require(!requestedGoBundle) {
+      "Trawl Go has no AI models or asset packs; omit -PtrawlPlayAssetDelivery=true when building Go bundles."
+    }
+    assetPacks += setOf(
+      ":asset-packs:pack_speech",
+      ":asset-packs:pack_quicklook",
+      ":asset-packs:pack_privacy",
+      ":asset-packs:pack_speech_lg",
+      ":asset-packs:pack_speech_nyn",
+      ":asset-packs:pack_speech_ach",
+      ":asset-packs:pack_speech_sw",
+      ":asset-packs:pack_speech_xog",
+    )
+    sourceSets.getByName("full").kotlin.directories.add("src/playPad/java")
+  } else {
+    sourceSets.getByName("full").kotlin.directories.add("src/noPlayPad/java")
+  }
+  sourceSets.getByName("go").kotlin.directories.add("src/noPlayPad/java")
   buildTypes {
     debug {
       // Legacy, UNSIGNED model files (a loose .litertlm, or a bundle without a signed manifest) are accepted only here by default:
@@ -137,6 +163,7 @@ android {
       buildConfigField("boolean", "ALLOW_UNSIGNED_MODELS", allowUnsigned)
       isMinifyEnabled = true
       isShrinkResources = true
+      ndk { debugSymbolLevel = "SYMBOL_TABLE" }
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
       signingConfig = signingConfigs.findByName("trawl") ?: signingConfigs.getByName("debug").also {
         if (providers.gradleProperty("trawlPublish").orNull == "true") error("trawlPublish=true but no publishing key: set trawlKeystore and its passwords")
@@ -230,6 +257,11 @@ dependencies {
   "fullImplementation"(libs.litertlm)
   // sherpa-onnx (ONNX Runtime linked in): speech to words, VAD and sound labels. scripts/fetch-asr.sh puts it in app/libs.
   "fullImplementation"(fileTree("libs") { include("*.aar") })
+  // Google Play Asset Delivery client: linked into full Play AAB builds only (-PtrawlPlayAssetDelivery=true).
+  // Downloads are performed over IPC by the Google Play Store app; Trawl itself keeps 0 INTERNET permission.
+  if (playAssetDelivery) {
+    "fullImplementation"(libs.play.asset.delivery)
+  }
   // The quick-look pass (TinyCLIP int8 on the CPU) runs on a slim ONNX Runtime 1.31 (operators for those two graphs only, no
   // telemetry client): app/libs/onnxruntime-slim.aar, built by scripts/ort-slim/build.sh. The stock AAR costs +12.9 MB compressed.
   // It coexists with sherpa's static ORT inside libsherpa-onnx-jni.so (both are picked up by the fileTree above).
@@ -256,6 +288,7 @@ dependencies {
   if (providers.gradleProperty("benchSqlcipher").orNull == "true") debugImplementation("net.zetetic:sqlcipher-android:4.19.1@aar")
   testImplementation(libs.junit)
   testImplementation(libs.robolectric)
+  testImplementation("androidx.work:work-testing:${libs.versions.work.get()}")
   testImplementation(platform(libs.androidx.compose.bom))
   testImplementation(libs.androidx.ui.test.junit4)
   testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.11.0")

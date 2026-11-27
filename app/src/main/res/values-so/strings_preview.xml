@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="player_play">Daar</string>
+  <string name="player_pause">Haki</string>
+  <string name="player_rewind_10">Dib u celi 10 ilbiriqsi</string>
+  <string name="player_forward_10">Horay u mari 10 ilbiriqsi</string>
+  <string name="player_jump_match">U bood %1$s</string>
+  <string name="player_open_external">Ku fur abka</string>
+  <string name="player_error">Faylkan laguma daari karo halkan.</string>
+  <string name="player_loading">Soo raraya daarista…</string>
+  <string name="player_seek_position">Meel-marinta daarista</string>
+  <string name="action_preview">Hordhac</string>
+  <string name="action_show_preview">Muuji hordhaca</string>
+  <string name="preview_loading">Soo raraya hordhaca…</string>
+  <string name="preview_unavailable">Hordhac looma hayo faylkan.</string>
+  <string name="preview_empty">Faylkani waa madhan yahay.</string>
+  <string name="preview_truncated">Muujinaya %1$d saf ee ugu horreeya</string>
+  <string name="preview_bytes_truncated">Muujinaya qaybta hore ee faylkan</string>
+  <string name="preview_rows_cols">%1$d saf · %2$d tiir</string>
+</resources>

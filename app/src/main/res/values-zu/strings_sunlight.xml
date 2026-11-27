@@ -9,4 +9,7 @@
   <string name="colours_wallpaper">Imibala yesithombe sangemuva</string>
   <string name="colours_wallpaper_hint">Ithatha imibala yayo esithombeni sakho sangemuva, bese ishintsha lapho naso sishintsha.</string>
   <string name="settings_brightness">Okukhanyayo noma okumnyama</string>
+  <string name="notif_waiting_other_app">Ilindile ngenkathi usebenzisa olunye uhlelo</string>
+  <string name="preview_checking">ukubuka kuqala kufihliwe kuze kuhlolwe</string>
+  <string name="preview_checking_words">Iyahlola · thepha ukuze ubone</string>
 </resources>

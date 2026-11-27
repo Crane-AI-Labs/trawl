@@ -26,4 +26,9 @@ class RefreshKeyTest {
     val a = IndexStatus(phase = IndexPhase.INDEXING, filesKnown = 248, filesUnderstood = 3)
     assertEquals(refreshKey(a), refreshKey(a.copy(filesUnderstood = 4, filesSearchable = 200)))
   }
+
+  @Test fun anEmptyIndexOpeningChangesTheKeyEvenWithoutAChangeOfPhase() {
+    val opening = IndexStatus(indexOpening = true)
+    assertNotEquals(refreshKey(opening), refreshKey(opening.copy(indexOpening = false)))
+  }
 }

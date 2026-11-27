@@ -7,4 +7,6 @@
   <string name="open_problem_memory">O celular está com pouca memória. O app tentará novamente em breve.</string>
   <string name="open_problem_other">O app tentará novamente em breve.</string>
   <string name="open_problem_detail">Seus resultados anteriores estão seguros, e nada foi apagado. O app tenta novamente sozinho. Você também pode tocar em Tentar novamente.</string>
+  <string name="index_opening_title">A abrir o seu índice</string>
+  <string name="index_opening_detail">Os resultados aparecerão quando o índice estiver pronto.</string>
 </resources>

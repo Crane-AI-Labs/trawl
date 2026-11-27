@@ -2,7 +2,7 @@
 agp = "9.4.1"
 kotlin = "2.3.20"
 coreKtx = "1.19.1"
-litertlm = "0.18.0"
+litertlm = "0.20.0"
 composeBom = "2026.09.00"
 activityCompose = "1.13.0"
 lifecycle = "2.11.0"
@@ -28,6 +28,9 @@ testExtJunit = "1.3.0"
 testRunner = "1.7.0"
 # Capture dates inside pictures (EXIF DateTimeOriginal) when MediaStore has none. 1.4.2 already came in through another library.
 exifinterface = "1.4.2"
+# Google Play Asset Delivery (on-demand model & speech packs). Only linked into Play AAB builds (-PtrawlPlayAssetDelivery=true);
+# sideload APKs never pull it in, and Play Store handles the download over IPC so Trawl stays at 0 INTERNET permission.
+playAssetDelivery = "2.3.0"
 
 [libraries]
 androidx-exifinterface = { group = "androidx.exifinterface", name = "exifinterface", version.ref = "exifinterface" }
@@ -66,9 +69,11 @@ robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "testRunner" }
+play-asset-delivery = { group = "com.google.android.play", name = "asset-delivery", version.ref = "playAssetDelivery" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
+android-asset-pack = { id = "com.android.asset-pack", version.ref = "agp" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

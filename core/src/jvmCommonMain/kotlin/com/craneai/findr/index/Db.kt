@@ -11,7 +11,58 @@ import androidx.sqlite.execSQL
  */
 class Db(val connection: SQLiteConnection) {
 
-  fun exec(sql: String) = connection.execSQL(sql)
+  private val statements = LinkedHashMap<String, SQLiteStatement>(CACHE_CAPACITY, 0.75f, true)
+  private var closed = false
+
+  /** Visible for tests: number of prepared statements currently held idle in this connection's LRU cache. */
+  internal val cachedStatementCount: Int get() = statements.size
+
+  fun exec(sql: String) {
+    // DETACH DATABASE fails with SQLITE_BUSY if any cached statement still references the attached DB.
+    if (sql.trimStart().startsWith("DETACH", ignoreCase = true)) clearStatementCache()
+    connection.execSQL(sql)
+  }
+
+  private fun checkout(sql: String): SQLiteStatement {
+    if (sql.length <= MAX_CACHED_SQL_LEN) {
+      // Remove on checkout so re-entrant calls with identical SQL never collide on an in-flight statement.
+      statements.remove(sql)?.let { return it }
+    }
+    return connection.prepare(sql)
+  }
+
+  private fun release(sql: String, statement: SQLiteStatement, failed: Boolean) {
+    if (failed || closed || sql.length > MAX_CACHED_SQL_LEN) {
+      runCatching { statement.close() }
+      return
+    }
+    val resetOk = runCatching {
+      statement.reset()
+      statement.clearBindings()
+    }.isSuccess
+    if (!resetOk) {
+      runCatching { statement.close() }
+      return
+    }
+    val displaced = statements.put(sql, statement)
+    if (displaced != null && displaced !== statement) runCatching { displaced.close() }
+    while (statements.size > MAX_CACHED_STATEMENTS) {
+      val eldest = statements.entries.iterator()
+      if (!eldest.hasNext()) break
+      val evicted = eldest.next().value
+      eldest.remove()
+      runCatching { evicted.close() }
+    }
+  }
+
+  private fun clearStatementCache() {
+    val iter = statements.values.iterator()
+    while (iter.hasNext()) {
+      val stmt = iter.next()
+      iter.remove()
+      runCatching { stmt.close() }
+    }
+  }
 
   private fun bind(statement: SQLiteStatement, args: Array<out Any?>) {
     args.forEachIndexed { i, arg ->
@@ -31,23 +82,31 @@ class Db(val connection: SQLiteConnection) {
 
   /** Runs a statement that returns no rows. */
   fun run(sql: String, vararg args: Any?) {
-    val statement = connection.prepare(sql)
+    val statement = checkout(sql)
+    var failed = false
     try {
       bind(statement, args)
       statement.step()
+    } catch (t: Throwable) {
+      failed = true
+      throw t
     } finally {
-      statement.close()
+      release(sql, statement, failed)
     }
   }
 
   /** Runs a query, calling [row] for each result row. */
   fun query(sql: String, vararg args: Any?, row: (SQLiteStatement) -> Unit) {
-    val statement = connection.prepare(sql)
+    val statement = checkout(sql)
+    var failed = false
     try {
       bind(statement, args)
       while (statement.step()) row(statement)
+    } catch (t: Throwable) {
+      failed = true
+      throw t
     } finally {
-      statement.close()
+      release(sql, statement, failed)
     }
   }
 
@@ -84,7 +143,17 @@ class Db(val connection: SQLiteConnection) {
 
   private var inTransaction = false
 
-  fun close() = connection.close()
+  fun close() {
+    closed = true
+    clearStatementCache()
+    connection.close()
+  }
+
+  internal companion object {
+    const val MAX_CACHED_STATEMENTS = 32
+    const val MAX_CACHED_SQL_LEN = 512
+    private const val CACHE_CAPACITY = 48
+  }
 }
 
 fun SQLiteStatement.textOrNull(column: Int): String? = if (isNull(column)) null else getText(column)

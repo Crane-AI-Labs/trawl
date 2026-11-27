@@ -7,4 +7,6 @@
   <string name="open_problem_memory">Ifoni ayinayo imemori eyanele. Izophinda izame maduze.</string>
   <string name="open_problem_other">Izophinda izame maduze.</string>
   <string name="open_problem_detail">Imiphumela yakho yangaphambilini iphephile futhi akukho okususiwe. Izama futhi ngokwayo, noma thepha okuthi Zama futhi.</string>
+  <string name="index_opening_title">Ivula inkomba yakho</string>
+  <string name="index_opening_detail">Imiphumela izovela lapho inkomba isilungele.</string>
 </resources>

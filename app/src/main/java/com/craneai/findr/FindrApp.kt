@@ -3,23 +3,50 @@ package com.craneai.findr
 import com.craneai.findr.ui.language.AppLocale
 import android.content.Context
 import android.app.Application
+import android.app.Activity
+import android.os.Bundle
 import com.craneai.findr.core.AndroidLogSink
 import com.craneai.findr.core.BuildFlags
 import com.craneai.findr.core.LogSinks
 import com.craneai.findr.core.SearchEngine
 import com.craneai.findr.privacy.PrivacyController
+import com.craneai.findr.privacy.PrivacyPrefs
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * Application root and the one place that decides which SearchEngine the app uses: the real one (engine/), shared
  * with the background worker. The stand-in with sample data (`ui/fake`) stays for UI work and previews.
  */
-class FindrApp : Application() {
+open class FindrApp : Application() {
   lateinit var engine: SearchEngine
     private set
 
   /** The app lock, the sensitive-result reveal and the window privacy; one per process, shared by every screen. */
   lateinit var privacy: PrivacyController
     private set
+
+  private val ready = CompletableDeferred<SearchEngine>()
+  private val startupScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+  @Volatile var isReady = false
+    private set
+
+  suspend fun awaitEngine(): SearchEngine = ready.await()
+
+  private var startedActivities = 0
+  private val startupActivities = object : ActivityLifecycleCallbacks {
+    override fun onActivityStarted(activity: Activity) { startedActivities++ }
+    override fun onActivityStopped(activity: Activity) { startedActivities = maxOf(0, startedActivities - 1) }
+    override fun onActivityCreated(activity: Activity, state: Bundle?) {}
+    override fun onActivityResumed(activity: Activity) {}
+    override fun onActivityPaused(activity: Activity) {}
+    override fun onActivitySaveInstanceState(activity: Activity, state: Bundle) {}
+    override fun onActivityDestroyed(activity: Activity) {}
+  }
 
   // The shared code in :core reads its build switches from BuildFlags; fill them from this build's BuildConfig before anything else runs
   // (a constructor runs before every ContentProvider, Service, Receiver and Activity of the process).
@@ -36,14 +63,31 @@ class FindrApp : Application() {
 
   override fun onCreate() {
     super.onCreate()
-    com.craneai.findr.diag.HeapProbe.start(BuildConfig.FINDR_HEAPLOG, BuildConfig.HEAP_BALLAST_MB)   // test builds only; a no-op otherwise
-    // First, so a crash while the engine starts is caught and reported too.
-    com.craneai.findr.diag.Diag.init(com.craneai.findr.diag.AndroidDiagPlatform(this), null)
-    engine = createEngine(this)
-    com.craneai.findr.diag.Diag.attach(engine)
-    privacy = PrivacyController(this, engine)
-    privacy.start()
+    registerActivityLifecycleCallbacks(startupActivities)
+    startupScope.launch {
+      try {
+        val prepared = withContext(Dispatchers.IO) {
+          com.craneai.findr.diag.Diag.init(com.craneai.findr.diag.AndroidDiagPlatform(this@FindrApp), null)
+          com.craneai.findr.diag.HeapProbe.start(BuildConfig.FINDR_HEAPLOG, BuildConfig.HEAP_BALLAST_MB)
+          val searchEngine = createSearchEngine()
+          searchEngine to PrivacyPrefs(this@FindrApp)
+        }
+        engine = prepared.first
+        com.craneai.findr.diag.Diag.attach(engine)
+        privacy = PrivacyController(this@FindrApp, engine, prepared.second)
+        privacy.start(startedActivities)
+        (engine as? com.craneai.findr.engine.FindrEngine)?.startUiTracking(startedActivities)
+        unregisterActivityLifecycleCallbacks(startupActivities)
+        isReady = true
+        ready.complete(engine)
+      } catch (failure: Throwable) {
+        ready.completeExceptionally(failure)
+        throw failure
+      }
+    }
   }
+
+  protected open fun createSearchEngine(): SearchEngine = createEngine(this)
 
   /**
    * The system wants memory back: drop the cached query vectors. Not on UI_HIDDEN, which fires whenever our last screen

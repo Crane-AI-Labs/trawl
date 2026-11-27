@@ -390,7 +390,9 @@ private fun PageModels(delivery: com.craneai.findr.ui.delivery.DeliveryViewModel
   val delivered by delivery.state.collectAsStateWithLifecycle()
   Eyebrow(stringResource(R.string.models_eyebrow))
   PageTitle(stringResource(R.string.models_title))
-  Text(appString(R.string.models_body, delivered.sizeMb), style = SunType.BodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+  if (delivered.sizeMb > 0) {
+    Text(appString(R.string.models_body, delivered.sizeMb), style = SunType.BodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+  }
   Spacer(Modifier.height(20.dp))
   com.craneai.findr.ui.delivery.GetModelsCard(delivery, access, framed = false, showBody = false)
 }
@@ -455,6 +457,7 @@ private fun PageExtras(addOns: AddOnsViewModel, offerIds: List<String>) {
       howTo = addOns.howToAdd(row.def.id),
       onInstall = { adding = null; addOns.install(row.def.id) },
       onDismiss = { adding = null },
+      downloadUrl = addOns.downloadUrl(row.def.id),
     )
   }
 }

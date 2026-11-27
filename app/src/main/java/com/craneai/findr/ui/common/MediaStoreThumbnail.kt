@@ -12,6 +12,7 @@ import coil3.fetch.Fetcher
 import coil3.fetch.ImageFetchResult
 import coil3.key.Keyer
 import coil3.request.Options
+import coil3.request.bitmapConfig
 import coil3.size.pxOrElse
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -32,7 +33,7 @@ import kotlinx.coroutines.withContext
  *
  * It only handles [MediaThumb]; the picture on screen falls back to the plain Coil path if MediaProvider cannot make one.
  */
-data class MediaThumb(val uri: String)
+data class MediaThumb(val uri: String, val modifiedMillis: Long = 0L, val sizeBytes: Long = 0L)
 
 /**
  * Whether the media grid is flinging too fast for anyone to look at its cells. Thumbnail fetches wait while it is (the
@@ -47,8 +48,10 @@ object GridFling {
 }
 
 class MediaThumbKeyer : Keyer<MediaThumb> {
-  // The size is part of the key so a bigger cell later does not reuse a thumbnail that is too small for it.
-  override fun key(data: MediaThumb, options: Options): String = "mediathumb:${data.uri}:${options.size.width}x${options.size.height}"
+  // Include size, modification time and byte length so a bigger cell does not reuse a smaller thumbnail,
+  // and an in-place edited photo (same MediaStore URI, new bytes) does not serve a stale cached bitmap.
+  override fun key(data: MediaThumb, options: Options): String =
+    "mediathumb:${data.uri}:${data.modifiedMillis}:${data.sizeBytes}:${options.size.width}x${options.size.height}"
 }
 
 class MediaThumbFetcher(private val data: MediaThumb, private val options: Options) : Fetcher {
@@ -65,7 +68,12 @@ class MediaThumbFetcher(private val data: MediaThumb, private val options: Optio
           val soft = options.context.contentResolver.loadThumbnail(Uri.parse(data.uri), px, signal)
           // A software bitmap is uploaded to the GPU by the RenderThread the first time it is drawn (Bitmap#prepareToDraw,
           // ~0.9 ms per 360 px thumbnail on the A06, mid-fling). As a hardware bitmap the upload happens here, off the frame.
-          soft.copy(Bitmap.Config.HARDWARE, false)?.also { soft.recycle() } ?: soft
+          // Respect options.bitmapConfig so Coil transformations (e.g. PrivacyBlurTransformation) receive software bitmaps.
+          if (options.bitmapConfig == Bitmap.Config.HARDWARE) {
+            soft.copy(Bitmap.Config.HARDWARE, false)?.also { soft.recycle() } ?: soft
+          } else {
+            soft
+          }
         }
       } finally {
         watcher.cancel()

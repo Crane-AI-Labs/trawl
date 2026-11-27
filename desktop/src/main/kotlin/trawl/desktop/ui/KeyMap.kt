@@ -3,7 +3,7 @@ package trawl.desktop.ui
 import trawl.desktop.Screen
 
 /** The keys the window cares about; everything else is [OTHER] (a letter is [CHAR] and carries its character). */
-enum class K { UP, DOWN, LEFT, RIGHT, HOME, END, PAGE_UP, PAGE_DOWN, ENTER, SPACE, ESCAPE, BACKSPACE, TAB, LETTER_K, LETTER_F, LETTER_C, LETTER_A, LETTER_Y, COMMA, PLUS, MINUS, ZERO, MENU, F10, CHAR, OTHER }
+enum class K { UP, DOWN, LEFT, RIGHT, HOME, END, PAGE_UP, PAGE_DOWN, ENTER, SPACE, ESCAPE, BACKSPACE, TAB, LETTER_K, LETTER_F, LETTER_C, LETTER_A, LETTER_Y, LETTER_R, LETTER_S, COMMA, PLUS, MINUS, ZERO, MENU, F10, CHAR, OTHER }
 
 /** A key press stripped of Compose types, so the whole shortcut table is tested without a window. */
 data class Keystroke(
@@ -37,6 +37,10 @@ data class KeyContext(
   val hasPicked: Boolean = false,
   /** Some text is selected in the search field, so Cmd/Ctrl C copies that text and not the chosen files. */
   val textSelected: Boolean = false,
+  /** "Find similar" mode is active; Backspace or Esc on an empty box returns to the previous view. */
+  val similar: Boolean = false,
+  /** The window can be put away (the tray icon is there and Trawl is set to keep running): Esc on an empty search box then hides it. */
+  val canHide: Boolean = false,
 )
 
 sealed interface KeyAction {
@@ -63,6 +67,10 @@ sealed interface KeyAction {
   data object ToggleQuickLook : KeyAction
   data object CloseQuickLook : KeyAction
   data object ClearQuery : KeyAction
+  data object FindSimilar : KeyAction
+  data object ClearSimilar : KeyAction
+  /** Esc with nothing left to undo: put the window away (it comes back from the tray or the quick-search shortcut). */
+  data object HideWindow : KeyAction
   data object Back : KeyAction
   data object OpenSettings : KeyAction
   /** Text size one step bigger (+1), smaller (-1) or back to Default (0). */
@@ -99,7 +107,9 @@ object KeyMap {
       return when {
         k.key == K.LETTER_K || k.key == K.LETTER_F -> if (!k.shift) KeyAction.FocusSearch else null
         k.key == K.COMMA -> KeyAction.OpenSettings
+        // Cmd/Ctrl+Enter and Cmd/Ctrl+R both show the result in its folder (Finder on a Mac; R as in Finder's "Reveal")
         k.key == K.ENTER -> if (ctx.hasResults) KeyAction.ShowInFolder else null
+        k.key == K.LETTER_R && !k.shift && !k.alt -> if (ctx.hasResults) KeyAction.ShowInFolder else null
         k.key == K.LETTER_C && k.shift -> if (ctx.hasResults) KeyAction.CopyPath else null
         // ---- SEARCH PACKAGE (A): in the search field the text's own copy and select-all win ----
         k.key == K.LETTER_C && !k.alt -> when {
@@ -109,6 +119,8 @@ object KeyMap {
         }
         // Ctrl/Cmd+Y previews, as in the quick panel (Space does too, but only where it cannot be a space in a query)
         k.key == K.LETTER_Y && !k.shift && !k.alt -> if (ctx.hasResults) KeyAction.ToggleQuickLook else null
+        // Cmd+Shift+S (macOS) / Ctrl+Shift+S (Windows/Linux) starts "Find similar" for the selected result
+        k.key == K.LETTER_S && k.shift && !k.alt -> if (ctx.hasResults) KeyAction.FindSimilar else null
         k.key == K.LETTER_A && !k.shift -> if (ctx.hasResults && ctx.zone == FocusZone.LIST) KeyAction.SelectAll else null
         else -> null
       }
@@ -163,11 +175,16 @@ object KeyMap {
       }
       K.ESCAPE -> when {
         ctx.hasPicked -> KeyAction.ClearPicked
-        search -> if (ctx.queryBlank) null else KeyAction.ClearQuery
+        ctx.similar && ctx.queryBlank -> KeyAction.ClearSimilar
+        search -> if (!ctx.queryBlank) KeyAction.ClearQuery else if (ctx.canHide) KeyAction.HideWindow else null
         else -> KeyAction.FocusSearch
       }
-      K.BACKSPACE -> if (ctx.zone == FocusZone.SEARCH) null else KeyAction.TypeIntoSearch(8)
-      K.CHAR, K.LETTER_K, K.LETTER_F, K.LETTER_C, K.LETTER_A, K.LETTER_Y, K.COMMA, K.PLUS, K.MINUS, K.ZERO -> if (ctx.zone == FocusZone.SEARCH || k.char == 0) null else KeyAction.TypeIntoSearch(k.char)
+      K.BACKSPACE -> when {
+        ctx.similar && ctx.queryBlank -> KeyAction.ClearSimilar
+        ctx.zone == FocusZone.SEARCH -> null
+        else -> KeyAction.TypeIntoSearch(8)
+      }
+      K.CHAR, K.LETTER_K, K.LETTER_F, K.LETTER_C, K.LETTER_A, K.LETTER_Y, K.LETTER_R, K.LETTER_S, K.COMMA, K.PLUS, K.MINUS, K.ZERO -> if (ctx.zone == FocusZone.SEARCH || k.char == 0) null else KeyAction.TypeIntoSearch(k.char)
       else -> null
     }
   }

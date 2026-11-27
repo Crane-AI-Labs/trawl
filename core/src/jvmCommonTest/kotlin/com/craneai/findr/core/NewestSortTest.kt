@@ -53,4 +53,27 @@ class NewestSortTest {
     val ordered = sortRanked(hits, strong = 3, order = SortOrder.NEWEST, nowMs = now) { it }
     assertEquals(listOf("today.txt", "last_year.txt", "stamped_2099.txt", "weak_new.txt", "weak_junk.txt"), ordered.map { it.name })
   }
+
+  @Test fun dateModifiedAndDateCreatedSortIndependently() {
+    val editedOldPhoto = IndexedFile(10, "content://m/10", "DCIM/", "edited_old.jpg", FileKind.IMAGE, null, 10, modifiedMillis = now - day, dateMillis = now - 500 * day)
+    val freshDoc = IndexedFile(11, "content://m/11", "Docs/", "fresh_doc.txt", FileKind.DOCUMENT, null, 10, modifiedMillis = now - 10 * day, dateMillis = now - 10 * day)
+    val junkCreated = IndexedFile(12, "content://m/12", "Docs/", "junk_created.txt", FileKind.DOCUMENT, null, 10, modifiedMillis = now - 20 * day, dateMillis = far)
+    val all = listOf(freshDoc, editedOldPhoto, junkCreated)
+
+    assertEquals(listOf("edited_old.jpg", "fresh_doc.txt", "junk_created.txt"), all.sortedWith(fileOrder(SortOrder.NEWEST, now)).map { it.name })
+    assertEquals(listOf("junk_created.txt", "fresh_doc.txt", "edited_old.jpg"), all.sortedWith(fileOrder(SortOrder.OLDEST, now)).map { it.name })
+    assertEquals(listOf("fresh_doc.txt", "edited_old.jpg", "junk_created.txt"), all.sortedWith(fileOrder(SortOrder.CREATED_NEWEST, now)).map { it.name })
+    assertEquals(listOf("edited_old.jpg", "fresh_doc.txt", "junk_created.txt"), all.sortedWith(fileOrder(SortOrder.CREATED_OLDEST, now)).map { it.name })
+  }
+
+  @Test fun largestAndSmallestOrderBySizeWithDeterministicTieBreak() {
+    val tiny = IndexedFile(1, "content://m/1", "Docs/", "tiny.txt", FileKind.DOCUMENT, null, sizeBytes = 50, modifiedMillis = now)
+    val sameA = IndexedFile(2, "content://m/2", "Docs/", "same_a.txt", FileKind.DOCUMENT, null, sizeBytes = 500, modifiedMillis = now)
+    val sameB = IndexedFile(3, "content://m/3", "Docs/", "same_b.txt", FileKind.DOCUMENT, null, sizeBytes = 500, modifiedMillis = now)
+    val huge = IndexedFile(4, "content://m/4", "Docs/", "huge.mp4", FileKind.VIDEO, null, sizeBytes = 5_000, modifiedMillis = now)
+    val all = listOf(sameA, huge, tiny, sameB)
+
+    assertEquals(listOf("huge.mp4", "same_b.txt", "same_a.txt", "tiny.txt"), all.sortedWith(fileOrder(SortOrder.LARGEST, now)).map { it.name })
+    assertEquals(listOf("tiny.txt", "same_a.txt", "same_b.txt", "huge.mp4"), all.sortedWith(fileOrder(SortOrder.SMALLEST, now)).map { it.name })
+  }
 }

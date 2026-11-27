@@ -152,4 +152,12 @@ class SettingsCodecTest {
     assertTrue(s.indexAudio)
     assertEquals(mapOf("camera" to false, "downloads" to true), s.groupOverrides)
   }
+
+  /** The speech add-on: no pack by default, the chosen one survives a round trip, and a name this build does not know is dropped. */
+  @Test fun theSpeechPackInUseSurvivesARoundTrip() {
+    assertEquals(null, SettingsCodec.decode(null).speechPack)
+    assertEquals(null, SettingsCodec.decode(SettingsCodec.encode(FindrSettings())).speechPack)
+    assertEquals(PackIds.SPEECH_LG, SettingsCodec.decode(SettingsCodec.encode(FindrSettings(speechPack = PackIds.SPEECH_LG))).speechPack)
+    assertEquals(null, SettingsCodec.decode("""{"version":3,"speechPack":"speech-klingon"}""").speechPack)
+  }
 }

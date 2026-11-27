@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="player_play">تشغيل</string>
+  <string name="player_pause">إيقاف مؤقت</string>
+  <string name="player_rewind_10">الرجوع 10 ثوانٍ</string>
+  <string name="player_forward_10">التقدم 10 ثوانٍ</string>
+  <string name="player_jump_match">الانتقال إلى %1$s</string>
+  <string name="player_open_external">فتح في تطبيق</string>
+  <string name="player_error">تعذر تشغيل هذا الملف هنا.</string>
+  <string name="player_loading">جارٍ تحميل التشغيل…</string>
+  <string name="player_seek_position">موضع التشغيل</string>
+  <string name="action_preview">معاينة</string>
+  <string name="action_show_preview">عرض المعاينة</string>
+  <string name="preview_loading">جارٍ تحميل المعاينة…</string>
+  <string name="preview_unavailable">المعاينة غير متوفرة لهذا الملف.</string>
+  <string name="preview_empty">هذا الملف فارغ.</string>
+  <string name="preview_truncated">عرض أول %1$d صفوف</string>
+  <string name="preview_bytes_truncated">عرض الجزء الأول من هذا الملف</string>
+  <string name="preview_rows_cols">%1$d صف · %2$d عمود</string>
+</resources>

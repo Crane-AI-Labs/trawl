@@ -50,4 +50,12 @@ class EngineOpenGuardTest {
     assertTrue(engine.contains("StoreNotReadyException"))
     assertTrue(engine.contains("CoroutineExceptionHandler"))
   }
+
+  @Test fun powerAndScreenCallbacksHandTheirWorkToTheBackgroundScope() {
+    val power = engine.substringAfter("private fun watchPower()").substringBefore("// ---- privacy")
+    assertTrue(power.contains("scope.launch {"))
+    assertTrue(power.indexOf("scope.launch {") < power.indexOf("refreshStatus()"))
+    val screen = engine.substringAfter("private fun watchScreen()").substringBefore("fun newFilesWaiting()")
+    assertTrue(screen.contains("scope.launch { schedule() }"))
+  }
 }

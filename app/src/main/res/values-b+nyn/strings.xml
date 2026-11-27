@@ -298,6 +298,8 @@
   <string name="settings_about_model">Okusherura kurikukoresa EmbeddingGemma 2 eya Google (Apache 2.0), byona aha simu egi.</string>
   <string name="settings_about_private"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> teine bwikirizo bwa intaneeti. Fayiro zaawe n\'ebi erikushoma kuruga omurizo tebiriruga aha simu egi namba.</string>
   <string name="settings_about_maker">Ekozirwe Crane AI Labs.</string>
+  <string name="settings_check_updates">Ronda ebirikugarukaho</string>
+  <string name="settings_check_updates_hint">Nikiigura orupapura rw\'okuhanura omu browser yaawe.</string>
   <string name="settings_licences">Layisensi n\'ebisiimwe</string>
   <string name="licences_title">Layisensi n\'ebisiimwe</string>
   <string name="licences_intro"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> eyombekerwe aha mirimo eri ahansi egi. Ebirangiriro ebi nibyetengwa ahabwa layisensi, kandi n\'omuringo gwaitu gw\'okusiima.</string>
@@ -471,4 +473,7 @@
     <item quantity="one">Fayiro %1$d teshomeka (ehendekire, nari omuringo gw\'esimu egi etarikubaasa kuguruha). Noobaasa kugizoora ahabw\'eiziina.</item>
     <item quantity="other">Fayiro %1$d zitashomeka (zihendekire, nari omuringo gw\'esimu egi etarikubaasa kuguruha). Noobaasa kuzizoora ahabw\'amaziina.</item>
   </plurals>
+  <string name="addons_download_browser">Iha omuri browser</string>
+  <string name="addons_download_return_hint">Fayiro yaheza kwihwa omuri Downloads, garuka aha onyige Teekamu.</string>
+  <string name="addons_no_browser">Tihariho browser erikubasa kwigura link y\'okwiha.</string>
 </resources>

@@ -5,6 +5,14 @@
   <string name="sort_oldest">አሮጌው</string>
   <string name="sort_largest">ትልቁ</string>
   <string name="sort_name">ስም በፊደል ቅደም ተከተል</string>
+  <string name="sort_chip_best">ተዛማጅ</string>
+  <string name="sort_chip_newest">አዲሱ</string>
+  <string name="sort_chip_oldest">አሮጌው</string>
+  <string name="sort_chip_created_newest">የተፈጠረ</string>
+  <string name="sort_chip_created_oldest">የተፈጠረ</string>
+  <string name="sort_chip_largest">ትልቁ</string>
+  <string name="sort_chip_smallest">ትንሹ</string>
+  <string name="sort_chip_name">ስም</string>
   <string name="sort_group">በዚህ ደርድር</string>
   <string name="date_any_time">ማንኛውም ጊዜ</string>
   <string name="date_group">ቀን</string>
@@ -85,4 +93,20 @@
   <string name="snack_marked_sensitive_many">ስሱ እንደሆኑ ተመልክተዋል። አሁን ከውጤቶች ተደብቀዋል።</string>
   <string name="snack_unmarked_sensitive_many">ምልክቱ ተወግዷል። እንደገና በውጤቶች ሊታዩ ይችላሉ።</string>
   <string name="nothing_in_dates">በ%1$s ምንም አልተገኘም። ሌላ ቀን ሞክር።</string>
+  <string name="sort_created_newest">የተፈጠረበት ቀን (አዲስ)</string>
+  <string name="sort_created_oldest">የተፈጠረበት ቀን (የቆየ)</string>
+  <string name="sort_smallest">ትንሹ</string>
+  <string name="subtype_group">የፋይል ዓይነት</string>
+  <string name="subtype_all">ሁሉም ዓይነቶች</string>
+  <string name="subtype_remove">የፋይል ዓይነት ማጣሪያ አስወግድ</string>
+  <string name="subtype_spreadsheet_menu">Excel እና CSV (.xlsx, .csv)</string>
+  <string name="subtype_text_menu">ጽሑፍ እና Markdown (.txt, .md)</string>
+  <string name="subtype_text_chip">ጽሑፍ / MD</string>
+  <string name="subtype_code_menu">ኮድ እና ዳታ (.json, .xml, …)</string>
+  <string name="subtype_code_chip">ኮድ / ዳታ</string>
+  <string name="view_mode_group">የዕይታ ሁኔታ</string>
+  <string name="view_grid">ፍርግርግ</string>
+  <string name="view_list">ዝርዝር</string>
+  <string name="label_modified_short">ተቀየረ %1$s</string>
+  <string name="label_created_short">ተፈጠረ %1$s</string>
 </resources>

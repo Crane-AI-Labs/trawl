@@ -2,6 +2,8 @@ package com.craneai.findr.engine
 
 import java.io.File
 import java.io.IOException
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 import java.util.zip.CRC32
 
 /**
@@ -80,10 +82,12 @@ object ModelBundle {
       var n = 0L
       input.use { src ->
         part.outputStream().use { out ->
-          val buffer = ByteArray(1 shl 20)
+          val buffer = ByteArray(64 * 1024)
           while (true) {
             val read = src.read(buffer)
             if (read < 0) break
+            // Enforce the declared entry size inside the read loop so a zip bomb cannot fill storage before rejection.
+            if (n + read > size) throw IOException("size exceeds expected $size")
             out.write(buffer, 0, read)
             check.update(buffer, 0, read)
             n += read
@@ -92,8 +96,7 @@ object ModelBundle {
       }
       if (n != size) throw IOException("copied $n of $size bytes")
       if (crc != null && check.value != crc) throw IOException("checksum mismatch")
-      target.delete()
-      if (!part.renameTo(target)) throw IOException("could not move into place")
+      Files.move(part.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING)
     } catch (t: Throwable) {
       part.delete()
       throw t

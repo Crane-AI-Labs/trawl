@@ -12,7 +12,7 @@ import org.junit.Test
  * gradle runs unit tests with the module directory as the working directory, so the real asset is read from src/main/assets.
  */
 class ClipTokenizerTest {
-  private val tok = File("src/main/assets/${ClipTokenizer.ASSET}").inputStream().use { ClipTokenizer.fromGzip(it) }
+  private val tok = File("src/full/assets/${ClipTokenizer.ASSET}").inputStream().use { ClipTokenizer.fromGzip(it) }
 
   private class Case(val text: String, val ids: LongArray)
 
@@ -64,7 +64,7 @@ class ClipTokenizerTest {
   @Test fun encodingAQueryIsCheap() {
     val queries = golden.map { it.text }.filter { it.length in 10..100 }
     val t0 = System.nanoTime()
-    val fresh = File("src/main/assets/${ClipTokenizer.ASSET}").inputStream().use { ClipTokenizer.fromGzip(it) }
+    val fresh = File("src/full/assets/${ClipTokenizer.ASSET}").inputStream().use { ClipTokenizer.fromGzip(it) }
     val loadMs = (System.nanoTime() - t0) / 1e6
     val t1 = System.nanoTime()
     queries.forEach { fresh.encode(it) }   // first pass: empty word cache, cold JIT

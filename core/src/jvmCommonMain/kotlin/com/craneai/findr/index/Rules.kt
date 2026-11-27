@@ -10,15 +10,16 @@ import com.craneai.findr.core.FileKind
 object Rules {
 
   /**
-   * Bump when [classify] starts calling existing files something else: the worker then crawls every row once, and a
-   * file already in the index whose kind changed is queued to be read as its new kind (IndexStore.upsertOne).
+   * Bump when classification or skip rules change: the worker then crawls every row once. A file whose kind changed
+   * or which is no longer skipped is queued to be read; unchanged files keep what was indexed (IndexStore.upsertOne).
    * 2: xlsx, pptx, ods, odp, epub, csv and tsv became DOCUMENT (they were name-only OTHER files).
    * 3: attempt every format: more picture, video and sound extensions, SVG as a document, and files with no or an
    *    unknown extension are recognised by their first bytes ([sniffKind]).
    * 4: app databases and chat backups (msgstore, wa.db, *.crypt12/14/15, WhatsApp/Telegram Databases and Backups) are
    *    clutter ([appDataReason]); files already indexed are marked skipped with a reason.
+   * 5: documents and PDFs in WhatsApp/Telegram Documents folders are read despite .nomedia, except Private folders.
    */
-  const val VERSION = 4
+  const val VERSION = 5
 
   // ---- classification --------------------------------------------------------------------------------------------
   //
@@ -213,6 +214,11 @@ object Rules {
   private val APP_DATA_FOLDERS = setOf("databases", "backups")
   private val CHAT_APPS = listOf("whatsapp", "telegram")
 
+  private fun isChatDocumentsFolder(part: String): Boolean {
+    val lower = part.lowercase()
+    return lower.endsWith(" documents") && CHAT_APPS.any { lower.startsWith("$it ") }
+  }
+
   /**
    * Why a file is an app's database or backup, or null. [relativePath] is the folder it sits in. A `Databases` or
    * `Backups` folder only counts under a WhatsApp or Telegram folder (a person's own "Backups" folder is theirs).
@@ -273,11 +279,12 @@ object Rules {
     if (parts.size >= 2 && parts[0].equals("Android", true) && (parts[1].equals("data", true) || parts[1].equals("obb", true))) {
       return "app-private folder (Android/${parts[1]})"
     }
-    for (part in parts) {
+    for ((index, part) in parts.withIndex()) {
       val lower = part.lowercase()
       if (lower.startsWith(".trashed")) return "trashed"
       if (lower == ".statuses") { if (allowStatuses) continue else return STATUS_REASON }
       if (lower in PRIVATE_FOLDERS) return "private folder"
+      if (lower == "private" && parts.take(index).any(::isChatDocumentsFolder)) return "private folder"
       // Named junk folders first, so ".thumbnails" reports as thumbnails rather than just "hidden".
       if (lower in SKIPPED_FOLDERS) return folderReason(lower)
       if (lower.startsWith(".")) return "hidden folder"
@@ -334,7 +341,12 @@ object Rules {
     excludedFolders: Set<String> = emptySet(), noMedia: Boolean = false, scope: FolderScope = FolderScope(),
   ): String? {
     folderSkipReason(relativePath, excludedFolders, allowStatuses = scope.isOn(FolderGroups.WHATSAPP_STATUS))?.let { return it }
-    if (noMedia) return ".nomedia folder"
+    if (noMedia) {
+      val parts = relativePath.split('/')
+      val chatDocument = (kind == FileKind.DOCUMENT || kind == FileKind.PDF) &&
+        parts.any(::isChatDocumentsFolder) && parts.none { it.startsWith(".") }
+      if (!chatDocument) return ".nomedia folder"
+    }
     if (name.startsWith(".")) return if (name.startsWith(".trashed")) "trashed" else if (name.startsWith(".pending")) "pending download" else "hidden file"
     if (isOwnPack(name)) return "Trawl's own add-on pack"
     appDataReason(relativePath, name)?.let { return it }

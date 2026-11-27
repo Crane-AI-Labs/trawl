@@ -9,7 +9,7 @@ import com.craneai.findr.core.LearningSpeed
  * study); a profiling build can also override single settings from a key=value file ([parse]) to try one without a rebuild.
  *
  * What is NOT here on purpose: anything that changes what is indexed or how results are ranked, and the battery policy of
- * [IndexPolicy] (charger first, 30% floor), which every phone shares.
+ * [IndexPolicy] (charger subject to heat limits, 30% floor on battery), which every phone shares.
  */
 data class Tuning(
   /** EmbeddingGemma's CPU threads while Trawl is in front or the screen is on; null is LiteRT-LM's default (4). */
@@ -22,6 +22,8 @@ data class Tuning(
   val privacyThreads: Int = 2,
   /** Speech (Parakeet) threads. */
   val asrThreads: Int = 2,
+  /** EmbeddingGemma audio encoder CPU threads (matched to performance cores instead of spinning all logical cores). */
+  val audioThreads: Int = DEFAULT_AUDIO_THREADS,
   /** Share of the time the quick-look lane runs while EmbeddingGemma embeds (1.0 = flat out). */
   val quickDuty: Double = QuickLookPass.BUSY_DUTY,
   /** The same for the privacy lane. */
@@ -114,7 +116,19 @@ data class Tuning(
   /** Is any lane paced by heat at all (a knob file asked for it)? */
   val paces: Boolean get() = (paceFromC < PACE_OFF_C || paceCapBelowKhz > 0) && minOf(paceWordsDuty, paceQuickDuty, pacePrivacyDuty) < 1.0
 
+  /**
+   * The heat limit (D48/D51) caps only the speech recogniser's threads. EmbeddingGemma's text and audio thread counts are part of its
+   * engine's configuration, so every change of them makes the embedder drop its engine and reload the picture model (2.7-5.5 s), and
+   * a text embed at 2 threads is slower: on the A06 at 37-39 C the limit flipped 3-7 times in the 25-video set and cost +14% phone-seconds
+   * per video minute (a06-speed-120.md). Predictive ADPF [HeatPace] handles thermal cooling cleanly between files without reloading.
+   */
+  fun withThermalLimit(reducedThreads: Boolean): Tuning = if (!reducedThreads) this else copy(
+    asrThreads = minOf(asrThreads, THERMAL_THREADS),
+  )
+
   companion object {
+    const val DEFAULT_AUDIO_THREADS = 4
+    const val THERMAL_THREADS = 2
     const val MEDIA_SHARE = 0.2
     const val QUICK_VIDEO_SHARE = 0.2
     const val QUICK_VIDEO_SEEK_MS = 1_500L
@@ -124,12 +138,18 @@ data class Tuning(
     val DEFAULT = Tuning()
 
     @Volatile private var installed: Tuning = DEFAULT
+    @Volatile private var reducedThreads: Boolean = false
 
     /** The phone's own tuning (class profile plus knob-file overrides), before the person's [LearningSpeed] is laid over it. */
     @Volatile private var deviceBase: Tuning = DEFAULT
 
-    /** The tuning in force: set once per process by [install]. */
-    val current: Tuning get() = installed
+    /** The tuning in force: phone profile, learning speed, and the worker's current thermal limit. */
+    val current: Tuning get() = installed.withThermalLimit(reducedThreads)
+
+    /** Updated at worker file boundaries; cooling restores the profile rather than replacing its settings. */
+    fun useThermal(reduced: Boolean) {
+      reducedThreads = reduced
+    }
 
     /** Chosen at engine start from the phone; [overrides] come from a profiling build's knob file, empty in a shipped build. */
     fun install(device: DeviceProfile, overrides: Map<String, String> = emptyMap(), speed: LearningSpeed = LearningSpeed.BALANCED, roomy: Boolean = false) {
@@ -142,8 +162,26 @@ data class Tuning(
       installed = LearningProfile.tuning(deviceBase, speed, roomy)
     }
 
-    /** The profile for a phone, by its [DeviceClass]. */
-    fun forDevice(device: DeviceProfile): Tuning = forClass(device.deviceClass)
+    /**
+     * Hardware-matched screen-on text threads for [perfCores] performance cores: 2 on 2-perf-core chips (Helio G85/G99) so
+     * threads don't spill onto slow little cores, scaling up to 4 on 4+ perf-core chips (Snapdragon 8 Gen 3, 1+3+4, 4+4).
+     */
+    fun recommendedTextThreads(perfCores: Int): Int = if (perfCores <= 0) DEFAULT_AUDIO_THREADS else perfCores.coerceIn(2, 4)
+
+    /** Hardware-matched audio encoder threads for [perfCores] performance cores (2 on 2-perf-core chips, up to 4 on 4+). */
+    fun recommendedAudioThreads(perfCores: Int): Int = if (perfCores <= 0) DEFAULT_AUDIO_THREADS else perfCores.coerceIn(2, 4)
+
+    /** The profile for a phone, combining its [DeviceClass] defaults with hardware-matched CPU thread counts. */
+    fun forDevice(device: DeviceProfile): Tuning {
+      val base = forClass(device.deviceClass)
+      if (device.perfCores <= 0) return base
+      // On uniform clusters (e.g. 4x Cortex-A7 with no little cores), leave half the cores free for UI/system.
+      val effectivePerf = if (device.littleCores == 0 && device.bigCores > 1) (device.bigCores / 2).coerceAtLeast(1) else device.perfCores
+      return base.copy(
+        textThreadsOn = recommendedTextThreads(effectivePerf),
+        audioThreads = recommendedAudioThreads(effectivePerf),
+      )
+    }
 
     /**
      * Every class is on [DEFAULT]: the device-profile study measured each knob on four phones (Infinix Helio G99, TECNO KN4 MT6769,
@@ -182,6 +220,7 @@ data class Tuning(
         clipImageThreads = int("clipImageThreads")?.takeIf { it in 1..8 } ?: base.clipImageThreads,
         privacyThreads = int("privacyThreads")?.takeIf { it in 1..8 } ?: base.privacyThreads,
         asrThreads = int("asrThreads")?.takeIf { it in 1..8 } ?: base.asrThreads,
+        audioThreads = int("audioThreads")?.takeIf { it in 1..16 } ?: base.audioThreads,
         quickDuty = dbl("quickDuty")?.takeIf { it in 0.05..1.0 } ?: base.quickDuty,
         privacyDuty = dbl("privacyDuty")?.takeIf { it in 0.05..1.0 } ?: base.privacyDuty,
         warmC = dbl("warmC")?.takeIf { it in 30.0..50.0 } ?: base.warmC,

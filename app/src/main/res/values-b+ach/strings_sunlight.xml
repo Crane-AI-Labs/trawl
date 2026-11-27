@@ -9,4 +9,7 @@
   <string name="colours_wallpaper">Rangi pa cal ma i nge</string>
   <string name="colours_wallpaper_hint">Kwanyo rangi ki i cal ma i nge, dok loke ka cal meno oloke.</string>
   <string name="settings_brightness">Maler onyo col</string>
+  <string name="notif_waiting_other_app">Tye ka kuro ma itye ka tic ki app mukene</string>
+  <string name="preview_checking">neno con kikanne nio ka kingio</string>
+  <string name="preview_checking_words">Tye ka ngio · di me neno</string>
 </resources>

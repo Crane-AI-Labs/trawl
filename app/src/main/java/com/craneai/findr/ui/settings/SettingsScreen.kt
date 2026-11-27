@@ -26,6 +26,7 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.DarkMode
@@ -190,6 +191,7 @@ fun SettingsScreen(
               onAdd = { addingId = row.def.id },
               onRemove = { removingId = row.def.id },
               onSwitch = { on -> addOnsViewModel.setOn(row.def.id, on) },
+              downloadUrl = addOnsViewModel.downloadUrl(row.def.id),
             )
           }
         }
@@ -301,6 +303,7 @@ fun SettingsScreen(
       howTo = addOnsViewModel.howToAdd(row.def.id),
       onInstall = { addingId = null; addOnsViewModel.install(row.def.id) },
       onDismiss = { addingId = null },
+      downloadUrl = addOnsViewModel.downloadUrl(row.def.id),
     )
   }
   addOnRows.firstOrNull { it.def.id == removingId }?.let { row ->
@@ -509,17 +512,28 @@ private fun StorageRow(label: String, value: String, hint: String? = null, onRem
   }
 }
 
+internal const val UPDATES_URL = "https://trawl.craneailabs.com/#download"
+
 @Composable
-private fun About(onLicences: () -> Unit) {
+internal fun About(onLicences: () -> Unit) {
   val context = LocalContext.current
   val version = remember {
     runCatching { context.packageManager.getPackageInfo(context.packageName, 0).versionName }.getOrNull().orEmpty()
   }
+  var noBrowser by remember { mutableStateOf(false) }
   Column(verticalArrangement = Arrangement.spacedBy(Sun.S8)) {
     Text(stringResource(R.string.settings_about_version, version), style = SunType.Label, color = MaterialTheme.colorScheme.onSurface)
     Text(stringResource(R.string.settings_about_model), style = SunType.Body, color = MaterialTheme.colorScheme.onSurfaceVariant)
     Text(appString(R.string.settings_about_private), style = SunType.Body, color = MaterialTheme.colorScheme.onSurfaceVariant)
     Text(stringResource(R.string.settings_about_maker), style = SunType.Body, color = MaterialTheme.colorScheme.onSurfaceVariant)
   }
-  NavRow(icon = null, title = stringResource(R.string.settings_licences), subtitle = null, onClick = onLicences, modifier = Modifier.padding(top = Sun.S8))
+  NavRow(
+    icon = Icons.AutoMirrored.Outlined.OpenInNew,
+    title = stringResource(R.string.settings_check_updates),
+    subtitle = stringResource(R.string.settings_check_updates_hint),
+    onClick = { noBrowser = !com.craneai.findr.ui.delivery.openInBrowser(context, UPDATES_URL) },
+    modifier = Modifier.padding(top = Sun.S8),
+  )
+  if (noBrowser) SunErrorText(stringResource(R.string.addons_no_browser), Modifier.padding(top = Sun.S4))
+  NavRow(icon = null, title = stringResource(R.string.settings_licences), subtitle = null, onClick = onLicences, modifier = Modifier.padding(top = Sun.S4))
 }

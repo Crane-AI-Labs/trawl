@@ -39,6 +39,9 @@ import trawl.desktop.Strings
 import trawl.desktop.ageBasis
 import trawl.desktop.ui.search.Age
 import trawl.desktop.ui.search.EmptyKind
+import trawl.desktop.ui.search.ListColumn
+import trawl.desktop.ui.search.ListColumnSort
+import trawl.desktop.ui.search.ListColumnVisibility
 import trawl.desktop.ui.search.Picking
 import trawl.desktop.ui.search.RowText
 import trawl.desktop.ui.search.SearchStatus
@@ -145,7 +148,51 @@ class SearchUiLogicTest {
   @Test fun bestMatchIsOnlyOfferedWhereThereIsSomethingToBeBestFor() {
     assertFalse(SortOrder.BEST in sortChoices(searching = false))
     assertEquals(SortOrder.BEST, sortChoices(searching = true).first())
-    assertEquals(5, sortChoices(true).size)
+    assertEquals(8, sortChoices(true).size)
+    assertEquals(7, sortChoices(false).size)
+    assertTrue(SortOrder.CREATED_NEWEST in sortChoices(false) && SortOrder.CREATED_OLDEST in sortChoices(false))
+    assertTrue(SortOrder.LARGEST in sortChoices(false) && SortOrder.SMALLEST in sortChoices(false))
+    for (o in SortOrder.entries) {
+      val label = o.text()
+      assertTrue(label.isNotBlank() && !label.startsWith("["), "sort label for $o: $label")
+    }
+  }
+
+  @Test fun listViewColumnsToggleSortAndAdaptToWidth() {
+    val ui = MainUi()
+    assertEquals(ResultViewMode.GRID, ui.viewMode)
+    ui.viewMode = ResultViewMode.LIST
+    assertEquals(ResultViewMode.LIST, ui.viewMode)
+
+    assertEquals(SortOrder.OLDEST, ListColumnSort.nextSort(ListColumn.MODIFIED, SortOrder.NEWEST))
+    assertEquals(SortOrder.NEWEST, ListColumnSort.nextSort(ListColumn.MODIFIED, SortOrder.OLDEST))
+    assertEquals(SortOrder.NEWEST, ListColumnSort.nextSort(ListColumn.MODIFIED, SortOrder.BEST))
+    assertEquals(SortOrder.CREATED_OLDEST, ListColumnSort.nextSort(ListColumn.CREATED, SortOrder.CREATED_NEWEST))
+    assertEquals(SortOrder.CREATED_NEWEST, ListColumnSort.nextSort(ListColumn.CREATED, SortOrder.CREATED_OLDEST))
+    assertEquals(SortOrder.CREATED_NEWEST, ListColumnSort.nextSort(ListColumn.CREATED, SortOrder.NEWEST))
+    assertEquals(SortOrder.LARGEST, ListColumnSort.nextSort(ListColumn.SIZE, SortOrder.NEWEST))
+    assertEquals(SortOrder.SMALLEST, ListColumnSort.nextSort(ListColumn.SIZE, SortOrder.LARGEST))
+    assertEquals(SortOrder.LARGEST, ListColumnSort.nextSort(ListColumn.SIZE, SortOrder.SMALLEST))
+    assertEquals(SortOrder.NAME, ListColumnSort.nextSort(ListColumn.NAME, SortOrder.NEWEST))
+    assertNull(ListColumnSort.nextSort(ListColumn.FOLDER, SortOrder.NEWEST))
+
+    assertEquals("↓", ListColumnSort.indicator(ListColumn.MODIFIED, SortOrder.NEWEST))
+    assertEquals("↑", ListColumnSort.indicator(ListColumn.MODIFIED, SortOrder.OLDEST))
+    assertEquals("↓", ListColumnSort.indicator(ListColumn.CREATED, SortOrder.CREATED_NEWEST))
+    assertEquals("↑", ListColumnSort.indicator(ListColumn.CREATED, SortOrder.CREATED_OLDEST))
+    assertEquals("↓", ListColumnSort.indicator(ListColumn.SIZE, SortOrder.LARGEST))
+    assertEquals("↑", ListColumnSort.indicator(ListColumn.SIZE, SortOrder.SMALLEST))
+    assertNull(ListColumnSort.indicator(ListColumn.SIZE, SortOrder.NEWEST))
+
+    val wide = ListColumnVisibility.forWidth(700, SortOrder.NEWEST)
+    assertTrue(wide.showFolder && wide.showModified && wide.showCreated)
+    val medium = ListColumnVisibility.forWidth(500, SortOrder.NEWEST)
+    assertFalse(medium.showFolder)
+    assertTrue(medium.showModified && medium.showCreated)
+    val narrowCreated = ListColumnVisibility.forWidth(380, SortOrder.CREATED_NEWEST)
+    assertFalse(narrowCreated.showFolder)
+    assertFalse(narrowCreated.showModified)
+    assertTrue(narrowCreated.showCreated)
   }
 
   // ---- A22: selection ------------------------------------------------------------------------------------------------------------------

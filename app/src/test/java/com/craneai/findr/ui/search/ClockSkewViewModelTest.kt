@@ -46,7 +46,9 @@ class ClockSkewViewModelTest {
   private class Engine(val evidence: List<Long>) : SearchEngine {
     val searches = ArrayList<ResultView>()
     val recents = ArrayList<ResultView>()
-    override val status: StateFlow<IndexStatus> = MutableStateFlow(IndexStatus())
+    var newestDatesCalls = 0
+    val mutableStatus = MutableStateFlow(IndexStatus())
+    override val status: StateFlow<IndexStatus> = mutableStatus
     override val settings: StateFlow<FindrSettings> = MutableStateFlow(FindrSettings())
     private val files = (1L..3L).map { IndexedFile(it, "fake://$it", "x/$it", "f$it", FileKind.IMAGE, null, it * 10, it) }
     override suspend fun search(query: String, filter: KindFilter, limit: Int, view: ResultView): SearchResults {
@@ -54,7 +56,10 @@ class ClockSkewViewModelTest {
       return SearchResults(query, files.map { SearchHit(it, 1.0, MatchReason.BOTH) }, strongCount = files.size, tookMs = 1, indexIncomplete = false)
     }
     override suspend fun recent(filter: KindFilter, limit: Int, view: ResultView): List<IndexedFile> { recents += view; return files }
-    override suspend fun newestDates(limit: Int, notAfterMs: Long): List<Long> = evidence.filter { it <= notAfterMs }.sortedDescending().take(limit)
+    override suspend fun newestDates(limit: Int, notAfterMs: Long): List<Long> {
+      newestDatesCalls++
+      return evidence.filter { it <= notAfterMs }.sortedDescending().take(limit)
+    }
     override fun startIndexing() {}
     override fun pauseIndexing() {}
     override fun resumeIndexing() {}
@@ -106,5 +111,35 @@ class ClockSkewViewModelTest {
     assertEquals(0L, vm.state.value.clockSkewMs)
     vm.setQuery("photos in October"); advanceUntilIdle()
     assertEquals(range(2025, 10, 2025, 11), e.searches.last().dates)   // the old behaviour, as it was
+  }
+
+  @Test fun senseClockIsCachedAcrossKeystrokesAndRefreshesOnNonceOrAfter60s() = runTest(dispatcher) {
+    var now = at(2026, 10, 19, 12)
+    val e = Engine(kn3Files)
+    val vm = SearchViewModel(e, clock = { now }, weekStart = { DayOfWeek.MONDAY }, feedDispatcher = dispatcher)
+    advanceUntilIdle()
+    assertEquals("initial load senses clock once", 1, e.newestDatesCalls)
+
+    // Consecutive typing keystrokes within 60 s must reuse the cached evidence.
+    now = now.plusSeconds(1)
+    vm.setQuery("r"); advanceUntilIdle()
+    now = now.plusSeconds(1)
+    vm.setQuery("re"); advanceUntilIdle()
+    now = now.plusSeconds(1)
+    vm.setQuery("rec"); advanceUntilIdle()
+    now = now.plusSeconds(10)
+    vm.setQuery("rece"); advanceUntilIdle()
+    assertEquals("typing keystrokes must not re-scan newestDates", 1, e.newestDatesCalls)
+
+    // After >= 60 s, the next load refreshes senseClock.
+    now = now.plusSeconds(60)
+    vm.setQuery("recei"); advanceUntilIdle()
+    assertEquals("after 60 s senseClock refreshes", 2, e.newestDatesCalls)
+
+    // An index phase change (nonce bump) refreshes senseClock immediately even within 60 s.
+    now = now.plusSeconds(2)
+    e.mutableStatus.value = IndexStatus(phase = com.craneai.findr.core.IndexPhase.UP_TO_DATE, filesKnown = 3)
+    advanceUntilIdle()
+    assertEquals("index nonce change refreshes senseClock", 3, e.newestDatesCalls)
   }
 }

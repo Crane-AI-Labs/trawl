@@ -127,6 +127,7 @@ private fun SheetHeader(status: IndexStatus) {
     Text(status.headline(), style = SunType.Title, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.semantics { heading() })
     val pauseReason = status.pauseReason   // a local copy: the property lives in :core now, so it cannot be smart-cast
     val detail = when {
+      status.indexOpening -> stringResource(R.string.index_opening_detail)
       status.phase == IndexPhase.PAUSED && pauseReason != null -> appString(pauseReason.detailRes)
       status.phase == IndexPhase.UP_TO_DATE -> appString(R.string.sheet_detail_up_to_date)
       status.phase == IndexPhase.SCANNING -> appString(R.string.sheet_detail_scanning)

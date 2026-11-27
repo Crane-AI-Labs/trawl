@@ -13,6 +13,7 @@ import com.craneai.findr.core.ResultView
 import com.craneai.findr.core.SearchResults
 import com.craneai.findr.core.SortOrder
 import com.craneai.findr.engine.ProgressiveSearch
+import com.craneai.findr.engine.QueryVectorCache
 import com.craneai.findr.engine.QueryVectors
 import com.craneai.findr.index.IndexStore
 import com.craneai.findr.search.Searcher
@@ -21,12 +22,20 @@ import java.time.LocalDate
 import java.time.ZonedDateTime
 import java.time.temporal.WeekFields
 import java.util.Locale
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicLong
+import java.util.concurrent.atomic.AtomicReference
+import kotlin.coroutines.resume
+import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
 
 /**
@@ -50,7 +59,50 @@ class SearchHooks(
   val touch: (String, KindFilter) -> Unit = { _, _ -> },
   /** Whether sensitive files may be listed; fails closed. */
   val includeSensitive: () -> Boolean = { false },
+  /** Identity of the active embedding model (e.g. name + byte length); when this changes the query vector cache invalidates automatically. */
+  val modelFingerprint: () -> String = { "default" },
+  val access: IndexAccess = IndexAccess(),
 )
+
+/**
+ * 1-slot latest-query coalescer around blocking native query embeddings.
+ *
+ * Native EmbeddingGemma JNI calls cannot be interrupted mid-flight. If rapid typing fires query B and then query C while
+ * query A is already inside JNI, B is woken and dropped immediately without ever entering JNI, and only C runs once A returns.
+ */
+internal class QueryEmbedCoalescer {
+  private val mutex = Mutex()
+  private val latest = AtomicLong(0L)
+  private val waiter = AtomicReference<CancellableContinuation<Unit>?>(null)
+
+  suspend fun embed(query: String, compute: (String) -> FloatArray?): FloatArray? {
+    val ticket = latest.incrementAndGet()
+    // Wake any earlier queued waiter so it observes supersession and exits without calling JNI.
+    waiter.getAndSet(null)?.let { cont -> if (cont.isActive) cont.resume(Unit) }
+    while (true) {
+      currentCoroutineContext().ensureActive()
+      if (latest.get() != ticket) return null
+      if (mutex.tryLock()) {
+        try {
+          currentCoroutineContext().ensureActive()
+          if (latest.get() != ticket) return null
+          return withContext(Dispatchers.Default) { compute(query) }
+        } finally {
+          mutex.unlock()
+          waiter.getAndSet(null)?.let { cont -> if (cont.isActive) cont.resume(Unit) }
+        }
+      }
+      suspendCancellableCoroutine<Unit> { cont ->
+        val prev = waiter.getAndSet(cont)
+        if (prev != null && prev.isActive) prev.resume(Unit)
+        cont.invokeOnCancellation { waiter.compareAndSet(cont, null) }
+        if (latest.get() != ticket || !mutex.isLocked) {
+          if (waiter.compareAndSet(cont, null) && cont.isActive) cont.resume(Unit)
+        }
+      }
+    }
+  }
+}
 
 /** The file "Find similar" started from. */
 data class SimilarTo(val id: Long, val name: String)
@@ -69,16 +121,34 @@ class RecentList(val files: List<IndexedFile>, val hidden: Int)
  * hiding of sensitive files are the core's ([Searcher], [IndexStore]), the same code the phone runs. Nothing here ranks.
  */
 class SearchApi(private val h: SearchHooks) {
+  private val coalescers = ConcurrentHashMap<String, QueryEmbedCoalescer>()
+  internal val queryCache = QueryVectorCache(capacity = QUERY_CACHE_CAPACITY)
+
+  private fun coalescerFor(lane: String): QueryEmbedCoalescer = coalescers.computeIfAbsent(lane) { QueryEmbedCoalescer() }
+
+  /** Drops all cached in-memory query vectors (on app lock, index wipe, or model change). */
+  fun clearQueryCache() = queryCache.clear()
+
   /**
    * Words first (at once), then the fused answer (words and meaning together), as the phone's [ProgressiveSearch] does it. The first
    * emission has `complete = false` when a meaning answer is coming. [meaningDelayMs] holds the embed back while a word is still being
-   * typed (the next keystroke cancels this flow first).
+   * typed (the next keystroke cancels this flow first). [coalescerLane] isolates independent surfaces (e.g. main window vs quick panel)
+   * so concurrent searches do not supersede each other's meaning embeds.
    */
-  fun search(query: String, filter: KindFilter, view: ResultView = ResultView.DEFAULT, limit: Int = LIMIT, meaningDelayMs: Long = 0, withSensitive: Boolean? = null): Flow<SearchResults> = flow {
+  fun search(
+    query: String,
+    filter: KindFilter,
+    view: ResultView = ResultView.DEFAULT,
+    limit: Int = LIMIT,
+    meaningDelayMs: Long = 0,
+    withSensitive: Boolean? = null,
+    coalescerLane: String = "main",
+  ): Flow<SearchResults> = h.access.flow(SearchResults(query, emptyList(), 0, 0L, indexIncomplete = true)) {
     h.touch(query.trim(), filter)
     val st = h.searcher()
     if (st == null) { emit(SearchResults(query, emptyList(), 0, 0L, indexIncomplete = true)); return@flow }   // the index is still opening
     val on = h.kinds()
+    val laneCoalescer = coalescerFor(coalescerLane)
     // A kind that is switched off is out of results even though its files stay in the index (switching it on again is instant). Ask for
     // more than [limit] when something is off, so the hits that are dropped do not leave the list short.
     val ask = if (on.size < Crawler.KINDS.size) limit * 3 else limit
@@ -88,7 +158,10 @@ class SearchApi(private val h: SearchHooks) {
       storedVectors = { h.vectorCount() > 0 },
       ensureVectors = {},   // the desktop loads the matrix when the index opens
       wantsMeaning = { q -> q.length >= ProgressiveSearch.MIN_MEANING_CHARS && h.modelReady() && h.vectorCount() > 0 },
-      embed = { q -> QueryVectors(withContext(Dispatchers.Default) { h.embed(q) }, null) },
+      embed = { q ->
+        val vec = queryCache.get(h.modelFingerprint(), q) { norm -> laneCoalescer.embed(norm, h.embed) }
+        QueryVectors(vec, null)
+      },
       includeSensitive = { withSensitive ?: h.includeSensitive() },
       wordsWeight = { q -> h.wordsWeight(q) },
       meaningWeight = { q, v -> h.meaningWeight(q, v) },
@@ -97,47 +170,49 @@ class SearchApi(private val h: SearchHooks) {
   }.flowOn(Dispatchers.Default)
 
   /** The newest files (or the sort/date the view asks for), for the window before anything is typed. */
-  fun recent(filter: KindFilter, view: ResultView = ResultView.DEFAULT, limit: Int = RECENT_LIMIT, withSensitive: Boolean? = null): RecentList {
-    val st = h.store() ?: return RecentList(emptyList(), 0)
+  fun recent(filter: KindFilter, view: ResultView = ResultView.DEFAULT, limit: Int = RECENT_LIMIT, withSensitive: Boolean? = null): RecentList = h.access.read(RecentList(emptyList(), 0)) {
+    val st = h.store() ?: return@read RecentList(emptyList(), 0)
     val kinds = filter.kinds.intersect(h.kinds())
     val sensitive = withSensitive ?: h.includeSensitive()
     val files = st.recent(kinds, limit, includeSensitive = sensitive, order = view.sort, dates = view.dates)
     val hidden = if (sensitive) 0 else st.recentHiddenCount(kinds, view.dates)
-    return RecentList(files, hidden)
+    RecentList(files, hidden)
   }
 
   /** The files whose pictures are closest to [file]'s own (the phone's "Find similar"). Empty for a file with no picture vector. */
-  suspend fun similar(file: IndexedFile, filter: KindFilter, view: ResultView = ResultView.DEFAULT, limit: Int = SIMILAR_LIMIT): SearchResults = withContext(Dispatchers.Default) {
+  suspend fun similar(file: IndexedFile, filter: KindFilter, view: ResultView = ResultView.DEFAULT, limit: Int = SIMILAR_LIMIT): SearchResults = withContext(Dispatchers.Default) { h.access.read(SearchResults(file.name, emptyList(), 0, 0L, indexIncomplete = true)) {
     h.touch(file.name, filter)
-    val st = h.searcher() ?: return@withContext SearchResults(file.name, emptyList(), 0, 0L, indexIncomplete = true)
+    val st = h.searcher() ?: return@read SearchResults(file.name, emptyList(), 0, 0L, indexIncomplete = true)
     val on = h.kinds()
     val ask = if (on.size < Crawler.KINDS.size) limit * 3 else limit
-    onlyKinds(st.similar(file.id, filter, ask, includeSensitive = h.includeSensitive(), view = view, label = file.name), on, limit)
-  }
+    onlyKinds(st.similar(file.id, filter, ask, includeSensitive = h.includeSensitive(), view = view, label = file.name, crossModal = true), on, limit)
+  } }
 
   /** The dates of the newest files: what [ClockSense] weighs against the computer's clock. */
-  fun newestDates(clockMs: Long): List<Long> = h.store()?.newestDates(ClockSense.EVIDENCE_FILES, ClockSense.ceiling(clockMs)) ?: emptyList()
+  fun newestDates(clockMs: Long): List<Long> = h.access.read(emptyList()) { h.store()?.newestDates(ClockSense.EVIDENCE_FILES, ClockSense.ceiling(clockMs)) ?: emptyList() }
 
   /** True when any of [files] holds [phrase] as words (its name or its text), which makes a date phrase part of what is looked for. */
-  fun anyMentions(phrase: String, files: List<IndexedFile>): Boolean {
-    val st = h.searcher() ?: return false
-    return st.mentioning(phrase, files.map { it.id }).isNotEmpty()
+  fun anyMentions(phrase: String, files: List<IndexedFile>): Boolean = h.access.read(false) {
+    val st = h.searcher() ?: return@read false
+    st.mentioning(phrase, files.map { it.id }).isNotEmpty()
   }
 
-  fun fileById(id: Long): IndexedFile? = h.store()?.fileById(id)
+  fun fileById(id: Long): IndexedFile? = h.access.read(null) { h.store()?.fileById(id) }
 
   /**
    * The opening text of a document, PDF, recording or video as it was indexed: what the preview shows for a file that came up with no match
    * to quote (the Recent list, where nothing was typed). The first stored chunks joined up to about [maxChars], cut at a word; null when the
    * file has no text (a picture, an empty file, one that is not indexed yet). Reads the index only, so it is quick; call it off the UI thread.
    */
-  fun leadText(fileId: Long, maxChars: Int = LEAD_CHARS): String? {
-    val st = h.store() ?: return null
-    return joinLead(st.storedChunks(fileId, 0, LEAD_CHUNKS).map { it.second }, maxChars)
+  fun leadText(fileId: Long, maxChars: Int = LEAD_CHARS): String? = h.access.read(null) {
+    val st = h.store() ?: return@read null
+    joinLead(st.storedChunks(fileId, 0, LEAD_CHUNKS).map { it.second }, maxChars)
   }
 
   companion object {
-    const val LIMIT = 80
+    /** High ceiling matching Searcher's FTS5 cap (1000) so neither Main Window nor Quick Panel arbitrarily truncates matches. */
+    const val LIMIT = 1000
+    const val QUERY_CACHE_CAPACITY = 64
     /** The Recent list is the library's newest files, not one screenful of them. */
     const val RECENT_LIMIT = 600
     const val SIMILAR_LIMIT = 60
@@ -162,8 +237,11 @@ class SearchApi(private val h: SearchHooks) {
     }
     /** Fewer similar pictures than this while the index is unfinished: the list is thin, and the "still learning" note is shown. */
     const val SIMILAR_THIN = 10
-    /** What can be a seed for "Find similar": pictures and videos, as on the phone (documents have no picture vector to start from). */
-    val SIMILAR_KINDS = setOf(FileKind.IMAGE, FileKind.SCREENSHOT, FileKind.VIDEO)
+    /** What can be a seed for "Find similar": every indexed modality (photos, screenshots, videos, documents, PDFs, audio). */
+    val SIMILAR_KINDS = setOf(
+      FileKind.IMAGE, FileKind.SCREENSHOT, FileKind.VIDEO,
+      FileKind.DOCUMENT, FileKind.PDF, FileKind.AUDIO,
+    )
 
     /** [r] without the hits of kinds that are switched off, cut to [limit], the strong count kept in step. Pure. */
     fun onlyKinds(r: SearchResults, on: Set<FileKind>, limit: Int): SearchResults {

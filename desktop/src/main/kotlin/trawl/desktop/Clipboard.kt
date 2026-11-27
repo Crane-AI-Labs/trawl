@@ -53,11 +53,11 @@ object AwtClipboard : ClipboardPort {
     }
   }
 
-  private class Files(val files: List<File>, val withGnome: Boolean) : Transferable {
+  private class Files(val files: List<File>, val withGnome: Boolean, val includePathsAsText: Boolean) : Transferable {
     private val flavors: Array<DataFlavor> = buildList {
       add(DataFlavor.javaFileListFlavor)
       if (withGnome) add(gnomeFlavor)
-      add(DataFlavor.stringFlavor)
+      if (includePathsAsText) add(DataFlavor.stringFlavor)
     }.toTypedArray()
 
     override fun getTransferDataFlavors(): Array<DataFlavor> = flavors
@@ -65,15 +65,23 @@ object AwtClipboard : ClipboardPort {
     override fun getTransferData(f: DataFlavor): Any = when {
       f.equals(DataFlavor.javaFileListFlavor) -> files
       withGnome && f.equals(gnomeFlavor) -> ByteArrayInputStream(Clip.gnomeCopiedText(files).toByteArray(Charsets.UTF_8))
-      f.equals(DataFlavor.stringFlavor) -> Clip.pathsText(files)
+      includePathsAsText && f.equals(DataFlavor.stringFlavor) -> Clip.pathsText(files)
       else -> throw UnsupportedFlavorException(f)
     }
   }
 
   override fun putFiles(files: List<File>): Boolean {
     if (java.awt.GraphicsEnvironment.isHeadless()) return false
+    // On macOS, write standardized NSURL objects directly via NSPasteboard.writeObjects so sandboxed drop/paste
+    // targets like WhatsApp Desktop (Mac Catalyst) and Safari receive public.file-url + sandbox extension tokens.
+    if (Platform.os == Os.MAC && trawl.desktop.shell.MacNative.copyFiles(files)) return true
     val linux = Platform.os == Os.LINUX
-    Toolkit.getDefaultToolkit().systemClipboard.setContents(Files(files, withGnome = linux), null)
+    if (linux) {
+      (SystemFlavorMap.getDefaultFlavorMap() as SystemFlavorMap).setNativesForFlavor(DataFlavor.javaFileListFlavor, arrayOf("text/uri-list"))
+    }
+    // Omit stringFlavor on macOS and Windows: advertising plain text alongside file URLs causes chat/mail/notes apps to paste
+    // the raw file path string instead of attaching the actual file object.
+    Toolkit.getDefaultToolkit().systemClipboard.setContents(Files(files, withGnome = linux, includePathsAsText = linux), null)
     return true
   }
 

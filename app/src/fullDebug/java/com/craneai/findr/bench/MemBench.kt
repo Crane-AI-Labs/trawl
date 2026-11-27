@@ -405,7 +405,7 @@ object MemBench {
       }
       JSONObject().put("asr_ms", stats(times)).put("files", files.size).put("words", words)
     }
-    override fun close() = asr.release()
+    override fun close() = runBlocking { asr.release() }
   }
 
   /** The whole search path over a store of [n] synthetic vectors, to compare the heap index with the mapped one. See the `vecidx` part. */

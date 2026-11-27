@@ -6,6 +6,13 @@ import org.junit.Test
 
 /** The notices the licences require must be on the screen, word for word. THIRD_PARTY_NOTICES.md says what they are. */
 class LicenceNoticesTest {
+  @Test fun seesHeadCarriesTeacherAndPhotographProvenance() {
+    val notice = LicenceNotices.required.single { it.name.contains("Sees head") }
+    for (word in listOf("Crane AI Labs", "Qwen3-VL-8B-Instruct", "Qwen team", "Apache-2.0", "Open Images", "credited photographers",
+      "CC BY 2.0", "creativecommons.org/licenses/by/2.0", "validation-images-with-rotation.csv", "Changes:", "No teacher model or photographs", "do not endorse")) {
+      assertTrue("missing $word", notice.text.contains(word))
+    }
+  }
   private val all = (LicenceNotices.required + LicenceNotices.components).joinToString("\n") { "${it.name} ${it.licence} ${it.text}" }
 
   @Test fun embeddingGemmaIsApacheWithTheProhibitedUsePolicy() {
@@ -58,7 +65,8 @@ class LicenceNoticesTest {
       "zenodo.org/records/5864560", "TICO-19", "creativecommons.org/licenses/by/4.0", "Changes:", "Common Voice", "DeepSeek-V4-Pro",
       "do not endorse")) assertTrue("missing: $s", n.text.contains(s))
     assertTrue(n.link == "zenodo.org/records/5089560")
-    assertTrue("no ShareAlike source", LicenceNotices.required.none { it.licence.contains("SA") || it.text.contains("Sunbird") })
+    // The opt-in speech packs are CC BY-SA by decision (D46: WAXAL ships in the add-on, not in the app); nothing else may be.
+    assertTrue("no ShareAlike source", LicenceNotices.required.filterNot { it.name.startsWith("Speech packs") }.none { it.licence.contains("SA") || it.text.contains("Sunbird") })
   }
 
   @Test fun moreLanguagesKeywordTableNamesItsSourcesLicenceAndChanges() {
@@ -137,5 +145,13 @@ class LicenceNoticesTest {
       val f = File(dir, t.asset)
       assertTrue("${t.asset} missing", f.isFile && f.length() > 500)
     }
+  }
+
+  /** D46: the speech packs carry WAXAL (CC BY-SA 4.0): Makerere University and Google WaxalNLP credited, ShareAlike said, Parakeet's CC BY kept. */
+  @Test fun speechPacksCreditWaxalAndParakeetAndSayShareAlike() {
+    val n = LicenceNotices.required.single { it.name.startsWith("Speech packs") }
+    assertTrue(n.licence.contains("CC BY-SA 4.0"))
+    for (s in listOf("Makerere University", "Google (WaxalNLP)", "huggingface.co/datasets/google/WaxalNLP", "creativecommons.org/licenses/by-sa/4.0",
+      "ShareAlike", "Parakeet-TDT-CTC-110M by NVIDIA", "creativecommons.org/licenses/by/4.0", "Changes:", "do not endorse")) assertTrue("missing: $s", n.text.contains(s))
   }
 }

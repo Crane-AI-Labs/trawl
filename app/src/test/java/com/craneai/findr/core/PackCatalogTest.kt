@@ -5,6 +5,7 @@ import com.craneai.findr.engine.AsrModelPack
 import com.craneai.findr.engine.PackFilesRegistry
 import com.craneai.findr.engine.PrivatePack
 import com.craneai.findr.engine.QuickLookPack
+import com.craneai.findr.engine.SpeechPacks
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -117,5 +118,50 @@ class PackCatalogTest {
     assertEquals("trawl-speech-models.zip", AsrModelPack.ARCHIVE_NAME)
     // The folder inside an archive is internal and unchanged, so a pack built either way has the same layout.
     assertEquals("findr-speech-models", PackFilesRegistry.speech.folderName)
+  }
+
+  // ---- the speech add-on (engine/LocalSpeech.kt, engine/SpeechPacks.kt) ----
+
+  private val speechPacks = PackCatalog.all.filter { it.id in PackIds.SPEECH_PACKS }
+
+  @Test fun everySpeechPackIsAnOptInAddOnSizedByItsPinnedFiles() {
+    assertEquals(PackIds.SPEECH_PACKS, speechPacks.map { it.id })
+    for (def in speechPacks) {
+      val entry = SpeechPacks.byId(def.id)!!
+      assertEquals(def.id, entry.sizeBytes, def.sizeBytes)
+      assertEquals(entry.files, PackFilesRegistry.of(def.id)!!.manifest)
+      assertFalse("not installed without a question", def.byDefault)
+      assertFalse("not offered at onboarding", def.atOnboarding)
+      assertEquals("${entry.folderName}.zip", def.archiveName)
+      assertTrue(PackFilesRegistry.of(def.id)!!.archive.matches("trawl-speech-${entry.language}-student.zip"))
+    }
+    val rows = packRows(PackCatalog.all, emptyMap(), FindrSettings())
+    assertTrue(offeredAtOnboarding(rows).none { it.def.id in PackIds.SPEECH_PACKS })
+  }
+
+  @Test fun oneSpeechPackAtATime() {
+    val lg = PackCatalog.speechLg
+    val sw = PackCatalog.speechSw
+    val withLg = lg.withEnabled(FindrSettings(), true)
+    assertTrue(lg.enabledIn(withLg))
+    val withSw = sw.withEnabled(withLg, true)
+    assertTrue(sw.enabledIn(withSw))
+    assertFalse("switching Swahili on switches Luganda off", lg.enabledIn(withSw))
+    assertEquals("switching Luganda off leaves Swahili alone", PackIds.SPEECH_SW, lg.withEnabled(withSw, false).speechPack)
+    assertEquals(null, sw.withEnabled(withSw, false).speechPack)
+  }
+
+  @Test fun theSpeechPackCopyQuotesItsMeasuredNumbers() {
+    for (def in speechPacks) {
+      val (after, before) = PackCatalog.Facts.SPEECH_PACK_FOUND_FIRST_PCT.getValue(def.id)
+      assertEquals(R.string.pack_speech_language_benefit, def.benefit.res)
+      assertEquals(listOf(after, before), def.benefit.args.drop(1))
+      assertTrue(after > before)
+    }
+  }
+
+  @Test fun theSpeechPackZipsAreNotTheSpeechModelsZip() {
+    for (def in speechPacks) assertFalse(PackFilesRegistry.of(def.id)!!.archive.matches("trawl-speech-models.zip"))
+    for (def in speechPacks) assertFalse(PackFilesRegistry.speech.archive.matches(def.archiveName))
   }
 }

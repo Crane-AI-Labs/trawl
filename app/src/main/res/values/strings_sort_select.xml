@@ -2,15 +2,70 @@
 <resources>
   <!-- Sorting the list. Best match = the search's own order of relevance. Shown on a small button with the current choice. -->
   <string name="sort_best">Best match</string>
-  <string name="sort_newest">Newest</string>
-  <string name="sort_oldest">Oldest</string>
+  <string name="sort_newest">Date modified (newest)</string>
+  <string name="sort_oldest">Date modified (oldest)</string>
+  <string name="sort_created_newest">Date created (newest)</string>
+  <string name="sort_created_oldest">Date created (oldest)</string>
   <string name="sort_largest">Largest</string>
-  <string name="sort_name">Name A to Z</string>
+  <string name="sort_smallest">Smallest</string>
+  <string name="sort_name">A to Z</string>
   <!-- Screen-reader name of the sort button and its menu, said before the current choice. -->
+  <string name="sort_chip_best">Match</string>
+  <string name="sort_chip_newest">Newest</string>
+  <string name="sort_chip_oldest">Oldest</string>
+  <string name="sort_chip_created_newest">Created</string>
+  <string name="sort_chip_created_oldest">Created</string>
+  <string name="sort_chip_largest">Largest</string>
+  <string name="sort_chip_smallest">Smallest</string>
+  <string name="sort_chip_name">Name</string>
   <string name="sort_group">Sort by</string>
 
-  <!-- The date chip. "Any time" = no date limit. -->
-  <string name="date_any_time">Any time</string>
+  <!-- Sub-type format filter chip & Grid/List view toggle -->
+  <string name="subtype_group">File type</string>
+  <string name="subtype_all">All types</string>
+  <string name="subtype_remove">Remove file type filter</string>
+  <string name="subtype_pdf_menu" translatable="false">PDF (.pdf)</string>
+  <string name="subtype_pdf_chip" translatable="false">PDF</string>
+  <string name="subtype_word_menu" translatable="false">Word (.docx, .doc, .rtf)</string>
+  <string name="subtype_word_chip" translatable="false">Word</string>
+  <string name="subtype_spreadsheet_menu">Excel &amp; CSV (.xlsx, .csv)</string>
+  <string name="subtype_spreadsheet_chip" translatable="false">Excel / CSV</string>
+  <string name="subtype_presentation_menu" translatable="false">PowerPoint (.pptx, .ppt)</string>
+  <string name="subtype_presentation_chip" translatable="false">PowerPoint</string>
+  <string name="subtype_text_menu">Text &amp; Markdown (.txt, .md)</string>
+  <string name="subtype_text_chip">Text / MD</string>
+  <string name="subtype_code_menu">Code &amp; Data (.json, .xml, …)</string>
+  <string name="subtype_code_chip">Code / Data</string>
+  <string name="subtype_png_menu" translatable="false">PNG (.png)</string>
+  <string name="subtype_png_chip" translatable="false">PNG</string>
+  <string name="subtype_jpeg_menu" translatable="false">JPEG (.jpg, .jpeg)</string>
+  <string name="subtype_jpeg_chip" translatable="false">JPEG</string>
+  <string name="subtype_heic_menu" translatable="false">HEIC (.heic, .heif)</string>
+  <string name="subtype_heic_chip" translatable="false">HEIC</string>
+  <string name="subtype_webp_menu" translatable="false">WebP (.webp)</string>
+  <string name="subtype_webp_chip" translatable="false">WebP</string>
+  <string name="subtype_mp4_menu" translatable="false">MP4 (.mp4, .m4v)</string>
+  <string name="subtype_mp4_chip" translatable="false">MP4</string>
+  <string name="subtype_mov_menu" translatable="false">QuickTime (.mov)</string>
+  <string name="subtype_mov_chip" translatable="false">MOV</string>
+  <string name="subtype_mkv_menu" translatable="false">MKV / WebM (.mkv, .webm)</string>
+  <string name="subtype_mkv_chip" translatable="false">MKV / WebM</string>
+  <string name="subtype_m4a_menu" translatable="false">M4A / AAC (.m4a, .aac)</string>
+  <string name="subtype_m4a_chip" translatable="false">M4A</string>
+  <string name="subtype_mp3_menu" translatable="false">MP3 (.mp3)</string>
+  <string name="subtype_mp3_chip" translatable="false">MP3</string>
+  <string name="subtype_wav_menu" translatable="false">WAV (.wav)</string>
+  <string name="subtype_wav_chip" translatable="false">WAV</string>
+  <string name="subtype_ogg_menu" translatable="false">OGG / FLAC (.ogg, .flac)</string>
+  <string name="subtype_ogg_chip" translatable="false">OGG / FLAC</string>
+  <string name="view_mode_group">View mode</string>
+  <string name="view_grid">Grid</string>
+  <string name="view_list">List</string>
+  <string name="label_modified_short">Mod %1$s</string>
+  <string name="label_created_short">Created %1$s</string>
+
+  <!-- The date chip. "Date" = no date limit (compact so Grid/List stays visible on phones). -->
+  <string name="date_any_time">Date</string>
   <string name="date_group">Date</string>
   <string name="date_today">Today</string>
   <string name="date_yesterday">Yesterday</string>

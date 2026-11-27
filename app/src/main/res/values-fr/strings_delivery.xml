@@ -48,4 +48,9 @@
   <string name="models_pack_upgrade_note">En ajoutant le lot Standard, <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> relira vos fichiers avec le meilleur modèle. Votre liste de fichiers est conservée : la recherche par nom de fichier et la recherche de photos par aperçu rapide continuent de fonctionner entre-temps. Les mots dans les documents et les captures d\'écran, ainsi que la recherche par sens, reviennent à mesure que chaque fichier est relu, surtout pendant la charge du téléphone.</string>
   <string name="models_pack_get_standard">Obtenir le lot Standard (%1$d MB)</string>
   <string name="models_pack_upgraded">Le lot Standard est installé. Fermez <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> puis rouvrez-le pour l\'utiliser. Il relira ensuite vos fichiers avec le meilleur modèle. Les noms de fichiers et la recherche rapide de photos continuent de fonctionner entre-temps ; les mots dans les documents et les captures d\'écran reviennent à mesure que les fichiers sont relus.</string>
+  <string name="models_get_full_bundle">Obtenir le pack complet (%1$d Mo)</string>
+  <string name="models_missing_full_bundle">Les téléchargements séparés pour ces packs ne sont pas disponibles ici. Obtenez le pack complet pour les ajouter.</string>
+  <string name="models_missing_packs">Le modèle de recherche est installé. Packs manquants : %1$s.</string>
+  <string name="models_refused_installed_safe">Le fichier téléchargé n\'a pas pu être utilisé. Votre modèle de recherche installé est toujours en place.</string>
+  <string name="models_search_installed">Le modèle de recherche est installé.</string>
 </resources>

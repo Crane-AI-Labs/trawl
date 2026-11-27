@@ -107,7 +107,7 @@ class MediaAudioDecoder(
             resampler = Resampler(rate, OUT_RATE)
             resamplerRate = rate
           }
-          resampler!!.process(mono, frames)
+          resampler.process(mono, frames)
         }
         cutter.push(converted)
         consumeNs += System.nanoTime() - t0
@@ -169,7 +169,7 @@ class MediaAudioDecoder(
       }
       if (outputDone) resampler?.finish()?.let { cutter.push(it) }
       cutter.finish()
-      Log.i(TAG, "decoded $cut windows from $mime ($rate Hz, $channels ch) with ${codec?.name} in " +   // log-safe: the codec's name
+      Log.i(TAG, "decoded $cut windows from $mime ($rate Hz, $channels ch) with ${codec.name} in " +   // log-safe: the codec's name
         "${SystemClock.elapsedRealtime() - started} ms (ours ${consumeNs / 1_000_000} ms)")
       cut
     } catch (e: CancellationException) {

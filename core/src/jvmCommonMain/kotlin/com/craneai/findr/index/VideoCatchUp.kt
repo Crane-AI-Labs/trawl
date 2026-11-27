@@ -27,7 +27,8 @@ import com.craneai.findr.core.FrameMoment
 object VideoCatchUp {
   /** The video reading a stamped video has. Raise it when a change to how videos are read should reach the videos already in the index. */
   const val VERSION = 1
-  const val STAMP = "video-reading=$VERSION"
+  const val KEY = "video-reading"
+  const val STAMP = "$KEY=$VERSION"
 
   /** A picture row of a video, as stored: its slot ([locStart] to [locEnd], grown by look-alike frames) and its keyframe mark, if any. */
   class FrameRow(val segmentId: Long, val locStart: Long, val locEnd: Long?, val marks: String?)

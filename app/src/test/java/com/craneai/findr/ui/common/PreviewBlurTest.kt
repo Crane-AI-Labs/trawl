@@ -6,6 +6,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import androidx.compose.runtime.snapshots.Snapshot
 import com.craneai.findr.core.PrivacyCheck
 import com.craneai.findr.core.PrivateLook
 import kotlinx.coroutines.runBlocking
@@ -95,6 +96,19 @@ class PreviewBlurTest {
     assertTrue(blur.reveal(a))
     assertFalse(blur.hides(a))
     assertTrue(blur.hides(b))
+  }
+
+  @Test fun revealingOnePictureOnlyInvalidatesThatPicturesState() {
+    val blur = PreviewBlur(enabled = true)
+    val a = file(1, 0.95f); val b = file(2, 0.95f)
+    val readsA = HashSet<Any>()
+    val readsB = HashSet<Any>()
+    Snapshot.observe(readObserver = { readsA += it }) { assertTrue(blur.hides(a)) }
+    Snapshot.observe(readObserver = { readsB += it }) { assertTrue(blur.hides(b)) }
+    val written = HashSet<Any>()
+    Snapshot.observe(writeObserver = { written += it }) { assertTrue(blur.reveal(a)) }
+    assertTrue("revealing picture A must write A's state", written.any { it in readsA })
+    assertFalse("revealing picture A must NOT invalidate picture B's state", written.any { it in readsB })
   }
 
   @Test fun aDeniedRevealKeepsThePictureHiddenAndSaysWhy() {

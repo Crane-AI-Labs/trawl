@@ -298,6 +298,8 @@
   <string name="settings_about_model">Bincike yana aiki ne da EmbeddingGemma 2 daga Google (Apache 2.0), gaba ɗaya a wannan wayar.</string>
   <string name="settings_about_private"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ba ta da izinin intanet. Fayilolinku da abin da take koya daga gare su ba sa taɓa fita daga wayar.</string>
   <string name="settings_about_maker">Crane AI Labs ce ta ƙirƙira.</string>
+  <string name="settings_check_updates">Duba sabuntawa</string>
+  <string name="settings_check_updates_hint">Yana buɗe shafin saukewa a cikin burauzarka.</string>
   <string name="settings_licences">Lasisai da yabo</string>
   <string name="licences_title">Lasisai da yabo</string>
   <string name="licences_intro">An gina <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> a kan ayyukan da ke ƙasa. Lasisai ne suka buƙaci waɗannan sanarwoyi, kuma ta haka muke nuna godiyarmu.</string>
@@ -472,4 +474,7 @@
     <item quantity="one">Ba a iya karanta fayil %1$d ba (ya lalace, ko nau\'in da wannan wayar ba ta iya buɗewa). Har yanzu kuna iya samunsa ta suna.</item>
     <item quantity="other">Ba a iya karanta fayiloli %1$d ba (sun lalace, ko nau\'in da wannan wayar ba ta iya buɗewa). Har yanzu kuna iya samun su ta suna.</item>
   </plurals>
+  <string name="addons_download_browser">Sauke a cikin burauza</string>
+  <string name="addons_download_return_hint">Bayan fayil din ya gama sauka zuwa Downloads, dawo nan ka danna Sanya.</string>
+  <string name="addons_no_browser">Ba a sami burauza da zai bude hanyar saukewa ba.</string>
 </resources>

@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.installer.1.6.0.schema.json
+
+PackageIdentifier: CraneAILabs.Trawl
+PackageVersion: 1.1.0
+InstallerLocale: en-US
+MinimumOSVersion: 10.0.19041.0
+InstallerType: msi
+Scope: user
+UpgradeBehavior: install
+AppsAndFeaturesEntries:
+  - UpgradeCode: "{6f1d1f7e-3c0e-4a5e-9d57-2b1f5e0c7a11}"
+Installers:
+  - Architecture: x64
+    InstallerUrl: https://github.com/Crane-AI-Labs/trawl/releases/download/desktop-1.1.0/Trawl-1.1.0.msi
+    InstallerSha256: REPLACE_WITH_RELEASE_MSI_SHA256
+ManifestType: installer
+ManifestVersion: 1.6.0

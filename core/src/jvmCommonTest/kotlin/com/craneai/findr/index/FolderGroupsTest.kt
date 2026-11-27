@@ -137,4 +137,49 @@ class FolderGroupsTest {
   @Test fun anUnknownGroupIdIsOnSoANewerSettingsFileNeverHidesFiles() {
     assertTrue(FolderScope(mapOf("from_the_future" to false)).isOn("from_the_future"))
   }
+
+  @Test fun sentChatDocumentsRespectGroupSwitchesAndCanBeAddedByHand() {
+    for ((path, groupId) in listOf(
+      "Android/media/com.whatsapp/WhatsApp/Media/WhatsApp Documents/Sent/" to FolderGroups.WHATSAPP_DOCUMENTS,
+      "WhatsApp/Media/WhatsApp Documents/Sent/" to FolderGroups.WHATSAPP_DOCUMENTS,
+      "Android/media/org.telegram.messenger/Telegram/Telegram Documents/Sent/" to FolderGroups.DOCUMENTS,
+      "Telegram/Telegram Documents/Sent/" to FolderGroups.DOCUMENTS,
+    )) {
+      val off = FolderScope(mapOf(groupId to false))
+      val added = off.copy(includedFolders = setOf(path.trim('/')))
+      for (kind in listOf(FileKind.DOCUMENT, FileKind.PDF)) {
+        assertNull(path, skip(path, "report.pdf", kind, noMedia = true))
+        assertEquals(path, "turned off: $groupId", skip(path, "report.pdf", kind, off, noMedia = true))
+        assertNull(path, skip(path, "report.pdf", kind, added, noMedia = true))
+        assertEquals(path, "excluded folder", skip("${path}Reports/", "report.pdf", kind, added, excluded = setOf(path), noMedia = true))
+      }
+    }
+  }
+
+  @Test fun addingChatDocumentsNeverOpensPrivateHiddenOrAppPrivateFolders() {
+    for (app in listOf("WhatsApp", "Telegram")) {
+      val base = "$app/$app Documents/"
+      val everything = FolderScope.EVERYTHING.copy(includedFolders = setOf(base, "Android"))
+      for (kind in listOf(FileKind.DOCUMENT, FileKind.PDF)) {
+        assertEquals("private folder", skip("${base}Sent/Private/", "report.pdf", kind, everything, noMedia = true))
+        assertEquals("hidden folder", skip("${base}Sent/.hidden/", "report.pdf", kind, everything, noMedia = true))
+        assertEquals(".nomedia folder", skip("${base}Sent/.Statuses/", "report.pdf", kind, everything, noMedia = true))
+        for (tree in listOf("data", "obb")) {
+          assertEquals("app-private folder (Android/$tree)", skip("Android/$tree/com.chat/${base}Sent/", "report.pdf", kind, everything, noMedia = true))
+        }
+      }
+    }
+  }
+
+  @Test fun addingNoMediaFoldersDoesNotWidenTheChatDocumentsException() {
+    val everything = FolderScope.EVERYTHING.copy(includedFolders = setOf("WhatsApp", "Telegram", "Documents"))
+    for (app in listOf("WhatsApp", "Telegram")) {
+      for (kind in listOf(FileKind.IMAGE, FileKind.SCREENSHOT, FileKind.VIDEO, FileKind.AUDIO, FileKind.OTHER)) {
+        assertEquals(".nomedia folder", skip("$app/$app Documents/Sent/", "attachment.bin", kind, everything, noMedia = true))
+      }
+    }
+    for (kind in listOf(FileKind.DOCUMENT, FileKind.PDF)) {
+      assertEquals(".nomedia folder", skip("Documents/Sent/", "report.pdf", kind, everything, noMedia = true))
+    }
+  }
 }

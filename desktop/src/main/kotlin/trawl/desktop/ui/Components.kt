@@ -91,16 +91,26 @@ fun SunButton(onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Boole
   )
 }
 
-/** Secondary: an outline in ink (or the danger colour). */
+/** Secondary: an outline in ink (or the danger colour with subtle red hover tint). */
 @Composable
 fun SunOutlinedButton(onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true, danger: Boolean = false, content: @Composable RowScope.() -> Unit) {
+  val tk = LocalSunlight.current
   val scheme = MaterialTheme.colorScheme
-  val edge = if (danger) scheme.error else scheme.outline
+  val source = remember { MutableInteractionSource() }
+  val hovered by source.collectIsHoveredAsState()
+  val fg = if (danger) tk.danger else scheme.onSurface
+  val edge = if (danger) tk.danger else scheme.outline
+  val bg = if (danger && hovered && enabled) tk.danger.copy(alpha = 0.08f) else Color.Transparent
   OutlinedButton(
-    onClick = onClick, modifier = modifier.heightIn(min = Sun.Button).sunFocus(MaterialTheme.shapes.small).pointerHoverIcon(PointerIcon.Hand), enabled = enabled,
-    shape = MaterialTheme.shapes.small, border = BorderStroke(Sun.Border, if (enabled) edge else edge.copy(alpha = 0.38f)),
-    colors = ButtonDefaults.outlinedButtonColors(contentColor = if (danger) scheme.error else scheme.onSurface),
-    contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp), content = content,
+    onClick = onClick,
+    modifier = modifier.heightIn(min = Sun.Button).sunFocus(MaterialTheme.shapes.small).hoverable(source).pointerHoverIcon(PointerIcon.Hand),
+    enabled = enabled,
+    interactionSource = source,
+    shape = MaterialTheme.shapes.small,
+    border = BorderStroke(Sun.Border, if (enabled) edge else edge.copy(alpha = 0.38f)),
+    colors = ButtonDefaults.outlinedButtonColors(containerColor = bg, contentColor = fg),
+    contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp),
+    content = content,
   )
 }
 

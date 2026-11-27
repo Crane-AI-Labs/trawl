@@ -12,7 +12,7 @@ import com.craneai.findr.core.FileKind
  *  - A trigger drops the keyword row when a segment goes, so a cascade from `files` can never leave words behind.
  */
 object Schema {
-  const val VERSION = 7L
+  const val VERSION = 9L
 
   /**
    * `meta.vec_gen` (EmbeddingGemma's modalities) and `meta.vec_gen_quick` (the quick-look pass's) count every change to what
@@ -54,6 +54,15 @@ object Schema {
     END
     """
 
+  /** Additive v9 partial and range indexes (used in both [CREATE] and migration 8 -> 9). */
+  private val V9_INDEXES: List<String> = listOf(
+    "CREATE INDEX IF NOT EXISTS files_volume_uri ON files(volume, uri)",
+    "CREATE INDEX IF NOT EXISTS files_sensitive ON files(kind, date_ms) WHERE sensitive != 0 AND state != 'skipped'",
+    "CREATE INDEX IF NOT EXISTS files_unscored_private ON files(kind, mtime DESC) WHERE looks_private IS NULL AND state != 'skipped'",
+    "CREATE INDEX IF NOT EXISTS files_words_pending ON files(kind, state) WHERE detail IS NULL AND state IN ('new', 'searchable')",
+    "CREATE INDEX IF NOT EXISTS segments_clip ON segments(file, vec IS NOT NULL) WHERE modality = 'clip'",
+  )
+
   /**
    * Steps from one schema version to the next: MIGRATIONS[0] takes an index from version 1 to 2, and so on. An app
    * update upgrades the index in place, one transaction per step, instead of throwing a user's index away. To change
@@ -84,6 +93,13 @@ object Schema {
     // 6 -> 7: `files(kind, state)`, so the per-kind-and-state counts behind every status (and the phone's "is anything waiting") read a
     // small index instead of the whole table: 115 ms -> 12 ms on 180,000 files (the research notes, "desktop-cpu-stats"). No data moves.
     listOf("CREATE INDEX files_kind_state ON files(kind, state)"),
+    listOf(
+      "CREATE VIRTUAL TABLE sees_fts USING fts5(body, tokenize = '$FTS_TOKENIZER')",
+      "CREATE TRIGGER sees_gone AFTER DELETE ON segments BEGIN DELETE FROM sees_fts WHERE rowid = old.id; END",
+    ),
+    // 8 -> 9: partial and range indexes for folder prefix counts/removals, sensitive counts, unscored privacy queue, words-pending queue,
+    // and quick-look clip lookups/counts. Indexes only: no column changes, no data moves.
+    V9_INDEXES,
   )
 
   /** FTS5 table: file names in `name`, folder words and extracted/OCR text in `body`. Porter stems word endings. */
@@ -139,12 +155,14 @@ object Schema {
     """,
     "CREATE INDEX segments_file ON segments(file)",
     "CREATE VIRTUAL TABLE fts USING fts5(name, body, tokenize = '$FTS_TOKENIZER')",
+    "CREATE VIRTUAL TABLE sees_fts USING fts5(body, tokenize = '$FTS_TOKENIZER')",
+    "CREATE TRIGGER sees_gone AFTER DELETE ON segments BEGIN DELETE FROM sees_fts WHERE rowid = old.id; END",
     """
     CREATE TRIGGER segments_gone AFTER DELETE ON segments BEGIN
       DELETE FROM fts WHERE rowid = old.id;
     END
     """,
-  ) + VEC_GEN_TRIGGERS
+  ) + V9_INDEXES + VEC_GEN_TRIGGERS
 
   /**
    * `files.sensitive` is a set of bits, so each reason a file is hidden can be added and removed on its own. A file is
@@ -251,6 +269,10 @@ object Schema {
     const val VEC_GEN_QUICK = "vec_gen_quick"
     /** Which model wrote the `files.looks_private` scores; a different one clears them so the pictures are scored again. */
     const val PRIVATE_MODEL = "private_model"
+    /** `'1'` after a clean [IndexStore.close] + WAL truncate, cleared to `'0'` on first write; lets `fastOpen` skip full integrity checks. */
+    const val CLEAN_CLOSE = "clean_close"
+    /** Deterministic SHA-256 fingerprint of the [PrivacyRules] last synced onto `files.sensitive`, for O(1) [IndexStore.applyRules] short-circuit. */
+    const val RULES_FINGERPRINT = "rules_fingerprint"
     fun mediaVersion(volume: String) = "ms_version:$volume"
     fun mediaGeneration(volume: String) = "ms_generation:$volume"
   }

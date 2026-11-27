@@ -148,14 +148,15 @@ object PrivateThumbnails {
     override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, ImageBitmap>) = size > KEEP
   }
 
-  /** The picture if it is already decoded in the form asked for (no decoding, no waiting): lets a tile that scrolls back into view draw at once. */
-  fun peek(file: File, side: Int, blurred: Boolean): ImageBitmap? =
-    if (!blurred) Thumbnails.peek(file, side) else synchronized(this) { cache["${file.absolutePath}|${file.lastModified()}"] }
+  /** The picture if it is already decoded in the form asked for (no decoding, no waiting): lets a tile that scrolls back into view draw at once. Pass [modifiedMillis] from [IndexedFile] to avoid a UI-thread `stat()`. */
+  fun peek(file: File, side: Int, blurred: Boolean, modifiedMillis: Long? = null): ImageBitmap? =
+    if (!blurred) Thumbnails.peek(file, side, modifiedMillis)
+    else synchronized(this) { cache["${file.absolutePath}|${modifiedMillis ?: file.lastModified()}"] }
 
   /** Blocking: call it off the UI thread. */
-  fun load(file: File, side: Int, blurred: Boolean): ImageBitmap? {
-    if (!blurred) return Thumbnails.load(file, side)
-    val key = "${file.absolutePath}|${file.lastModified()}"
+  fun load(file: File, side: Int, blurred: Boolean, modifiedMillis: Long? = null): ImageBitmap? {
+    if (!blurred) return Thumbnails.load(file, side, modifiedMillis)
+    val key = "${file.absolutePath}|${modifiedMillis ?: file.lastModified()}"
     synchronized(this) { cache[key] }?.let { return it }
     // Decode small: the blur keeps 12 px of it anyway.
     val img = Thumbnails.decode(file, Blurred.SHOWN) ?: return null

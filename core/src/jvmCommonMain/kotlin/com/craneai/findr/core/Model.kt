@@ -58,10 +58,11 @@ data class IndexedFile(
 
 /**
  * How a list is ordered. [BEST] is the relevance order and only means something with a query (browsing treats it as [NEWEST]).
- * The others order the files a query already found (the strong matches first, then the weaker ones: a sort never lifts a weak match
- * above a strong one) or, when browsing, every file.
+ * [NEWEST] / [OLDEST] order by modified time (`mtime`); [CREATED_NEWEST] / [CREATED_OLDEST] order by creation or capture date
+ * (`date_ms`). The others order the files a query already found (the strong matches first, then the weaker ones: a sort never
+ * lifts a weak match above a strong one) or, when browsing, every file.
  */
-enum class SortOrder { BEST, NEWEST, OLDEST, LARGEST, NAME }
+enum class SortOrder { BEST, NEWEST, OLDEST, CREATED_NEWEST, CREATED_OLDEST, LARGEST, SMALLEST, NAME }
 
 /** A span of time on the file date: [fromMs] inclusive, [untilMs] exclusive, either side open when null. */
 data class DateRange(val fromMs: Long? = null, val untilMs: Long? = null) {
@@ -167,6 +168,7 @@ data class IndexStatus(
   val lastError: String? = null,
   /** Set while the index file cannot be opened (the phase is then [IndexPhase.ERROR]); the app retries on its own. Null once it is open. */
   val openProblem: IndexOpenProblem? = null,
+  val indexOpening: Boolean = false,
   /** Files this phone could not read because its memory ran out twice on them: shown in the index sheet, retried only after an update. */
   val tooLargeFiles: Int = 0,
   /** The two passes over photos, screenshots and videos (D2). Null when quick look is off or its models aren't installed. */
@@ -217,6 +219,7 @@ data class FindrSettings(
   val indexRecordings: Boolean = true,     // voice notes and recordings are read (words and sounds, or the audio vector): on by default, see engine/AudioPolicy
   val indexAudio: Boolean = false,         // "Deeper sound search": EmbeddingGemma's audio vector per 10 s for every recording and video, music too: slow, opt-in
   val speechToText: Boolean = true,        // on by default; works once the speech models are installed. Words + sound labels from the speech model (sherpa-onnx): see SherpaAsrEngine
+  val speechPack: String? = null,          // the opt-in speech add-on in use (a PackIds.SPEECH_PACKS id), or none; one at a time, as the gate cannot tell languages apart: see engine/LocalSpeech
   val quickLook: Boolean = true,           // on by default; works once the quick-look models are installed. A fast CPU first pass over photos (D2): see QuickLookPass
   /** Blur thumbnails that look private (PrivateLook) in the main app. On by default (a fresh install; a saved choice stays), at the stricter [PrivateLook.MAIN_APP_THRESHOLD]; the quick-search panel has its own switch and threshold. Blur only: never hides or reorders. */
   val blurPrivatePreviews: Boolean = true,

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.craneailabs.Trawl</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>Apache-2.0</project_license>
+  <name>Trawl</name>
+  <summary>Search your own files by meaning, offline</summary>
+  <developer id="com.craneailabs">
+    <name>Crane AI Labs</name>
+  </developer>
+  <description>
+    <p>
+      Trawl searches your local photos, screenshots, PDFs, Office documents, spreadsheets,
+      code, videos, and audio recordings by meaning and exact words — entirely on your computer.
+    </p>
+    <p>
+      Trawl has no network access, no accounts, and no telemetry. Everything stays on your device.
+    </p>
+  </description>
+  <launchable type="desktop-id">com.craneailabs.Trawl.desktop</launchable>
+  <url type="homepage">https://trawlsearch.com/</url>
+  <url type="bugtracker">https://github.com/Crane-AI-Labs/trawl/issues</url>
+  <categories>
+    <category>Utility</category>
+    <category>FileTools</category>
+  </categories>
+  <content_rating type="oars-1.1" />
+  <releases>
+    <release version="1.1.0" date="2026-11-26">
+      <description>
+        <ul>
+          <li>Off-heap SQ8 v3 vector store with ARM64 NEON SDOT acceleration on macOS and Linux ARM64</li>
+          <li>Un-truncated Quick Search results with Images and Documents prioritized ahead of Videos and Audio</li>
+          <li>Soft-wrapped Markdown and prose preview alongside JSON, CSV/Excel table, and code previews</li>
+          <li>Grid/List toggle, 17-format file-type filter, Size sort toggle, and Find similar shortcut (Ctrl+Shift+S)</li>
+          <li>Top-bar Add dropdown supporting folders and multi-select individual files, plus native Linux notifications</li>
+        </ul>
+      </description>
+    </release>
+  </releases>
+</component>

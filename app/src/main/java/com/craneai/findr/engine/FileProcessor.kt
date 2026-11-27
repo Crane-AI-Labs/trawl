@@ -15,6 +15,7 @@ import com.craneai.findr.core.IndexedFile
 import com.craneai.findr.core.OcrEngine
 import com.craneai.findr.core.OnScreenText
 import com.craneai.findr.core.TextExtractor
+import com.craneai.findr.core.SeesHead
 import com.craneai.findr.core.VideoSampler
 import com.craneai.findr.extract.DocumentTextExtractor
 import com.craneai.findr.extract.MediaAudioDecoder
@@ -93,6 +94,9 @@ class WordsOnly {
 /** What [FileProcessor.videoWords] read: the words pieces, each with the window it came from (0 for a short video), and the counts. */
 class VideoWords(val pieces: List<Pair<Int, Piece>>, val stats: WordsOnly)
 
+/** A soundtrack read again for its words (index.SoundtrackCatchUp): the pieces with their window, how many windows, and the time the recogniser took. */
+class SoundtrackWords(val pieces: List<Pair<Int, Piece>>, val windows: Int, val asrMs: Long)
+
 /**
  * Turns one file into searchable pieces. The rules come from the M2 eval (the build notes):
  * documents → ~400-char chunks, embedded and in FTS; scanned PDF pages → OCR, which *is* their text, so embedded too;
@@ -127,10 +131,21 @@ class FileProcessor(
 ) {
   /** The lite profile: pictures and frames by the quick-look model, their text embedded by EmbeddingGemma's text model. */
   private val lite get() = !embedder.imagesByEmbeddingGemma
+  private val seesHead by lazy { SeesHead.fromAssets(ContextAssets(context)) }
   private val yieldToUser = UserYield(MAX_WAIT_PER_FILE_MS, pauseForUser, userBusy)
 
   /** Time the last [process] call spent waiting for the user, which isn't indexing time (excluded from pace and logs). */
   val waitedMs: Long get() = yieldToUser.waitedMs
+
+  suspend fun seesWords(store: com.craneai.findr.index.IndexStore, fileId: Long): Boolean {
+    if (Edition.GO || lite) return false
+    letUserFirst()
+    val frames = store.seesFrames(fileId) ?: return false
+    val active = coroutineContext
+    val line = if (frames.vectors.isEmpty()) null else seesHead.line(frames.vectors) { active.ensureActive() }
+    active.ensureActive()
+    return store.saveSeesCatchUp(frames, line)
+  }
 
   /** Between expensive steps inside one file: see [UserYield] (waits for the user, defers a file past its budget). */
   private suspend fun letUserFirst(gpu: Boolean = false) = yieldToUser.letUserFirst(gpu)
@@ -207,12 +222,16 @@ class FileProcessor(
   }
 
   private suspend fun document(file: IndexedFile, uri: Uri, fromChunk: Int, progress: DocumentProgress): Processed {
+    val maxEmbed = DocMeaningCap.maxEmbeddedChunks(file.name, file.kind)
     // Later steps: the first step stored every chunk's text, so embed the next ones from the index, not the file.
-    if (fromChunk > 0) storedChunks?.invoke(file.id, fromChunk, CHUNKS_PER_STEP)?.let { (chunks, total) ->
-      if (chunks.isNotEmpty()) {
-        progress.prepare(chunks, total)
-        return embedDocumentChunks(chunks, progress)
+    if (fromChunk > 0) storedChunks?.invoke(file.id, fromChunk, minOf(CHUNKS_PER_STEP, (maxEmbed - fromChunk).coerceAtLeast(0)))?.let { (chunks, total) ->
+      val target = minOf(total, maxEmbed)
+      if (chunks.isNotEmpty() && fromChunk < target) {
+        val bounded = chunks.take(target - fromChunk)
+        progress.prepare(bounded, total, embedTarget = target)
+        return embedDocumentChunks(bounded, progress)
       }
+      if (fromChunk >= target) return Processed(emptyList(), null, "chunks $target/$total, meaning capped at $target/$total chunks (all words searchable)")
     }
     val extracted = text.extract(context, uri, file.mimeType, file.name)
     val pages = extracted.pages.toMutableList()
@@ -229,22 +248,26 @@ class FileProcessor(
           coroutineContext.ensureActive()
           letUserFirst()
           val bitmap = renderer.render(i) ?: continue
-          pages[i] = ocr.read(bitmap)
-          bitmap.recycle()
+          pages[i] = try {
+            ocr.read(bitmap)
+          } finally {
+            bitmap.recycle()
+          }
           read++
         }
       }
     }
     val ctx = coroutineContext
     val all = pages.flatMapIndexed { page, body -> Chunker.chunks(body) { ctx.ensureActive() }.map { page + 1 to it } }
-    val step = all.drop(fromChunk).take(CHUNKS_PER_STEP)
+    val embedTarget = minOf(all.size, maxEmbed)
+    val stepLimit = minOf(CHUNKS_PER_STEP, (embedTarget - fromChunk).coerceAtLeast(0))
+    val step = all.drop(fromChunk).take(stepLimit)
     // The first step replaces everything the file had, so it carries the rest of the text too (words only): a long
-    // document stays searchable by all its words while later steps add meaning. Those later steps add vectors only,
-    // so no text is in the keyword index twice.
+    // document stays searchable by all its words while later steps add meaning up to embedTarget.
     val suffix = (extracted.stopped?.let { ", stopped early: $it" } ?: "") +
       (if (unread > 0) ", $unread scanned pages past $OCR_MAX_PAGES not read" else "") +
       (if (extracted.truncated && all.isNotEmpty()) ", long file: first part read" else "")
-    progress.prepare((if (fromChunk == 0) all else step).map { (page, chunk) -> page.toLong() to chunk }, all.size, suffix)
+    progress.prepare((if (fromChunk == 0) all else step).map { (page, chunk) -> page.toLong() to chunk }, all.size, suffix, embedTarget = embedTarget)
     return embedDocumentChunks(step.map { (page, chunk) -> page.toLong() to chunk }, progress)
   }
 
@@ -304,7 +327,7 @@ class FileProcessor(
     val pieces = words?.let { if (it.long) readText(it.text) else listOf(Piece(PieceKind.OCR, PieceModality.TEXT, text = it.text)) }.orEmpty().toMutableList()
     coroutineContext.ensureActive()
     val ready = quick?.ready == true
-    val vector = if (ready && !quick!!.has(file.id)) quick.ofFile(uri) else null
+    val vector = if (ready && !quick.has(file.id)) quick.ofFile(uri) else null
     if (vector != null) pieces += Piece(PieceKind.IMAGE, PieceModality.CLIP, vector = vector)
     return Processed(pieces, null, if (ready) null else com.craneai.findr.index.IndexStore.QUICK_MISSING)
   }
@@ -378,14 +401,14 @@ class FileProcessor(
     val sound = if (wantsSound && together) async { trackOrNote() } else null
     // Frames arrive one at a time: the sampler fetches the next keyframe while this one is on the GPU. A small buffer
     // bounds the bitmaps held at once (each up to 768 px, ~2.4 MB).
-    val frames = Channel<VideoFrame>(FRAME_BUFFER)
+    val frames = Channel<VideoFrame>(FRAME_BUFFER, onUndeliveredElement = { it.bitmap?.recycle() })
     var sampleMs = 0L   // the sampler's own time, not counting its waits for a free buffer slot
     var cantOpen: FormatNotReadable? = null   // the sampler could not open the video at all (no codec, damaged)
     launch {
       val t0 = System.nanoTime()
       var waitedNs = 0L
       try {
-        video.stream(context, uri, if (windowed) framesInWindow(window!!, file.durationMs, Tuning.current.deepFramesPerMin) else framesFor(seconds), if (windowed) startMs else 0L, if (windowed) MEDIA_WINDOW_MS else Long.MAX_VALUE) { f ->
+        video.stream(context, uri, if (windowed) framesInWindow(window, file.durationMs, Tuning.current.deepFramesPerMin) else framesFor(seconds), if (windowed) startMs else 0L, if (windowed) MEDIA_WINDOW_MS else Long.MAX_VALUE) { f ->
           val tw = System.nanoTime()
           frames.send(f)
           waitedNs += System.nanoTime() - tw
@@ -430,7 +453,7 @@ class FileProcessor(
       val same = hash?.let { h -> kept.firstOrNull { java.lang.Long.bitCount(it.hash xor h) <= SAME_FRAME_BITS } }
       if (same != null) {
         same.end = maxOf(same.end, f.shotEndMs)
-        f.bitmap?.let { bmp ->
+        f.bitmap.let { bmp ->
           try {
             val to = System.nanoTime()
             val lineage = kept.indexOf(same)
@@ -446,27 +469,35 @@ class FileProcessor(
         }
         continue
       }
-      letUserFirst(gpu = wordsOnly == null)
-      val te = System.nanoTime()
-      // The frame's OCR runs while the GPU embeds it (the CPU is idle for ~85% of an embedding): `embed` is the wall
-      // time of both together, `ocr` the OCR's own time inside it. The lite profile reads the frame with the quick-look model
-      // first, on the CPU, before OCR recycles the bitmap. Words only: the picture already has its vector, nothing is embedded.
-      // (Not CompletableDeferred<FloatArray?>(null): with a bare null that call picks the constructor taking a parent Job, and the
-      // deferred never completes. VideoWordsTest caught it.)
-      val vector = if (wordsOnly != null) CompletableDeferred<FloatArray?>().apply { complete(null) }
-      else if (lite) CompletableDeferred(if (quickReady) quickFrame(f) else null) else async { embedder.image(f.jpeg) }
-      var look: FrameSignature? = null
-      f.bitmap?.let { bmp ->
-        val to = System.nanoTime()
-        try {
-          // Only a frame that showed words can have merged frames worth a second read, so a text-free frame needs no look.
-          if (readFrame(bmp, f.timeMs) && extraReads.enabled) look = frameSignatureOrNull(bmp)
-        } finally { bmp.recycle() }
-        ocrMs += (System.nanoTime() - to) / 1_000_000
+      var recycled = false
+      try {
+        letUserFirst(gpu = wordsOnly == null)
+        val te = System.nanoTime()
+        // The frame's OCR runs while the GPU embeds it (the CPU is idle for ~85% of an embedding): `embed` is the wall
+        // time of both together, `ocr` the OCR's own time inside it. The lite profile reads the frame with the quick-look model
+        // first, on the CPU, before OCR recycles the bitmap. Words only: the picture already has its vector, nothing is embedded.
+        // (Not CompletableDeferred<FloatArray?>(null): with a bare null that call picks the constructor taking a parent Job, and the
+        // deferred never completes. VideoWordsTest caught it.)
+        val vector = if (wordsOnly != null) CompletableDeferred<FloatArray?>().apply { complete(null) }
+        else if (lite) CompletableDeferred(if (quickReady) quickFrame(f) else null) else async { embedder.image(f.jpeg) }
+        var look: FrameSignature? = null
+        f.bitmap?.let { bmp ->
+          val to = System.nanoTime()
+          try {
+            // Only a frame that showed words can have merged frames worth a second read, so a text-free frame needs no look.
+            if (readFrame(bmp, f.timeMs) && extraReads.enabled) look = frameSignatureOrNull(bmp)
+          } finally {
+            bmp.recycle()
+            recycled = true
+          }
+          ocrMs += (System.nanoTime() - to) / 1_000_000
+        }
+        kept += Kept(hash ?: 0L, f.shotStartMs, f.shotEndMs, f.timeMs, vector.await())
+        look?.let { extraReads.covered(kept.lastIndex, it) }
+        embedMs += (System.nanoTime() - te) / 1_000_000
+      } finally {
+        if (!recycled) f.bitmap?.recycle()
       }
-      kept += Kept(hash ?: 0L, f.shotStartMs, f.shotEndMs, f.timeMs, vector.await())
-      look?.let { extraReads.covered(kept.lastIndex, it) }
-      embedMs += (System.nanoTime() - te) / 1_000_000
     }
     val frameModality = if (lite) PieceModality.CLIP else PieceModality.IMAGE
     // The slot is what the picture stands for; its marks say when the picture really is, which is what the result's time shows.
@@ -510,34 +541,11 @@ class FileProcessor(
     if (withSpeech) {
       val engine = asr?.takeIf { it.available() }
       if (engine == null) notes += com.craneai.findr.index.IndexStore.SPEECH_MISSING else {
-        val ta = System.nanoTime()
-        speechActive?.incrementAndGet()
-        val t = try { engine.transcribe(context, uri, spanMs?.let { (it / 1000).toInt() } ?: 300, startMs) } finally { speechActive?.decrementAndGet() }
-        val asrMs = (System.nanoTime() - ta) / 1_000_000
-        speechSeconds = if (t.speech.isEmpty() && t.sounds.isEmpty()) t.seconds else 1.0
-        val tt = System.nanoTime()
-        // English-only models write English-looking junk for Luganda and Swahili speech; junk transcripts hurt retrieval (the research notes),
-        // so a transcript that is not mostly common English words is dropped, keeping only its long English runs (a note that switches
-        // language keeps its English part). The sounds line is kept: it comes from the sound classifier.
-        val verdict = speechGate.judge(t.speech.joinToString(" ") { it.text })
-        notEnglish = !verdict.english
-        val speech = when {
-          verdict.english -> TranscriptPieces.speech(t)
-          verdict.partial.isNotEmpty() ->
-            TranscriptPieces.ofText(verdict.partial)
-          else -> emptyList()
-        }
-        val sounds = TranscriptPieces.sounds(t)
-        // Each piece is words for FTS and a text embedding for meaning. The sounds line is its own modality, so search centres its
-        // cosines apart from the transcripts (tags eval ii: speech r@1 back to 0.84 from 0.76, all 0.73 -> 0.81).
-        (speech.map { PieceKind.TRANSCRIPT to it } + listOfNotNull(sounds?.let { PieceKind.SOUND to it })).forEach { (kind, x) ->
-          coroutineContext.ensureActive()
-          letUserFirst()
-          pieces += Piece(kind, if (kind == PieceKind.SOUND) PieceModality.SOUND else PieceModality.TEXT, x.startMs, x.endMs, x.text, embedder.document(x.text), x.marks)
-        }
-        notes += SpeechLanguageGate.note(verdict, speech.size, embedder.supportsAudio) +
-          (if (sounds != null) ", sounds" else "") +
-          " (speech ${secs(asrMs)} text ${secs((System.nanoTime() - tt) / 1_000_000)})"
+        val r = speech(engine, uri, startMs, spanMs)
+        speechSeconds = r.speechSeconds
+        notEnglish = r.notEnglish
+        pieces += r.pieces
+        notes += r.note
       }
     }
     // The audio vector is the way back in for speech the transcript could not carry: no words to search, but the model hears the meaning
@@ -552,6 +560,66 @@ class FileProcessor(
     }
     if (soundFile != null && decodedNothing(speechSeconds, vectorWindows, soundFile.durationMs)) throw notReadable(soundFile, "no audio could be decoded")
     return Processed(pieces, null, notes.joinToString(", ").ifEmpty { null })
+  }
+
+  /** What the speech model made of one stretch of a soundtrack: its pieces (transcript, and the sounds line), the note for the detail, and whether the gate called it not English. */
+  private class SpeechRead(val pieces: List<Piece>, val note: String, val notEnglish: Boolean, val speechSeconds: Double, val asrMs: Long)
+
+  private suspend fun speech(engine: AsrEngine, uri: Uri, startMs: Long, spanMs: Long?): SpeechRead {
+    val ta = System.nanoTime()
+    speechActive?.incrementAndGet()
+    // The speech pack's second read happens inside the engine (it holds the samples) and only when the gate calls the window not English;
+    // the router is the gate's own verdict, so an English window never reaches the pack and is processed as ever.
+    val reading = if (engine.localAvailable()) LocalSpeech.Router(speechGate) { letUserFirst() } else null
+    val t = try { engine.transcribe(context, uri, spanMs?.let { (it / 1000).toInt() } ?: 300, startMs, reading) } finally { speechActive?.decrementAndGet() }
+    val asrMs = (System.nanoTime() - ta) / 1_000_000
+    val speechSeconds = if (t.speech.isEmpty() && t.sounds.isEmpty()) t.seconds else 1.0
+    val tt = System.nanoTime()
+    // English-only models write English-looking junk for Luganda and Swahili speech; junk transcripts hurt retrieval (the research notes),
+    // so a transcript that is not mostly common English words is dropped, keeping only its long English runs (a note that switches
+    // language keeps its English part). The sounds line is kept: it comes from the sound classifier.
+    // Sung and spoken words are judged apart (SpeechLanguageGate.keep), each by the same rule. Where the speech pack read a segment again,
+    // its words stand in for the junk (LocalSpeech.keep); a window it did not touch is exactly the gate's judgement.
+    val kept = LocalSpeech.keep(t, speechGate)
+    val verdict = kept.verdict
+    val speech = kept.speech
+    val sounds = TranscriptPieces.sounds(t)
+    // Each piece is words for FTS and a text embedding for meaning. The sounds line is its own modality, so search centres its
+    // cosines apart from the transcripts (tags eval ii: speech r@1 back to 0.84 from 0.76, all 0.73 -> 0.81).
+    val pieces = ArrayList<Piece>()
+    (speech.map { PieceKind.TRANSCRIPT to it } + listOfNotNull(sounds?.let { PieceKind.SOUND to it })).forEach { (kind, x) ->
+      coroutineContext.ensureActive()
+      letUserFirst()
+      pieces += Piece(kind, if (kind == PieceKind.SOUND) PieceModality.SOUND else PieceModality.TEXT, x.startMs, x.endMs, x.text, embedder.document(x.text), x.marks)
+    }
+    val askedLocal = reading != null && !verdict.english
+    val note = SpeechLanguageGate.note(verdict, speech.size, embedder.supportsAudio, if (askedLocal) kept.localKept ?: 0 else null) +
+      (if (sounds != null) ", sounds" else "") +
+      " (speech ${secs(asrMs)} text ${secs((System.nanoTime() - tt) / 1_000_000)})"
+    return SpeechRead(pieces, note, !verdict.english, speechSeconds, asrMs)
+  }
+
+  /**
+   * A video's or recording's soundtrack read again, the speech model's words only (index.SoundtrackCatchUp): every window a fresh read
+   * takes sound from, through the same recogniser, language gate and rules, with no picture opened and no audio vector made. The pieces
+   * come with their window (0 for a file read whole), so the worker saves a later window's as a fresh read does. Sounds-line pieces are
+   * returned too; the store decides whether to replace the old line ([com.craneai.findr.index.SoundtrackCatchUp.REFRESH_SOUNDS]).
+   * Throws [IllegalStateException] when the speech model is not available: the file must stay in the queue, not be stamped.
+   */
+  suspend fun soundtrackWords(file: IndexedFile): SoundtrackWords {
+    val engine = asr?.takeIf { it.available() } ?: throw IllegalStateException("speech model not available")
+    val uri = Uri.parse(file.uri)
+    val windows = windowCount(file.durationMs)
+    val out = ArrayList<Pair<Int, Piece>>()
+    var asrMs = 0L
+    for (w in 0 until windows) {
+      coroutineContext.ensureActive()
+      yieldToUser.reset()
+      val r = speech(engine, uri, w * MEDIA_WINDOW_MS, if (windows > 1) MEDIA_WINDOW_MS else null)
+      asrMs += r.asrMs
+      out += r.pieces.map { w to it }
+    }
+    return SoundtrackWords(out, windows, asrMs)
   }
 
   private suspend fun sound(uri: Uri, startMs: Long = 0, spanMs: Long? = null): Processed {
@@ -615,7 +683,9 @@ class FileProcessor(
   /** The phone's image path from M1: longest side 768 px, JPEG quality 90. */
   private fun jpeg(bitmap: Bitmap, maxSide: Int): ByteArray {
     val scale = maxSide.toFloat() / maxOf(bitmap.width, bitmap.height)
-    val scaled = if (scale < 1f) Bitmap.createScaledBitmap(bitmap, (bitmap.width * scale).toInt(), (bitmap.height * scale).toInt(), true) else bitmap
+    val scaled = if (scale < 1f) {
+      Bitmap.createScaledBitmap(bitmap, (bitmap.width * scale).toInt().coerceAtLeast(1), (bitmap.height * scale).toInt().coerceAtLeast(1), true)
+    } else bitmap
     return ByteArrayOutputStream().use { scaled.compress(Bitmap.CompressFormat.JPEG, 90, it); it.toByteArray() }
       .also { if (scaled !== bitmap) scaled.recycle() }
   }

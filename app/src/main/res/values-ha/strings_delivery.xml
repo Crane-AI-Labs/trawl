@@ -48,4 +48,9 @@
   <string name="models_pack_upgrade_note">Ƙara kunshin Na al\'ada zai sa manhajar <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ta sake karanta fayilolinku da samfuri mafi inganci. Jerin fayilolinku yana nan: bincike ta sunan fayil da gano hotuna ta duba da sauri suna ci gaba da aiki a halin yanzu. Kalmomin da ke cikin takardu da hotunan allo, da bincike ta ma\'ana, suna dawowa yayin da ake sake karanta kowane fayil, mafi kyau yayin da wayar ke caji.</string>
   <string name="models_pack_get_standard">Sauke kunshin Na al\'ada (%1$d MB)</string>
   <string name="models_pack_upgraded">An shigar da kunshin Na al\'ada. Rufe <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> sannan ku sake buɗe ta don fara amfani da shi. Daga nan za ta sake karanta fayilolinku da samfuri mafi inganci. Sunayen fayil da duba hotuna da sauri suna ci gaba da aiki a halin yanzu; kalmomin da ke cikin takardu da hotunan allo suna dawowa yayin da ake karanta fayilolin.</string>
+  <string name="models_get_full_bundle">Sami cikakken kunshi (%1$d MB)</string>
+  <string name="models_missing_full_bundle">Sauke wadannan kunshi daban-daban ba ya nan. Sami cikakken kunshi don kara su.</string>
+  <string name="models_missing_packs">An sanya samfurin bincike. Kunshin da suka bata: %1$s.</string>
+  <string name="models_refused_installed_safe">Ba a iya amfani da fayil din da aka sauke ba. Samfurin bincikenka da aka sanya yana nan daram.</string>
+  <string name="models_search_installed">An sanya samfurin bincike.</string>
 </resources>

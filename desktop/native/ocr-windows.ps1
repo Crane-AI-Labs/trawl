@@ -10,18 +10,29 @@ $asTask = ([System.WindowsRuntimeSystemExtensions].GetMethods() | Where-Object {
   $_.Name -eq 'AsTask' -and $_.GetParameters().Count -eq 1 -and $_.GetParameters()[0].ParameterType.Name -eq 'IAsyncOperation`1' })[0]
 function Wait($op, [Type]$t) { $task = $asTask.MakeGenericMethod($t).Invoke($null, @($op)); $task.Wait(-1) | Out-Null; $task.Result }
 $engine = [Windows.Media.Ocr.OcrEngine]::TryCreateFromUserProfileLanguages()
-$stdout = [Console]::Out
-while ($null -ne ($path = [Console]::In.ReadLine())) {
+$utf8 = New-Object System.Text.UTF8Encoding($false)
+$stdin = New-Object System.IO.StreamReader([Console]::OpenStandardInput(), $utf8)
+$stdout = [Console]::OpenStandardOutput()
+while ($null -ne ($path = $stdin.ReadLine())) {
   $text = ''
-  try {
-    $file = Wait ([Windows.Storage.StorageFile]::GetFileFromPathAsync($path)) ([Windows.Storage.StorageFile])
-    $stream = Wait ($file.OpenAsync([Windows.Storage.FileAccessMode]::Read)) ([Windows.Storage.Streams.IRandomAccessStream])
-    $decoder = Wait ([Windows.Graphics.Imaging.BitmapDecoder]::CreateAsync($stream)) ([Windows.Graphics.Imaging.BitmapDecoder])
-    $bitmap = Wait ($decoder.GetSoftwareBitmapAsync()) ([Windows.Graphics.Imaging.SoftwareBitmap])
-    $result = Wait ($engine.RecognizeAsync($bitmap)) ([Windows.Media.Ocr.OcrResult])
-    $text = ($result.Lines | ForEach-Object { $_.Text }) -join "`n"
-    $stream.Dispose()
-  } catch { $text = '' }
-  $stdout.WriteLine((@{ path = $path; text = $text } | ConvertTo-Json -Compress))
+  if ($null -ne $engine -and $path.Length -gt 0) {
+    $stream = $null
+    $bitmap = $null
+    try {
+      $file = Wait ([Windows.Storage.StorageFile]::GetFileFromPathAsync($path)) ([Windows.Storage.StorageFile])
+      $stream = Wait ($file.OpenAsync([Windows.Storage.FileAccessMode]::Read)) ([Windows.Storage.Streams.IRandomAccessStream])
+      $decoder = Wait ([Windows.Graphics.Imaging.BitmapDecoder]::CreateAsync($stream)) ([Windows.Graphics.Imaging.BitmapDecoder])
+      $bitmap = Wait ($decoder.GetSoftwareBitmapAsync()) ([Windows.Graphics.Imaging.SoftwareBitmap])
+      $result = Wait ($engine.RecognizeAsync($bitmap)) ([Windows.Media.Ocr.OcrResult])
+      $text = ($result.Lines | ForEach-Object { $_.Text }) -join "`n"
+    } catch { $text = '' }
+    finally {
+      if ($null -ne $bitmap) { try { $bitmap.Dispose() } catch { } }
+      if ($null -ne $stream) { try { $stream.Dispose() } catch { } }
+    }
+  }
+  $json = (@{ path = $path; text = $text } | ConvertTo-Json -Compress) + "`n"
+  $bytes = $utf8.GetBytes($json)
+  $stdout.Write($bytes, 0, $bytes.Length)
   $stdout.Flush()
 }

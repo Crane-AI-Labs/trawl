@@ -123,9 +123,33 @@ class IndexAdminTest {
     assertNotNull(store.meta(IndexAdmin.FORMATS_KEY))
   }
 
+  @Test fun legacyWorkbooksAreQueuedOnceEvenWhereTheFirstCleanUpRan() {
+    store.setMeta(IndexAdmin.FORMATS_KEY, "1")   // an index that already ran the first formats clean-up
+    add("budget.xls", FileKind.DOCUMENT, state = FileState.UNDERSTOOD, detail = IndexStore.NAME_ONLY)
+    add("OLD.XLS", FileKind.DOCUMENT, state = FileState.FAILED, detail = "took too long")
+    add("sheet.xlsx", FileKind.DOCUMENT, state = FileState.UNDERSTOOD)
+    add("prices.csv", FileKind.DOCUMENT, state = FileState.UNDERSTOOD)
+    add("report.pdf", FileKind.PDF, state = FileState.UNDERSTOOD)
+    add("skipped.xls", FileKind.DOCUMENT, state = FileState.SKIPPED)
+    val log = ArrayList<String>()
+    assertEquals(2, IndexAdmin.rereadLegacyWorkbooks(store) { log += it })
+    assertEquals(FileState.SEARCHABLE.db to null, stateOf("budget.xls"))
+    assertEquals(FileState.SEARCHABLE.db to null, stateOf("OLD.XLS"))
+    for (name in listOf("sheet.xlsx", "prices.csv", "report.pdf")) assertEquals(FileState.UNDERSTOOD.db, stateOf(name).first, name)
+    assertEquals(FileState.SKIPPED.db, stateOf("skipped.xls").first, "a file the person skipped stays skipped")
+    assertEquals(listOf("2 legacy Excel workbooks go back in the queue: this build reads them"), log)
+    // Once per index.
+    store.setState(store.read { db -> db.long("SELECT id FROM files WHERE name = 'budget.xls'") }!!, FileState.UNDERSTOOD)
+    assertEquals(0, IndexAdmin.rereadLegacyWorkbooks(store))
+    assertEquals(FileState.UNDERSTOOD.db, stateOf("budget.xls").first)
+    assertEquals(0, IndexAdmin.rereadNewFormats(store), "the first clean-up does not run again")
+  }
+
   @Test fun aFreshIndexIsMarkedWithoutQueuingAnything() {
     assertEquals(0, IndexAdmin.rereadNewFormats(store))
     assertNotNull(store.meta(IndexAdmin.FORMATS_KEY))
+    assertEquals(0, IndexAdmin.rereadLegacyWorkbooks(store))
+    assertNotNull(store.meta(IndexAdmin.LEGACY_WORKBOOKS_KEY))
     assertNull(stateOf("nothing").first)
   }
 }

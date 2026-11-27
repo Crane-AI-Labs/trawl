@@ -2,9 +2,6 @@ package com.craneai.findr.ui.search
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -17,16 +14,21 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.outlined.ContentCopy
+import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.FolderOpen
 import androidx.compose.material.icons.outlined.ImageSearch
-import androidx.compose.material.icons.outlined.OpenInNew
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
@@ -119,8 +121,21 @@ fun ShareBadge(onClick: () -> Unit, modifier: Modifier = Modifier, painter: Pain
 private val BADGE_DISC = Color(0xB3000000)
 private val BADGE_TINT = ColorFilter.tint(Color.White)
 
-/** What a long-press opens on any result: the things a person does with a file, as icons with their word under them. */
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+/** One action button in the uniform 2-column action grid inside [FileActionSheet]. */
+private data class SheetActionSpec(
+  val icon: ImageVector,
+  val label: String,
+  val onClick: () -> Unit,
+  val primary: Boolean = false,
+  val hint: String? = null,
+)
+
+/**
+ * What a long-press or "More" opens on any result: the things a person does with a file,
+ * laid out in a uniform 2-column grid of equal-width, equal-height buttons (`Modifier.weight(1f)`),
+ * matching Desktop 1.1.0's action grid.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FileActionSheet(
   file: IndexedFile,
@@ -132,6 +147,8 @@ fun FileActionSheet(
   onDismiss: () -> Unit,
   /** "Find similar" for a photo, screenshot or video; null leaves the action out. */
   onFindSimilar: (() -> Unit)? = null,
+  /** In-app structured preview (JSON, CSV/Excel, code); null leaves the action out. */
+  onPreview: (() -> Unit)? = null,
 ) {
   ModalBottomSheet(
     onDismissRequest = onDismiss,
@@ -139,7 +156,16 @@ fun FileActionSheet(
     containerColor = MaterialTheme.colorScheme.background,
     tonalElevation = 0.dp,
   ) {
-    Column(Modifier.padding(horizontal = Sun.Gutter).padding(bottom = Sun.S16).navigationBarsPadding(), verticalArrangement = Arrangement.spacedBy(Sun.S12)) {
+    val stacked = androidx.compose.ui.platform.LocalDensity.current.fontScale >= 1.3f
+    Column(
+      Modifier
+        .fillMaxWidth()
+        .verticalScroll(rememberScrollState())
+        .padding(horizontal = Sun.Gutter)
+        .padding(bottom = Sun.S16)
+        .navigationBarsPadding(),
+      verticalArrangement = Arrangement.spacedBy(Sun.S12),
+    ) {
       Text(
         file.name,
         style = SunType.BodyLarge.copy(fontWeight = FontWeight.Bold),
@@ -148,18 +174,39 @@ fun FileActionSheet(
         overflow = TextOverflow.Ellipsis,
         modifier = Modifier.padding(horizontal = 4.dp),
       )
-      FlowRow(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly, verticalArrangement = Arrangement.spacedBy(Sun.S8)) {
-        SheetAction(Icons.Outlined.Share, stringResource(R.string.action_share), onShare, primary = true)
-        SheetAction(Icons.Outlined.ContentCopy, stringResource(R.string.action_copy), onCopy)
-        SheetAction(Icons.Outlined.OpenInNew, stringResource(R.string.action_open), onOpen)
-        SheetAction(Icons.Outlined.FolderOpen, stringResource(R.string.action_show_folder), onShowFolder)
-        if (onFindSimilar != null && file.kind in SIMILAR_KINDS) SheetAction(Icons.Outlined.ImageSearch, stringResource(R.string.action_find_similar), onFindSimilar, hint = stringResource(R.string.action_find_similar_help))
+      val actions = buildList {
+        add(SheetActionSpec(Icons.Outlined.Share, stringResource(R.string.action_share), onShare, primary = true))
+        if (onPreview != null) {
+          add(SheetActionSpec(Icons.Outlined.Description, stringResource(R.string.action_preview), onPreview))
+        }
+        add(SheetActionSpec(Icons.AutoMirrored.Outlined.OpenInNew, stringResource(R.string.action_open), onOpen))
+        add(SheetActionSpec(Icons.Outlined.ContentCopy, stringResource(R.string.action_copy), onCopy))
+        add(SheetActionSpec(Icons.Outlined.FolderOpen, stringResource(R.string.action_show_folder), onShowFolder))
+        if (onFindSimilar != null && file.kind in SIMILAR_KINDS) {
+          add(SheetActionSpec(Icons.Outlined.ImageSearch, stringResource(R.string.action_find_similar), onFindSimilar, hint = stringResource(R.string.action_find_similar_help)))
+        }
         // User marking is one of the only two ways a file becomes sensitive (the other is a private folder). Never a guess.
         // A file that is sensitive only because of its folder is un-hidden by changing the folder, not here.
         if (!file.sensitive) {
-          SheetAction(Icons.Outlined.VisibilityOff, stringResource(R.string.action_mark_sensitive), { onMarkSensitive(true) })
+          add(SheetActionSpec(Icons.Outlined.VisibilityOff, stringResource(R.string.action_mark_sensitive), { onMarkSensitive(true) }))
         } else if (file.markedSensitive) {
-          SheetAction(Icons.Outlined.Visibility, stringResource(R.string.action_unmark_sensitive), { onMarkSensitive(false) })
+          add(SheetActionSpec(Icons.Outlined.Visibility, stringResource(R.string.action_unmark_sensitive), { onMarkSensitive(false) }))
+        }
+      }
+      Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Sun.S8)) {
+        if (stacked) {
+          actions.forEach { action ->
+            SheetAction(action, Modifier.fillMaxWidth().heightIn(min = Sun.Target))
+          }
+        } else {
+          actions.chunked(2).forEach { pair ->
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Sun.S8)) {
+              pair.forEach { action ->
+                SheetAction(action, Modifier.weight(1f).heightIn(min = Sun.Target))
+              }
+              if (pair.size == 1) Spacer(Modifier.weight(1f))
+            }
+          }
         }
       }
     }
@@ -167,27 +214,33 @@ fun FileActionSheet(
 }
 
 @Composable
-private fun SheetAction(icon: ImageVector, label: String, onClick: () -> Unit, primary: Boolean = false, hint: String? = null) {
+private fun SheetAction(action: SheetActionSpec, modifier: Modifier = Modifier) {
   val t = LocalSunlight.current
-  Column(
-    Modifier
-      .widthIn(min = 72.dp)
-      .clip(MaterialTheme.shapes.small)
-      .clickable(role = Role.Button, onClick = onClick)
-      .padding(horizontal = 6.dp, vertical = 8.dp)
-      .semantics(mergeDescendants = true) { contentDescription = if (hint == null) label else "$label. $hint" },
-    horizontalAlignment = Alignment.CenterHorizontally,
-    verticalArrangement = Arrangement.spacedBy(6.dp),
+  val bg = if (action.primary) t.action else t.paper
+  val fg = if (action.primary) t.onAction else t.ink
+  val shape = MaterialTheme.shapes.small
+  Row(
+    modifier
+      .clip(shape)
+      .background(bg, shape)
+      .border(Sun.Border, if (action.primary) t.action else t.line, shape)
+      .clickable(role = Role.Button, onClick = action.onClick)
+      .padding(horizontal = Sun.S12, vertical = Sun.S8)
+      .semantics(mergeDescendants = true) {
+        contentDescription = if (action.hint == null) action.label else "${action.label}. ${action.hint}"
+      },
+    verticalAlignment = Alignment.CenterVertically,
+    horizontalArrangement = Arrangement.spacedBy(Sun.S8),
   ) {
-    // The main action is the strongest thing on the sheet: an ink disc. The others are outlined.
-    val bg = if (primary) t.action else t.paper
-    val fg = if (primary) t.onAction else t.ink
-    Box(
-      Modifier.size(Sun.Target).clip(CircleShape).background(bg).border(Sun.Border, t.line, CircleShape),
-      contentAlignment = Alignment.Center,
-    ) {
-      Icon(icon, contentDescription = null, tint = fg, modifier = Modifier.size(Sun.Icon))
-    }
-    Text(label, style = SunType.CaptionBold, color = t.ink, textAlign = TextAlign.Center, modifier = Modifier.clearAndSetSemantics { })
+    Icon(action.icon, contentDescription = null, tint = fg, modifier = Modifier.size(20.dp))
+    Text(
+      action.label,
+      style = SunType.Label,
+      color = fg,
+      maxLines = 2,
+      overflow = TextOverflow.Ellipsis,
+      textAlign = TextAlign.Start,
+      modifier = Modifier.weight(1f).clearAndSetSemantics { },
+    )
   }
 }

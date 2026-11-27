@@ -32,6 +32,8 @@ interface QuickSearchApi {
   fun search(query: String): Flow<List<QuickHit>>
   fun open(file: IndexedFile)
   fun showInFolder(file: IndexedFile)
+  /** Copies [file] to the system clipboard (Cmd+C / Ctrl+C in Quick Search). Default no-op for minimal test fakes. */
+  fun copy(file: IndexedFile) {}
   /** True while the app lock is on: the panel then shows a locked state and [search] answers nothing. */
   val locked: StateFlow<Boolean> get() = NEVER_LOCKED
   /** The blur is on and the Privacy pack can score pictures: the panel covers pictures that look private. Default: no. */
@@ -43,12 +45,18 @@ interface QuickSearchApi {
 
 /**
  * The quick panel's search, through the same [trawl.desktop.SearchApi] as the main window (the phone's progressive search: words at once,
- * then the fused answer, so the list may update once as the meaning lands), limited to a short list. Nothing here ranks.
+ * then the fused answer, so the list may update once as the meaning lands). Uses the full [trawl.desktop.SearchApi.LIMIT] (no arbitrary
+ * tiny truncation) so the user can scroll through every matching file lazily, with Images & Documents prioritized before Videos/Audio
+ * unless the query explicitly asks for video/audio.
  */
 class ControllerQuickSearch(
-  private val c: AppController, private val limit: Int = 30,
+  private val c: AppController,
+  private val limit: Int = trawl.desktop.SearchApi.LIMIT,
   /** The system's own big preview (macOS Quick Look), or none. */
   full: FullPreview = NoFullPreview,
+  /** Stage-2 meaning hold-back while typing: Stage-1 words answer immediately, while native EmbeddingGemma waits for a real pause. */
+  private val meaningDelayMs: Long = MEANING_DELAY_MS,
+  private val recentLimit: Int = trawl.desktop.SearchApi.RECENT_LIMIT,
 ) : QuickSearchApi {
   override val preview: QuickPreviewApi = ControllerPreview(c, full, c.previewPlayer)
 
@@ -70,11 +78,12 @@ class ControllerQuickSearch(
     val dates = parsed.date?.filter?.range
     val phrase = parsed.date?.phrase
     if (text.isEmpty()) {
-      emit(c.searchApi.recent(KindFilter.ALL, ResultView(SortOrder.NEWEST, dates, phrase), limit, withSensitive = false).files.map { QuickHit(it, null) })
+      emit(c.searchApi.recent(KindFilter.ALL, ResultView(SortOrder.NEWEST, dates, phrase), recentLimit, withSensitive = false).files.map { QuickHit(it, null) })
     } else {
       emitAll(
-        c.searchApi.search(text, KindFilter.ALL, ResultView(SortOrder.BEST, dates, phrase), limit, withSensitive = false).map { r ->
-          r.hits.map { QuickHit(it.file, if (blur && PrivateLook.blurs(it.file.looksPrivate)) null else it.snippet, (it.locator as? com.craneai.findr.core.Locator.Time)?.startMs) }
+        c.searchApi.search(text, KindFilter.ALL, ResultView(SortOrder.BEST, dates, phrase), limit, meaningDelayMs = meaningDelayMs, withSensitive = false, coalescerLane = "quick").map { r ->
+          val mapped = r.hits.map { QuickHit(it.file, if (blur && PrivateLook.blurs(it.file.looksPrivate)) null else it.snippet, (it.locator as? com.craneai.findr.core.Locator.Time)?.startMs) }
+          prioritizeHits(mapped, text)
         },
       )
     }
@@ -82,4 +91,20 @@ class ControllerQuickSearch(
 
   override fun open(file: IndexedFile) = c.open(file)
   override fun showInFolder(file: IndexedFile) = c.showInFolder(file)
+  override fun copy(file: IndexedFile) = c.copyFiles(listOf(file))
+
+  companion object {
+    const val MEANING_DELAY_MS = 280L
+
+    /**
+     * Keeps Images (Photos + Screenshots) and Documents (Documents + PDFs) ahead of Videos/Audio/Other while preserving
+     * exact Searcher relevance order within each tier. Media-specific queries keep raw relevance order untouched.
+     */
+    fun prioritizeHits(hits: List<QuickHit>, query: String): List<QuickHit> {
+      if (hits.size <= 1 || trawl.desktop.ui.isMediaSpecificQuery(query)) return hits
+      val (primary, secondary) = hits.partition { trawl.desktop.ui.isPrimarySearchKind(it.file.kind) }
+      if (primary.isEmpty() || secondary.isEmpty()) return hits
+      return primary + secondary
+    }
+  }
 }

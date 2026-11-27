@@ -44,6 +44,36 @@ class SpeechLanguageGate(val words: Lazy<EnglishWords?>, val common: Lazy<Englis
     return Verdict(share, tokens.size, false, runs(tokens, isCommon))
   }
 
+  /** What the gate keeps of a transcript: the [verdict] for the index note, and the [speech] pieces to index. */
+  class Kept(val verdict: Verdict, val speech: List<TranscriptText>)
+
+  /**
+   * Judges a transcript and returns what to index. Sung pieces ([com.craneai.findr.core.SpeechSegment.sung]) and spoken ones are judged
+   * as two pools with the same rule, so a Luganda verse cannot sink an English chorus and junk lyrics cannot ride on English speech
+   * (internal/research/sung-words.md). With nothing sung this is exactly the one-pool judgement the gate always made.
+   */
+  fun keep(t: com.craneai.findr.core.AudioTranscript): Kept {
+    val sung = t.speech.filter { it.sung }
+    if (sung.isEmpty()) {
+      val v = judge(t.speech.joinToString(" ") { it.text })
+      return Kept(v, pieces(v, t))
+    }
+    val spoken = t.speech.filterNot { it.sung }
+    val vp = judge(spoken.joinToString(" ") { it.text })
+    val vs = judge(sung.joinToString(" ") { it.text })
+    val n = vp.wordCount + vs.wordCount
+    val share = if (n == 0) 0.0 else (vp.share * vp.wordCount + vs.share * vs.wordCount) / n
+    val both = Verdict(share, n, vp.english && vs.english)
+    return Kept(both, pieces(vp, com.craneai.findr.core.AudioTranscript(spoken, emptyList(), t.seconds)) +
+      pieces(vs, com.craneai.findr.core.AudioTranscript(sung, emptyList(), t.seconds)))
+  }
+
+  private fun pieces(v: Verdict, t: com.craneai.findr.core.AudioTranscript): List<TranscriptText> = when {
+    v.english -> TranscriptPieces.speech(t)
+    v.partial.isNotEmpty() -> TranscriptPieces.ofText(v.partial)
+    else -> emptyList()
+  }
+
   /** The maximal runs of [RUN_MIN] or more consecutive common words, joined by spaces. */
   private fun runs(tokens: List<String>, isCommon: List<Boolean>): String {
     val out = StringBuilder()
@@ -77,10 +107,17 @@ class SpeechLanguageGate(val words: Lazy<EnglishWords?>, val common: Lazy<Englis
   }
 
   companion object {
-    /** The index-detail line for a file's speech: what was kept, or why it was not and what stood in for it. */
-    fun note(v: Verdict, speechPieces: Int, audioVectors: Boolean): String {
+    /**
+     * The index-detail line for a file's speech: what was kept, or why it was not and what stood in for it. [localKept] is null when
+     * no speech pack was asked (none installed, or Go); otherwise how many of its readings were kept, and the line carries [NOTE_LOCAL].
+     */
+    fun note(v: Verdict, speechPieces: Int, audioVectors: Boolean, localKept: Int? = null): String {
       if (v.english) return "$speechPieces speech pieces"
       val head = "speech not English (${Math.round(v.share * 100)}% common words)"
+      if (localKept != null) {
+        val tail = if (audioVectors) ", audio vector" else ""
+        return "$head: $NOTE_LOCAL, " + (if (localKept > 0) "$localKept pieces kept ($speechPieces pieces in all)" else "nothing kept") + tail
+      }
       if (speechPieces > 0) return "$head: kept its English parts ($speechPieces pieces)" + (if (audioVectors) ", audio vector" else "")
       return head + ": " + (if (audioVectors) "audio vector" else "transcript dropped")
     }
@@ -96,6 +133,8 @@ class SpeechLanguageGate(val words: Lazy<EnglishWords?>, val common: Lazy<Englis
     /** What [note] writes into `files.detail`, which is how files read under an older rule are found (IndexStore.requeueSpeechRead). */
     const val NOTE_ENGLISH = "speech pieces"
     const val NOTE_NOT_ENGLISH = "speech not English"
+    /** In the detail of a not-English window that a speech pack was asked to read again (LocalSpeech). */
+    const val NOTE_LOCAL = "read again in its own language"
     private val TOKEN = Regex("[a-z]+(?:'[a-z]+)?")
 
     fun tokens(text: String): List<String> =

@@ -25,7 +25,7 @@ object MediaSchedule {
   /** Pictures are embedded at 768 px on the long side, JPEG quality 90, as on the phone. */
   const val EMBED_MAX_SIDE = 768
   /** Tuning.mediaShare: about one second in five of busy time goes to videos and recordings. */
-  const val MEDIA_SHARE = 0.2
+  val MEDIA_SHARE: Double = BackgroundTuning.mediaShare
   /** Tuning.asrMaxSpeechS: the longest speech segment the recogniser is given. */
   const val ASR_MAX_SPEECH_S = 15
   /** A file never waits more than this for the person using the computer (the phone's MAX_WAIT_PER_FILE_MS). */

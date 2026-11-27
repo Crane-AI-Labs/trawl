@@ -27,6 +27,7 @@ class AddOnsViewModel(private val engine: SearchEngine) : ViewModel() {
   fun remove(id: String) = engine.packs.remove(id)
   fun notNow(id: String) = engine.packs.decline(id)
   fun howToAdd(id: String): PackCopy? = engine.packs.howToAdd(id)
+  fun downloadUrl(id: String): String? = engine.packs.downloadUrl(id)
 
   fun setOn(id: String, on: Boolean) {
     val def = PackCatalog.byId(id) ?: return

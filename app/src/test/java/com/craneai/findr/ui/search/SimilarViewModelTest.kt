@@ -129,4 +129,66 @@ class SimilarViewModelTest {
     assertEquals(1L, e.similars.last().seed.id)
     assertFalse(vm.state.value.nothingFound)
   }
+
+  @Test fun clearSimilarRestoresPriorQueryAndResults() = runTest(dispatcher) {
+    val e = Engine(); val vm = vm(e)
+    vm.setQuery("beach"); advanceUntilIdle()
+    assertEquals("beach", vm.state.value.resultsQuery)
+
+    vm.findSimilar(e.files[0]); advanceUntilIdle()
+    assertEquals(SimilarTo(1L, "IMG_1.jpg"), vm.state.value.similar)
+    assertEquals("", vm.state.value.query)
+
+    vm.clearSimilar(); advanceUntilIdle()
+    assertNull(vm.state.value.similar)
+    assertEquals("beach", vm.state.value.query)
+    assertEquals("beach", vm.state.value.resultsQuery)
+    assertEquals(SearchMode.RESULTS, vm.state.value.mode)
+    assertEquals("beach", e.searches.last())
+  }
+
+  @Test fun chainedFindSimilarStillRestoresOriginalQuery() = runTest(dispatcher) {
+    val e = Engine(); val vm = vm(e)
+    vm.setQuery("wedding"); advanceUntilIdle()
+
+    vm.findSimilar(e.files[0], firstVisibleItemIndex = 12, firstVisibleItemScrollOffset = 84); advanceUntilIdle()
+    vm.findSimilar(e.files[1], firstVisibleItemIndex = 2, firstVisibleItemScrollOffset = 10); advanceUntilIdle()
+    assertEquals(SimilarTo(2L, "IMG_2.jpg"), vm.state.value.similar)
+    assertNull(vm.state.value.pendingScrollRestore)
+
+    vm.clearSimilar(); advanceUntilIdle()
+    assertNull(vm.state.value.similar)
+    assertEquals("wedding", vm.state.value.query)
+    assertEquals("wedding", vm.state.value.resultsQuery)
+    assertEquals(SearchMode.RESULTS, vm.state.value.mode)
+    val restore = vm.state.value.pendingScrollRestore
+    assertNotNull("Leaving Find similar must emit saved scroll restore", restore)
+    assertEquals(12, restore!!.firstVisibleItemIndex)
+    assertEquals(84, restore.firstVisibleItemScrollOffset)
+    assertEquals(1L, restore.anchorFileId)
+
+    vm.consumeScrollRestore(restore.token)
+    assertNull(vm.state.value.pendingScrollRestore)
+  }
+
+  @Test fun clearSimilarFromHomeEmitsSavedScrollRestoreAndTypingClearsIt() = runTest(dispatcher) {
+    val e = Engine(); val vm = vm(e)
+    // Browse Home -> Find similar -> clearSimilar restores Home scroll position
+    vm.findSimilar(e.files[2], firstVisibleItemIndex = 18, firstVisibleItemScrollOffset = 140); advanceUntilIdle()
+    vm.clearSimilar(); advanceUntilIdle()
+    assertEquals(SearchMode.RECENT, vm.state.value.mode)
+    val homeRestore = vm.state.value.pendingScrollRestore
+    assertNotNull(homeRestore)
+    assertEquals(18, homeRestore!!.firstVisibleItemIndex)
+    assertEquals(140, homeRestore.firstVisibleItemScrollOffset)
+    assertEquals(3L, homeRestore.anchorFileId)
+    vm.consumeScrollRestore(homeRestore.token)
+    assertNull(vm.state.value.pendingScrollRestore)
+
+    // Typing a new query directly from Find similar clears saved scroll instead of restoring stale offset
+    vm.findSimilar(e.files[0], firstVisibleItemIndex = 9, firstVisibleItemScrollOffset = 42); advanceUntilIdle()
+    vm.setQuery("invoice"); advanceUntilIdle()
+    assertNull(vm.state.value.similar)
+    assertNull(vm.state.value.pendingScrollRestore)
+  }
 }

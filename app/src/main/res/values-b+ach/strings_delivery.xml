@@ -47,4 +47,9 @@
   <string name="models_pack_upgrade_note">Medo pack me Standard bimiyo <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kwano fayil megi odoco ki model ma ber loyo. Kwan me fayil megi pe bal: yenyo ki nying fayil ki nongo cal ki neno me oyotoyot bimede ki tic kare meno. Lok ma tye i waraga ki cal me wang cim, ki yenyo ki tamme, bidok ka kikwano fayil acel acel, ber loyo ka cim tye ka caji.</string>
   <string name="models_pack_get_standard">Gam pack me Standard (%1$d MB)</string>
   <string name="models_pack_upgraded">Pack me Standard dong kiketo. Lor <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ci yab odoco wek cako tic kwede. Ci bikwano fayil megi odoco ki model ma ber loyo. Nying fayil ki yenyo cal oyot bimede ki tic kare meno; lok ma tye i waraga ki cal me wang cim bidok ka kikwano fayil.</string>
+  <string name="models_get_full_bundle">Gam dul ducu (%1$d MB)</string>
+  <string name="models_missing_full_bundle">Gamo dul magi acel acel pe tye kany. Gam dul ducu me medo gi.</string>
+  <string name="models_missing_packs">Madel me yeny dong okete. Dul ma orem: %1$s.</string>
+  <string name="models_refused_installed_safe">Fayil ma kigamo pe otic. Madel me yeny ma okete pud tye maber.</string>
+  <string name="models_search_installed">Madel me yeny dong okete.</string>
 </resources>

@@ -15,11 +15,14 @@ import com.craneai.findr.core.ModelChoiceStore
 import com.craneai.findr.core.ModelPlan
 import com.craneai.findr.core.ModelUpdate
 import com.craneai.findr.core.PackCatalog
+import com.craneai.findr.core.PackIds
 import com.craneai.findr.core.Refusal
 import com.craneai.findr.core.RemovableFile
 import com.craneai.findr.core.UpdateKind
 import java.io.File
 import java.io.InputStream
+import java.security.MessageDigest
+import java.util.concurrent.ConcurrentHashMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -221,6 +224,9 @@ class ModelDelivery(
   private var previous = emptyMap<String, Seen>()
   /** name|length|modified of a file already tried: a refused file is not read again until it changes. */
   private val tried = HashSet<String>()
+  private val acknowledgedKeys = ConcurrentHashMap.newKeySet<String>()
+  @Volatile private var acknowledgedBundles = prefs.getStringSet("acknowledged_bundles", emptySet()).orEmpty().toSet()
+  private var completedBundle: Pair<String, String>? = null
   /**
    * name|length|modified of a download already reported as stopped. Kept when the person taps Get the models again (unlike [tried]):
    * the stopped file is still there, and it must not be reported again over the new download. A changed file has a new key.
@@ -292,7 +298,7 @@ class ModelDelivery(
     val now = System.currentTimeMillis()
     // Never install an unfinished file: one that has held still must also END like a zip (a browser that stalls on a file it already
     // named holds still without being done). A preallocated one that ends like a zip is caught by the installer's checks below (see finish).
-    val step = DownloadsWatch.step(listing, previous, now, tried + stopped) { ZipTail.hasEnd(File(dir, it.name)) }
+    val step = DownloadsWatch.step(listing, previous, now, tried + stopped + acknowledgedKeys) { ZipTail.hasEnd(File(dir, it.name)) }
     previous = DownloadsWatch.look(listing, previous, now)
     val phase = flow.value.phase
     val waiting = phase == DeliveryPhase.IDLE || phase == DeliveryPhase.DOWNLOADING ||
@@ -380,6 +386,7 @@ class ModelDelivery(
   }
 
   private suspend fun finish(result: BundleResult, rec: Pending, before: BundleClass?) {
+    val fingerprint = if (result is BundleResult.Installed || result is BundleResult.Refused && result.reason == Refusal.ALREADY_INSTALLED) fingerprint(rec) else null
     flow.value = choiceState(flow.value)
     when (result) {
       is BundleResult.Installed -> {
@@ -393,6 +400,7 @@ class ModelDelivery(
         if (full) choiceStore.recordInstalled(result.manifest.bundleClass)
         onInstalled()
         refreshUpdate()
+        completedBundle = fingerprint?.let { rec.key to it }
         flow.value = choiceState(flow.value).copy(
           phase = DeliveryPhase.DONE, refusal = null, removable = offer(rec), doneBytes = 0, totalBytes = 0,
           upgradedToStandard = flow.value.upgradedToStandard || upgraded,
@@ -403,8 +411,19 @@ class ModelDelivery(
         when (result.reason) {
           Refusal.CANCELLED -> flow.value = flow.value.copy(phase = DeliveryPhase.IDLE, doneBytes = 0, totalBytes = 0)
           Refusal.ALREADY_INSTALLED -> {
+            if (rec.file != null && fingerprint != null && fingerprint in acknowledgedBundles) {
+              acknowledgedKeys += rec.key
+              val phase = flow.value.phase
+              if (phase == DeliveryPhase.IDLE || phase == DeliveryPhase.DOWNLOADING ||
+                phase == DeliveryPhase.REFUSED && flow.value.refusal == Refusal.INCOMPLETE) {
+                pending = null
+                flow.value = flow.value.copy(phase = DeliveryPhase.IDLE, refusal = null, removable = null, doneBytes = 0, totalBytes = 0)
+              }
+              return
+            }
             // The file is a good copy of what is already here: say so, and still offer to free its space.
             pending = rec.takeIf { canRemove(it) }
+            completedBundle = fingerprint?.let { rec.key to it }
             flow.value = flow.value.copy(phase = DeliveryPhase.DONE, refusal = Refusal.ALREADY_INSTALLED, removable = offer(rec), doneBytes = 0, totalBytes = 0)
           }
           else -> {
@@ -429,13 +448,14 @@ class ModelDelivery(
   private fun clearDeclined(m: BundleManifest) {
     val folders = m.files.mapNotNull { f -> f.path.substringBefore('/', "").takeIf { it.isNotEmpty() } }.toSet()
     val choices = PackPrefs(context)
-    listOf(PackCatalog.SPEECH, PackCatalog.QUICK_LOOK, PackCatalog.PRIVACY).forEach { id ->
+    (listOf(PackCatalog.SPEECH, PackCatalog.QUICK_LOOK, PackCatalog.PRIVACY) + PackIds.SPEECH_PACKS).forEach { id ->
       if (PackFilesRegistry.of(id)?.folderName in folders) choices.setDeclined(id, false)
     }
   }
 
   private fun installer(): SignedBundleInstaller {
-    val packs = listOf(PackCatalog.SPEECH, PackCatalog.QUICK_LOOK, PackCatalog.PRIVACY).mapNotNull { id -> PackFilesRegistry.of(id)?.let { id to it } }
+    // The speech add-on's packs install from a bundle that carries them too (a bundle made for a Luganda speaker); they stay off until chosen.
+    val packs = (listOf(PackCatalog.SPEECH, PackCatalog.QUICK_LOOK, PackCatalog.PRIVACY) + PackIds.SPEECH_PACKS).mapNotNull { id -> PackFilesRegistry.of(id)?.let { id to it } }
     val choices = PackPrefs(context)
     return SignedBundleInstaller(
       modelsDir = modelsDir,
@@ -452,9 +472,35 @@ class ModelDelivery(
 
   override fun acknowledge() {
     if (flow.value.phase == DeliveryPhase.INSTALLING) return
+    if (flow.value.phase == DeliveryPhase.DONE) completedBundle?.let { (key, fingerprint) ->
+      acknowledgedKeys += key
+      acknowledgedBundles = acknowledgedBundles + fingerprint
+      prefs.edit().putStringSet("acknowledged_bundles", acknowledgedBundles).apply()
+    }
     tried.clear()   // the person looked at the problem: a file that was refused may be tried again (they freed space, fixed the download)
     flow.value = flow.value.copy(phase = DeliveryPhase.IDLE, refusal = null, doneBytes = 0, totalBytes = 0, removable = null)
   }
+
+  private fun fingerprint(rec: Pending): String? = runCatching {
+    val file = rec.file
+    if (file != null && (!file.isFile || file.length() != rec.bytes || file.lastModified() != rec.modified)) return@runCatching null
+    val input = file?.inputStream() ?: rec.uri?.let { context.contentResolver.openInputStream(it) } ?: return@runCatching null
+    val digest = MessageDigest.getInstance("SHA-256")
+    var bytes = 0L
+    input.buffered().use { stream ->
+      val buffer = ByteArray(64 * 1024)
+      while (true) {
+        val read = stream.read(buffer)
+        if (read < 0) break
+        digest.update(buffer, 0, read)
+        bytes += read
+      }
+    }
+    if (rec.bytes > 0 && bytes != rec.bytes) return@runCatching null
+    if (file != null && (!file.isFile || file.length() != rec.bytes || file.lastModified() != rec.modified)) return@runCatching null
+    val hash = digest.digest().joinToString("") { byte -> "%02x".format(byte) }
+    "${rec.name}|$bytes|$hash"
+  }.getOrNull()
 
   // ---- freeing the space -----------------------------------------------------------------------------------------
 

@@ -27,7 +27,11 @@ class KeepLearningTest {
   @Test fun heatStopsBeforeTheWorkersOwnCoolDown() {
     assertEquals(Stop.HOT, KeepLearning.stopReason(ok.copy(batteryTempC = 42.0)))
     assertNull(KeepLearning.stopReason(ok.copy(batteryTempC = 41.9)))
-    assertEquals("PowerManager.THERMAL_STATUS_SEVERE", Stop.HOT, KeepLearning.stopReason(ok.copy(thermalStatus = 3)))
+    assertEquals("SEVERE with a battery at 40 C", Stop.HOT, KeepLearning.stopReason(ok.copy(thermalStatus = 3, batteryTempC = 40.0)))
+    assertEquals("SEVERE with the headroom at 1.0", Stop.HOT, KeepLearning.stopReason(ok.copy(thermalStatus = 3, headroom = 1.0f)))
+    assertEquals("SEVERE and no battery temperature to check it", Stop.HOT, KeepLearning.stopReason(ok.copy(thermalStatus = 3, batteryTempC = Double.NaN)))
+    assertNull("a stuck SEVERE on a 36 C phone (the KN4 and A06, D48) does not stop the screen", KeepLearning.stopReason(ok.copy(thermalStatus = 3)))
+    assertNull(KeepLearning.stopReason(ok.copy(thermalStatus = 4, headroom = 0.4f)))
     assertNull("moderate is the worker's business", KeepLearning.stopReason(ok.copy(thermalStatus = 2)))
     assertEquals("heat wins even when done", Stop.HOT, KeepLearning.stopReason(ok.copy(phase = IndexPhase.UP_TO_DATE, sameStateForMs = 60_000, batteryTempC = 43.0)))
   }

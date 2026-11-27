@@ -9,4 +9,7 @@
   <string name="colours_wallpaper">Amabara g\'ekishushani ky\'enyima</string>
   <string name="colours_wallpaper_hint">Etwara amabara gaayo omu kishushani kyawe ky\'enyima, kandi gahinduka nakyo kyahinduka.</string>
   <string name="settings_brightness">Ekyerikire nari ekwatire</string>
+  <string name="notif_waiting_other_app">Neerinda waaba nookozesa app endiijo</string>
+  <string name="preview_checking">okureeba kusherekirwe okuhitsya kyakeberwa</string>
+  <string name="preview_checking_words">Neekebera · nyiga oreebe</string>
 </resources>

@@ -67,12 +67,15 @@ import com.craneai.findr.core.FileKind
 import com.craneai.findr.core.IndexedFile
 import com.craneai.findr.core.Locator
 import com.craneai.findr.core.SearchHit
+import com.craneai.findr.core.SortOrder
 import com.craneai.findr.ui.common.FileThumbnail
 import com.craneai.findr.ui.common.LocalPreviewBlur
 import com.craneai.findr.ui.common.SharedIcons
 import com.craneai.findr.ui.common.UiCounters
+import com.craneai.findr.ui.common.formatBytes
 import com.craneai.findr.ui.common.formatDuration
 import com.craneai.findr.ui.common.highlightedSnippet
+import com.craneai.findr.ui.common.isVisual
 import com.craneai.findr.ui.common.labelRes
 import com.craneai.findr.ui.common.plainSnippet
 
@@ -84,14 +87,68 @@ private fun locatorLabel(locator: Locator?): String? = when (locator) {
   null -> null
 }
 
+/** Which timestamp a row's relative age displays: capture/created date only for Created sorts, modified date otherwise (Desktop parity). */
+internal fun displayDateMillis(file: IndexedFile, sort: SortOrder): Long = when (sort) {
+  SortOrder.CREATED_NEWEST, SortOrder.CREATED_OLDEST -> file.dateMillis
+  else -> file.modifiedMillis.takeIf { it > 0L } ?: file.dateMillis
+}
+
+/** Bounded LRU caches so 120 Hz list flings reuse formatted dates across same-day/same-minute files instead of calling DateUtils per row. */
+private object DateLabelCache {
+  private const val MAX_ENTRIES = 512
+  private val shortDates = object : LinkedHashMap<Long, String>(128, 0.75f, true) {
+    override fun removeEldestEntry(eldest: MutableMap.MutableEntry<Long, String>?): Boolean = size > MAX_ENTRIES
+  }
+  private val ages = object : LinkedHashMap<Long, String>(128, 0.75f, true) {
+    override fun removeEldestEntry(eldest: MutableMap.MutableEntry<Long, String>?): Boolean = size > MAX_ENTRIES
+  }
+  private var cachedLocaleKey: String = ""
+
+  private fun ensureLocale(localeTag: String, tzId: String) {
+    val key = "$localeTag|$tzId"
+    if (key != cachedLocaleKey) {
+      cachedLocaleKey = key
+      shortDates.clear()
+      ages.clear()
+    }
+  }
+
+  @Synchronized
+  fun shortDate(context: android.content.Context, millis: Long, localeTag: String): String {
+    val tz = java.util.TimeZone.getDefault()
+    ensureLocale(localeTag, tz.id)
+    val dayBucket = Math.floorDiv(millis + tz.getOffset(millis), 86_400_000L)
+    return shortDates.getOrPut(dayBucket) {
+      DateUtils.formatDateTime(context, millis, DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_ABBREV_MONTH or DateUtils.FORMAT_SHOW_YEAR)
+    }
+  }
+
+  @Synchronized
+  fun relativeAge(context: android.content.Context, millis: Long, nowMs: Long, localeTag: String): String {
+    ensureLocale(localeTag, java.util.TimeZone.getDefault().id)
+    val minBucket = millis / 60_000L
+    val nowMin = nowMs / 60_000L
+    val key = (minBucket shl 24) xor (nowMin and 0xFFFFFFL)
+    return ages.getOrPut(key) { ageLabel(context, millis, nowMs) }
+  }
+}
+
 @Composable
-private fun relativeAge(file: IndexedFile): String {
+private fun relativeAge(file: IndexedFile, sort: SortOrder = SortOrder.NEWEST): String {
   val context = LocalContext.current
-  val locale = LocalConfiguration.current.locales[0]
-  // Recomputed rarely; "2 hours ago" needs no live ticking on a results list.
-  // The file's date: the day a photo was taken when the phone knows it, else when the file was last changed.
+  val localeTag = LocalConfiguration.current.locales[0].toLanguageTag()
   val skew = LocalClockSkewMs.current
-  return remember(file.dateMillis, locale, skew) { ageLabel(context, file.dateMillis, System.currentTimeMillis() + skew) }
+  val displayMs = displayDateMillis(file, sort)
+  return remember(displayMs, localeTag, skew) {
+    DateLabelCache.relativeAge(context, displayMs, System.currentTimeMillis() + skew, localeTag)
+  }
+}
+
+@Composable
+private fun shortDateLabel(millis: Long): String {
+  val context = LocalContext.current
+  val localeTag = LocalConfiguration.current.locales[0].toLanguageTag()
+  return remember(millis, localeTag) { DateLabelCache.shortDate(context, millis, localeTag) }
 }
 
 /** How far the phone's clock is behind its own files ([com.craneai.findr.core.ClockSense]), so a file from last week does not read "In 7 weeks" on a phone whose clock is 7 weeks slow. 0 when the clock is right. */
@@ -115,8 +172,10 @@ internal fun ageLabel(context: android.content.Context, millis: Long, now: Long 
  */
 internal fun ageBasis(millis: Long, now: Long): Long = if (millis > now) now else millis
 
+private val UNLOCALISED_RELATIVE = Regex("""^\s*[-+\u2212]\s*\d""")
+
 /** A relative time with no words around the number: "-8 h", "+3 d" (what ICU falls back to without the language's data). */
-internal fun looksUnlocalised(relative: String): Boolean = Regex("""^\s*[-+\u2212]\s*\d""").containsMatchIn(relative)
+internal fun looksUnlocalised(relative: String): Boolean = UNLOCALISED_RELATIVE.containsMatchIn(relative)
 
 /** A square thumbnail in the grid: photo, screenshot or video. */
 @OptIn(ExperimentalFoundationApi::class)
@@ -140,17 +199,21 @@ fun MediaCell(
   val moment = (hit.locator as? Locator.Time)?.startMs
   val atLabel = locatorLabel(hit.locator)
   val kindLabel = stringResource(file.kind.labelRes())
-  val description = buildString {
-    append(file.name).append(", ").append(kindLabel)
-    file.durationMs?.let { append(", ").append(formatDuration(it)) }
-    atLabel?.let { append(", ").append(it) }
+  val description = remember(file.name, kindLabel, file.durationMs, atLabel) {
+    buildString {
+      append(file.name).append(", ").append(kindLabel)
+      file.durationMs?.let { append(", ").append(formatDuration(it)) }
+      atLabel?.let { append(", ").append(it) }
+    }
   }
   val blur = LocalPreviewBlur.current
   val hidden = blur.hides(file)
   val openLabel = stringResource(if (hidden) R.string.action_show_picture else R.string.action_open)
   val selectLabel = stringResource(R.string.action_select)
-  val hiddenNote = stringResource(if (blur.checking(file)) R.string.preview_checking else R.string.preview_hidden)
-  val cellDescription = if (hidden) stringResource(R.string.a11y_description_note, description, hiddenNote) else description
+  val cellDescription = if (hidden) {
+    val hiddenNote = stringResource(if (blur.checking(file)) R.string.preview_checking else R.string.preview_hidden)
+    stringResource(R.string.a11y_description_note, description, hiddenNote)
+  } else description
 
   Box(
     modifier
@@ -227,48 +290,88 @@ fun FileRow(
    * under its text (MomentStrip). Null, [compact] and [selecting] leave the strip out.
    */
   onOpenAt: ((Long) -> Unit)? = null,
+  /** Current sort order, so the age / date metadata reflects Date modified vs Date created accurately. */
+  sort: SortOrder = SortOrder.NEWEST,
+  /** Dense metadata list row (List view mode): shows thumbnail/badge, folder, exact size, and Date Modified/Created. */
+  listMode: Boolean = false,
 ) {
   val file = hit.file
   val haptics = LocalHapticFeedback.current
   val t = LocalSunlight.current
   val badge = locatorLabel(hit.locator)
-  val folder = file.relativePath.substringBeforeLast('/', "")
-  val age = relativeAge(file)
+  val folder = remember(file.relativePath) { file.relativePath.substringBeforeLast('/', "") }
+  val age = relativeAge(file, sort)
   val pages = file.pageCount?.takeIf { it > 1 && file.kind == FileKind.PDF }
   val pagesText = pages?.let { pluralStringResource(R.plurals.pages_count, it, it) }
   val kindLabel = stringResource(file.kind.labelRes())
-  val subtitle = buildString {
-    append(kindLabel)
-    if (folder.isNotEmpty()) append("  ·  ").append(folder)
-    append("  ·  ").append(age)
-    val durationMs = file.durationMs   // a local copy: the property lives in :core now, so it cannot be smart-cast
-    if (file.kind == FileKind.AUDIO && durationMs != null) append("  ·  ").append(formatDuration(durationMs))
-    if (pagesText != null) append("  ·  ").append(pagesText)
+  val sizeText = remember(file.sizeBytes) { formatBytes(file.sizeBytes) }
+  val modDateText = if (listMode && file.modifiedMillis > 0L) stringResource(R.string.label_modified_short, shortDateLabel(file.modifiedMillis)) else null
+  val createdDateText = if (listMode && file.dateMillis > 0L) stringResource(R.string.label_created_short, shortDateLabel(file.dateMillis)) else null
+  val subtitle = remember(listMode, folder, sizeText, sort, modDateText, createdDateText, file.modifiedMillis, file.dateMillis, file.kind, file.durationMs, kindLabel, age, pagesText) {
+    if (listMode) {
+      buildString {
+        if (folder.isNotEmpty()) append(folder).append("  ·  ")
+        append(sizeText)
+        val createdPrimary = sort == SortOrder.CREATED_NEWEST || sort == SortOrder.CREATED_OLDEST
+        if (createdPrimary) {
+          if (createdDateText != null) append("  ·  ").append(createdDateText)
+          if (modDateText != null && file.modifiedMillis != file.dateMillis) append("  ·  ").append(modDateText)
+        } else {
+          if (modDateText != null) append("  ·  ").append(modDateText)
+          else if (createdDateText != null) append("  ·  ").append(createdDateText)
+          if (createdDateText != null && modDateText != null && file.dateMillis != file.modifiedMillis) append("  ·  ").append(createdDateText)
+        }
+        val durationMs = file.durationMs
+        if ((file.kind == FileKind.AUDIO || file.kind == FileKind.VIDEO) && durationMs != null) append("  ·  ").append(formatDuration(durationMs))
+      }
+    } else {
+      buildString {
+        append(kindLabel)
+        if (folder.isNotEmpty()) append("  ·  ").append(folder)
+        if (sort == SortOrder.LARGEST || sort == SortOrder.SMALLEST) append("  ·  ").append(sizeText)
+        append("  ·  ").append(age)
+        val durationMs = file.durationMs   // a local copy: the property lives in :core now, so it cannot be smart-cast
+        if (file.kind == FileKind.AUDIO && durationMs != null) append("  ·  ").append(formatDuration(durationMs))
+        if (pagesText != null) append("  ·  ").append(pagesText)
+      }
+    }
   }
   val blur = LocalPreviewBlur.current
   val hidden = blur.hides(file)
-  val showLabel = stringResource(R.string.action_show_picture)
-  val hiddenNote = stringResource(if (blur.checking(file)) R.string.preview_checking else R.string.preview_hidden)
-  val description = buildString {
-    append(file.name).append(", ").append(kindLabel).append(", ").append(age)   // the date, as the subtitle shows it
-    badge?.let { append(", ").append(it) }
-    if (hidden) append(", ").append(hiddenNote)
-    hit.snippet?.let { append(". ").append(plainSnippet(it)) }
+  val typeVisual = remember(file.name, file.kind, hidden) { if (hidden) null else FileTypeVisual.of(file.name, file.kind) }
+  val showLabel = if (hidden) stringResource(R.string.action_show_picture) else ""
+  val hiddenNote = if (hidden) stringResource(if (blur.checking(file)) R.string.preview_checking else R.string.preview_hidden) else ""
+  val description = remember(file.name, kindLabel, listMode, sizeText, age, badge, hidden, hiddenNote, hit.snippet) {
+    buildString {
+      append(file.name).append(", ").append(kindLabel).append(", ").append(if (listMode) "$sizeText, $age" else age)   // the date, as the subtitle shows it
+      badge?.let { append(", ").append(it) }
+      if (hidden) append(", ").append(hiddenNote)
+      hit.snippet?.let { append(". ").append(plainSnippet(it)) }
+    }
   }
   // The matched words: bold, on the marker (a fill under ink, never a coloured word).
-  val highlight = SpanStyle(fontWeight = FontWeight.Bold, background = t.marker, color = t.onMarker)
+  val highlight = remember(t.marker, t.onMarker) { SpanStyle(fontWeight = FontWeight.Bold, background = t.marker, color = t.onMarker) }
+  val highlightedText = remember(hit.snippet, highlight) { hit.snippet?.let { highlightedSnippet(it, highlight) } }
   val divider = t.line2
 
   // Share and Copy sit beside the clickable part, not inside it: the merged "open this file" node must not swallow them.
   // At a large font size (130% and up, UI audit item 12) they move under it, so the name keeps the width it needs instead of wrapping per word.
   val stacked = LocalDensity.current.fontScale >= 1.3f
+  val thumbSize = if (listMode) 44.dp else Sun.Thumb
+  val momentMs = (hit.locator as? Locator.Time)?.startMs
+  val badgeModifier = if (momentMs != null && onOpenAt != null && !selecting && !hidden) {
+    Modifier.clickable(
+      role = Role.Button,
+      onClickLabel = stringResource(R.string.strip_open_at_match, formatDuration(momentMs)),
+    ) { onOpenAt(momentMs) }
+  } else Modifier
   val openPart: @Composable (Modifier) -> Unit = { partModifier ->
     Row(
       partModifier
         .clip(MaterialTheme.shapes.small)
         .combinedClickable(
-          onClickLabel = stringResource(if (selecting) R.string.action_select else R.string.action_open),
-          onClick = if (selecting) onToggle else onOpen,
+          onClickLabel = stringResource(if (selecting) R.string.action_select else if (hidden) R.string.action_show_picture else R.string.action_open),
+          onClick = if (selecting) onToggle else if (hidden) { { blur.reveal(file); Unit } } else onOpen,
           onLongClickLabel = stringResource(R.string.action_select),
           onLongClick = {
             haptics.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -281,47 +384,77 @@ fun FileRow(
           // The thumbnail has no node of its own (it is merged into this one), so TalkBack reaches "show" as an action here.
           if (hidden) customActions = listOf(CustomAccessibilityAction(showLabel) { blur.reveal(file); true })
         }
-        .padding(start = 8.dp, top = if (compact) 3.dp else 8.dp, bottom = if (compact) 3.dp else 8.dp, end = 4.dp),
+        .padding(start = 8.dp, top = if (compact || listMode) 4.dp else 8.dp, bottom = if (compact || listMode) 4.dp else 8.dp, end = 4.dp),
       horizontalArrangement = Arrangement.spacedBy(Sun.S12),
-      verticalAlignment = if (compact) Alignment.CenterVertically else Alignment.Top,
+      verticalAlignment = if (compact || listMode) Alignment.CenterVertically else Alignment.Top,
     ) {
       if (selecting) SelectMark(selected, Modifier.align(Alignment.CenterVertically), size = 28)
-      FileThumbnail(
-        file,
-        Modifier
-          .size(Sun.Thumb)
-          .clip(MaterialTheme.shapes.extraSmall)
-          .then(if (hidden) Modifier.clickable { blur.reveal(file) } else Modifier)
-          .clearAndSetSemantics { },
-        frameMs = (hit.locator as? Locator.Time)?.startMs,
-      )
-      Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(if (compact) 0.dp else 2.dp)) {
-        Row(verticalAlignment = Alignment.Top) {
+      if (file.kind.isVisual()) {
+        FileThumbnail(
+          file,
+          Modifier
+            .size(thumbSize)
+            .clip(MaterialTheme.shapes.extraSmall)
+            .then(if (hidden && !selecting) Modifier.clickable { blur.reveal(file) } else Modifier)
+            .clearAndSetSemantics { },
+          frameMs = (hit.locator as? Locator.Time)?.startMs,
+          iconSize = if (listMode) 22.dp else 28.dp,
+        )
+      } else {
+        ColorKindTile(
+          fileName = file.name,
+          kind = file.kind,
+          modifier = Modifier.size(thumbSize).clearAndSetSemantics { },
+          iconSize = if (listMode) 22.dp else 28.dp,
+        )
+      }
+      Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(if (compact || listMode) 1.dp else 2.dp)) {
+        if (stacked) {
+          // At large accessibility text (>= 130%, UI audit item 12), keep badges below the file name so the name keeps the full column width.
           Text(
             file.name,
-            style = SunType.BodyLarge,
+            style = if (listMode) SunType.Label else SunType.BodyLarge,
             color = MaterialTheme.colorScheme.onSurface,
-            maxLines = if (compact) 1 else 2,
-            overflow = if (compact) TextOverflow.MiddleEllipsis else TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f),
+            maxLines = if (compact || listMode) 1 else 2,
+            overflow = if (compact || listMode) TextOverflow.MiddleEllipsis else TextOverflow.Ellipsis,
           )
-          if (badge != null) {
-            Pill(badge, strong = true, modifier = Modifier.padding(start = 8.dp, top = 2.dp))
+          if (typeVisual != null || badge != null) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+              if (typeVisual != null) TypeBadge(typeVisual)
+              if (badge != null) Pill(badge, modifier = badgeModifier, strong = true)
+            }
+          }
+        } else {
+          Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            Text(
+              file.name,
+              style = if (listMode) SunType.Label else SunType.BodyLarge,
+              color = MaterialTheme.colorScheme.onSurface,
+              maxLines = if (compact || listMode) 1 else 2,
+              overflow = if (compact || listMode) TextOverflow.MiddleEllipsis else TextOverflow.Ellipsis,
+              modifier = Modifier.weight(1f, fill = false),
+            )
+            if (typeVisual != null) {
+              TypeBadge(typeVisual)
+            }
+            if (badge != null) {
+              Pill(badge, modifier = badgeModifier, strong = true)
+            }
           }
         }
         Text(
-          if (hidden) stringResource(R.string.preview_hidden_words) else subtitle,
-          style = if (compact) SunType.Caption else SunType.Body,
+          if (hidden) stringResource(if (blur.checking(file)) R.string.preview_checking_words else R.string.preview_hidden_words) else subtitle,
+          style = if (compact || listMode) SunType.Caption else SunType.Body,
           color = MaterialTheme.colorScheme.onSurfaceVariant,
-          maxLines = if (compact) 1 else 2,
+          maxLines = if (compact || listMode) 1 else 2,
           overflow = TextOverflow.Ellipsis,
         )
-        hit.snippet?.let { snippet ->
+        highlightedText?.let { snippetText ->
           Text(
-            highlightedSnippet(snippet, highlight),
-            style = SunType.Body,
+            snippetText,
+            style = if (listMode) SunType.Caption else SunType.Body,
             color = MaterialTheme.colorScheme.onSurface,
-            maxLines = if (compact) 2 else 3,
+            maxLines = if (compact || listMode) 1 else 3,
             overflow = TextOverflow.Ellipsis,
           )
         }
@@ -330,11 +463,10 @@ fun FileRow(
   }
   // The strip of pictures around a video's matched moment sits under the whole row (it has taps of its own, so it is outside the
   // row's merged "open this file" node), aligned with the thumbnail's left edge.
-  val momentMs = (hit.locator as? Locator.Time)?.startMs
   val stripOn = onOpenAt != null && momentMs != null && file.kind == FileKind.VIDEO && !compact && !selecting && stripMayShow(momentMs, file.durationMs)
   val stripFrames = rememberStripFrames(file, momentMs ?: 0L, hidden, stripOn)
   val strip: @Composable () -> Unit = {
-    if (stripOn && momentMs != null && onOpenAt != null && stripFrames.takesRoom()) {
+    if (stripOn && stripFrames.takesRoom()) {
       MomentStrip(stripFrames, momentMs, hidden, onOpenAt, { blur.reveal(file) }, Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp))
     }
   }
@@ -343,6 +475,7 @@ fun FileRow(
   val reduce = LocalReduceMotion.current
   val rowModifier = modifier
     .fillMaxWidth()
+    .graphicsLayer()   // its own RenderNode: 120 Hz flings translate cached rows on GPU instead of re-recording every frame
     .then(if (stripOn) Modifier.animateContentSize(motionTween(reduce, Motion.Standard)) else Modifier)
     .heightIn(min = Sun.Row)
     .then(if (selecting && selected) Modifier.background(t.marker.copy(alpha = 0.22f)) else Modifier)

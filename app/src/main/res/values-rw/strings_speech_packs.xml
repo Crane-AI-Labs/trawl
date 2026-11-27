@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="pack_speech_lg_name">Imvugo mu Kiganda</string>
+  <string name="pack_speech_nyn_name">Imvugo mu Runyankole</string>
+  <string name="pack_speech_ach_name">Imvugo mu Acholi</string>
+  <string name="pack_speech_sw_name">Imvugo mu Giswahili</string>
+  <string name="pack_speech_xog_name">Imvugo mu Lusoga (igerageza)</string>
+  <string name="speech_language_lg">Ikiganda</string>
+  <string name="speech_language_nyn">Runyankole</string>
+  <string name="speech_language_ach">Acholi</string>
+  <string name="speech_language_sw">Igiswahili</string>
+  <string name="speech_language_xog">Lusoga</string>
+  <string name="pack_speech_language_benefit">Ibona ibyavuzwe mu majwi na videwo byo mu %1$s, ishakisha ry\'Icyongereza ritabasha gusoma. Mu igerageza ryacu ijwi nyaryo ryaje ku mwanya wa mbere %2$d%%, ugereranyije na %3$d%% ritariho.</string>
+  <string name="pack_speech_language_cost">Isoma ku nshuro ya kabiri imvugo itari iy\'Icyongereza, bityo ayo mafayilo atwara igihe kirekire, kandi ntibitunganijwe ijana ku ijana: tegereza amagambo amwe atari yo. Icyongereza gisomwa nk\'uko bisanzwe. Ururimi rumwe rw\'imvugo icyarimwe; ikenera ububiko bw\'inyongera gusa iyo irimo gukora.</string>
+</resources>

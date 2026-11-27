@@ -98,8 +98,8 @@ fun ReportDialog(reporter: Reporter, onClose: () -> Unit, openLogFolder: () -> U
         }, enabled = report != null) { Text(t("report_mail")) }
         SunOutlinedButton(onClick = {
           val r = report ?: return@SunOutlinedButton
+          val chosen = chooseSaveFile() ?: return@SunOutlinedButton
           scope.launch {
-            val chosen = withContext(Dispatchers.IO) { chooseSaveFile() } ?: return@launch
             val ok = withContext(Dispatchers.IO) { reporter.save(r, chosen) }
             result = (if (ok) t("report_saved") else t("report_save_failed")) to ok
           }
@@ -125,8 +125,12 @@ private fun chooseSaveFile(): File? {
   val dialog = FileDialog(null as Frame?, t("report_save"), FileDialog.SAVE).apply {
     file = ProblemReports.fileName()
     directory = trawl.desktop.Platform.userFolders().downloads.takeIf { it.isDirectory }?.absolutePath
-    isVisible = true
   }
-  val name = dialog.file ?: return null
-  return File(dialog.directory ?: return null, name)
+  return try {
+    dialog.isVisible = true
+    val name = dialog.file ?: return null
+    File(dialog.directory ?: return null, name)
+  } finally {
+    dialog.dispose()
+  }
 }

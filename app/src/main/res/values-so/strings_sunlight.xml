@@ -9,4 +9,7 @@
   <string name="colours_wallpaper">Midabada sawirka gidaarka</string>
   <string name="colours_wallpaper_hint">Waxay midabadeeda ka qaadataa sawirka gidaarka, wayna is beddeshaa marka sawirku is beddelo.</string>
   <string name="settings_brightness">Koolac ama madow</string>
+  <string name="notif_waiting_other_app">Sugaya inta aad isticmaalayso ab kale</string>
+  <string name="preview_checking">hordhaca waa la qariyay ilaa la hubiyo</string>
+  <string name="preview_checking_words">Hubinaya · taabo si aad u aragto</string>
 </resources>

@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.yield
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -72,9 +73,13 @@ class ColdStartQueryTest {
         assertEquals(meaningId, warm.hits.first().file.id)
         assertEquals(2, warm.strongCount)
         assertEquals(generation + 1, readiness.value.generation)
-        assertEquals(2, loads)
+        readiness.value = readiness.value.copy(phase = Phase.UP_TO_DATE)
+        yield()
+        assertEquals(2, loads, "readiness refreshes once; unrelated status changes do not reload")
         assertTrue(answers.tryReceive().isFailure)
-        assertEquals(wordsId, ResultNav.reconcile(wordsId, query, query, warm.hits.map { it.file.id }))
+        val warmIds = warm.hits.map { it.file.id }
+        assertEquals(meaningId, ResultNav.reconcile(wordsId, query, query, warmIds, userMoved = false), "the untouched selection follows the best meaning hit")
+        assertEquals(wordsId, ResultNav.reconcile(wordsId, query, query, warmIds, userMoved = true), "a row the person chose stays chosen")
       } finally {
         collector.cancel()
       }

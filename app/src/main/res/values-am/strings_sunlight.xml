@@ -9,4 +9,7 @@
   <string name="colours_wallpaper">የልጣፍ ቀለሞች</string>
   <string name="colours_wallpaper_hint">ቀለሞቹን ከልጣፍህ ይወስዳል፣ ልጣፉ ሲቀየርም አብሮ ይቀየራል።</string>
   <string name="settings_brightness">ብሩህ ወይም ጨለማ</string>
+  <string name="notif_waiting_other_app">ሌላ መተግበሪያ ሲጠቀሙ በመጠበቅ ላይ</string>
+  <string name="preview_checking">እስኪረጋገጥ ድረስ ቅድመ ዕይታ ተደብቋል</string>
+  <string name="preview_checking_words">በመፈተሽ ላይ · ለማየት ይንኩ</string>
 </resources>

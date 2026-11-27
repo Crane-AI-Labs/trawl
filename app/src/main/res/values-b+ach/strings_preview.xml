@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="player_play">Tuku</string>
+  <string name="player_pause">Cung manok</string>
+  <string name="player_rewind_10">Dwog cen ceken 10</string>
+  <string name="player_forward_10">Wot anyim ceken 10</string>
+  <string name="player_jump_match">Cwal i %1$s</string>
+  <string name="player_open_external">Yab i app</string>
+  <string name="player_error">Fayil man pe twero tuku kany.</string>
+  <string name="player_loading">Tye ka cano tuku…</string>
+  <string name="player_seek_position">Kabedo me tuku</string>
+  <string name="action_preview">Nen con</string>
+  <string name="action_show_preview">Nyut neno con</string>
+  <string name="preview_loading">Tye ka cano neno con…</string>
+  <string name="preview_unavailable">Neno con pe tye pi fayil man.</string>
+  <string name="preview_empty">Fayil man tye nono.</string>
+  <string name="preview_truncated">Tye ka nyuto rek %1$d mukwongo</string>
+  <string name="preview_bytes_truncated">Tye ka nyuto but fayil man mukwongo</string>
+  <string name="preview_rows_cols">Rek %1$d · kolum %2$d</string>
+</resources>

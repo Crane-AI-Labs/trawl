@@ -49,14 +49,14 @@ object ExtractLimits {
 
 /** The document types [DocumentTextExtractor] reads, chosen by extension first (MIME types from file managers lie). */
 enum class DocFormat {
-  PLAIN, DELIMITED, HTML, RTF, PDF, DOCX, XLSX, PPTX, ODT, ODS, ODP, EPUB, SVG;
+  PLAIN, DELIMITED, HTML, RTF, PDF, DOCX, XLSX, XLS, PPTX, ODT, ODS, ODP, EPUB, SVG;
 
   companion object {
     private val byExtension = mapOf(
       "txt" to PLAIN, "md" to PLAIN, "markdown" to PLAIN, "json" to PLAIN, "log" to PLAIN,
       "csv" to DELIMITED, "tsv" to DELIMITED,
       "html" to HTML, "htm" to HTML, "xhtml" to HTML,
-      "rtf" to RTF, "pdf" to PDF, "docx" to DOCX, "xlsx" to XLSX, "pptx" to PPTX,
+      "rtf" to RTF, "pdf" to PDF, "docx" to DOCX, "xlsx" to XLSX, "xls" to XLS, "pptx" to PPTX,
       "odt" to ODT, "ods" to ODS, "odp" to ODP, "epub" to EPUB, "svg" to SVG, "svgz" to SVG,
     )
     private val byMime = mapOf(
@@ -66,7 +66,7 @@ enum class DocFormat {
       "text/html" to HTML, "application/xhtml+xml" to HTML,
       "text/rtf" to RTF, "application/rtf" to RTF, "application/pdf" to PDF,
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document" to DOCX,
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" to XLSX,
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" to XLSX, "application/vnd.ms-excel" to XLS,
       "application/vnd.openxmlformats-officedocument.presentationml.presentation" to PPTX,
       "application/vnd.oasis.opendocument.text" to ODT,
       "application/vnd.oasis.opendocument.spreadsheet" to ODS,

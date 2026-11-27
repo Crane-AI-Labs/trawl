@@ -22,8 +22,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Close
@@ -107,6 +109,7 @@ fun LockScreen(privacy: PrivacyController) {
     Modifier
       .fillMaxSize()
       .background(MaterialTheme.colorScheme.background)
+      .verticalScroll(rememberScrollState())
       .statusBarsPadding()
       .navigationBarsPadding()
       .padding(Sun.S32),

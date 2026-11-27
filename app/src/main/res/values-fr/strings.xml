@@ -300,6 +300,8 @@
   <string name="settings_about_model">La recherche fonctionne avec EmbeddingGemma 2 par Google (Apache 2.0), entièrement sur ce téléphone.</string>
   <string name="settings_about_private"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> n\'a pas accès à Internet. Vos fichiers et ce que l\'application en apprend ne quittent jamais ce téléphone.</string>
   <string name="settings_about_maker">Créé par Crane AI Labs.</string>
+  <string name="settings_check_updates">Vérifier les mises à jour</string>
+  <string name="settings_check_updates_hint">Ouvre la page de téléchargement dans votre navigateur.</string>
   <string name="settings_licences">Licences et crédits</string>
   <string name="licences_title">Licences et crédits</string>
   <string name="licences_intro"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> s\'appuie sur les travaux ci-dessous. Ces mentions sont requises par les licences et nous permettent aussi de remercier leurs auteurs.</string>
@@ -481,4 +483,7 @@
     <item quantity="many">%1$d de fichiers n\'ont pas pu être lus (endommagés, ou format que ce téléphone ne peut pas ouvrir). Vous pouvez toujours les trouver par leur nom.</item>
     <item quantity="other">%1$d fichiers n\'ont pas pu être lus (endommagés, ou format que ce téléphone ne peut pas ouvrir). Vous pouvez toujours les trouver par leur nom.</item>
   </plurals>
+  <string name="addons_download_browser">Télécharger dans le navigateur</string>
+  <string name="addons_download_return_hint">Une fois le fichier téléchargé dans Téléchargements, revenez ici et appuyez sur Installer.</string>
+  <string name="addons_no_browser">Aucun navigateur trouvé pour ouvrir le lien de téléchargement.</string>
 </resources>

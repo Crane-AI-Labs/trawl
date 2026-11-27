@@ -1,0 +1,9 @@
+{
+  "pad_pack_name": "pack_speech",
+  "pack_id": "speech",
+  "folder_name": "findr-speech-models",
+  "archive_name": "trawl-speech-models.zip",
+  "delivery_type": "on-demand",
+  "expected_uncompressed_bytes": 142772368,
+  "staging_note": "Stage verified real weights into src/main/assets/<folder_name>/ via scripts/pack-speech-packs.sh --stage-pad before Play Console upload."
+}

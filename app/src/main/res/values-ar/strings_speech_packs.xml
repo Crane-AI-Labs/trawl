@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="pack_speech_lg_name">الكلام باللوغندية</string>
+  <string name="pack_speech_nyn_name">الكلام بالرونيانكولي</string>
+  <string name="pack_speech_ach_name">الكلام بالأشولي</string>
+  <string name="pack_speech_sw_name">الكلام بالسواحيلية</string>
+  <string name="pack_speech_xog_name">الكلام باللوسوغا (تجريبي)</string>
+  <string name="speech_language_lg">اللوغندية</string>
+  <string name="speech_language_nyn">الرونيانكولي</string>
+  <string name="speech_language_ach">الأشولي</string>
+  <string name="speech_language_sw">السواحيلية</string>
+  <string name="speech_language_xog">اللوسوغا</string>
+  <string name="pack_speech_language_benefit">يعثر على ما قيل في الرسائل الصوتية ومقاطع الفيديو بلغة %1$s، وهو ما لا يستطيع البحث الصوتي بالإنجليزية قراءته. في اختباراتنا ظهرت الرسالة الصوتية الصحيحة أولاً بنسبة %2$d%% مقابل %3$d%% بدونها.</string>
+  <string name="pack_speech_language_cost">يعيد قراءة الكلام غير الإنجليزي مرة ثانية، لذا تستغرق هذه الملفات وقتاً أطول، وهو ليس مثالياً: توقّع بعض الكلمات الخاطئة. يُقرأ الكلام الإنجليزي تماماً كما كان. لغة كلام واحدة في كل مرة؛ يحتاج إلى ذاكرة إضافية أثناء العمل فقط.</string>
+</resources>

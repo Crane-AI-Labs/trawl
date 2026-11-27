@@ -42,12 +42,15 @@ import trawl.desktop.ui.privacy.rememberLeave
 fun QuickLook(row: ResultRow, position: Int, total: Int, c: AppController, onClose: () -> Unit) {
   val tk = LocalSunlight.current
   val f = row.file
+  val closeAndStop = { c.previewPlayer.stop(); onClose() }
+  val latestClose = androidx.compose.runtime.rememberUpdatedState(closeAndStop)
+  androidx.compose.runtime.DisposableEffect(f.id) { onDispose { c.previewPlayer.stop() } }
   val hidden = LocalPreviewBlur.current.hides(f)
   val leave = rememberLeave()
   val shape = RoundedCornerShape(14.dp)
   val folder = remember(f.id) { PathText.tilde(c.fileOf(f).path) }
   BoxWithConstraints(
-    Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.55f)).pointerInput(Unit) { detectTapGestures { onClose() } },
+    Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.55f)).pointerInput(Unit) { detectTapGestures { latestClose.value() } },
     contentAlignment = Alignment.Center,
   ) {
     val w = (maxWidth - 64.dp).coerceIn(320.dp, 1040.dp)
@@ -62,9 +65,11 @@ fun QuickLook(row: ResultRow, position: Int, total: Int, c: AppController, onClo
         RowBadges(row)
         Spacer(Modifier.weight(1f))
         Text("$position / $total", style = SunType.Caption, color = tk.ink2)
-        SunIconButton(Icons.Close, t("action_close"), onClose)
+        SunIconButton(Icons.Close, t("action_close"), closeAndStop)
       }
-      PreviewMedia(row, c, height = null, side = 1800, excerptLines = 40, modifier = Modifier.weight(1f))
+      androidx.compose.runtime.key(f.id, row.page, row.startMs) {
+        PreviewMedia(row, c, height = null, side = 1800, excerptLines = 40, modifier = Modifier.weight(1f))
+      }
       Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Sun.S12)) {
         Text(if (hidden) t("hidden_label") else folder, style = SunType.Caption, color = tk.ink2, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
         Text(t("quicklook_move"), style = SunType.Caption, color = tk.ink2)

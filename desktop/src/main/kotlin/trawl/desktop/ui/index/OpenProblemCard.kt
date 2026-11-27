@@ -26,10 +26,11 @@ import trawl.desktop.ui.SunType
 /**
  * The card shown in place of the meter when the index file cannot be opened (busy, disk full, unreadable, out of memory, other).
  * Calm on purpose: nothing was deleted and Trawl is trying again by itself, so it says that, once, and offers Try again. It names the
- * kind of trouble in a plain sentence and never shows an exception.
+ * kind of trouble in a plain sentence and never shows an exception. When [stopped] (the same trouble several times in a row) it says
+ * that Trawl has stopped trying on its own and what to do: a card that promised "shortly" for 40 hours would be a lie.
  */
 @Composable
-fun OpenProblemCard(problem: IndexOpenProblem, onRetry: (() -> Unit)?, modifier: Modifier = Modifier) {
+fun OpenProblemCard(problem: IndexOpenProblem, onRetry: (() -> Unit)?, modifier: Modifier = Modifier, stopped: Boolean = false) {
   val tk = LocalSunlight.current
   SunCard(modifier.fillMaxWidth(), color = tk.paper) {
     Column(Modifier.padding(horizontal = Sun.S16, vertical = Sun.S12), verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -38,8 +39,8 @@ fun OpenProblemCard(problem: IndexOpenProblem, onRetry: (() -> Unit)?, modifier:
         Spacer(Modifier.width(10.dp))
         Text(t("open_problem_title", t("app_name")), style = SunType.Label, color = tk.ink)
       }
-      Text(MeterTexts.problem(problem), style = SunType.Body, color = tk.ink)
-      Text(t("open_problem_detail"), style = SunType.Caption, color = tk.ink2)
+      Text(MeterTexts.problem(problem, stopped), style = SunType.Body, color = tk.ink)
+      Text(MeterTexts.problemDetail(problem, stopped), style = SunType.Caption, color = tk.ink2)
       if (onRetry != null) SunOutlinedButton(onClick = onRetry) { Text(t("action_try_again"), style = SunType.Label) }
     }
   }

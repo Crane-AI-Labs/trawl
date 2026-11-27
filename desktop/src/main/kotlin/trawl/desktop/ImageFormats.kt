@@ -87,7 +87,7 @@ object ImageFormats {
 
   private fun run(cmd: List<String>, env: Map<String, String> = emptyMap(), timeoutS: Long = 60): Boolean {
     val p = try {
-      ProcessBuilder(cmd).apply { environment().putAll(env); redirectErrorStream(true); redirectOutput(ProcessBuilder.Redirect.DISCARD) }.start()
+      HelperProcs.started(ProcessBuilder(cmd).apply { environment().putAll(env); redirectErrorStream(true); redirectOutput(ProcessBuilder.Redirect.DISCARD) }.start())
     } catch (_: java.io.IOException) { return false }   // the program is not installed
     if (!p.waitFor(timeoutS, TimeUnit.SECONDS)) { p.destroyForcibly(); return false }
     return p.exitValue() == 0
@@ -129,7 +129,7 @@ object HeicRoute {
   fun present(): Boolean = answer
 
   private fun probe(cmd: List<String>): String? {
-    val p = ProcessBuilder(cmd).redirectErrorStream(true).start()
+    val p = Politeness.Cpu.track(ProcessBuilder(cmd).redirectErrorStream(true).start())
     val text = p.inputStream.bufferedReader().readText()
     return if (p.waitFor(20, TimeUnit.SECONDS) && p.exitValue() == 0) text else { p.destroyForcibly(); null }
   }

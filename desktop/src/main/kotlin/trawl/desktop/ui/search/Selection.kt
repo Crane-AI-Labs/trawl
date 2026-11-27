@@ -112,6 +112,7 @@ class PickActions(
   val onShare: () -> Unit,
   val onAll: () -> Unit,
   val onClose: () -> Unit,
+  val onRemoveFromIndex: (() -> Unit)? = null,
 )
 
 /** The bar over the list while several results are chosen: how many, then Copy, Show in folders, Share (where the computer has it), Select all, and a way out. */
@@ -165,6 +166,13 @@ fun MultiPane(files: List<IndexedFile>, actions: PickActions, modifier: Modifier
       Icon(Icons.Share, contentDescription = null, modifier = Modifier.size(Sun.IconSmall))
       Spacer(Modifier.width(Sun.S8))
       Text(tn("action_share_n", n, formatCount(n)), style = SunType.Label)
+    }
+    actions.onRemoveFromIndex?.let { remove ->
+      SunOutlinedButton(onClick = remove, danger = true) {
+        Icon(Icons.Close, contentDescription = null, modifier = Modifier.size(Sun.IconSmall))
+        Spacer(Modifier.width(Sun.S8))
+        Text(tn("action_remove_from_index_n", n, formatCount(n)), style = SunType.Label)
+      }
     }
   }
 }

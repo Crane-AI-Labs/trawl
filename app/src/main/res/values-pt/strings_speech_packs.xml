@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="pack_speech_lg_name">Fala em luganda</string>
+  <string name="pack_speech_nyn_name">Fala em runyankole</string>
+  <string name="pack_speech_ach_name">Fala em acholi</string>
+  <string name="pack_speech_sw_name">Fala em suaíli</string>
+  <string name="pack_speech_xog_name">Fala em lusoga (beta)</string>
+  <string name="speech_language_lg">luganda</string>
+  <string name="speech_language_nyn">runyankole</string>
+  <string name="speech_language_ach">acholi</string>
+  <string name="speech_language_sw">suaíli</string>
+  <string name="speech_language_xog">lusoga</string>
+  <string name="pack_speech_language_benefit">Encontra o que foi dito em áudios e vídeos em %1$s, que a busca de fala em inglês não consegue ler. Nos nossos testes, o áudio certo apareceu primeiro %2$d%% das vezes, contra %3$d%% sem ele.</string>
+  <string name="pack_speech_language_cost">Lê novamente a fala que não está em inglês, então esses arquivos levam mais tempo para ler, e não é perfeito: espere algumas palavras erradas. O inglês continua sendo lido exatamente como antes. Um idioma de fala por vez; usa memória extra apenas enquanto trabalha.</string>
+</resources>

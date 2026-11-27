@@ -18,7 +18,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.isAltPressed
+import androidx.compose.ui.input.key.isCtrlPressed
+import androidx.compose.ui.input.key.isMetaPressed
+import androidx.compose.ui.input.key.isShiftPressed
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.DpSize
@@ -79,17 +88,19 @@ private fun AppContent(c: AppController) {
         Modifier.fillMaxSize().pointerInput(Unit) {
           // Which input was last used, so keyboard focus on a button is told apart from the button having been clicked.
           awaitPointerEventScope { while (true) { awaitPointerEvent(PointerEventPass.Initial); InputModality.keyboard = false; c.privacy.onInput() } }
-        }.onPreviewKeyEvent { e ->
+        }.onPreviewKeyEvent {
           InputModality.keyboard = true
           c.privacy.onInput()
-          val k = e.toStroke() ?: return@onPreviewKeyEvent false
+          false
+        }.onKeyEvent { e ->
+          val k = e.toStroke() ?: return@onKeyEvent false
           val ctx = KeyContext(screen, FocusZone.OTHER, quickLook = false, queryBlank = true, hasResults = false, isMac = MainUi.isMac)
           val action = KeyMap.map(k, ctx)
-          // Text size (Cmd/Ctrl + Plus, Minus, 0) works on every screen, so it is answered here before any screen sees the key.
-          if (action is KeyAction.Zoom) { c.zoom(action.step); return@onPreviewKeyEvent true }
-          // Esc goes back from Settings and Licences; the main screen has its own keys (MainScreen).
-          if (screen == Screen.MAIN) return@onPreviewKeyEvent false
-          if (action != KeyAction.Back) return@onPreviewKeyEvent false
+          // Text size (Cmd/Ctrl + Plus, Minus, 0) works on every screen once focused children (e.g., ShortcutRecorderBox) decline it.
+          if (action is KeyAction.Zoom) { c.zoom(action.step); return@onKeyEvent true }
+          // Never mutate underlying navigation behind LockScreen; let MainScreen handle its own Esc.
+          if (locked || screen == Screen.MAIN) return@onKeyEvent false
+          if (action != KeyAction.Back) return@onKeyEvent false
           if (screen == Screen.LICENCES) c.closeLicences() else if (screen == Screen.SETTINGS) c.closeSettings()
           true
         },
@@ -142,6 +153,7 @@ fun runWindow(args: List<String> = emptyList()) {
   Strings.use(Locale.getDefault())
   trawl.desktop.WmClass.apply()   // before the first window: the dock groups Trawl's windows with its launcher entry (Linux)
   val dataDir = Platform.dataDir()
+  trawl.desktop.OwnerOnlyPermissions.hardenDataDir(dataDir)
   // --- shell (Package D): one Trawl per data folder. A second launch (or `trawl --quick`) hands over to the running one and exits. ---
   val quickLaunch = "--quick" in args
   val instance = when (val o = trawl.desktop.shell.SingleInstanceShell.acquire(dataDir, if (quickLaunch) "quick" else "show")) {
@@ -189,8 +201,15 @@ fun runWindow(args: List<String> = emptyList()) {
       },
       placement = if (place?.maximized == true) ComposeWindowPlacement.Maximized else ComposeWindowPlacement.Floating,
     )
-    // The first-screen demo does no work while the window is minimised.
-    LaunchedEffect(state) { snapshotFlow { state.isMinimized }.collect { WindowActivity.minimized = it } }
+    // The first-screen demo does no work while the window is minimised; stop any active preview audio too.
+    LaunchedEffect(state) { snapshotFlow { state.isMinimized }.collect { WindowActivity.minimized = it; if (it) controller.previewPlayer.stop() } }
+    // The index works behind the person's programs while no window shows (hidden to the tray, or minimised); see BackgroundMode.
+    LaunchedEffect(state, mainVisible) { snapshotFlow { mainVisible && !state.isMinimized }.collect { shown -> if (!shown) controller.previewPlayer.stop(); runCatching { controller.windowShown(shown) } } }
+    // On macOS, switching to NSApplicationActivationPolicyAccessory while the Main Window is hidden to the menu bar
+    // gives Quick Search 100% Spotlight/Raycast parity over native Full-Screen Spaces (zero Space swooshing).
+    LaunchedEffect(mainVisible) {
+      if (shell.os == trawl.desktop.Os.MAC) trawl.desktop.shell.MacNative.setAccessoryPolicy(!mainVisible)
+    }
     if (forced == null) {
       // Save a moment after the window stops moving or resizing.
       LaunchedEffect(state) {
@@ -203,24 +222,63 @@ fun runWindow(args: List<String> = emptyList()) {
         }
       }
     }
-    Window(onCloseRequest = shell::onMainCloseRequest, visible = mainVisible, title = t("app_name"), state = state) {
+    Window(
+      onCloseRequest = shell::onMainCloseRequest,
+      visible = mainVisible,
+      title = t("app_name"),
+      state = state,
+      onPreviewKeyEvent = { e ->
+        if (e.type != androidx.compose.ui.input.key.KeyEventType.KeyDown || e.isAltPressed || e.isShiftPressed) {
+          false
+        } else if (shell.os == trawl.desktop.Os.MAC && e.isMetaPressed && !e.isCtrlPressed) {
+          when (e.key) {
+            androidx.compose.ui.input.key.Key.M -> { state.isMinimized = true; true }
+            androidx.compose.ui.input.key.Key.W -> { shell.onMainCloseRequest(); true }
+            else -> false
+          }
+        } else if (shell.os != trawl.desktop.Os.MAC && e.isCtrlPressed && !e.isMetaPressed && e.key == androidx.compose.ui.input.key.Key.W) {
+          shell.onMainCloseRequest()
+          true
+        } else false
+      },
+    ) {
       LaunchedEffect(Unit) {
         window.minimumSize = Dimension(first.minWidth, first.minHeight)
         window.iconImages = Brand.icons()   // the title bar, taskbar and alt-tab show the Trawl mark, not the Java cup
         // macOS shows the Dock icon through the Taskbar API; elsewhere it is unsupported and harmless to skip.
         runCatching { if (java.awt.Taskbar.isTaskbarSupported()) java.awt.Taskbar.getTaskbar().iconImage = Brand.icon(512) }
       }
+      // Guarantee standard macOS window traffic lights (especially the yellow Minimize button) stay enabled across hide/show transitions.
+      LaunchedEffect(mainVisible, mainRaise) {
+        if (mainVisible && shell.os == trawl.desktop.Os.MAC) {
+          trawl.desktop.shell.MacNative.configureMain(window)
+        }
+      }
       // --- shell (Package D): come to the front when asked, know whether we have the focus, and make Cmd+Q / Dock "Quit" really quit. ---
       // The same verified raise as the quick panel (tray click, a second launch, "Open Trawl" from the panel), minus the parts that float it
       // over full-screen apps: this is an ordinary window.
-      val mainRaiser = remember { trawl.desktop.shell.PanelRaiser.forWindow(shell.os, onSettled = { n, ok -> controller.appLog.log("main window raise: $n attempts, focused ${if (ok) "yes" else "no"}") }, overlay = false) }
+      val mainRaiser = remember {
+        trawl.desktop.shell.PanelRaiser.forWindow(
+          shell.os,
+          onSettled = { n, ok ->
+            controller.appLog.log("main window raise: $n attempts, focused ${if (ok) "yes" else "no"}")
+            if (!ok) runCatching { controller.windowFocused(false) }
+          },
+          overlay = false,
+        )
+      }
       LaunchedEffect(mainRaise) {
         if (mainRaise > 0) { state.isMinimized = false; mainRaiser.raise(window) }
       }
       DisposableEffect(window) {
         val focus = object : java.awt.event.WindowAdapter() {
-          override fun windowGainedFocus(e: java.awt.event.WindowEvent?) { shell.mainFocused = true; controller.privacy.onWindowFocus("main", true) }
-          override fun windowLostFocus(e: java.awt.event.WindowEvent?) { shell.mainFocused = false; controller.privacy.onWindowFocus("main", false) }
+          override fun windowGainedFocus(e: java.awt.event.WindowEvent?) { runCatching { controller.windowFocused(true) }; shell.mainFocused = true; controller.privacy.onWindowFocus("main", true) }
+          override fun windowLostFocus(e: java.awt.event.WindowEvent?) {
+            shell.mainFocused = false; controller.privacy.onWindowFocus("main", false)
+            // The background lever (BackgroundMode): focus that moves to one of Trawl's own windows (a folder chooser, a file dialog) is not
+            // the person leaving Trawl, so the process stays in front. Only focus that leaves the app (no opposite window here) counts.
+            if (e?.oppositeWindow == null) runCatching { controller.windowFocused(false) }
+          }
         }
         window.addWindowFocusListener(focus)
         // Trawl's own dialogs (the folder chooser, file dialogs) take the keyboard from this window: that is not leaving.
@@ -230,7 +288,7 @@ fun runWindow(args: List<String> = emptyList()) {
           if (d.isSupported(java.awt.Desktop.Action.APP_QUIT_HANDLER)) d.setQuitHandler { _, r -> r.cancelQuit(); shell.quit() }
           if (d.isSupported(java.awt.Desktop.Action.APP_EVENT_REOPENED)) d.addAppEventListener(java.awt.desktop.AppReopenedListener { shell.showMain() })
         }
-        onDispose { window.removeWindowFocusListener(focus); stopOwnFocus() }
+        onDispose { controller.previewPlayer.stop(); window.removeWindowFocusListener(focus); stopOwnFocus() }
       }
       // --- end shell ---
       // Privacy: keep the window out of screenshots and screen sharing while hidden or sensitive things show (or when the person asked). A request
@@ -258,7 +316,9 @@ fun runWindow(args: List<String> = emptyList()) {
           exitApplication()
         }
       }
-      trawl.desktop.ui.quick.WithShell(shell) { App(controller) }   // shell (Package D)
+      ProvideFileDrag(window) {
+        trawl.desktop.ui.quick.WithShell(shell) { App(controller) }   // shell (Package D)
+      }
     }
     // --- shell (Package D) ---
     ShellTray(shell)

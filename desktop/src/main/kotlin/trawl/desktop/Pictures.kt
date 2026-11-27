@@ -134,25 +134,45 @@ object Exif {
   }
 }
 
-/** Small previews of pictures for the result grid: decoded at a fraction of full size (ImageIO subsampling), turned upright, kept in a small cache. */
+/** Small previews of pictures for the result grid: decoded at a fraction of full size (ImageIO subsampling), turned upright, kept in a small byte-bounded cache. */
 object Thumbnails {
   private const val KEEP = 300
+  private const val MAX_CACHE_BYTES = 96L * 1024L * 1024L
+  private const val MAX_DECODE_PIXELS = 4_000_000L
+  private var cachedBytes = 0L
   private val cache = object : LinkedHashMap<String, ImageBitmap>(KEEP, 0.75f, true) {
-    override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, ImageBitmap>) = size > KEEP
+    override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, ImageBitmap>): Boolean {
+      val evict = size > KEEP || cachedBytes > MAX_CACHE_BYTES
+      if (evict) cachedBytes = (cachedBytes - bitmapBytes(eldest.value)).coerceAtLeast(0L)
+      return evict
+    }
   }
+
+  private fun bitmapBytes(bmp: ImageBitmap): Long = bmp.width.toLong() * bmp.height.toLong() * 4L
 
   @Synchronized fun cached(key: String): ImageBitmap? = cache[key]
 
-  /** The thumbnail if it is already decoded (no decoding, no waiting), so a tile that scrolls back into view draws at once instead of flashing empty. */
-  fun peek(file: File, side: Int = 360): ImageBitmap? = cached("${file.absolutePath}|${file.lastModified()}|$side")
+  /** The thumbnail if it is already decoded (no decoding, no waiting), so a tile that scrolls back into view draws at once instead of flashing empty. Pass [modifiedMillis] from [com.craneai.findr.core.IndexedFile] when known to avoid a filesystem stat on the UI thread. */
+  fun peek(file: File, side: Int = 360, modifiedMillis: Long? = null): ImageBitmap? =
+    cached("${file.absolutePath}|${modifiedMillis ?: file.lastModified()}|$side")
 
   /** The picture at about [side] px on its short side, or null when ImageIO cannot read it (a damaged file, or a HEIC on a computer with no decoder for it). Blocking: call it off the UI thread. */
-  fun load(file: File, side: Int = 360): ImageBitmap? {
-    val key = "${file.absolutePath}|${file.lastModified()}|$side"
+  fun load(file: File, side: Int = 360, modifiedMillis: Long? = null): ImageBitmap? {
+    val key = "${file.absolutePath}|${modifiedMillis ?: file.lastModified()}|$side"
     cached(key)?.let { return it }
     val img = decode(file, side) ?: return null
     val bmp = img.toComposeImageBitmap()
-    synchronized(this) { cache[key] = bmp }
+    synchronized(this) {
+      cache.put(key, bmp)?.let { prev -> cachedBytes = (cachedBytes - bitmapBytes(prev)).coerceAtLeast(0L) }
+      cachedBytes += bitmapBytes(bmp)
+      val it = cache.entries.iterator()
+      while (it.hasNext() && (cache.size > KEEP || cachedBytes > MAX_CACHE_BYTES)) {
+        val e = it.next()
+        if (e.key == key) break
+        cachedBytes = (cachedBytes - bitmapBytes(e.value)).coerceAtLeast(0L)
+        it.remove()
+      }
+    }
     return bmp
   }
 
@@ -163,7 +183,17 @@ object Thumbnails {
       val r = readers.next()
       try {
         r.input = iis
-        val step = maxOf(1, minOf(r.getWidth(0), r.getHeight(0)) / side)
+        val w = r.getWidth(0).coerceAtLeast(1)
+        val h = r.getHeight(0).coerceAtLeast(1)
+        val safeSide = side.coerceAtLeast(32)
+        val shortStep = minOf(w, h) / safeSide
+        // Guard against extreme-aspect stitched screenshots / crafted 200x200000 images allocating multi-hundred-MB buffers.
+        val longStep = maxOf(w, h) / (safeSide * 3).coerceAtLeast(2048)
+        val totalPixels = w.toLong() * h.toLong()
+        val pixelStep = if (totalPixels > MAX_DECODE_PIXELS) {
+          kotlin.math.ceil(kotlin.math.sqrt(totalPixels.toDouble() / MAX_DECODE_PIXELS.toDouble())).toInt()
+        } else 1
+        val step = maxOf(1, shortStep, longStep, pixelStep)
         val param: ImageReadParam = r.defaultReadParam.apply { setSourceSubsampling(step, step, 0, 0) }
         Exif.upright(r.read(0, param), Exif.orientation(file))
       } finally { r.dispose() }

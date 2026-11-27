@@ -10,8 +10,8 @@ import com.craneai.findr.core.FindrSettings
  * same groups from MediaStore alone and the folder picker, and a new group (for example one the ethics review asks
  * for) is one more entry in [FolderGroups.ALL], with a label in the UI.
  *
- * What is NEVER decided here: private places (hidden folders, `.nomedia`, other apps' private trees) stay out in
- * [Rules.folderSkipReason] whatever a group's switch says, and a folder the person excluded beats every switch.
+ * What is NEVER decided here: private places and `.nomedia` exceptions are enforced by [Rules.skipReason]
+ * whatever a group's switch says, and a folder the person excluded beats every switch.
  */
 data class PathRule(
   /** Folder paths from the volume root, lower case, no slashes at the ends: "dcim/camera". Matches that folder and below. */

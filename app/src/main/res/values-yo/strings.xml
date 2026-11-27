@@ -296,6 +296,8 @@
   <string name="settings_about_model">Wíwá nǹkan ń lo EmbeddingGemma 2 láti ọwọ́ Google (Apache 2.0), pátápátá lórí fóònù yìí.</string>
   <string name="settings_about_private"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kò ní àyè láti lo intanẹ́ẹ̀tì. Àwọn fáìlì rẹ àti ohun tí ó kọ́ láti inú wọn kì í jáde kúrò lórí fóònù rárá.</string>
   <string name="settings_about_maker">Crane AI Labs ló ṣe é.</string>
+  <string name="settings_check_updates">Ṣàyẹ̀wò àwọn àtúnṣe tuntun</string>
+  <string name="settings_check_updates_hint">Ń ṣí ojú-ìwé ìgbàsílẹ̀ nínú aṣàwárí rẹ.</string>
   <string name="settings_licences">Àwọn ìwé àṣẹ àti ìmoore</string>
   <string name="licences_title">Àwọn ìwé àṣẹ àti ìmoore</string>
   <string name="licences_intro"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> dá lórí àwọn iṣẹ́ tí ó wà nísàlẹ̀ yìí. Àwọn ìwé àṣẹ bèèrè fún àwọn àkíyèsí wọ̀nyí, bẹ́ẹ̀ sì ni a ṣe ń dúpẹ́ pẹ̀lú.</string>
@@ -461,4 +463,7 @@
   <plurals name="sheet_unreadable">
     <item quantity="other">Fáìlì %1$d kò ṣeé kà (ó ti bàjẹ́, tàbí ó jẹ́ irú tí fóònù yìí kò lè ṣí). O ṣì lè rí wọn nípa orúkọ.</item>
   </plurals>
+  <string name="addons_download_browser">Ṣe igbasilẹ ninu aṣàwákiri</string>
+  <string name="addons_download_return_hint">Lẹhin ti faili ba pari igbasilẹ sinu Downloads, pada si ibi ki o tẹ Fi sori ẹrọ.</string>
+  <string name="addons_no_browser">Ko si aṣàwákiri ti a ri lati ṣi ọna asopọ igbasilẹ naa.</string>
 </resources>

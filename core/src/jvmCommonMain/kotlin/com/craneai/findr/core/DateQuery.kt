@@ -388,7 +388,7 @@ object DateParser {
     }
     if (dayCounts) {
       val yearAfterDay = yearOf(t.getOrNull(p + 2)?.text, c)
-      val d = resolveDay(dayAfter!!.first, m.number, yearAfterDay, c) ?: return null
+      val d = resolveDay(dayAfter.first, m.number, yearAfterDay, c) ?: return null
       return hit(DateLabel.Day(d), c.days(d, d), p + 2 + (if (yearAfterDay != null) 1 else 0))
     }
     val ym = when {

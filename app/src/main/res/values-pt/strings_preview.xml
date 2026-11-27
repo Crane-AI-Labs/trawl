@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="player_play">Reproduzir</string>
+  <string name="player_pause">Pausa</string>
+  <string name="player_rewind_10">Recuar 10 segundos</string>
+  <string name="player_forward_10">Avançar 10 segundos</string>
+  <string name="player_jump_match">Ir para %1$s</string>
+  <string name="player_open_external">Abrir na app</string>
+  <string name="player_error">Não foi possível reproduzir este ficheiro aqui.</string>
+  <string name="player_loading">A carregar reprodução…</string>
+  <string name="player_seek_position">Posição de reprodução</string>
+  <string name="action_preview">Pré-visualizar</string>
+  <string name="action_show_preview">Mostrar pré-visualização</string>
+  <string name="preview_loading">A carregar pré-visualização…</string>
+  <string name="preview_unavailable">Pré-visualização indisponível para este ficheiro.</string>
+  <string name="preview_empty">Este ficheiro está vazio.</string>
+  <string name="preview_truncated">A mostrar as primeiras %1$d linhas</string>
+  <string name="preview_bytes_truncated">A mostrar a primeira parte deste ficheiro</string>
+  <string name="preview_rows_cols">%1$d linhas · %2$d colunas</string>
+</resources>

@@ -38,6 +38,8 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import coil3.ImageLoader
 import coil3.SingletonImageLoader
 import coil3.video.VideoFrameDecoder
@@ -93,6 +95,13 @@ class QuickSearchActivity : FragmentActivity() {   // FragmentActivity: the phon
     enableEdgeToEdge()
     installImageLoader()
     logStartup()
+    lifecycleScope.launch {
+      (application as FindrApp).awaitEngine()
+      if (!isFinishing) showContent()
+    }
+  }
+
+  private fun showContent() {
     // The window's FLAG_SECURE follows the privacy controller from here, not from the composition (UI audit P10).
     followSecureWindow(privacy.secureWindow)
 
@@ -187,7 +196,7 @@ class QuickSearchActivity : FragmentActivity() {   // FragmentActivity: the phon
     super.onNewIntent(intent)
     setIntent(intent)
     readIntent(intent)
-    viewModel.setQuery("")
+    if ((application as FindrApp).isReady) viewModel.setQuery("")
     reopen++
   }
 
@@ -207,11 +216,11 @@ class QuickSearchActivity : FragmentActivity() {   // FragmentActivity: the phon
 
   override fun onStop() {
     super.onStop()
-    viewModel.setInteracting(false)
+    if ((application as FindrApp).isReady) viewModel.setInteracting(false)
     leaving = null
     // A panel that lost the screen (Home, a call, the chooser) is finished: the next tap should open a fresh one.
     // The phone's own unlock prompt is the one exception: it must be able to answer.
-    if (!isChangingConfigurations && !privacy.authInFlight()) finish()
+    if (!isChangingConfigurations && (!(application as FindrApp).isReady || !privacy.authInFlight())) finish()
   }
 
   private fun readIntent(i: Intent) {

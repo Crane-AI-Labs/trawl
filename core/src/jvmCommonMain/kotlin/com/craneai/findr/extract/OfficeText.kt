@@ -268,6 +268,7 @@ object OfficeText {
   fun extract(
     format: DocFormat, file: File, maxChars: Int, newParser: () -> XmlPullParser, tick: () -> Unit = {},
   ): ExtractedText {
+    if (format == DocFormat.XLS) return try { XlsText.extract(file, maxChars, tick) } catch (e: ExtractTimeout) { ExtractedText(emptyList(), truncated = true, stopped = e.message) }
     try {
       return extractParts(format, file, maxChars, newParser, tick)
     } catch (e: ExtractTimeout) {

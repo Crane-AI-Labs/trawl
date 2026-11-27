@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- In-app seekable moment player sheet (video and audio timestamp matches). -->
+  <string name="player_play">Play</string>
+  <string name="player_pause">Pause</string>
+  <string name="player_rewind_10">Back 10 seconds</string>
+  <string name="player_forward_10">Forward 10 seconds</string>
+  <string name="player_jump_match">Jump to %1$s</string>
+  <string name="player_open_external">Open in app</string>
+  <string name="player_error">This file could not be played here.</string>
+  <string name="player_loading">Loading playback…</string>
+  <string name="player_seek_position">Playback position</string>
+
+  <!-- Structured preview sheet (JSON, CSV/Excel tables, code/config). -->
+  <string name="action_preview">Preview</string>
+  <string name="action_show_preview">Show preview</string>
+  <string name="preview_loading">Loading preview…</string>
+  <string name="preview_unavailable">Preview is not available for this file.</string>
+  <string name="preview_empty">This file is empty.</string>
+  <string name="preview_truncated">Showing the first %1$d rows</string>
+  <string name="preview_bytes_truncated">Showing the first part of this file</string>
+  <string name="preview_rows_cols">%1$d rows · %2$d columns</string>
+</resources>

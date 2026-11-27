@@ -55,11 +55,12 @@ class QuickLookPass(
         val batch = store.nextForQuickLook(BATCH, engine.enabledKinds(), Tuning.current.quickVideoShare)
         if (batch.isEmpty()) break
         for (p in batch) {
-          if (stopped()) break
-          while (engine.userInteracting && !stopped()) delay(250)
+          if (stopped() || !engine.quickLookShouldRun()) break
+          while (engine.userInteracting && !stopped() && engine.quickLookShouldRun()) delay(250)
           // Speech recognition beside EmbeddingGemma's video frames leaves no CPU to spare: a quick look then cost EG +13% per
           // frame on the A06 (vision agent, 25-video mix), so the pass waits until the soundtrack is done (the research notes).
-          while (engine.speechActive.get() > 0 && !stopped()) delay(250)
+          while (engine.speechActive.get() > 0 && !stopped() && engine.quickLookShouldRun()) delay(250)
+          if (stopped() || !engine.quickLookShouldRun()) break
           coroutineContext.ensureActive()
           val t0 = System.nanoTime()
           val ok = one(p)
@@ -78,6 +79,14 @@ class QuickLookPass(
             else -> 1.0
           }
           if (duty < 1.0) delay((workMs * (1 / duty - 1)).toLong())
+          // Predictive thermal pacing (ADPF headroom, corroborated OS status, battery warmC): keeps FAST (4 threads, duty 1.0)
+          // and standalone LIGHT runs on battery from overheating between files.
+          val heat = engine.thermalDecision(engine.batteryCelsius())
+          when (heat.action) {
+            HeatPace.Action.COOL_DOWN -> { delay(1_000); break }
+            HeatPace.Action.PACE -> HeatPace.restMs(workMs, hot = true, duty = heat.duty).let { if (it > 0) delay(it) }
+            HeatPace.Action.FULL_SPEED -> {}
+          }
           // Heat pacing (a study knob, off in every shipped build): once the phone is warm, a further rest in proportion to the work.
           if (Tuning.current.paces) HeatPace.restMs(workMs, engine.heatPaced(), Tuning.current.paceQuickDuty).let { if (it > 0) delay(it) }
         }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="pack_speech_lg_name">Parole en luganda</string>
+  <string name="pack_speech_nyn_name">Parole en runyankole</string>
+  <string name="pack_speech_ach_name">Parole en acholi</string>
+  <string name="pack_speech_sw_name">Parole en swahili</string>
+  <string name="pack_speech_xog_name">Parole en lusoga (bêta)</string>
+  <string name="speech_language_lg">luganda</string>
+  <string name="speech_language_nyn">runyankole</string>
+  <string name="speech_language_ach">acholi</string>
+  <string name="speech_language_sw">swahili</string>
+  <string name="speech_language_xog">lusoga</string>
+  <string name="pack_speech_language_benefit">Retrouve ce qui a été dit dans les notes vocales et vidéos en %1$s, que la recherche vocale anglaise ne peut pas lire. Lors de nos tests, la bonne note vocale est arrivée en premier %2$d%% du temps, contre %3$d%% sans ce pack.</string>
+  <string name="pack_speech_language_cost">Relit une seconde fois la parole qui n\'est pas en anglais : ces fichiers prennent donc plus de temps à lire, et ce n\'est pas parfait (attendez-vous à quelques mots erronés). L\'anglais est lu exactement comme avant. Une seule langue vocale à la fois ; utilise de la mémoire supplémentaire uniquement pendant le traitement.</string>
+</resources>

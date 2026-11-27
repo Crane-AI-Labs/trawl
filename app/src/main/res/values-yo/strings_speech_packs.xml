@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="pack_speech_lg_name">Ọ̀rọ̀ ní Luganda</string>
+  <string name="pack_speech_nyn_name">Ọ̀rọ̀ ní Runyankole</string>
+  <string name="pack_speech_ach_name">Ọ̀rọ̀ ní Acholi</string>
+  <string name="pack_speech_sw_name">Ọ̀rọ̀ ní Swahili</string>
+  <string name="pack_speech_xog_name">Ọ̀rọ̀ ní Lusoga (àdánwò)</string>
+  <string name="speech_language_lg">Luganda</string>
+  <string name="speech_language_nyn">Runyankole</string>
+  <string name="speech_language_ach">Acholi</string>
+  <string name="speech_language_sw">Swahili</string>
+  <string name="speech_language_xog">Lusoga</string>
+  <string name="pack_speech_language_benefit">Ó máa ń rí ohun tí a sọ nínú àwọn ohùn àti fídíò ní %1$s, èyí tí ìwádìí ọ̀rọ̀ Gẹ̀ẹ́sì kò lè kà. Nínú ìdánwò wa, ohùn tó tọ́ wá ní àkọ́kọ́ ní %2$d%%, dípò %3$d%% láìsí rẹ̀.</string>
+  <string name="pack_speech_language_cost">Ó máa ń tún ọ̀rọ̀ tí kì í ṣe Gẹ̀ẹ́sì kà ní ìgbà kejì, nítorí náà àwọn fáìlì wọ̀nyí gba àkókò díẹ̀ sí i, kò sì pé pérépéré: retí àwọn ọ̀rọ̀ díẹ̀ tí kò tọ́. Gẹ̀ẹ́sì ṣì ń kà bíi ti tẹ́lẹ̀. Èdè ọ̀rọ̀ kan ṣoṣo ní ìgbà kan; ó nílò ìrántí afikún nígbà tí ó bá ń ṣiṣẹ́ nìkan.</string>
+</resources>

@@ -28,6 +28,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.craneai.findr.core.IndexedFile
+import kotlinx.coroutines.launch
 import trawl.desktop.privacy.OsAvailability
 import trawl.desktop.privacy.Passphrase
 import trawl.desktop.privacy.PreviewBlur
@@ -184,8 +185,11 @@ fun EnableLockDialog(c: PrivacyController, onDone: (Boolean) -> Unit) {
   var two by remember { mutableStateOf("") }
   var useOs by remember { mutableStateOf(true) }
   var error by remember { mutableStateOf<String?>(null) }
+  var busy by remember { mutableStateOf(false) }
+  val scope = androidx.compose.runtime.rememberCoroutineScope()
 
   fun go() {
+    if (busy) return
     when {
       one != two -> error = t("privacy_pass_mismatch")
       else -> when (Passphrase.problem(one.toCharArray())) {
@@ -193,12 +197,19 @@ fun EnableLockDialog(c: PrivacyController, onDone: (Boolean) -> Unit) {
         Passphrase.Problem.BLANK -> error = t("privacy_pass_blank")
         null -> {
           val chars = one.toCharArray()
-          one = ""; two = ""
-          when (c.enableLock(chars, useOsPrompt = useOs && prompt != null)) {
-            PrivacyController.ChangeResult.OK -> onDone(true)
-            PrivacyController.ChangeResult.NEEDS_PROOF -> error = t("privacy_need_proof")
-            PrivacyController.ChangeResult.WEAK -> error = t("privacy_pass_min", Passphrase.MIN_LENGTH)
-            PrivacyController.ChangeResult.BLANK -> error = t("privacy_pass_blank")
+          val enableOs = useOs && prompt != null
+          one = ""; two = ""; busy = true
+          scope.launch {
+            val res = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+              c.enableLock(chars, useOsPrompt = enableOs)
+            }
+            busy = false
+            when (res) {
+              PrivacyController.ChangeResult.OK -> onDone(true)
+              PrivacyController.ChangeResult.NEEDS_PROOF -> error = t("privacy_need_proof")
+              PrivacyController.ChangeResult.WEAK -> error = t("privacy_pass_min", Passphrase.MIN_LENGTH)
+              PrivacyController.ChangeResult.BLANK -> error = t("privacy_pass_blank")
+            }
           }
         }
       }
@@ -230,8 +241,8 @@ fun EnableLockDialog(c: PrivacyController, onDone: (Boolean) -> Unit) {
         error?.let { Notice(it, bad = true) }
       }
     },
-    confirmButton = { SunButton(onClick = ::go, enabled = one.isNotEmpty()) { Text(t("privacy_lock_enable")) } },
-    dismissButton = { SunTextButton(onClick = { onDone(false) }) { Text(t("auth_cancel")) } },
+    confirmButton = { SunButton(onClick = ::go, enabled = !busy && one.isNotEmpty()) { Text(t("privacy_lock_enable")) } },
+    dismissButton = { SunTextButton(onClick = { if (!busy) onDone(false) }, enabled = !busy) { Text(t("auth_cancel")) } },
   )
 }
 

@@ -70,11 +70,17 @@ class PrivacyStore(private val dir: File) {
 
   fun save(s: PrivacySettings) {
     dir.mkdirs()
+    trawl.desktop.OwnerOnlyPermissions.hardenDir(dir)
     val part = File(dir, "privacy.json.part")
     part.writeText(toJson(s).toString(2))
+    trawl.desktop.OwnerOnlyPermissions.hardenFile(part)
     // Keep the last good file: only a copy that parses becomes the backup.
-    if (file.isFile && parse(file) != null) Files.copy(file.toPath(), backup.toPath(), StandardCopyOption.REPLACE_EXISTING)
+    if (file.isFile && parse(file) != null) {
+      Files.copy(file.toPath(), backup.toPath(), StandardCopyOption.REPLACE_EXISTING)
+      trawl.desktop.OwnerOnlyPermissions.hardenFile(backup)
+    }
     Files.move(part.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING)
+    trawl.desktop.OwnerOnlyPermissions.hardenFile(file)
   }
 
   private fun parse(f: File): PrivacySettings? = try {

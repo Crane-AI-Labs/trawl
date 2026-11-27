@@ -11,6 +11,7 @@ import com.craneai.findr.core.IndexedFile
 import com.craneai.findr.core.KindFilter
 import com.craneai.findr.core.SearchEngine
 import com.craneai.findr.core.SearchHit
+import com.craneai.findr.ui.search.prioritizeSearchResults
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -138,17 +139,18 @@ class QuickSearchViewModel(private val engine: SearchEngine) : ViewModel() {
       // A half-typed word that matches nothing keeps the last list for a moment instead of flashing "nothing found" between
       // keystrokes; the next keystroke cancels this wait.
       if (nothing) delay(DEBOUNCE_MS)
-      mark(results.hits.map { it.file.id }, results.complete, q)
+      val ordered = prioritizeSearchResults(results.hits, results.strongCount, query = q, filter = KindFilter.ALL)
+      mark(ordered.map { it.file.id }, results.complete, q)
       _state.update {
         it.copy(
-          hits = results.hits,
+          hits = ordered,
           searching = !results.complete,
           nothingFound = nothing,
           indexIncomplete = results.indexIncomplete,
           resultsQuery = q,
           notSetUp = nothing && engine.status.value.filesSearchable == 0,
           hiddenCount = results.hiddenCount,
-          showsSensitive = results.hits.any { h -> h.file.sensitive },
+          showsSensitive = ordered.any { h -> h.file.sensitive },
           revealedForNow = engine.sensitiveRevealed.value && !engine.settings.value.showSensitive,
         )
       }
@@ -171,8 +173,8 @@ class QuickSearchViewModel(private val engine: SearchEngine) : ViewModel() {
     /** How long typing must pause before the meaning step starts (words come at once). Shorter than the main screen's 250 ms: the panel exists to be quick. */
     const val DEBOUNCE_MS = 120L
 
-    /** A panel shows a handful, not a library. */
-    const val LIMIT = 30
+    /** Quick search uses a virtualized LazyColumn, so scroll all matching results instead of truncating at 30. */
+    const val LIMIT = 500
     private const val PERF = "FindrPerf"
 
     fun factory(engine: SearchEngine): ViewModelProvider.Factory = viewModelFactory {

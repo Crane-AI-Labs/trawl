@@ -47,4 +47,9 @@
   <string name="models_pack_upgrade_note">Fífi àpò Standard kún un máa mú kí <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> tún ka àwọn fáìlì rẹ pẹ̀lú módẹ́lì tó dára jù. Àtòjọ àwọn fáìlì rẹ wà bẹ́ẹ̀: wíwá nípa orúkọ fáìlì àti rírí àwọn fọ́tò nípa ìwò kíákíá ń ṣiṣẹ́ lọ lásìkò yìí. Àwọn ọ̀rọ̀ inú àwọn ìwé àti àwòrán ojú ìbòjú, àti ìwárí nípa ìtumọ̀, máa padà bí a ṣe ń tún ka fáìlì kọ̀ọ̀kan, ó sì dára jù nígbà tí fóònù bá ń gba iná.</string>
   <string name="models_pack_get_standard">Gba àpò Standard (%1$d MB)</string>
   <string name="models_pack_upgraded">A ti fi àpò Standard sílò. Pa <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> dé, kí o sì tún ṣí i láti bẹ̀rẹ̀ sí í lo ó. Lẹ́yìn náà ó máa tún ka àwọn fáìlì rẹ pẹ̀lú módẹ́lì tó dára jù. Orúkọ fáìlì àti wíwá fọ́tò kíákíá ń ṣiṣẹ́ lọ lásìkò yìí; àwọn ọ̀rọ̀ inú àwọn ìwé àti àwòrán ojú ìbòjú máa padà bí a ṣe ń ka àwọn fáìlì.</string>
+  <string name="models_get_full_bundle">Gba àkójọpọ̀ kíkún (%1$d MB)</string>
+  <string name="models_missing_full_bundle">Igbasilẹ lọtọ fun awọn akopọ wọnyi ko si nibi. Gba àkójọpọ̀ kíkún lati fi wọn kun.</string>
+  <string name="models_missing_packs">Awoṣe wiwa ti wa ni fifi sori ẹrọ. Awọn akopọ ti o padanu: %1$s.</string>
+  <string name="models_refused_installed_safe">Ko le lo faili ti a gba silẹ. Awoṣe wiwa rẹ ti o fi sori ẹrọ ṣi wa ni aaye.</string>
+  <string name="models_search_installed">Awoṣe wiwa ti wa ni fifi sori ẹrọ.</string>
 </resources>

@@ -56,6 +56,7 @@ class LiteRtEmbedder(private val context: Context, override val profile: MemoryP
   private var hasVisionExecutor = true
   /** Text threads the loaded engine was built with (null: LiteRT-LM's default, 4). */
   private var loadedThreads: Int? = null
+  private var loadedAudioThreads: Int? = null
   private val power = context.getSystemService(PowerManager::class.java)
   private var screenOn = true
   private var screenChangedAt = 0L
@@ -122,15 +123,17 @@ class LiteRtEmbedder(private val context: Context, override val profile: MemoryP
    */
   private fun liteCut(text: String): String = if (lite && text.length > LITE_MAX_INPUT_CHARS) text.take(LITE_MAX_INPUT_CHARS) else text
 
-  /** [forIndexing]: the worker's call, which may rebuild the engine for the screen state ([textThreads]); a query never waits for that. */
+  /** [forIndexing]: the worker's call, which may rebuild for screen or thermal thread limits; a query never waits for that. */
   private suspend fun run(needed: Level, inputs: List<InputData>, forIndexing: Boolean): FloatArray = guard.serial {
     // A GPU engine on Adreno is never rebuilt just for the thread count: it could not be closed (EngineGuard), so it would leak.
-    if (forIndexing && guard.current != null && !guard.pinsGpu && loadedThreads != textThreads()) {
+    if (forIndexing && guard.current != null && !guard.pinsGpu &&
+      (loadedThreads != textThreads() || (level == Level.AUDIO && loadedAudioThreads != audioThreads()))) {
       Log.i(TAG, "text threads ${loadedThreads ?: "default"} -> ${textThreads() ?: "default"} (screen ${if (screenOn) "on" else "off"})")
-      guard.discard("text threads changed"); level = null
+      Log.i(TAG, "audio threads ${loadedAudioThreads ?: "idle"} -> ${audioThreads()}")
+      guard.discard("CPU threads changed"); level = null
     }
     val e = ensure(needed)
-    e.computeEmbedding(inputs, if (hasVisionExecutor) OPTIONS else TEXT_OPTIONS).embedding
+    e.computeEmbedding(inputs, if (hasVisionExecutor) OptionsHolder.OPTIONS else OptionsHolder.TEXT_OPTIONS).embedding
   }
 
   /**
@@ -138,6 +141,8 @@ class LiteRtEmbedder(private val context: Context, override val profile: MemoryP
    * off for [SCREEN_OFF_SETTLE_MS] (charging overnight, nobody looking), the default as soon as it is on again. On the
    * A06, 6 threads cut a ~250-token chunk from 1.12 to 0.84 s with bit-identical vectors, but janked our grid while
    * the screen was on, and would take cores from whatever app is in front (the research notes).
+   * The worker's MODERATE-on-charger cap applies in both screen states through [Tuning.current]. A pinned Adreno GPU engine
+   * keeps its loaded thread counts, since rebuilding it just for threads would leak it.
    */
   private fun textThreads(): Int? {
     val on = power?.isInteractive ?: true
@@ -145,6 +150,9 @@ class LiteRtEmbedder(private val context: Context, override val profile: MemoryP
     if (on != screenOn) { screenOn = on; screenChangedAt = now }
     return if (!screenOn && now - screenChangedAt >= SCREEN_OFF_SETTLE_MS) Tuning.current.textThreadsOff else Tuning.current.textThreadsOn
   }
+
+  /** Audio threads are matched to the chip's performance cores (Tuning.audioThreads) rather than spinning all logical cores. */
+  private fun audioThreads(): Int = Tuning.current.audioThreads
 
   /** Loads (or upgrades) the engine to at least `needed`. Called inside [EngineGuard.serial]. */
   private fun ensure(needed: Level): EmbeddingEngine {
@@ -158,6 +166,7 @@ class LiteRtEmbedder(private val context: Context, override val profile: MemoryP
     guard.discard("rebuilding at $needed"); level = null
     val start = System.nanoTime()
     val threads = textThreads()
+    val audioThreads = audioThreads()
     val schedule = ProbeSchedule(probeMemory, context.cacheDir, file, BuildConfig.VERSION_CODE.toLong(), ::lastCrashAtMs)
     val selfTest = EngineSelfTest<EngineHandle<EmbeddingEngine>>(
       probes,
@@ -175,7 +184,7 @@ class LiteRtEmbedder(private val context: Context, override val profile: MemoryP
     val e = try {
       selfTest.loadVerified(
         file.name,
-        { EngineHandle(load(file, needed, threads), gpu = needed >= Level.VISION && visionOnGpu) },   // after load(): it may have fallen back to CPU
+        { EngineHandle(load(file, needed, threads, audioThreads), gpu = needed >= Level.VISION && visionOnGpu) },   // after load(): it may have fallen back to CPU
         { h, text -> probeEmbedding(h.engine, text) },
         guard::dispose,
       )
@@ -190,6 +199,7 @@ class LiteRtEmbedder(private val context: Context, override val profile: MemoryP
     guard.install(e)
     level = needed
     loadedThreads = threads
+    loadedAudioThreads = audioThreads.takeIf { needed == Level.AUDIO }
     readyFlow.value = true
     Log.i(TAG, "loaded ${file.name} at $needed (vision ${if (needed >= Level.VISION && visionOnGpu) "GPU" else "CPU, idle"}) in ${(System.nanoTime() - start) / 1_000_000} ms, self-test ${selfTest.lastProbeMs} ms")   // log-safe: our model file
     return e.engine
@@ -202,20 +212,20 @@ class LiteRtEmbedder(private val context: Context, override val profile: MemoryP
     .maxOfOrNull { it.timestamp } ?: 0L
 
   /** The engine as the model needs it: build, with the GPU-vision fallback. */
-  private fun load(file: File, needed: Level, threads: Int?): EmbeddingEngine = try {
-    build(file, needed, visionOnGpu, threads)
+  private fun load(file: File, needed: Level, threads: Int?, audioThreads: Int): EmbeddingEngine = try {
+    build(file, needed, visionOnGpu, threads, audioThreads)
   } catch (t: Throwable) {
     if (needed < Level.VISION || !visionOnGpu) throw t
     // Some GPUs/drivers can't run the vision encoder: fall back to CPU (slower, but it works).
     Log.w(TAG, "vision on GPU failed, falling back to CPU", t)
     visionOnGpu = false
-    build(file, needed, false, threads)
+    build(file, needed, false, threads, audioThreads)
   }
 
   private fun probeEmbedding(e: EmbeddingEngine, text: String): FloatArray =
-    e.computeEmbedding(listOf(InputData.Text(text)), if (hasVisionExecutor) OPTIONS else TEXT_OPTIONS).embedding
+    e.computeEmbedding(listOf(InputData.Text(text)), if (hasVisionExecutor) OptionsHolder.OPTIONS else OptionsHolder.TEXT_OPTIONS).embedding
 
-  private fun build(file: File, needed: Level, gpuVision: Boolean, textThreads: Int?): EmbeddingEngine {
+  private fun build(file: File, needed: Level, gpuVision: Boolean, textThreads: Int?, audioThreads: Int): EmbeddingEngine {
     // A multimodal model won't start without a vision executor ("Vision executor settings are not configured"), even
     // for text alone: give it the CPU one when only text is needed (unused; the GPU one costs seconds and memory).
     val vision = when {
@@ -224,9 +234,7 @@ class LiteRtEmbedder(private val context: Context, override val profile: MemoryP
       else -> null
     }
     hasVisionExecutor = vision != null
-    // Audio uses every core: 8 threads ran a 10 s window in 2.5 s on the A06, against 3.6 s on the default 4
-    // (the research notes). Text threads: see textThreads() (more only with the screen off).
-    val audio = if (needed >= Level.AUDIO) Backend.CPU(threadCount = Runtime.getRuntime().availableProcessors()) else null
+    val audio = if (needed >= Level.AUDIO) Backend.CPU(threadCount = audioThreads) else null
     return EmbeddingEngine(
       EmbeddingEngineConfig(
         modelPath = file.absolutePath,
@@ -248,12 +256,12 @@ class LiteRtEmbedder(private val context: Context, override val profile: MemoryP
    * loaded instead ([EngineGuard.unload]): the memory is not given back there.
    */
   override suspend fun release() = guard.serial {
-    if (guard.unload("release")) { level = null; loadedThreads = null; readyFlow.value = false }
+    if (guard.unload("release")) { level = null; loadedThreads = null; loadedAudioThreads = null; readyFlow.value = false }
   }
 
   /** The loaded engine is stale (a new model file): gone for good, closed unless that is the Adreno GPU engine, which is set aside unclosed. */
   override suspend fun discard() = guard.serial {
-    guard.discard("model replaced"); level = null; loadedThreads = null
+    guard.discard("model replaced"); level = null; loadedThreads = null; loadedAudioThreads = null
     readyFlow.value = false
   }
 
@@ -268,13 +276,15 @@ class LiteRtEmbedder(private val context: Context, override val profile: MemoryP
       Log.i(TAG, "audio encoder released (the engine reloads at the level the next file needs)")
       level = null
       loadedThreads = null
+      loadedAudioThreads = null
       readyFlow.value = false
     }
   }
 
-  private companion object {
-    private val OPTIONS = EmbeddingOptions(normalize = true, visionTokensPerImage = VISION_TOKENS)
+  /** Initialization-on-demand holder so constructing [LiteRtEmbedder] does not eagerly load `litertlm` classes. */
+  private object OptionsHolder {
+    val OPTIONS = EmbeddingOptions(normalize = true, visionTokensPerImage = VISION_TOKENS)
     /** For an engine built without a vision executor (the text-only bundle, lite profile). */
-    private val TEXT_OPTIONS = EmbeddingOptions(normalize = true)
+    val TEXT_OPTIONS = EmbeddingOptions(normalize = true)
   }
 }

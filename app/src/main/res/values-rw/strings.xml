@@ -298,6 +298,8 @@
   <string name="settings_about_model">Gushakisha bikorwa na EmbeddingGemma 2 ya Google (Apache 2.0), byose bikabera kuri iyi telefone.</string>
   <string name="settings_about_private"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> nta burenganzira bwa interineti ifite. Amafayiro yawe n\'ibyo iyigaho ntibigera biva kuri iyi telefone.</string>
   <string name="settings_about_maker">Yakozwe na Crane AI Labs.</string>
+  <string name="settings_check_updates">Reba ibigezweho</string>
+  <string name="settings_check_updates_hint">Bifungura urupapuro rwo gukuramo muri mushakisha yawe.</string>
   <string name="settings_licences">Impushya n\'ishimwe</string>
   <string name="licences_title">Impushya n\'ishimwe</string>
   <string name="licences_intro"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yubakiye ku mirimo ikurikira. Ubu butumwa busabwa n\'impushya, kandi ni n\'uburyo bwo gushimira.</string>
@@ -471,4 +473,7 @@
     <item quantity="one">Fayiro %1$d ntiyashoboye gusomwa (yangiritse, cyangwa ni ubwoko telefone idashobora gufungura). Iracyaboneka ku izina.</item>
     <item quantity="other">Amafayiro %1$d ntiyashoboye gusomwa (yangiritse, cyangwa ni ubwoko telefone idashobora gufungura). Aracyaboneka ku mazina yayo.</item>
   </plurals>
+  <string name="addons_download_browser">Kuramo muri mushakisha</string>
+  <string name="addons_download_return_hint">Dosiye nirangira gukurwamo muri Downloads, garuka hano ukande Shyiramo.</string>
+  <string name="addons_no_browser">Nta mushakisha wabonetse wo gufungura ihuza ryo gukuramo.</string>
 </resources>

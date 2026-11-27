@@ -2,7 +2,7 @@ package trawl.desktop.shell
 
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.onNodeWithContentDescription
-import androidx.compose.ui.test.runComposeUiTest
+import trawl.desktop.runComposeUiTest
 import com.craneai.findr.core.FileKind
 import com.craneai.findr.core.IndexedFile
 import java.util.Locale

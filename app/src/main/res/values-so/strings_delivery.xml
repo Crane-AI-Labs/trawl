@@ -47,4 +47,9 @@
   <string name="models_pack_upgrade_note">Ku darista xirmada Standard waxay <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ka dhigaysaa inuu mar kale akhriyo faylashaada isagoo isticmaalaya moodalka ka fiican. Liiskaaga faylashu wuu ahaanayaa: raadinta magaca faylka iyo helista sawirrada jaleeco degdeg ah way sii shaqaynayaan. Erayada dukumentiyada iyo sawirrada shaashadda ku jira, iyo raadinta macnaha, way soo noqonayaan markii fayl kasta mar kale la akhriyo, inta ugu fiican marka taleefanku dallacayo.</string>
   <string name="models_pack_get_standard">Hel xirmada Standard (%1$d MB)</string>
   <string name="models_pack_upgraded">Xirmada Standard waa la rakibay. Xir <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> oo mar kale fur si aad u bilowdo isticmaalkeeda. Kadib wuxuu mar kale akhriyaa faylashaada moodalka ka fiican. Magacyada faylasha iyo raadinta degdegga ah ee sawirrada way sii shaqaynayaan; erayada dukumentiyada iyo sawirrada shaashadda ku jira way soo noqonayaan marka faylasha la akhriyo.</string>
+  <string name="models_get_full_bundle">Hel xirmada buuxda (%1$d MB)</string>
+  <string name="models_missing_full_bundle">Soo degis gooni ah oo xirmooyinkan ah halkan kama jirto. Hel xirmada buuxda si aad ugu darto.</string>
+  <string name="models_missing_packs">Qaabka raadinta waa la rakibay. Xirmooyinka maqan: %1$s.</string>
+  <string name="models_refused_installed_safe">Faylka la soo dejiyay lama isticmaali karin. Qaabkaaga raadinta ee rakiban weli wuu joogaa.</string>
+  <string name="models_search_installed">Qaabka raadinta waa la rakibay.</string>
 </resources>

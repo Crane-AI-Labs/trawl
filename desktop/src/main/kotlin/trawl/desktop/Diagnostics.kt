@@ -6,9 +6,11 @@ import com.craneai.findr.ui.common.formatBytes
 /** Facts about the app itself that the About section and the problem report print. */
 object AppInfo {
   /** Kept in step with `packageVersion` in desktop/build.gradle.kts (a test compares them). */
-  const val VERSION = "1.0.3"
+  const val VERSION = "1.1.0"
   const val MAKER = "Crane AI Labs"
   const val MODEL = "EmbeddingGemma 2"
+  /** Manual updates page opened in the user's external browser on click (Trawl itself opens zero network sockets, D43). */
+  const val UPDATES_URL = "https://trawlsearch.com/"
 }
 
 /**

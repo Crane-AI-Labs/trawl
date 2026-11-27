@@ -71,9 +71,12 @@ class DateIndexTest {
     assertEquals("stamped_2099.jpg", store.recent(all, 10, nowMs = now + 73L * 366 * day).first().name)
   }
 
-  @Test fun browsingUsesTheCaptureDateForOrderAndRange() {
+  @Test fun browsingDistinguishesModifiedDateAndCreatedCaptureDate() {
     store.upsertFromCrawl(listOf(record(1, "scanned.jpg", t0 + 500 * day, taken = t0), record(2, "fresh.jpg", t0 + 10 * day)))
-    assertEquals(listOf("fresh.jpg", "scanned.jpg"), store.recent(FileKind.entries.toSet(), 10).map { it.name })
+    assertEquals(listOf("scanned.jpg", "fresh.jpg"), store.recent(FileKind.entries.toSet(), 10, order = SortOrder.NEWEST).map { it.name })
+    assertEquals(listOf("fresh.jpg", "scanned.jpg"), store.recent(FileKind.entries.toSet(), 10, order = SortOrder.OLDEST).map { it.name })
+    assertEquals(listOf("fresh.jpg", "scanned.jpg"), store.recent(FileKind.entries.toSet(), 10, order = SortOrder.CREATED_NEWEST).map { it.name })
+    assertEquals(listOf("scanned.jpg", "fresh.jpg"), store.recent(FileKind.entries.toSet(), 10, order = SortOrder.CREATED_OLDEST).map { it.name })
     assertEquals(listOf("scanned.jpg"), store.recent(FileKind.entries.toSet(), 10, dates = DateRange(t0, t0 + day)).map { it.name })
   }
 
@@ -86,7 +89,7 @@ class DateIndexTest {
 
   @Test fun migrationFillsTheDateFromTheModifiedTimeAndForcesAResync() {
     // exercised end to end by SchemaMigrationTest (every older layout upgrades to the current one); here the data effect
-    val migration = Schema.MIGRATIONS.single { step -> step.any { "date_ms" in it } }.joinToString(";")
+    val migration = Schema.MIGRATIONS.single { step -> step.any { "ADD COLUMN date_ms" in it } }.joinToString(";")
     assertTrue(migration.contains("UPDATE files SET date_ms = mtime"))
     assertTrue(migration.contains("ms_generation"))
   }

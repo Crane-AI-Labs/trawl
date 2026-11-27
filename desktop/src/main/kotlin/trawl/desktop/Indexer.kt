@@ -1,6 +1,8 @@
 package trawl.desktop
 
 import com.craneai.findr.core.FileKind
+import com.craneai.findr.core.OcrLine
+import com.craneai.findr.core.OnScreenText
 import com.craneai.findr.engine.Chunker
 import com.craneai.findr.index.CrawlRecord
 import com.craneai.findr.index.FileState
@@ -26,7 +28,7 @@ class Stats {
  * The crawl, the readers and the writes of the desktop prototype. The index (IndexStore), the segment layout and the file
  * rules (Rules.classify) are the Android app's own classes, compiled from the same source.
  */
-class Indexer(private val store: IndexStore, private val vectors: VectorIndex, private val embedder: DesktopEmbedder, private val ocr: Ocr?) {
+class Indexer(private val store: IndexStore, private val vectors: VectorIndex, private val embedder: IndexEmbedder, private val ocr: Ocr?) {
   val stats = Stats()
   private val volume = "desktop"
 
@@ -93,11 +95,13 @@ class Indexer(private val store: IndexStore, private val vectors: VectorIndex, p
           chunks = read.chunks.flatMapIndexed { page, cs -> cs.map { (page + 1L) to it } }
           pageCount = read.chunks.size.takeIf { read.pdf }
         }
+        val cap = meaningChunkCap(f.name)
         var n = 0
-        val segs = ArrayList<Segment>()
+        val segs = ArrayList<Segment>(chunks.size)
         for ((page, c) in chunks) {
-          val vec = embedder.document(c)
-          segs += Segment(SegmentKind.CHUNK, Modality.TEXT, page, page, c, vec, late = n >= CHUNKS_PER_STEP)
+          // Cap meaning vectors per document while storing every chunk's text in SQLite FTS5 so 100% of words remain searchable.
+          val vec = if (n < cap) embedder.document(c) else null
+          segs += Segment(SegmentKind.CHUNK, if (vec != null) Modality.TEXT else Modality.NONE, page, page, c, vec, late = n >= CHUNKS_PER_STEP)
           n++
         }
         save(id, f.kind, segs, pageCount)
@@ -112,11 +116,22 @@ class Indexer(private val store: IndexStore, private val vectors: VectorIndex, p
         // OCR reads the picture beside the embed, as on the phone (the GPU embed leaves the CPU free).
         var words: String? = null
         // The words are in the index already (the words pass read them): no second OCR, the stored words stay.
-        val ocrThread = ocr?.takeIf { !wordsDone }?.let { o -> Thread { val to = System.nanoTime(); words = readable(o.read(file)); stats.ocrNs += System.nanoTime() - to }.also { it.start() } }
-        val te = System.nanoTime()
-        val vec = embedder.image(jpeg)
-        stats.embedNs += System.nanoTime() - te
-        ocrThread?.join()
+        val ocrThread = ocr?.takeIf { !wordsDone }?.let { o ->
+          Thread {
+            runCatching {
+              LowPriority.applyToThisThread()
+              val to = System.nanoTime()
+              words = readable(o.readLines(file))
+              stats.ocrNs += System.nanoTime() - to
+            }
+          }.also { it.start() }
+        }
+        val vec = try {
+          val te = System.nanoTime()
+          embedder.image(jpeg).also { stats.embedNs += System.nanoTime() - te }
+        } finally {
+          ocrThread?.join()
+        }
         val segs = listOfNotNull(words?.let { Segment(SegmentKind.OCR, Modality.NONE, text = it) }) + Segment(SegmentKind.IMAGE, Modality.IMAGE, vector = vec)
         save(id, f.kind, segs, null, replace = !wordsDone)
         stats.images++; stats.imageNs += System.nanoTime() - t
@@ -133,10 +148,12 @@ class Indexer(private val store: IndexStore, private val vectors: VectorIndex, p
    */
   private fun textOnlyPicture(f: Found, id: Long, file: File, wordsDone: Boolean) {
     val t = System.nanoTime()
-    val words = if (wordsDone) storedWords(id) else ocr?.let { o -> val to = System.nanoTime(); readable(o.read(file)).also { stats.ocrNs += System.nanoTime() - to } }
+    val words = if (wordsDone) storedWords(id)?.let { OnScreenText.Kept(it, OnScreenText.legacy(it) != null) }
+      else ocr?.let { o -> val to = System.nanoTime(); OnScreenText.keep(o.readLines(file)).also { stats.ocrNs += System.nanoTime() - to } }
     val te = System.nanoTime()
-    val segs = words?.let { w ->
-      Chunker.chunks(w).take(MAX_READ_CHUNKS).mapIndexed { i, c -> Segment(SegmentKind.OCR, Modality.OCR_TEXT, text = w.takeIf { i == 0 }, vector = embedder.document(c)) }
+    val segs = words?.let { kept ->
+      if (!kept.long) listOf(Segment(SegmentKind.OCR, Modality.NONE, text = kept.text))
+      else Chunker.chunks(kept.text).take(MAX_READ_CHUNKS).mapIndexed { i, chunk -> Segment(SegmentKind.OCR, Modality.OCR_TEXT, text = kept.text.takeIf { i == 0 }, vector = embedder.document(chunk)) }
     }.orEmpty()
     stats.embedNs += System.nanoTime() - te
     save(id, f.kind, segs, null)
@@ -154,13 +171,21 @@ class Indexer(private val store: IndexStore, private val vectors: VectorIndex, p
     segs.forEachIndexed { i, s -> s.vector?.let { vectors.add(ids[i], id, kind, s.modality, s.late, it) } }
   }
 
-  private fun readable(s: String): String? = Companion.readable(s)
-
   companion object {
-    /** Text worth keeping from a picture: stray marks and a few letters are noise, not words. */
-    fun readable(s: String): String? = s.trim().takeIf { t -> t.count { it.isLetter() } >= 10 }
+    /** The same long readings and confident short plain words as on Android. */
+    fun readable(lines: List<OcrLine>): String? = OnScreenText.keep(lines)?.text
 
     const val CHUNKS_PER_STEP = 40
+    /** High safety ceiling on meaning-embedded chunks for prose, code & data-bearing exports (PDF/DOCX/MD/JSON/CSV). All chunks go to FTS5. */
+    const val DOC_MAX_CHUNKS = 500
+    /** Maximum chunks embedded for meaning per non-prose log/vector-graphics file (.log, .svg). 100% of every line still goes to FTS5. */
+    const val MACHINE_DATA_MAX_CHUNKS = 8
+    val MACHINE_DATA_EXT = setOf("log", "svg", "svgz")
+
+    /** Maximum number of chunks to embed for meaning for a file named [name]; chunks beyond this keep full FTS5 text with `vector = null`. */
+    fun meaningChunkCap(name: String): Int =
+      if (name.substringAfterLast('.', "").lowercase() in MACHINE_DATA_EXT) MACHINE_DATA_MAX_CHUNKS else DOC_MAX_CHUNKS
+
     /** How many ~400-character pieces of a picture's words get a vector on the text-only model (the phone's lite profile reads four). */
     const val MAX_READ_CHUNKS = 4
     val TEXT_EXT = setOf("txt", "text", "md", "markdown", "csv", "tsv")

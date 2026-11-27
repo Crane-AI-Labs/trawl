@@ -52,6 +52,8 @@ class EnginePackManager(
 
   override fun howToAdd(id: String): PackCopy? = PackCatalog.byId(id)?.let(source::howToAdd)
 
+  override fun downloadUrl(id: String): String? = PackCatalog.byId(id)?.let(source::downloadUrl)
+
   /** Re-reads the disk. Cheap (a few `stat`s); the engine calls it with every meter refresh. */
   fun refresh() {
     _states.update { cur ->
@@ -99,7 +101,15 @@ class EnginePackManager(
   private suspend fun run(def: PackDef, files: PackFiles): PackState {
     val installer = AsrModelInstaller(File(modelsDir, files.dir), files.manifest)
     if (installer.complete()) return PackState.Installed(installer.installedBytes())
-    val found = source.open(files)
+    modelsDir.mkdirs()
+    val missingBytes = installer.missing().sumOf { it.size }
+    val usableBytes = modelsDir.usableSpace
+    if (usableBytes > 0L && missingBytes > 0L && usableBytes < missingBytes + FREE_SPACE_MARGIN_BYTES) {
+      val detail = "not enough free space (${usableBytes / 1_000_000} MB free, need ${(missingBytes + FREE_SPACE_MARGIN_BYTES) / 1_000_000} MB)"
+      log("${def.id}: not installed: $detail")
+      return PackState.Failed(PackProblem.BAD_FILES, detail)
+    }
+    val found = source.open(files) { done, total -> set(def.id, PackState.Installing(done, total)) }
     when (found) {
       is PackSourceResult.NeedsFileAccess -> return PackState.Failed(PackProblem.NEEDS_FILE_ACCESS)
       is PackSourceResult.NotFound -> return PackState.Failed(PackProblem.NOT_FOUND)
@@ -115,7 +125,10 @@ class EnginePackManager(
       for (candidate in found.sources) {
         try {
           when (val r = installer.install(candidate) { done, total -> set(def.id, PackState.Installing(done, total)) }) {
-            is AsrModelInstaller.Outcome.Ready -> return PackState.Installed(installer.installedBytes())
+            is AsrModelInstaller.Outcome.Ready -> {
+              source.onInstalled(files)
+              return PackState.Installed(installer.installedBytes())
+            }
             is AsrModelInstaller.Outcome.Incomplete -> problems += r.problems
           }
         } catch (t: Throwable) {
@@ -129,6 +142,10 @@ class EnginePackManager(
     return PackState.Failed(PackProblem.BAD_FILES, problems.firstOrNull())
   }
 
+  private companion object {
+    const val FREE_SPACE_MARGIN_BYTES = 16L * 1024L * 1024L
+  }
+
   override fun remove(id: String) {
     val def = PackCatalog.byId(id) ?: return
     val files = registry(id) ?: return
@@ -138,6 +155,7 @@ class EnginePackManager(
       PackLocks.of(id).withLock {
         host.releaseForRemoval(def)
         val freed = File(modelsDir, files.dir).let { dir -> dir.walkTopDown().filter { it.isFile }.sumOf { it.length() }.also { dir.deleteRecursively() } }
+        source.onRemoved(files)
         host.setEnabled(def, false)
         set(id, disk(def))
         log("${def.id}: removed, freed ${freed / 1_000_000} MB")

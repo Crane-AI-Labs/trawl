@@ -5,6 +5,14 @@
   <string name="sort_oldest">Atijọ́ jù</string>
   <string name="sort_largest">Tó tóbi jù</string>
   <string name="sort_name">Orúkọ láti A sí Z</string>
+  <string name="sort_chip_best">Ìbámu</string>
+  <string name="sort_chip_newest">Titun</string>
+  <string name="sort_chip_oldest">Atijọ́</string>
+  <string name="sort_chip_created_newest">Ìdásílẹ̀</string>
+  <string name="sort_chip_created_oldest">Ìdásílẹ̀</string>
+  <string name="sort_chip_largest">Tóbi jù</string>
+  <string name="sort_chip_smallest">Kéré jù</string>
+  <string name="sort_chip_name">Orúkọ</string>
   <string name="sort_group">Tò nípa</string>
   <string name="date_any_time">Nígbàkigbà</string>
   <string name="date_group">Ọjọ́</string>
@@ -76,4 +84,20 @@
   <string name="snack_marked_sensitive_many">A ti sàmì sí wọn pé wọ́n ṣe kókó. Wọ́n ti fipamọ́ kúrò nínú àwọn àbájáde báyìí.</string>
   <string name="snack_unmarked_sensitive_many">A ti yọ àmì náà kúrò lára wọn. Wọ́n lè tún hàn nínú àwọn àbájáde.</string>
   <string name="nothing_in_dates">A kò rí ohunkóhun ní %1$s. Gbìyànjú ọjọ́ mìíràn.</string>
+  <string name="sort_created_newest">Ọjọ ti a ṣẹda (tuntun)</string>
+  <string name="sort_created_oldest">Ọjọ ti a ṣẹda (atijọ)</string>
+  <string name="sort_smallest">Kékeré jùlọ</string>
+  <string name="subtype_group">Iru faili</string>
+  <string name="subtype_all">Gbogbo iru</string>
+  <string name="subtype_remove">Yọ àlẹ̀mọ́ iru faili kuro</string>
+  <string name="subtype_spreadsheet_menu">Excel ati CSV (.xlsx, .csv)</string>
+  <string name="subtype_text_menu">Ọrọ ati Markdown (.txt, .md)</string>
+  <string name="subtype_text_chip">Ọrọ / MD</string>
+  <string name="subtype_code_menu">Koodu ati data (.json, .xml, …)</string>
+  <string name="subtype_code_chip">Koodu / Data</string>
+  <string name="view_mode_group">Ipo wiwo</string>
+  <string name="view_grid">Àwọ̀n</string>
+  <string name="view_list">Àtòjọ</string>
+  <string name="label_modified_short">Àtúnṣe %1$s</string>
+  <string name="label_created_short">Ṣẹ̀dá %1$s</string>
 </resources>

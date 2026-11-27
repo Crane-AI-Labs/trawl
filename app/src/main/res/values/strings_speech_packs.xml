@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- The opt-in speech add-on: one pack per language, a second speech model that reads again the speech the English one cannot. -->
+  <string name="pack_speech_lg_name">Speech in Luganda</string>
+  <string name="pack_speech_nyn_name">Speech in Runyankole</string>
+  <string name="pack_speech_ach_name">Speech in Acholi</string>
+  <string name="pack_speech_sw_name">Speech in Swahili</string>
+  <!-- Lusoga is a beta: its pack finds fewer voice notes than the others. -->
+  <string name="pack_speech_xog_name">Speech in Lusoga (beta)</string>
+  <string name="speech_language_lg">Luganda</string>
+  <string name="speech_language_nyn">Runyankole</string>
+  <string name="speech_language_ach">Acholi</string>
+  <string name="speech_language_sw">Swahili</string>
+  <string name="speech_language_xog">Lusoga</string>
+  <!-- %1$s: the language (speech_language_*). %2$d: share of test voice notes found first with the pack, %3$d: without it (percent). -->
+  <string name="pack_speech_language_benefit">Finds what was said in %1$s voice notes and videos, which the English speech search cannot read. In our tests the right voice note came first %2$d%% of the time, against %3$d%% without it.</string>
+  <string name="pack_speech_language_cost">Reads speech that is not English a second time, so those files take longer to read, and it is not perfect: expect some wrong words. English speech is read exactly as before. One speech language at a time; it needs extra memory only while it works.</string>
+</resources>

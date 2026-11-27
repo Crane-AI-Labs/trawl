@@ -173,8 +173,14 @@ class SpokenWord(val text: String, val startMs: Long, val endMs: Long)
  * One stretch of speech: when it starts and ends in the file, and what was said. [words] says when each word of [text] was said,
  * for recognisers that report it (Parakeet); empty for the rest (Moonshine), which keep the one time for the whole stretch.
  * When present, the words' texts joined by single spaces are [text] exactly ([com.craneai.findr.engine.TranscriptPieces.speech] checks).
- */
-class SpeechSegment(val startMs: Long, val endMs: Long, val text: String, val words: List<SpokenWord> = emptyList())
+ * [sung]: read from a stretch the sound labeller called singing ([SungReader]); the language gate judges sung and spoken words apart.
+ * [local]: what a speech pack's model made of the same stretch, when it was asked to read it again (the opt-in speech add-on:
+ * engine/LocalSpeech.kt). Same times as this segment; null when it was not asked. [text] stays what the first recogniser heard, so the
+ * language gate still judges the window the way it always did. */
+class SpeechSegment(
+  val startMs: Long, val endMs: Long, val text: String, val words: List<SpokenWord> = emptyList(), val sung: Boolean = false,
+  val local: SpeechSegment? = null,
+)
 
 /** What a soundtrack is made of, in words: the speech, and the AudioSet sound labels heard in each window. */
 class SoundTags(val startMs: Long, val endMs: Long, val labels: List<String>)

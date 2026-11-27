@@ -55,4 +55,30 @@ object Scope {
     val roots = paths(chosen)
     return skipped.filter { s -> SafePath.of(s)?.let { p -> roots.any { p.startsWith(it) && p != it } } == true }
   }
+
+  /** True when [path] is one of the individually excluded files ("Remove from index"). */
+  fun isSkippedFile(path: Path, skippedFiles: Set<Path>): Boolean =
+    skippedFiles.isNotEmpty() && path.toAbsolutePath().normalize() in skippedFiles
+
+  /** [existing] with [add] added (normalized and deduplicated). */
+  fun withSkippedFile(existing: List<String>, add: String): List<String> {
+    val a = SafePath.of(add) ?: return existing
+    val kept = paths(existing)
+    if (kept.any { it == a }) return kept.map { it.toString() }
+    return (kept + listOf(a)).map { it.toString() }
+  }
+
+  /** Excluded files that still lie inside one of the chosen folders. */
+  fun pruneSkippedFiles(skippedFiles: List<String>, chosen: List<String>): List<String> {
+    val roots = paths(chosen)
+    return skippedFiles.filter { s -> SafePath.of(s)?.let { p -> roots.any { p.startsWith(it) } } == true }
+  }
+
+  /** [existing] with [add] normalized and deduplicated, preserving order. */
+  fun withAddedFiles(existing: List<String>, add: List<String>): List<String> {
+    val out = LinkedHashSet<Path>()
+    for (s in existing) SafePath.of(s)?.let(out::add)
+    for (s in add) SafePath.of(s)?.let(out::add)
+    return out.map { it.toString() }
+  }
 }

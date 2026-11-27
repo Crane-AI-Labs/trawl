@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="player_play">Zannya</string>
+  <string name="player_pause">Yimirizaako</string>
+  <string name="player_rewind_10">Dda mabega sikonda 10</string>
+  <string name="player_forward_10">Genda mu maaso sikonda 10</string>
+  <string name="player_jump_match">Buukira ku %1$s</string>
+  <string name="player_open_external">Ggulawo mu app</string>
+  <string name="player_error">Fayiro eno tekozeseza kuzannyibwa wano.</string>
+  <string name="player_loading">Etikka okuzannya…</string>
+  <string name="player_seek_position">Ekifo ky\'okuzannya</string>
+  <string name="action_preview">Kebera</string>
+  <string name="action_show_preview">Laga ekikebero</string>
+  <string name="preview_loading">Etikka ekikebero…</string>
+  <string name="preview_unavailable">Ekikebero tekiriiko ku fayiro eno.</string>
+  <string name="preview_empty">Fayiro eno njereere.</string>
+  <string name="preview_truncated">Elaga ennyiriri %1$d ezisooka</string>
+  <string name="preview_bytes_truncated">Elaga ekitundu ekisooka ekya fayiro eno</string>
+  <string name="preview_rows_cols">Ennyiriri %1$d · emigongo %2$d</string>
+</resources>

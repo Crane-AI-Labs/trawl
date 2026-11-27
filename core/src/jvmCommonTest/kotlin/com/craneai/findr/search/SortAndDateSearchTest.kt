@@ -79,7 +79,11 @@ class SortAndDateSearchTest {
     assertEquals(listOf("report b.txt", "Report a.txt", "report d.txt", "report c.txt", "report e.txt"), names(search("report", ResultView(SortOrder.NEWEST))))
     assertEquals(listOf("report e.txt", "report c.txt", "report d.txt", "Report a.txt", "report b.txt"), names(search("report", ResultView(SortOrder.OLDEST))))
     assertEquals(listOf("report e.txt", "report d.txt", "report c.txt", "report b.txt", "Report a.txt"), names(search("report", ResultView(SortOrder.LARGEST))))
+    assertEquals(listOf("Report a.txt", "report b.txt", "report c.txt", "report d.txt", "report e.txt"), names(search("report", ResultView(SortOrder.SMALLEST))))
     assertEquals(listOf("Report a.txt", "report b.txt", "report c.txt", "report d.txt", "report e.txt"), names(search("report", ResultView(SortOrder.NAME))))
+    // SQL IndexStore.recent() matches in-memory Sorting.fileOrder() for Largest & Smallest
+    assertEquals(listOf("report e.txt", "report d.txt", "report c.txt", "report b.txt", "Report a.txt"), store.recent(KindFilter.ALL.kinds, 10, order = SortOrder.LARGEST).map { it.name })
+    assertEquals(listOf("Report a.txt", "report b.txt", "report c.txt", "report d.txt", "report e.txt"), store.recent(KindFilter.ALL.kinds, 10, order = SortOrder.SMALLEST).map { it.name })
   }
 
   @Test fun bestMatchIsTheOrderItAlwaysWas() {
@@ -162,5 +166,20 @@ class SortAndDateSearchTest {
     assertTrue(search("holiday", ResultView(dates = DateRange(t0 + 300 * day, t0 + 301 * day))).hits.isEmpty())
     assertEquals(taken, search("holiday", ResultView()).hits[0].file.dateMillis)
     assertEquals(t0 + 300 * day, search("holiday", ResultView()).hits[0].file.modifiedMillis)
+  }
+
+  @Test fun searchSortsModifiedAndCreatedIndependently() {
+    val id1 = nextId++
+    val id2 = nextId++
+    store.upsertFromCrawl(
+      listOf(
+        CrawlRecord("external_primary", id1, "content://x/$id1", "Docs/", "budget old_created_recently_edited.txt", FileKind.DOCUMENT, null, 100, modifiedMillis = t0 + 100 * day, dateMillis = t0 + 1 * day),
+        CrawlRecord("external_primary", id2, "content://x/$id2", "Docs/", "budget newly_created.txt", FileKind.DOCUMENT, null, 100, modifiedMillis = t0 + 20 * day, dateMillis = t0 + 20 * day),
+      ),
+    )
+    assertEquals(listOf("budget old_created_recently_edited.txt", "budget newly_created.txt"), names(search("budget", ResultView(SortOrder.NEWEST))))
+    assertEquals(listOf("budget newly_created.txt", "budget old_created_recently_edited.txt"), names(search("budget", ResultView(SortOrder.OLDEST))))
+    assertEquals(listOf("budget newly_created.txt", "budget old_created_recently_edited.txt"), names(search("budget", ResultView(SortOrder.CREATED_NEWEST))))
+    assertEquals(listOf("budget old_created_recently_edited.txt", "budget newly_created.txt"), names(search("budget", ResultView(SortOrder.CREATED_OLDEST))))
   }
 }

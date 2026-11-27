@@ -61,7 +61,7 @@ class VisionBenchActivity : Activity() {
     scope.launch {
       val out = File(filesDir, "results/$tag.json").apply { parentFile!!.mkdirs() }
       // Same as BenchActivity: the app's own indexer would compete for the CPU and the GPU, so pause it for the run.
-      val engine = (application as? com.craneai.findr.FindrApp)?.engine as? com.craneai.findr.engine.FindrEngine
+      val engine = (application as? com.craneai.findr.FindrApp)?.awaitEngine() as? com.craneai.findr.engine.FindrEngine
       val pausedHere = engine != null && !engine.paused
       if (pausedHere) {
         engine!!.pauseIndexing()

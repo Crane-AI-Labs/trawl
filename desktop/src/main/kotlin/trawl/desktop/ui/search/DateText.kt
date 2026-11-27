@@ -67,11 +67,18 @@ fun SortOrder.text(): String = when (this) {
   SortOrder.BEST -> t("sort_best")
   SortOrder.NEWEST -> t("sort_newest")
   SortOrder.OLDEST -> t("sort_oldest")
+  SortOrder.CREATED_NEWEST -> t("sort_created_newest")
+  SortOrder.CREATED_OLDEST -> t("sort_created_oldest")
   SortOrder.LARGEST -> t("sort_largest")
+  SortOrder.SMALLEST -> t("sort_smallest")
   SortOrder.NAME -> t("sort_name")
 }
 
 /** The sorts the menu offers: Best match only where there is something to be best for (a search, or Find similar). */
 fun sortChoices(searching: Boolean): List<SortOrder> =
-  if (searching) listOf(SortOrder.BEST, SortOrder.NEWEST, SortOrder.OLDEST, SortOrder.LARGEST, SortOrder.NAME)
-  else listOf(SortOrder.NEWEST, SortOrder.OLDEST, SortOrder.LARGEST, SortOrder.NAME)
+  if (searching) listOf(
+    SortOrder.BEST, SortOrder.NEWEST, SortOrder.OLDEST, SortOrder.CREATED_NEWEST, SortOrder.CREATED_OLDEST, SortOrder.LARGEST, SortOrder.SMALLEST, SortOrder.NAME,
+  )
+  else listOf(
+    SortOrder.NEWEST, SortOrder.OLDEST, SortOrder.CREATED_NEWEST, SortOrder.CREATED_OLDEST, SortOrder.LARGEST, SortOrder.SMALLEST, SortOrder.NAME,
+  )

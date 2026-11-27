@@ -5,6 +5,14 @@
   <string name="sort_oldest">Mafi tsoho</string>
   <string name="sort_largest">Mafi girma</string>
   <string name="sort_name">Suna daga A zuwa Z</string>
+  <string name="sort_chip_best">Dacewa</string>
+  <string name="sort_chip_newest">Sabo</string>
+  <string name="sort_chip_oldest">Tsoho</string>
+  <string name="sort_chip_created_newest">Ƙirƙira</string>
+  <string name="sort_chip_created_oldest">Ƙirƙira</string>
+  <string name="sort_chip_largest">Girma</string>
+  <string name="sort_chip_smallest">Ƙanana</string>
+  <string name="sort_chip_name">Suna</string>
   <string name="sort_group">Jera bisa</string>
   <string name="date_any_time">Kowane lokaci</string>
   <string name="date_group">Kwanan wata</string>
@@ -85,4 +93,20 @@
   <string name="snack_marked_sensitive_many">An yi musu alamar sirri. Yanzu an ɓoye su daga sakamako.</string>
   <string name="snack_unmarked_sensitive_many">An cire alamar. Za su iya sake bayyana a sakamako.</string>
   <string name="nothing_in_dates">Ba a sami komai a %1$s ba. Gwada wani kwanan wata.</string>
+  <string name="sort_created_newest">Ranar kirkirowa (mafi sabo)</string>
+  <string name="sort_created_oldest">Ranar kirkirowa (mafi tsufa)</string>
+  <string name="sort_smallest">Mafi kankanta</string>
+  <string name="subtype_group">Nau\'in fayil</string>
+  <string name="subtype_all">Duk nau\'o\'i</string>
+  <string name="subtype_remove">Cire tace nau\'in fayil</string>
+  <string name="subtype_spreadsheet_menu">Excel da CSV (.xlsx, .csv)</string>
+  <string name="subtype_text_menu">Rubutu da Markdown (.txt, .md)</string>
+  <string name="subtype_text_chip">Rubutu / MD</string>
+  <string name="subtype_code_menu">Lamba da bayanai (.json, .xml, …)</string>
+  <string name="subtype_code_chip">Lamba / Bayanai</string>
+  <string name="view_mode_group">Yanayin kallo</string>
+  <string name="view_grid">Gidaje</string>
+  <string name="view_list">Jeri</string>
+  <string name="label_modified_short">Gyara %1$s</string>
+  <string name="label_created_short">Kirkiro %1$s</string>
 </resources>

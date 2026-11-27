@@ -29,10 +29,13 @@ import java.io.File
 import java.time.LocalDate
 import java.net.URI
 import java.nio.file.Paths
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
@@ -101,6 +104,19 @@ data class ViewUi(
   val browse: Boolean = true,
 )
 
+/**
+ * Snapshot captured right before entering "Find similar" so clearing the chip or pressing Backspace
+ * restores the exact prior query, filter, subtype, selected file, and list scroll position.
+ */
+data class SimilarReturnState(
+  val query: String,
+  val filter: KindFilter,
+  val subType: FileSubType?,
+  val selectedId: Long?,
+  val scrollIndex: Int,
+  val scrollOffset: Int,
+)
+
 /** What Trawl keeps on disk and how many files of each kind it knows, for Settings. */
 data class StorageUi(
   val indexBytes: Long = 0,
@@ -147,6 +163,7 @@ class AppController(
   private val userFolders: Platform.UserFolders = Platform.userFolders(),
   logSink: (String) -> Unit = { System.err.println("[trawl] $it") },
   private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
+  shredFile: (File) -> Long = com.craneai.findr.search.VectorFile::shred,
 ) : AutoCloseable {
   /** Every line the app writes about itself goes through here: made safe (no names, no paths), kept in logs/trawl.log, passed to [logSink]. */
   val appLog = AppLog(File(dataDir, "logs"), sink = logSink)
@@ -167,6 +184,10 @@ class AppController(
    */
   val privacy = PrivacyController(PrivacyStore(dataDir), OsUnlocks.choose(dataDir))
   @Volatile private var privacyIndex: PrivacyIndex? = null
+  @Volatile private var privacyStore: IndexStore? = null
+  private val indexAccess = IndexAccess()
+  private val _forgetting = MutableStateFlow(false)
+  val forgetting: StateFlow<Boolean> = _forgetting.asStateFlow()
   private val passRunning = AtomicBoolean(false)
   @Volatile private var passStop = false
   @Volatile private var passThread: Thread? = null
@@ -195,9 +216,17 @@ class AppController(
     dataDir, log, ocrChoice = { Ocrs.choose(dataDir) },
     onStoreOpened = ::bindPrivacy,
     includeSensitive = { privacy.revealed.value && !privacy.locked.value },
+    access = indexAccess, shredFile = shredFile,
   )
   @Volatile private var skippedPaths: List<java.nio.file.Path> = emptyList()
-  private val watcher = FolderWatcher(log = log, ignore = { Scope.isSkipped(it, skippedPaths) }, onDirty = { service.reconcile(it) })
+  @Volatile private var skippedFilePaths: Set<java.nio.file.Path> = emptySet()
+  private val watcher = FolderWatcher(log = log, ignore = { Scope.isSkipped(it, skippedPaths) || Scope.isSkippedFile(it, skippedFilePaths) }, onDirty = { service.reconcile(it) })
+    .also { w -> service.onWalked = { dir, ms -> w.walked(dir, ms) } }
+  init {
+    // "Removed 4,213 files from skipped folders": the line the window shows when a skipped folder has taken files out of the index.
+    service.onPurged = { n, _ -> say(tn("skipped_removed", n, java.text.NumberFormat.getIntegerInstance().format(n)), good = true) }
+    service.onLargeFolder = ::onLargeFolderDetected
+  }
   val ocrKind: String = Ocrs.kind()
 
   /** Crash reports and the problem report: counts and error classes, never names or contents. */
@@ -230,6 +259,8 @@ class AppController(
   val query: StateFlow<String> = _query.asStateFlow()
   private val _filter = MutableStateFlow(KindFilter.ALL)
   val filter: StateFlow<KindFilter> = _filter.asStateFlow()
+  private val _subType = MutableStateFlow<FileSubType?>(null)
+  val subType: StateFlow<FileSubType?> = _subType.asStateFlow()
   private val _results = MutableStateFlow(ResultsUi())
   val results: StateFlow<ResultsUi> = _results.asStateFlow()
 
@@ -240,6 +271,16 @@ class AppController(
 
   private val _watch = MutableStateFlow(WatchInfo())
   val watch: StateFlow<WatchInfo> = _watch.asStateFlow()
+
+  private val largeFolderLock = Any()
+  private val largeFolderQueue = ArrayDeque<LargeFolderAlert>()
+  private val largeFolderSeenThisRun = HashSet<String>()
+  private val _largeFolderAlert = MutableStateFlow<LargeFolderAlert?>(null)
+  /** Active large-folder warning banner for the main window (one at a time, persisted once answered so we never nag twice). */
+  val largeFolderAlert: StateFlow<LargeFolderAlert?> = _largeFolderAlert.asStateFlow()
+  @Volatile internal var notifyLargeFolder: (title: String, body: String) -> Unit = { title, body ->
+    scope.launch(Dispatchers.IO) { OsNotifier.notify(title, body) }
+  }
 
   private val _notice = MutableStateFlow<String?>(null)
   val notice: StateFlow<String?> = _notice.asStateFlow()
@@ -270,6 +311,7 @@ class AppController(
     refreshModel()
     if (_settings.value.onboarded) startIndexing()
     scope.launch { runQueries() }
+    scope.launch { privacy.locked.collect { if (it) { previewPlayer.stop(); searchApi.clearQueryCache() } } }
     scope.launch { keepFolderCounts() }
     scope.launch { keepStorage() }
     scope.launch { watchModels() }
@@ -282,7 +324,9 @@ class AppController(
 
   /** Runs on the index's opener thread with each index it opens: the saved marks are applied to it, and the scoring pass looks for work. */
   private fun bindPrivacy(store: IndexStore) {
-    val ix = StorePrivacyIndex(store)
+    store.applyRules(privacy.settings.value.rules)
+    privacyStore = store
+    val ix = StorePrivacyIndex(store, indexAccess, available = { privacyStore === store })
     privacyIndex = ix
     privacy.bind(ix)
     startPass()
@@ -293,6 +337,7 @@ class AppController(
 
   /** The "looks private" pass (picture scores for the blur): one background thread at a time, only with the pack, and only where its engine runs. */
   private fun startPass() {
+    if (_forgetting.value) return
     val ix = privacyIndex ?: return
     if (!privacyPackReady() || !passRunning.compareAndSet(false, true)) return
     passStop = false
@@ -305,9 +350,9 @@ class AppController(
     }
   }
 
-  private fun stopPass() {
+  private fun stopPass(waitForExit: Boolean = false) {
     passStop = true
-    passThread?.let { runCatching { it.join(5_000) } }
+    passThread?.let { if (waitForExit) it.join() else runCatching { it.join(5_000) } }
   }
 
   /** A new batch of files gives the scoring pass something to look at. */
@@ -341,13 +386,30 @@ class AppController(
 
   // ---- search --------------------------------------------------------------------------------------------------
 
+  /** Last monotonic time the query text changed: background generation refreshes wait out active typing so indexing never interrupts keystrokes. */
+  @Volatile private var lastTypedAtNs: Long = System.nanoTime() - TYPING_QUIET_MS * 1_000_000L
+
   fun setQuery(q: String) {
+    lastTypedAtNs = System.nanoTime()
+    if (q.isNotBlank() && session.similar != null) {
+      beforeSimilar = null
+      _pendingSimilarRestore.value = null
+    }
     session.queryChanged(q)
     _query.value = q
     refreshView(q)
   }
 
-  fun setFilter(f: KindFilter) { _filter.value = if (f.kinds.any { it in enabledKinds() } || f == KindFilter.ALL) f else KindFilter.ALL }
+  fun setFilter(f: KindFilter) {
+    val next = if (f.kinds.any { it in enabledKinds() } || f == KindFilter.ALL) f else KindFilter.ALL
+    if (next != _filter.value) _subType.value = _subType.value?.takeIf { next in it.filters }
+    _filter.value = next
+  }
+
+  fun setSubType(sub: FileSubType?) {
+    _subType.value = sub?.takeIf { _filter.value in it.filters }
+    viewTick.value++
+  }
 
   /** The kinds Trawl reads now, per "What to read". */
   fun enabledKinds(): Set<FileKind> = Scope.enabledKinds(_settings.value)
@@ -367,35 +429,90 @@ class AppController(
   fun setDateRange(from: LocalDate, to: LocalDate) { session.setDateRange(from, to); viewChanged() }
   fun clearDate() { session.clearDate(_query.value.trim()); viewChanged() }
 
-  /** Lists the files whose pictures look most like [f]'s. Only for pictures and videos: a document has no picture to start from. */
+  /** Lists the files whose meaning vectors sit closest to [f]'s across all indexed modalities. */
   fun canFindSimilar(f: IndexedFile): Boolean = f.kind in SearchApi.SIMILAR_KINDS
 
   /** True when the picture "Find similar" started from is blurred or sensitive: its name is then not written on the chip or the heading (privacy). */
   @Volatile private var similarNameHidden = false
+  @Volatile private var beforeSimilar: SimilarReturnState? = null
+  private val _pendingSimilarRestore = MutableStateFlow<SimilarReturnState?>(null)
+  /** Non-null after [clearSimilar] restores prior query/filter until the UI restores selection and scroll position. */
+  val pendingSimilarRestore: StateFlow<SimilarReturnState?> = _pendingSimilarRestore.asStateFlow()
+  /** Registered by [MainScreen] to snapshot `(selectedId, firstVisibleItemIndex, firstVisibleItemScrollOffset)` right before entering Find similar. */
+  @Volatile internal var captureViewport: () -> Triple<Long?, Int, Int> = { Triple(null, 0, 0) }
 
-  fun findSimilar(f: IndexedFile, nameHidden: Boolean = false) {
+  fun findSimilar(
+    f: IndexedFile,
+    nameHidden: Boolean = false,
+    selectedId: Long? = null,
+    scrollIndex: Int? = null,
+    scrollOffset: Int? = null,
+  ) {
     if (!canFindSimilar(f)) return
+    if (session.similar == null) {
+      val (capSel, capIdx, capOff) = runCatching { captureViewport() }.getOrDefault(Triple(null, 0, 0))
+      beforeSimilar = SimilarReturnState(
+        query = _query.value,
+        filter = _filter.value,
+        subType = _subType.value,
+        selectedId = selectedId ?: capSel ?: f.id,
+        scrollIndex = (scrollIndex ?: capIdx).coerceAtLeast(0),
+        scrollOffset = (scrollOffset ?: capOff).coerceAtLeast(0),
+      )
+    }
+    _pendingSimilarRestore.value = null
     similarNameHidden = nameHidden || f.sensitive
     session.findSimilar(f)
     _query.value = ""
     viewChanged()
   }
 
-  fun clearSimilar() { session.clearSimilar(); viewChanged() }
+  fun clearSimilar() {
+    val wasSimilar = session.similar != null
+    val snap = beforeSimilar
+    beforeSimilar = null
+    session.clearSimilar()
+    if (wasSimilar && snap != null) {
+      setFilter(snap.filter)
+      _subType.value = snap.subType?.takeIf { _filter.value in it.filters }
+      session.queryChanged(snap.query)
+      _query.value = snap.query
+      _pendingSimilarRestore.value = snap
+    }
+    viewChanged()
+  }
+
+  fun consumeSimilarRestore(state: SimilarReturnState) {
+    if (_pendingSimilarRestore.value == state) _pendingSimilarRestore.value = null
+  }
 
   /** A request for the index, without the generation: the same request asked again after the index grew is a refresh (it must not flash). */
   private data class Asked(val query: String, val filter: KindFilter, val tick: Int, val privacy: Triple<Boolean, Boolean, Int>)
 
   @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
   private suspend fun runQueries() {
-    // Typing is answered after a short pause; the index changing under an open query is answered at most once a second.
-    val generation = service.ui.map { it.generation }.distinctUntilChanged().conflate().transform { emit(it); delay(900) }
+    // Typing is answered after a short pause. While browsing Recent, index updates refresh at most every 900 ms; while a non-blank
+    // query is open, background refreshes throttle to 2.5 s and wait out active typing so indexing never cancels a search or spins the fan.
+    var firstGen = true
+    val generation = service.ui.map { it.generation }.distinctUntilChanged().conflate().transform { g ->
+      if (!firstGen) {
+        while (_query.value.isNotBlank()) {
+          val elapsedMs = ((System.nanoTime() - lastTypedAtNs).coerceAtLeast(0L)) / 1_000_000L
+          val wait = (TYPING_QUIET_MS - elapsedMs).coerceIn(0L, TYPING_QUIET_MS)
+          if (wait <= 0L) break
+          delay(wait)
+        }
+      }
+      firstGen = false
+      emit(g)
+      delay(if (_query.value.isBlank()) GEN_BROWSE_REFRESH_MS else GEN_QUERY_REFRESH_MS)
+    }
     var last: Asked? = null
     // Locking, showing the sensitive files and marking one all re-ask the same question (privacy package): they are part of the request.
     val privacyView = combine(privacy.locked, privacy.revealed, refresh) { l, r, n -> Triple(l, r, n) }
     combine(_query.debounce(120), _filter, viewTick, generation, privacyView) { q, f, tick, _, pv -> Asked(q.trim(), f, tick, pv) }.collectLatest { asked ->
       // Locked: no results at all. The window shows only the lock screen, and nothing is looked up behind it (the shell's quick panel asks the same rule).
-      if (privacy.locked.value) { last = asked; _results.value = ResultsUi(asked.query); return@collectLatest }
+      if (privacy.locked.value) { searchApi.clearQueryCache(); last = asked; _results.value = ResultsUi(asked.query); return@collectLatest }
       val previous = last
       last = asked
       val again = asked == previous
@@ -403,23 +520,33 @@ class AppController(
       val typing = previous != null && previous.query != asked.query
       // (The screenshot run can hold the meaning back for seconds so the words-first state can be photographed: TRAWL_DEMO_MEANING_DELAY_MS.)
       val delayMs = DEMO_MEANING_DELAY_MS?.takeIf { asked.query.isNotEmpty() } ?: if (typing) MEANING_DELAY_MS else 0L
-      session.load(asked.query, asked.filter, delayMs, quiet = again) { a -> _results.value = toUi(a) }
+      try {
+        session.load(asked.query, asked.filter, delayMs, quiet = again) { a -> _results.value = toUi(a) }
+      } catch (e: CancellationException) {
+        throw e
+      } catch (t: Throwable) {
+        // Never let a single query failure kill the search collector coroutine permanently.
+        log("search failed: ${t.javaClass.simpleName}")
+      }
     }
   }
 
   private fun toUi(a: SessionAnswer): ResultsUi {
     val d = a.derived
+    val sub = _subType.value
     val notReady = !service.ui.value.let { it.phase == Phase.UP_TO_DATE || it.phase == Phase.NOT_STARTED }
     a.recent?.let { r ->
+      val files = if (sub != null) r.files.filter { sub.matches(it.name) } else r.files
       return ResultsUi(
-        query = _query.value.trim(), rows = r.files.map { ResultRow(it, null, null, null, true) }, tookMs = 0, indexIncomplete = notReady,
+        query = _query.value.trim(), rows = files.map { ResultRow(it, null, null, null, true) }, tookMs = 0, indexIncomplete = notReady,
         hiddenCount = r.hidden, sort = d.sort, date = d.date, browse = true, skewMs = a.skewMs, words = "",
       )
     }
     val r = a.hits ?: return ResultsUi()
-    val rows = r.hits.mapIndexed { i, h ->
+    val allRows = r.hits.mapIndexed { i, h ->
       ResultRow(h.file, h.snippet, h.reason, (h.locator as? Locator.Page)?.page, i < r.strongCount, (h.locator as? Locator.Time)?.startMs)
     }
+    val rows = if (sub != null) allRows.filter { sub.matches(it.file.name) } else allRows
     val seed = a.similar
     return ResultsUi(
       query = if (seed != null) "" else _query.value.trim(), rows = rows, tookMs = r.tookMs, indexIncomplete = r.indexIncomplete, complete = r.complete,
@@ -451,9 +578,40 @@ class AppController(
     startIndexing()
   }
 
+  /**
+   * Adds individual [files] to Trawl's index without crawling sibling files in their parent folders.
+   * Re-adding a previously excluded file cleanly removes it from [Settings.excludedFiles].
+   */
+  fun addFiles(files: List<File>) {
+    val valid = files.filter { it.isFile }.mapNotNull { SafePath.of(it)?.toString() }.distinct()
+    if (valid.isEmpty()) return
+    val s = _settings.value
+    val nextExcluded = s.excludedFiles.filterNot { ex -> valid.any { sameFolder(ex, it) } }
+    val nextAdded = Scope.withAddedFiles(s.addedFiles, valid)
+    if (nextExcluded == s.excludedFiles && nextAdded == s.addedFiles) return
+    save(s.copy(addedFiles = nextAdded, excludedFiles = nextExcluded))
+    startIndexing()
+  }
+
+  /** Removes an individually added file from Settings and Trawl's index without ever touching the file on disk. */
+  fun removeAddedFile(path: String) {
+    val norm = SafePath.of(path)?.toString() ?: path
+    val s = _settings.value
+    val nextAdded = s.addedFiles.filterNot { sameFolder(it, norm) }
+    if (nextAdded == s.addedFiles) return
+    save(s.copy(addedFiles = nextAdded))
+    startIndexing()
+  }
+
   fun removeFolder(path: String) {
     val folders = _settings.value.folders.filterNot { it == path }
-    save(_settings.value.copy(folders = folders, excludedFolders = Scope.pruneSkipped(_settings.value.excludedFolders, folders)))
+    save(
+      _settings.value.copy(
+        folders = folders,
+        excludedFolders = Scope.pruneSkipped(_settings.value.excludedFolders, folders),
+        excludedFiles = Scope.pruneSkippedFiles(_settings.value.excludedFiles, folders),
+      ),
+    )
     startIndexing()
   }
 
@@ -481,7 +639,76 @@ class AppController(
     _watch.value = watcher.info
   }
 
+  internal fun onLargeFolderDetected(alert: LargeFolderAlert) {
+    val norm = SafePath.of(alert.path)?.toString() ?: alert.path
+    val s = _settings.value
+    if (s.excludedFolders.any { sameFolder(it, norm) } || s.dismissedLargeFolders.any { sameFolder(it, norm) }) return
+    val p = SafePath.of(norm)
+    if (p != null && Scope.isSkipped(p, skippedPaths)) return
+    val clean = alert.copy(path = norm)
+    val shouldNotify = synchronized(largeFolderLock) {
+      if (!largeFolderSeenThisRun.add(norm)) return@synchronized false
+      if (_largeFolderAlert.value == null) _largeFolderAlert.value = clean else largeFolderQueue.addLast(clean)
+      true
+    }
+    if (shouldNotify) {
+      val body = t(
+        "large_folder_notify",
+        clean.name,
+        com.craneai.findr.ui.common.formatCount(clean.fileCount),
+        com.craneai.findr.ui.common.formatBytes(clean.totalBytes),
+      )
+      runCatching { notifyLargeFolder(t("app_name"), body) }
+    }
+  }
+
+  /** One-click "Exclude folder" from the large-folder banner: excludes & purges the folder and remembers not to nag again. */
+  fun excludeLargeFolder(alert: LargeFolderAlert) {
+    rememberDismissedLargeFolder(alert.path)
+    skipFolder(File(alert.path))
+    advanceLargeFolderAlert(alert.path)
+  }
+
+  /** "Keep reading" from the large-folder banner: dismisses and persists so Trawl never nags about this folder again. */
+  fun keepReadingLargeFolder(alert: LargeFolderAlert) {
+    rememberDismissedLargeFolder(alert.path)
+    advanceLargeFolderAlert(alert.path)
+  }
+
+  private fun rememberDismissedLargeFolder(path: String) {
+    val norm = SafePath.of(path)?.toString() ?: path
+    if (_settings.value.dismissedLargeFolders.any { sameFolder(it, norm) }) return
+    save(_settings.value.copy(dismissedLargeFolders = _settings.value.dismissedLargeFolders + norm))
+  }
+
+  private fun advanceLargeFolderAlert(path: String) {
+    val norm = SafePath.of(path)?.toString() ?: path
+    synchronized(largeFolderLock) {
+      largeFolderQueue.removeAll { sameFolder(it.path, norm) }
+      if (_largeFolderAlert.value?.let { sameFolder(it.path, norm) } == true) {
+        _largeFolderAlert.value = largeFolderQueue.removeFirstOrNull()
+      }
+    }
+  }
+
   fun setSpeed(s: LearningSpeed) = changeScope { it.copy(learningSpeed = s) }
+
+  /**
+   * "Read on battery anyway": lifts the low-battery wait for this stay on the battery (every speed), and moves Gentle, which waits for
+   * the charger whatever the charge, to Balanced as the button has always done.
+   */
+  fun readOnBattery() {
+    service.readOnBattery()
+    if (_settings.value.learningSpeed == LearningSpeed.GENTLE) setSpeed(LearningSpeed.BALANCED)
+  }
+
+  /** "Run anyway" on a heat or power-saving wait: reading goes on for the rest of this run of the app, at the speed the person chose. */
+  fun runAnyway(hold: Hold) = service.runAnyway(hold)
+
+  /** The shell tells the index what the windows are doing (see [IndexService.windows]). */
+  fun windowShown(visible: Boolean) = service.windows(mainVisible = visible)
+  fun windowFocused(focused: Boolean) = service.windows(mainFocused = focused)
+  fun panelShown(open: Boolean) = service.windows(panelOpen = open)
 
   /** The Pause / Resume button. Only Resume clears the pause; a restart keeps it (the phone's rule, [IndexPause]). */
   fun setPaused(paused: Boolean) = changeScope { it.copy(indexPaused = IndexPause.after(if (paused) IndexPause.Event.PAUSE else IndexPause.Event.RESUME, it.indexPaused)) }
@@ -492,10 +719,44 @@ class AppController(
     if (!enabledKinds().let { on -> _filter.value.kinds.any { it in on } || _filter.value == KindFilter.ALL }) _filter.value = KindFilter.ALL
   }
 
+  /**
+   * Removes [files] from Trawl's local index (rows, FTS words, and vectors) and adds their paths to
+   * [Settings.excludedFiles] so future scans never re-index them. NEVER deletes or modifies any user file on disk.
+   */
+  fun removeFromIndex(files: List<IndexedFile>) {
+    if (files.isEmpty()) return
+    previewPlayer.stop()
+    val ids = files.map { it.id }.distinct()
+    val paths = files.mapNotNull { runCatching { fileOf(it).absolutePath }.getOrNull() }.distinct()
+    var addedChanged = false
+    if (paths.isNotEmpty()) {
+      val s0 = _settings.value
+      val nextAdded = s0.addedFiles.filterNot { af -> paths.any { sameFolder(af, it) } }
+      addedChanged = nextAdded != s0.addedFiles
+      val updatedExcluded = paths.fold(s0.excludedFiles) { acc, p -> Scope.withSkippedFile(acc, p) }
+      save(s0.copy(addedFiles = nextAdded, excludedFiles = updatedExcluded))
+    }
+    val s = _settings.value
+    skippedFilePaths = Scope.paths(s.excludedFiles).toSet()
+    service.removeFromIndex(ids)
+    pushConfig()
+    if (addedChanged) service.setFolders(s.folders.map(::File), s.addedFiles.map(::File))
+    refreshResults()
+    say(tn("removed_from_index", ids.size, com.craneai.findr.ui.common.formatCount(ids.size)), good = true)
+  }
+
+  /** Re-includes a previously removed file so Trawl indexes it again (Settings -> Skipped files). */
+  fun restoreExcludedFile(path: String) {
+    val norm = SafePath.of(path)?.toString() ?: path
+    changeScope { it.copy(excludedFiles = it.excludedFiles.filterNot { p -> sameFolder(p, norm) }) }
+    refreshResults()
+  }
+
   private fun pushConfig() {
     val s = _settings.value
     skippedPaths = Scope.paths(s.excludedFolders)
-    service.configure(Scope.enabledKinds(s), skippedPaths, s.learningSpeed, s.indexPaused)
+    skippedFilePaths = Scope.paths(s.excludedFiles).toSet()
+    service.configure(Scope.enabledKinds(s), skippedPaths, s.learningSpeed, s.indexPaused, skippedFilePaths)
   }
 
   private fun sameFolder(a: String, b: String) = (SafePath.of(a) ?: a) == (SafePath.of(b) ?: b)
@@ -507,17 +768,36 @@ class AppController(
   val forgot: StateFlow<Forgot?> = _forgot.asStateFlow()
 
   fun forgetEverything() {
-    // Measured before the drop: afterwards the index is already being read again from the start.
-    val before = Forgot(service.ui.value.byKind.values.sum(), service.indexBytes())
-    service.forgetAll()
-    runCatching { reporter.wipe() }
-    _forgot.value = before
+    if (!_forgetting.compareAndSet(false, true)) return
+    _forgot.value = null
+    scope.launch(start = CoroutineStart.UNDISPATCHED) {
+      withContext(Dispatchers.IO + NonCancellable) {
+        try {
+          stopPass(waitForExit = true)
+          privacyStore = null
+          privacyIndex = null
+          searchApi.clearQueryCache()
+          _results.value = ResultsUi(_query.value, indexIncomplete = true)
+          val before = service.forgetAll()
+          runCatching { reporter.wipe() }
+          _forgot.value = before
+        } catch (failure: Exception) {
+          log("forgetting failed: ${failure.javaClass.simpleName}")
+          say(t("settings_forget_failed"))
+        } finally {
+          _forgetting.value = false
+          startPass()
+          refreshResults()
+        }
+      }
+    }
   }
 
   private fun startIndexing() {
     pushConfig()
     val folders = _settings.value.folders.map(::File)
-    service.setFolders(folders)
+    val added = _settings.value.addedFiles.map(::File)
+    service.setFolders(folders, added)
     watcher.watch(folders)
     _watch.value = watcher.info
     modelSetup.installedModel()?.let { service.attachModel(it) }
@@ -720,11 +1000,19 @@ class AppController(
     }
   }
 
+  /** Manual zero-network update check: opens Trawl's website in the user's external browser (zero sockets inside Trawl, D43). */
+  fun checkForUpdates() {
+    scope.launch(Dispatchers.IO) {
+      if (!Platform.openBrowser(AppInfo.UPDATES_URL)) say(t("settings_check_updates_failed", AppInfo.UPDATES_URL))
+    }
+  }
+
   // ---- files ---------------------------------------------------------------------------------------------------
 
   fun fileOf(f: IndexedFile): File = Paths.get(URI(f.uri)).toFile()
 
   fun open(f: IndexedFile) {
+    previewPlayer.stop()
     scope.launch(Dispatchers.IO) { if (!Platform.open(fileOf(f))) say(t("open_failed", f.name)) }
   }
 
@@ -788,12 +1076,18 @@ class AppController(
   private companion object {
     /** How long a word being typed holds back the meaning answer; the words answer is on screen before it. */
     const val MEANING_DELAY_MS = 180L
+    /** Background index generation refresh cadence while browsing Recent (no embedding) vs. while a search query is open. */
+    const val GEN_BROWSE_REFRESH_MS = 900L
+    const val GEN_QUERY_REFRESH_MS = 2_500L
+    /** Wait this long after the last keystroke before letting a background indexing tick re-run an open query. */
+    const val TYPING_QUIET_MS = 1_500L
     private val DEMO_MEANING_DELAY_MS: Long? = System.getenv("TRAWL_DEMO_MEANING_DELAY_MS")?.toLongOrNull()
     const val SHOW_FOLDERS_MAX = 6
   }
 
   override fun close() {
     passStop = true
+    runCatching { previewPlayer.stop() }
     stopPrivacyWatch()
     scope.cancel()
     watcher.close()

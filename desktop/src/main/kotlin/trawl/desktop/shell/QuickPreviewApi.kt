@@ -50,12 +50,14 @@ class ControllerPreview(
   override fun fileOf(file: IndexedFile): File = c.fileOf(file)
 
   override suspend fun picture(file: IndexedFile, side: Int, blurred: Boolean): ImageBitmap? = withContext(Dispatchers.IO) {
-    runCatching { if (blurred) PrivateThumbnails.load(fileOf(file), side, blurred = true) else Thumbnails.load(fileOf(file), side) }.getOrNull()
+    runCatching {
+      if (blurred) PrivateThumbnails.load(fileOf(file), side, blurred = true, modifiedMillis = file.modifiedMillis)
+      else Thumbnails.load(fileOf(file), side, modifiedMillis = file.modifiedMillis)
+    }.getOrNull()
   }
 
-  override suspend fun frame(file: IndexedFile, momentMs: Long, side: Int): ImageBitmap? = withContext(Dispatchers.IO) {
-    runCatching { c.frames.load(fileOf(file), momentMs, side) }.getOrNull()
-  }
+  override suspend fun frame(file: IndexedFile, momentMs: Long, side: Int): ImageBitmap? =
+    runCatching { c.frames.loadSuspend(fileOf(file), momentMs, side, modifiedMillis = file.modifiedMillis) }.getOrNull()
 
   override suspend fun lead(file: IndexedFile): String? = c.leadText(file)
 }

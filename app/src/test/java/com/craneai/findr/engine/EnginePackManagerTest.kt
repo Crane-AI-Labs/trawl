@@ -261,4 +261,21 @@ class EnginePackManagerTest {
     assertNull(m.states.value["nope"])
     assertEquals(0, changed)
   }
+
+  @Test fun downloadsSourceProvidesBrowserDownloadUrlAndPlaySourceReturnsNull() {
+    val downloads = DownloadsFolderSource(downloads = { tmp.root }, hasAccess = { true })
+    val play = PlayAssetPackSource()
+    val mgr = manager(downloads)
+
+    assertEquals(
+      com.craneai.findr.BuildConfig.MODELS_BASE_URL + "trawl-speech-lg.zip",
+      mgr.downloadUrl(com.craneai.findr.core.PackIds.SPEECH_LG),
+    )
+    for (def in PackCatalog.all) {
+      assertEquals(com.craneai.findr.BuildConfig.MODELS_BASE_URL + def.archiveName, downloads.downloadUrl(def))
+      assertEquals(downloads.downloadUrl(def), mgr.downloadUrl(def.id))
+      assertNull(play.downloadUrl(def))
+    }
+    assertNull(mgr.downloadUrl("unknown-pack"))
+  }
 }

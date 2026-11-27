@@ -25,6 +25,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 
@@ -73,6 +74,25 @@ class SearchApiTest {
     assertEquals(listOf("report e.txt", "report c.txt", "report d.txt", "Report a.txt", "report b.txt"), names(last(api, "report", ResultView(SortOrder.OLDEST))))
     assertEquals(listOf("report e.txt", "report d.txt", "report c.txt", "report b.txt", "Report a.txt"), names(last(api, "report", ResultView(SortOrder.LARGEST))))
     assertEquals(listOf("Report a.txt", "report b.txt", "report c.txt", "report d.txt", "report e.txt"), names(last(api, "report", ResultView(SortOrder.NAME))))
+  }
+
+  @Test fun explicitDateModifiedAndDateCreatedSortsWorkForSearchAndRecent() {
+    val n1 = next++
+    val n2 = next++
+    store.upsertFromCrawl(
+      listOf(
+        CrawlRecord("desktop", n1, "file:///t/memo_edited.txt", "t/", "memo_edited.txt", FileKind.DOCUMENT, null, 100, modifiedMillis = t0 + 50 * day, dateMillis = t0 + 1 * day),
+        CrawlRecord("desktop", n2, "file:///t/memo_created.txt", "t/", "memo_created.txt", FileKind.DOCUMENT, null, 100, modifiedMillis = t0 + 10 * day, dateMillis = t0 + 10 * day),
+      ),
+    )
+    val api = SearchApi(hooks())
+    assertEquals(listOf("memo_edited.txt", "memo_created.txt"), names(last(api, "memo", ResultView(SortOrder.NEWEST))))
+    assertEquals(listOf("memo_created.txt", "memo_edited.txt"), names(last(api, "memo", ResultView(SortOrder.OLDEST))))
+    assertEquals(listOf("memo_created.txt", "memo_edited.txt"), names(last(api, "memo", ResultView(SortOrder.CREATED_NEWEST))))
+    assertEquals(listOf("memo_edited.txt", "memo_created.txt"), names(last(api, "memo", ResultView(SortOrder.CREATED_OLDEST))))
+    assertEquals(listOf("memo_edited.txt", "memo_created.txt"), api.recent(KindFilter.ALL, ResultView(SortOrder.NEWEST)).files.map { it.name })
+    assertEquals(listOf("memo_created.txt", "memo_edited.txt"), api.recent(KindFilter.ALL, ResultView(SortOrder.CREATED_NEWEST)).files.map { it.name })
+    assertEquals(listOf("memo_edited.txt", "memo_created.txt"), api.recent(KindFilter.ALL, ResultView(SortOrder.CREATED_OLDEST)).files.map { it.name })
   }
 
   @Test fun aDateRangeKeepsOnlyTheFilesInsideIt() {
@@ -153,8 +173,11 @@ class SearchApiTest {
     assertTrue(api.recent(KindFilter.ALL).files.isEmpty())
   }
 
-  @Test fun findSimilarSeedKindsAreImagesScreenshotsAndVideosOnly() {
-    assertEquals(setOf(FileKind.IMAGE, FileKind.SCREENSHOT, FileKind.VIDEO), SearchApi.SIMILAR_KINDS)
+  @Test fun findSimilarSeedKindsIncludeAllIndexedModalities() {
+    assertEquals(
+      setOf(FileKind.IMAGE, FileKind.SCREENSHOT, FileKind.VIDEO, FileKind.DOCUMENT, FileKind.PDF, FileKind.AUDIO),
+      SearchApi.SIMILAR_KINDS,
+    )
   }
 
   // ---- SearchSession: the chips and the date words on top ----------------------------------------------------------------------------
@@ -215,5 +238,117 @@ class SearchApiTest {
     assertTrue(s.derive("").similar)
     s.queryChanged("sun")
     assertNull(s.similar, "typing leaves Find similar")
+  }
+
+  @Test fun queryVectorCacheReusesVectorsAcrossFilterTogglesAndInvalidatesOnModelChangeOrClear() {
+    val id = add("quarterly invoice summary.txt", t0)
+    val ids = store.saveSegments(id, listOf(Segment(SegmentKind.CHUNK, Modality.TEXT, text = "invoice totals", vector = topic(3))), FileState.UNDERSTOOD)
+    vectors.add(ids[0], id, FileKind.DOCUMENT, Modality.TEXT, false, topic(3))
+    var embeds = 0
+    var fp = "model-a.litertlm:100"
+    val api = SearchApi(
+      SearchHooks(
+        store = { store }, searcher = { searcher }, modelReady = { true }, vectorCount = { vectors.size },
+        embed = { embeds++; topic(3) }, wordsWeight = { 1.0 }, meaningWeight = { _, _ -> 1.0 },
+        kinds = { Crawler.KINDS }, modelFingerprint = { fp },
+      ),
+    )
+    runBlocking {
+      api.search("invoice summary", KindFilter.ALL).toList()
+      assertEquals(1, embeds)
+      // Same query with different filter or extra spaces hits the 64-entry LRU cache.
+      api.search("  invoice   summary ", KindFilter.DOCUMENTS).toList()
+      assertEquals(1, embeds, "repeated query should hit QueryVectorCache without re-embedding")
+      // Model change invalidates the cache.
+      fp = "model-b.litertlm:200"
+      api.search("invoice summary", KindFilter.ALL).toList()
+      assertEquals(2, embeds, "model fingerprint change must invalidate QueryVectorCache")
+      // Explicit clear (wipe / app lock) invalidates the cache.
+      api.clearQueryCache()
+      api.search("invoice summary", KindFilter.ALL).toList()
+      assertEquals(3, embeds, "clearQueryCache must force fresh embed")
+    }
+  }
+
+  @Test fun queryEmbedCoalescerDropsSupersededQueriesBehindInFlightNativeCall() = runBlocking {
+    val coalescer = QueryEmbedCoalescer()
+    val startedFirst = kotlinx.coroutines.CompletableDeferred<Unit>()
+    val releaseFirst = kotlinx.coroutines.CompletableDeferred<Unit>()
+    val executed = java.util.Collections.synchronizedList(mutableListOf<String>())
+
+    val first = async(kotlinx.coroutines.Dispatchers.Default) {
+      coalescer.embed("q1") { q ->
+        executed += q
+        startedFirst.complete(Unit)
+        runBlocking { releaseFirst.await() }
+        topic(1)
+      }
+    }
+    startedFirst.await()
+
+    val q2 = async(kotlinx.coroutines.Dispatchers.Default) {
+      coalescer.embed("q2") { q -> executed += q; topic(2) }
+    }
+    kotlinx.coroutines.delay(25)
+    val q3 = async(kotlinx.coroutines.Dispatchers.Default) {
+      coalescer.embed("q3") { q -> executed += q; topic(3) }
+    }
+    kotlinx.coroutines.delay(25)
+    val q4 = async(kotlinx.coroutines.Dispatchers.Default) {
+      coalescer.embed("q4") { q -> executed += q; topic(4) }
+    }
+    kotlinx.coroutines.delay(25)
+    releaseFirst.complete(Unit)
+
+    assertNotNull(first.await())
+    assertNull(q2.await(), "superseded waiter q2 must be skipped")
+    assertNull(q3.await(), "superseded waiter q3 must be skipped")
+    assertNotNull(q4.await(), "latest query q4 must execute once q1 completes")
+    assertEquals(listOf("q1", "q4"), executed)
+  }
+
+  @Test fun separateCoalescerLanesDoNotSupersedeEachOther() = runBlocking {
+    val id1 = add("quarterly invoice summary.txt", t0)
+    val ids1 = store.saveSegments(id1, listOf(Segment(SegmentKind.CHUNK, Modality.TEXT, text = "invoice totals", vector = topic(1))), FileState.UNDERSTOOD)
+    vectors.add(ids1[0], id1, FileKind.DOCUMENT, Modality.TEXT, false, topic(1))
+    val id2 = add("summer vacation itinerary.txt", t0 + day)
+    val ids2 = store.saveSegments(id2, listOf(Segment(SegmentKind.CHUNK, Modality.TEXT, text = "vacation flight", vector = topic(2))), FileState.UNDERSTOOD)
+    vectors.add(ids2[0], id2, FileKind.DOCUMENT, Modality.TEXT, false, topic(2))
+
+    val mainEntered = kotlinx.coroutines.CompletableDeferred<Unit>()
+    val releaseMain = kotlinx.coroutines.CompletableDeferred<Unit>()
+    val embedded = java.util.Collections.synchronizedList(mutableListOf<String>())
+    val api = SearchApi(
+      SearchHooks(
+        store = { store }, searcher = { searcher }, modelReady = { true }, vectorCount = { vectors.size },
+        embed = { q ->
+          embedded += q
+          if (q.contains("invoice")) {
+            mainEntered.complete(Unit)
+            runBlocking { releaseMain.await() }
+            topic(1)
+          } else {
+            topic(2)
+          }
+        },
+        wordsWeight = { 1.0 }, meaningWeight = { _, _ -> 1.0 }, kinds = { Crawler.KINDS },
+      ),
+    )
+
+    val mainJob = async(kotlinx.coroutines.Dispatchers.Default) {
+      api.search("invoice summary", KindFilter.ALL, coalescerLane = "main").toList()
+    }
+    mainEntered.await()
+
+    val quickJob = async(kotlinx.coroutines.Dispatchers.Default) {
+      api.search("vacation flight", KindFilter.ALL, coalescerLane = "quick").toList()
+    }
+    val quickSteps = quickJob.await()
+    releaseMain.complete(Unit)
+    val mainSteps = mainJob.await()
+
+    assertTrue(quickSteps.last().complete, "quick lane must complete with meaning even while main lane is in JNI")
+    assertTrue(mainSteps.last().complete, "main lane must complete without being superseded by quick lane")
+    assertTrue(embedded.any { it.contains("invoice") } && embedded.any { it.contains("vacation") }, "both lanes must embed independently: $embedded")
   }
 }

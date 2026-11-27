@@ -4,9 +4,14 @@ import androidx.annotation.StringRes
 import com.craneai.findr.R
 import com.craneai.findr.core.FileKind
 import com.craneai.findr.core.IndexedFile
+import com.craneai.findr.core.KindFilter
 import com.craneai.findr.core.MatchReason
 import com.craneai.findr.core.SearchHit
+import com.craneai.findr.search.Fusion
 import com.craneai.findr.ui.common.isVisual
+
+/** Layout density for results and browse feeds: visual grid tiles vs dense metadata list rows for every file. */
+enum class ResultViewMode { GRID, LIST }
 
 /** One entry in the home list. The list is built in the view model; composables only draw it. */
 sealed interface FeedItem {
@@ -45,8 +50,9 @@ fun SearchHit.isRow(): Boolean = snippet != null || !file.kind.isVisual()
 /** Recents are plain files; wrap them as hits so one list renders both. */
 fun IndexedFile.asRecentHit() = SearchHit(file = this, score = 0.0, reason = MatchReason.WORDS)
 
-/** Items in exactly the order given: photos as cells, documents as rows, no groups and no headings (a sorted list keeps its order). */
-private fun flat(hits: List<SearchHit>): List<FeedItem> = hits.map { if (it.isRow()) FeedItem.Row(it) else FeedItem.Cell(it) }
+/** Items in exactly the order given: photos as cells (or rows in [listMode]), documents as rows, no groups and no headings (a sorted list keeps its order). */
+private fun flat(hits: List<SearchHit>, listMode: Boolean = false): List<FeedItem> =
+  hits.map { if (listMode || it.isRow()) FeedItem.Row(it) else FeedItem.Cell(it) }
 
 /** Document rows shown before the photo peek, and how many photo cells it holds (one row of the grid on a phone). */
 const val PEEK_AFTER_ROWS = 4
@@ -80,27 +86,99 @@ private fun section(hits: List<SearchHit>, headers: Boolean, cellsTitle: Int, ro
   return r + c
 }
 
+/** Images (photos + screenshots) and Documents (PDF + document) lead general search results ahead of Videos, Audio, and Other. */
+internal fun FileKind.isPrimarySearchKind(): Boolean =
+  this == FileKind.IMAGE || this == FileKind.SCREENSHOT || this == FileKind.DOCUMENT || this == FileKind.PDF
+
+/** True unless the user explicitly filtered or queried for Videos or Audio/Voice notes. */
+fun shouldPrioritizeImagesAndDocuments(query: String, filter: KindFilter = KindFilter.ALL): Boolean {
+  if (filter != KindFilter.ALL) return false
+  val hinted = Fusion.kindHints(query)
+  return FileKind.VIDEO !in hinted && FileKind.AUDIO !in hinted
+}
+
+private fun prioritizeTier(hits: List<SearchHit>): List<SearchHit> {
+  if (hits.size <= 1) return hits
+  val primary = ArrayList<SearchHit>(hits.size)
+  val secondary = ArrayList<SearchHit>()
+  for (h in hits) {
+    if (h.file.kind.isPrimarySearchKind()) primary += h else secondary += h
+  }
+  if (primary.isEmpty() || secondary.isEmpty()) return hits
+  primary.addAll(secondary)
+  return primary
+}
+
+/**
+ * Reorders search hits so Images (Photos + Screenshots) and Documents (PDF + Document) appear first
+ * before Videos, Audio/Voice notes, and Other within the strong tier and within the weak tier separately,
+ * preserving relative relevance order within each tier and never demoting video/audio when explicitly queried/filtered.
+ */
+fun prioritizeSearchResults(
+  hits: List<SearchHit>,
+  strongCount: Int,
+  query: String = "",
+  filter: KindFilter = KindFilter.ALL,
+): List<SearchHit> {
+  if (!shouldPrioritizeImagesAndDocuments(query, filter) || hits.size <= 1) return hits
+  val split = strongCount.coerceIn(0, hits.size)
+  return prioritizeTier(hits.subList(0, split)) + prioritizeTier(hits.subList(split, hits.size))
+}
+
+private fun layoutTier(
+  hits: List<SearchHit>,
+  headers: Boolean,
+  sorted: Boolean,
+  listMode: Boolean,
+  prioritizeImagesAndDocs: Boolean,
+): List<FeedItem> {
+  if (hits.isEmpty()) return emptyList()
+  if (sorted) return flat(hits, listMode)
+  if (!prioritizeImagesAndDocs) {
+    return if (listMode) flat(hits, true) else section(hits, headers, R.string.section_photos_videos, R.string.section_documents_text)
+  }
+  val primary = hits.filter { it.file.kind.isPrimarySearchKind() }
+  val secondary = hits.filter { !it.file.kind.isPrimarySearchKind() }
+  if (primary.isEmpty() || secondary.isEmpty()) {
+    return if (listMode) flat(hits, true) else section(hits, headers, R.string.section_photos_videos, R.string.section_documents_text)
+  }
+  if (listMode) return flat(primary, true) + flat(secondary, true)
+  val primaryHeaders = headers && primary.any { it.isRow() } && primary.any { !it.isRow() }
+  return section(primary, primaryHeaders, R.string.section_photos_videos, R.string.section_documents_text) +
+    section(secondary, headers = false, R.string.section_photos_videos, R.string.section_documents_text)
+}
+
 /**
  * Search results: strong hits grouped into photos/videos and documents/text, then the "Weaker matches" fold.
+ * When [prioritizeImagesAndDocs] is true (default Best-match queries not explicitly asking for video/audio),
+ * Images and Documents appear before Videos, Audio, and Other within strong and weak tiers separately.
  * A file appears once; if it is strong it is never repeated under weak.
  */
-fun buildResultFeed(hits: List<SearchHit>, strongCount: Int, weakExpanded: Boolean, sorted: Boolean = false): List<FeedItem> {
+fun buildResultFeed(
+  hits: List<SearchHit>,
+  strongCount: Int,
+  weakExpanded: Boolean,
+  sorted: Boolean = false,
+  listMode: Boolean = false,
+  prioritizeImagesAndDocs: Boolean = true,
+): List<FeedItem> {
   val unique = hits.distinctBy { it.file.id }
   val strong = unique.take(strongCount.coerceIn(0, unique.size))
   val weak = unique.drop(strong.size)
-  val showHeaders = !sorted && strong.any { it.isRow() } && strong.any { !it.isRow() }
+  val showHeaders = !sorted && !listMode && strong.any { it.isRow() } && strong.any { !it.isRow() }
   val out = ArrayList<FeedItem>()
-  // A chosen sort (Newest, Oldest, Largest, Name) is one list in that order. Grouping into photos and documents would break it.
-  out += if (sorted) flat(strong) else section(strong, showHeaders, R.string.section_photos_videos, R.string.section_documents_text)
+  // A chosen sort (Newest, Oldest, Largest, Name) or List mode is one flat list in that order.
+  out += layoutTier(strong, showHeaders, sorted, listMode, prioritizeImagesAndDocs)
   if (weak.isNotEmpty()) {
     out += FeedItem.WeakToggle(weak.size, weakExpanded, noStrongMatches = strong.isEmpty())
-    if (weakExpanded) out += if (sorted) flat(weak) else section(weak, headers = false, R.string.section_photos_videos, R.string.section_documents_text)
+    if (weakExpanded) out += layoutTier(weak, headers = false, sorted, listMode, prioritizeImagesAndDocs)
   }
   return out
 }
 
 /** Browsing with a sort or a date chosen: the files in the order the index returned them, as one list with no headings. */
-fun buildSortedFeed(files: List<IndexedFile>): List<FeedItem> = flat(files.distinctBy { it.id }.map { it.asRecentHit() })
+fun buildSortedFeed(files: List<IndexedFile>, listMode: Boolean = false): List<FeedItem> =
+  flat(files.distinctBy { it.id }.map { it.asRecentHit() }, listMode)
 
 /** Every file the list shows (unique, in list order, folded weak matches not included): what "Select all" selects. */
 fun List<FeedItem>.shownFiles(): List<IndexedFile> = mapNotNull {
@@ -111,11 +189,12 @@ fun List<FeedItem>.shownFiles(): List<IndexedFile> = mapNotNull {
   }
 }
 
-/** Before typing: the newest files. Documents lead (receipts and letters are what people reach for), then photos. */
-fun buildRecentFeed(files: List<IndexedFile>): List<FeedItem> {
+/** Before typing: the newest files. Documents lead (receipts and letters are what people reach for), then photos. In [listMode], all files render as dense metadata rows. */
+fun buildRecentFeed(files: List<IndexedFile>, listMode: Boolean = false): List<FeedItem> {
   // "File" (OTHER: an APK, a zip, a database) is never featured here; it stays findable by name.
   val hits = files.filter { it.kind != FileKind.OTHER }.distinctBy { it.id }.map { it.asRecentHit() }
-  val rows = hits.filter { it.isRow() }.take(6)
+  if (listMode) return hits.map { FeedItem.Row(it) }
+  val rows = hits.filter { it.isRow() }.sortedBy { if (it.file.kind.isPrimarySearchKind()) 0 else 1 }.take(6)
   val cells = hits.filter { !it.isRow() }
   val out = ArrayList<FeedItem>()
   if (rows.isNotEmpty()) {

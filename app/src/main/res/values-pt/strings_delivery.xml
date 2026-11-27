@@ -47,4 +47,9 @@
   <string name="models_pack_upgrade_note">Ao adicionar o pacote Padrão, o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> lê seus arquivos novamente com o modelo melhor. Sua lista de arquivos continua: a busca por nome de arquivo e a busca de fotos por visualização rápida seguem funcionando enquanto isso. As palavras dentro de documentos e capturas de tela e a busca por significado voltam conforme cada arquivo é lido de novo, melhor com o celular no carregador.</string>
   <string name="models_pack_get_standard">Baixar o pacote Padrão (%1$d MB)</string>
   <string name="models_pack_upgraded">O pacote Padrão foi instalado. Feche o <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> e abra de novo para começar a usá-lo. Ele então lê seus arquivos novamente com o modelo melhor. Os nomes de arquivo e a busca rápida de fotos seguem funcionando enquanto isso; as palavras dentro de documentos e capturas de tela voltam conforme os arquivos são lidos.</string>
+  <string name="models_get_full_bundle">Obter o pacote completo (%1$d MB)</string>
+  <string name="models_missing_full_bundle">As transferências separadas para estes pacotes não estão disponíveis aqui. Obtenha o pacote completo para os adicionar.</string>
+  <string name="models_missing_packs">O modelo de pesquisa está instalado. Pacotes em falta: %1$s.</string>
+  <string name="models_refused_installed_safe">Não foi possível usar o ficheiro transferido. O seu modelo de pesquisa instalado continua disponível.</string>
+  <string name="models_search_installed">O modelo de pesquisa está instalado.</string>
 </resources>

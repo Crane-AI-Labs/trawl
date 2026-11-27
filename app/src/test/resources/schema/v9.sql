@@ -1,0 +1,98 @@
+CREATE INDEX files_date ON files(date_ms DESC);
+
+CREATE INDEX files_kind_mtime ON files(kind, mtime DESC);
+
+CREATE INDEX files_kind_state ON files(kind, state);
+
+CREATE INDEX files_sensitive ON files(kind, date_ms) WHERE sensitive != 0 AND state != 'skipped';
+
+CREATE INDEX files_unscored_private ON files(kind, mtime DESC) WHERE looks_private IS NULL AND state != 'skipped';
+
+CREATE INDEX files_volume_uri ON files(volume, uri);
+
+CREATE INDEX files_words_pending ON files(kind, state) WHERE detail IS NULL AND state IN ('new', 'searchable');
+
+CREATE INDEX files_work ON files(state, priority, mtime DESC);
+
+CREATE INDEX segments_clip ON segments(file, vec IS NOT NULL) WHERE modality = 'clip';
+
+CREATE INDEX segments_file ON segments(file);
+
+CREATE TABLE files(
+      id INTEGER PRIMARY KEY,
+      volume TEXT NOT NULL,
+      mediastore_id INTEGER NOT NULL,
+      uri TEXT NOT NULL,
+      rel_path TEXT NOT NULL,
+      name TEXT NOT NULL,
+      kind TEXT NOT NULL,
+      mime TEXT,
+      size INTEGER NOT NULL,
+      mtime INTEGER NOT NULL,
+      width INTEGER,
+      height INTEGER,
+      duration_ms INTEGER,
+      pages INTEGER,
+      state TEXT NOT NULL DEFAULT 'new',
+      detail TEXT,
+      fingerprint TEXT NOT NULL,
+      priority INTEGER NOT NULL DEFAULT 9,
+      info TEXT,
+      indexed_at INTEGER, sensitive INTEGER NOT NULL DEFAULT 0, looks_private REAL, date_ms INTEGER NOT NULL DEFAULT 0,
+      UNIQUE(volume, mediastore_id)
+    );
+
+CREATE VIRTUAL TABLE fts USING fts5(name, body, tokenize = 'porter unicode61 remove_diacritics 2');
+
+CREATE TABLE meta(
+      key TEXT PRIMARY KEY,
+      value TEXT NOT NULL
+    );
+
+CREATE VIRTUAL TABLE sees_fts USING fts5(body, tokenize = 'porter unicode61 remove_diacritics 2');
+
+CREATE TABLE segments(
+      id INTEGER PRIMARY KEY,
+      file INTEGER NOT NULL REFERENCES files(id) ON DELETE CASCADE,
+      kind TEXT NOT NULL,
+      modality TEXT NOT NULL DEFAULT 'none',
+      loc_start INTEGER,
+      loc_end INTEGER,
+      late INTEGER NOT NULL DEFAULT 0,
+      vec BLOB
+    , marks TEXT);
+
+CREATE TRIGGER sees_gone AFTER DELETE ON segments BEGIN DELETE FROM sees_fts WHERE rowid = old.id; END;
+
+CREATE TRIGGER segments_gone AFTER DELETE ON segments BEGIN
+      DELETE FROM fts WHERE rowid = old.id;
+    END;
+
+CREATE TRIGGER vec_gen_delete AFTER DELETE ON segments WHEN old.vec IS NOT NULL AND old.modality != 'clip' BEGIN
+      INSERT INTO meta(key, value) VALUES('vec_gen', '1') ON CONFLICT(key) DO UPDATE SET value = CAST(value AS INTEGER) + 1;
+    END;
+
+CREATE TRIGGER vec_gen_file AFTER UPDATE OF state, kind ON files WHEN (new.state = 'skipped') != (old.state = 'skipped') OR new.kind != old.kind BEGIN
+      INSERT INTO meta(key, value) VALUES('vec_gen', '1') ON CONFLICT(key) DO UPDATE SET value = CAST(value AS INTEGER) + 1;
+      INSERT INTO meta(key, value) VALUES('vec_gen_quick', '1') ON CONFLICT(key) DO UPDATE SET value = CAST(value AS INTEGER) + 1;
+    END;
+
+CREATE TRIGGER vec_gen_insert AFTER INSERT ON segments WHEN new.vec IS NOT NULL AND new.modality != 'clip' BEGIN
+      INSERT INTO meta(key, value) VALUES('vec_gen', '1') ON CONFLICT(key) DO UPDATE SET value = CAST(value AS INTEGER) + 1;
+    END;
+
+CREATE TRIGGER vec_gen_quick_delete AFTER DELETE ON segments WHEN old.vec IS NOT NULL AND old.modality = 'clip' BEGIN
+      INSERT INTO meta(key, value) VALUES('vec_gen_quick', '1') ON CONFLICT(key) DO UPDATE SET value = CAST(value AS INTEGER) + 1;
+    END;
+
+CREATE TRIGGER vec_gen_quick_insert AFTER INSERT ON segments WHEN new.vec IS NOT NULL AND new.modality = 'clip' BEGIN
+      INSERT INTO meta(key, value) VALUES('vec_gen_quick', '1') ON CONFLICT(key) DO UPDATE SET value = CAST(value AS INTEGER) + 1;
+    END;
+
+CREATE TRIGGER vec_gen_quick_update AFTER UPDATE OF vec, late, file, modality ON segments WHEN new.modality = 'clip' OR old.modality = 'clip' BEGIN
+      INSERT INTO meta(key, value) VALUES('vec_gen_quick', '1') ON CONFLICT(key) DO UPDATE SET value = CAST(value AS INTEGER) + 1;
+    END;
+
+CREATE TRIGGER vec_gen_update AFTER UPDATE OF vec, late, file, modality ON segments WHEN new.modality != 'clip' OR old.modality != 'clip' BEGIN
+      INSERT INTO meta(key, value) VALUES('vec_gen', '1') ON CONFLICT(key) DO UPDATE SET value = CAST(value AS INTEGER) + 1;
+    END;

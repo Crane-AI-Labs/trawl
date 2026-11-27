@@ -5,6 +5,8 @@ import com.craneai.findr.index.FileState
 import com.craneai.findr.index.IndexStore
 import com.craneai.findr.index.PendingFile
 import com.craneai.findr.index.Segment
+import com.craneai.findr.index.ReadingStamps
+import com.craneai.findr.index.SoundtrackCatchUp
 import com.craneai.findr.index.VideoCatchUp
 import kotlinx.coroutines.withTimeoutOrNull
 
@@ -37,8 +39,9 @@ internal class UnderstandingStep(private val store: IndexStore, private val proc
     val segments = result.pieces.map { it.toSegment(late = from > 0) }
     val dbStarted = System.nanoTime()
     store.saveSegments(pending.file.id, segments, state, detail, replace = from == 0 && (!timedOut || result.pieces.isNotEmpty()),
-      info = VideoCatchUp.STAMP.takeIf { pending.file.kind == FileKind.VIDEO && from == 0 && !timedOut },
+      info = readingStamps(pending.file.kind, store.speechPackStamp).takeIf { from == 0 && !timedOut },
       keepQuick = IndexWorker.keepsQuick(segments, imagesByEmbeddingGemma))
+    if (!timedOut && state == FileState.UNDERSTOOD && pending.file.kind == FileKind.VIDEO) processor.seesWords(store, pending.file.id)
     val dbMs = (System.nanoTime() - dbStarted) / 1_000_000
     return Outcome(segments, result.nextChunk.takeUnless { timedOut }, detail, state == FileState.UNDERSTOOD, timedOut, dbMs)
   }
@@ -48,6 +51,20 @@ internal class UnderstandingStep(private val store: IndexStore, private val proc
     private val NEXT_CHUNK = Regex("next=(\\d+)")
     private val TIMEOUTS = Regex("timeouts=(\\d+)")
     private val SKIPPED_WINDOWS = Regex("skipped=\\d+")
+
+    /**
+     * What a fresh read of a [kind] file is made by today ([VideoCatchUp], [SoundtrackCatchUp]): written on its first step, so a file read by
+     * an older build, or begun by one, has less and is caught up. [speechPack]: the speech pack in use ([SoundtrackCatchUp.PACK_KEY]), whose
+     * reading a fresh read of a soundtrack already has.
+     */
+    fun readingStamps(kind: FileKind, speechPack: String? = null): String? {
+      val sound = when (kind) {
+        FileKind.VIDEO -> ReadingStamps.put(ReadingStamps.put(null, VideoCatchUp.KEY, VideoCatchUp.VERSION), SoundtrackCatchUp.KEY, SoundtrackCatchUp.VERSION)
+        FileKind.AUDIO -> ReadingStamps.put(null, SoundtrackCatchUp.KEY, SoundtrackCatchUp.VERSION)
+        else -> return null
+      }
+      return if (speechPack == null) sound else ReadingStamps.put(sound, SoundtrackCatchUp.PACK_KEY, speechPack)
+    }
 
     fun from(pending: PendingFile): Int = pending.detail?.let { NEXT_CHUNK.find(it)?.groupValues?.get(1)?.toIntOrNull() } ?: 0
   }

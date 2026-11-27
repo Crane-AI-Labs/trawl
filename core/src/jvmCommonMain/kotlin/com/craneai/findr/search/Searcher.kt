@@ -67,6 +67,12 @@ class Searcher(
     companion object { val NONE = Words(emptyList(), emptyMap(), emptySet()) }
   }
 
+  /** 1-slot cache of the last FTS5 words pass so ProgressiveSearch's fused Stage 2 reuses Stage 1's exact words in 0 ms when the index has not changed. */
+  private data class WordsCacheKey(
+    val rev: Long, val query: String, val filter: KindFilter, val prefixLast: Boolean, val dates: DateRange?, val datePhrase: String?, val sees: Boolean, val maxWordFiles: Int,
+  )
+  @Volatile private var lastWords: Pair<WordsCacheKey, Words>? = null
+
   /**
    * @param prefixLast treat the last word as unfinished ("recei" finds "receipt"), for search-as-you-type
    * @param quickVector the query in the quick-look model's space (null: that modality sits this query out, e.g. a
@@ -100,22 +106,34 @@ class Searcher(
     if (limit <= 0) return results(emptyList(), 0)
 
     val terms = Fusion.terms(query)
+    val hinted = Fusion.kindHints(query)
+    val sees = FileKind.VIDEO in hinted
     val dates = view.dates
     // A date read from the query is a filter, except for the files that carry those very words in their name or text: "Church choir
     // schedule Oct 2026.docx" (modified in September) is what "church choir schedule oct 2026" asks for, not something to hide.
     val carriers = if (dates != null && view.datePhrase != null && DateParser.namesCalendarDate(view.datePhrase)) carrying(view.datePhrase) else emptySet()
-    // The table is read only for a query holding a local grammar word (LocalLanguages.mayBeLocal); an English query never reads it.
-    val table = if (LocalLanguages.mayBeLocal(query)) keywords?.value else null
-    // Another local language (Runyankole, Kinyarwanda, Acholi: LocalKeywords.languageOf), or null: Luganda/Swahili or not local.
-    val language = table?.languageOf(query)
-    val local = language == null && Fusion.isLocal(query)
-    // A Luganda or Swahili query's words as the table reads them (LocalKeywords.words: "ng'ombe" stays one word); another local
-    // language's without its grammar words, matching its English words; any other query's as before.
-    val found = if (table != null && language != null) {
-      words(table.terms(query, language), filter, prefixLast, dates, carriers, nounClasses = language.bantu, english = { table.english(language, it) })
+    val wordsRev = store.changeCount
+    val maxWordFiles = limit.coerceIn(MAX_WORD_FILES, MAX_WORD_FILES_CAP)
+    val wordsKey = WordsCacheKey(wordsRev, query, filter, prefixLast, dates, view.datePhrase, sees, maxWordFiles)
+    val cachedWords = lastWords
+    val found = if (cachedWords != null && cachedWords.first == wordsKey) {
+      cachedWords.second
     } else {
-      val lgsw = if (local) table else null
-      words(lgsw?.terms(query) ?: terms, filter, prefixLast, dates, carriers, nounClasses = local, english = lgsw?.let { t -> { t.english(it) } })
+      // The table is read only for a query holding a local grammar word (LocalLanguages.mayBeLocal); an English query never reads it.
+      val table = if (LocalLanguages.mayBeLocal(query)) keywords?.value else null
+      // Another local language (Runyankole, Kinyarwanda, Acholi: LocalKeywords.languageOf), or null: Luganda/Swahili or not local.
+      val language = table?.languageOf(query)
+      val local = language == null && Fusion.isLocal(query)
+      // A Luganda or Swahili query's words as the table reads them (LocalKeywords.words: "ng'ombe" stays one word); another local
+      // language's without its grammar words, matching its English words; any other query's as before.
+      val computed = if (table != null && language != null) {
+        words(table.terms(query, language), filter, prefixLast, dates, carriers, nounClasses = language.bantu, english = { table.english(language, it) }, sees = sees, maxWordFiles = maxWordFiles)
+      } else {
+        val lgsw = if (local) table else null
+        words(lgsw?.terms(query) ?: terms, filter, prefixLast, dates, carriers, nounClasses = local, english = lgsw?.let { t -> { t.english(it) } }, sees = sees, maxWordFiles = maxWordFiles)
+      }
+      if (store.changeCount == wordsRev) lastWords = wordsKey to computed
+      computed
     }
     val inRange = dates?.let { d -> store.idsInDateRange(d).let { if (carriers.isEmpty()) it else it + carriers } }
     val best = meaning(queryVector, filter, quickVector, found.coverage.filterValues { it >= Fusion.MIN_COVERAGE }.keys, inRange)
@@ -124,7 +142,6 @@ class Searcher(
 
     // A file qualifies by standing out in meaning, or by containing at least half the query's words.
     val lookup = Fusion.isLookup(terms)
-    val hinted = Fusion.kindHints(query)
     val candidates = HashSet<Long>()
     for ((file, m) in best) if (m.z >= zGate) candidates += file
     for ((file, share) in coverage) if (share >= Fusion.MIN_COVERAGE) candidates += file
@@ -177,7 +194,7 @@ class Searcher(
       val semantic = best[file]
       val keyword = keywordOf[file]
       val useMeaning = semantic != null && (semantic.z >= zGate || keyword == null)
-      val segment = if (useMeaning) semantic?.segmentId else keyword?.segment
+      val segment = if (useMeaning) semantic.segmentId else keyword?.segment
       if (segment != null) pointedAt[file] = segment
     }
     val facts = segmentFacts(pointedAt.values + top.mapNotNull { keywordOf[it.first]?.segment })
@@ -243,6 +260,8 @@ class Searcher(
     includeSensitive: Boolean = false,
     view: ResultView = ResultView.DEFAULT,
     label: String = "",
+    /** When true, accepts any EmbeddingGemma modality (text, image, audio, sound) as seed and matches across all modalities allowed by [filter]. */
+    crossModal: Boolean = false,
     /** The seed's quick-look vector, made on demand (the image tower, ~0.1 s): called at most once, and only when [similarSeed] needs it. */
     quickSeed: (() -> FloatArray?)? = null,
   ): SearchResults {
@@ -256,7 +275,7 @@ class Searcher(
     val seedFile = store.fileById(fileId) ?: return results(emptyList(), 0)
     // A hidden seed (the lock closed after its result was drawn) must not draw out its neighbours.
     if (seedFile.sensitive && !includeSensitive) return results(emptyList(), 0)
-    val seed = similarSeed(fileId, quickSeed) ?: return results(emptyList(), 0)
+    val seed = similarSeed(fileId, crossModal = crossModal, quickSeed = quickSeed) ?: return results(emptyList(), 0)
 
     val index = seed.space.index(vectors, quick) ?: return results(emptyList(), 0)
     val allowed = BooleanArray(FileKind.entries.size).also { a -> filter.kinds.forEach { a[it.ordinal] = true } }
@@ -269,7 +288,7 @@ class Searcher(
       if (current == null || z > current.z) best[file] = Meaning(z, segment)
     }
     index.read {
-      val only = seed.space.modality.ordinal
+      val only = if (crossModal && seed.space == SimilarSpace.EMBEDDING_GEMMA) -1 else seed.space.modality.ordinal
       for (vector in seed.vectors) {
         if (index === vectors && inRange == null && vectors.twoStageApplies()) {
           twoStageMeaning(vector, allowed, emptySet(), ::offer, only = only, skip = fileId)
@@ -299,16 +318,17 @@ class Searcher(
     return results(hits, if (view.sort == SortOrder.BEST) Fusion.strongCount(hits.map { it.score }) else minOf(strongCount, hits.size))
   }
 
-  /** The exact scan for [similar]: every row of [index] scored, the z-scale taken from the rows of [only] modality except the seed's. */
+  /** The exact scan for [similar]: every row of [index] scored, the z-scale taken from the rows of [only] modality (or all modalities when [only] < 0) except the seed's. */
   private fun exactSimilar(
     index: VectorIndex, vector: FloatArray, allowed: BooleanArray, only: Int, skip: Long, offer: (Long, Double, Long) -> Unit,
   ) {
     val scores = index.scores(vector)
-    val rows = (0 until index.size).filter { index.modalityOrdinal(it) == only && index.fileId(it) != skip }.toIntArray()
+    val rows = (0 until index.size).filter { (only < 0 || index.modalityOrdinal(it) == only) && index.fileId(it) != skip }.toIntArray()
     if (rows.isEmpty()) return
     val sub = FloatArray(rows.size) { scores[rows[it]] }
+    val mods = IntArray(rows.size) { if (only < 0) index.modalityOrdinal(rows[it]) else only }
     val z = Fusion.meaning(
-      sub, IntArray(rows.size) { only }, BooleanArray(rows.size) { !index.isLate(rows[it]) }, BooleanArray(rows.size) { index.isStale(rows[it]) },
+      sub, mods, BooleanArray(rows.size) { !index.isLate(rows[it]) }, BooleanArray(rows.size) { index.isStale(rows[it]) },
     )
     for (i in rows.indices) {
       val row = rows[i]
@@ -349,12 +369,14 @@ class Searcher(
    * [egSparse]; otherwise the quick-look space, with the seed's stored quick-look vector, or one made by [quickSeed]
    * (once, on demand) if it has none. A seed is never searched in two spaces. Null when no usable vector exists.
    */
-  fun similarSeed(fileId: Long, quickSeed: (() -> FloatArray?)? = null): SimilarSeed? {
+  fun similarSeed(fileId: Long, crossModal: Boolean = false, quickSeed: (() -> FloatArray?)? = null): SimilarSeed? {
     val egBlobs = ArrayList<ByteArray>()
+    val egOtherBlobs = ArrayList<ByteArray>()
     val quickBlobs = ArrayList<ByteArray>()
     store.forEachVectorOfFile(fileId) { _, _, _, modality, _, blob ->
       when {
         modality == Modality.IMAGE && blob.size == vectors.dim * 2 -> egBlobs += blob
+        crossModal && modality in vectors.holds && blob.size == vectors.dim * 2 -> egOtherBlobs += blob
         modality == Modality.CLIP && quick != null && blob.size == quick.dim * 2 -> quickBlobs += blob
       }
     }
@@ -364,13 +386,14 @@ class Searcher(
       // evenly spaced across the file, the first and the last included (a video's key frames come in time order)
       return (0 until take).map { i -> Fp16.blobToFloats(blobs[if (take == 1) 0 else (i.toLong() * (n - 1) / (take - 1)).toInt()]) }
     }
-    val useQuick = quick != null && (egBlobs.isEmpty() || egSparse())
-    if (!useQuick) return if (egBlobs.isNotEmpty()) SimilarSeed(SimilarSpace.EMBEDDING_GEMMA, pick(egBlobs)) else null
+    val chosenEg = if (egBlobs.isNotEmpty()) egBlobs else egOtherBlobs
+    val useQuick = quick != null && (chosenEg.isEmpty() || (egBlobs.isNotEmpty() && egSparse()))
+    if (!useQuick) return if (chosenEg.isNotEmpty()) SimilarSeed(SimilarSpace.EMBEDDING_GEMMA, pick(chosenEg)) else null
     if (quickBlobs.isNotEmpty()) return SimilarSeed(SimilarSpace.QUICK_LOOK, pick(quickBlobs))
-    val made = quickSeed?.invoke()?.takeIf { it.size == quick!!.dim }
+    val made = quickSeed?.invoke()?.takeIf { it.size == quick.dim }
     return when {
       made != null -> SimilarSeed(SimilarSpace.QUICK_LOOK, listOf(made), embedded = true)
-      egBlobs.isNotEmpty() -> SimilarSeed(SimilarSpace.EMBEDDING_GEMMA, pick(egBlobs))   // no quick vector to be had: the sparse space still answers
+      chosenEg.isNotEmpty() -> SimilarSeed(SimilarSpace.EMBEDDING_GEMMA, pick(chosenEg))   // no quick vector to be had: the sparse space still answers
       else -> null
     }
   }
@@ -424,6 +447,9 @@ class Searcher(
         // A date range takes the exact path too: the first pass keeps the best rows of the whole index, and the files in range may not be among them.
         if (m == 0 && inRange == null && vectors.twoStageApplies()) { twoStageMeaning(eg!!, allowed, wordFiles, ::offer); return@withQuick }
         val egScores = if (n > 0) vectors.scores(eg!!) else FloatArray(0)
+        if (n > 0 && vectors.isQuantized) {
+          rescoreTopFp16Full(eg!!, egScores, allowed)
+        }
         val scores = FloatArray(n + m)
         val modality = IntArray(n + m)
         val setsScale = BooleanArray(n + m)
@@ -462,35 +488,125 @@ class Searcher(
     /** Find-similar: score only rows of this modality (ordinal) and leave out the seed's own rows, scale included. */
     only: Int = -1, skip: Long = -1L,
   ) {
-    val n = vectors.size
-    val groups = Modality.entries.size
-    val modality = IntArray(n) { vectors.modalityOrdinal(it) }
-    val onScale = Fusion.scaleRows(modality, BooleanArray(n) { !vectors.isLate(it) }, BooleanArray(n) { vectors.isStale(it) })
-    if (only >= 0) for (row in 0 until n) if (modality[row] != only || vectors.fileId(row) == skip) onScale[row] = false
-    val groupRows = IntArray(groups)
-    for (row in 0 until n) if (onScale[row]) groupRows[modality[row]]++
-    val seen = IntArray(groups)
-    val sample = checkNotNull(vectors.twoStage).scaleSample
-    val picked = IntArray(groupRows.sumOf { minOf(it, sample) })
-    var taken = 0
-    for (row in 0 until n) if (onScale[row]) {
-      val g = modality[row]
-      // systematic sample: scaleSample evenly spaced rows of a modality that has more (all of them otherwise)
-      if ((seen[g] + 1).toLong() * sample / groupRows[g] > seen[g].toLong() * sample / groupRows[g]) picked[taken++] = row
-      seen[g]++
-    }
-    val sampleScores = vectors.scoresAt(eg, picked)
-    val scale = Fusion.estimateScale(sampleScores, IntArray(taken) { modality[picked[it]] }, groupRows)
+    val ss = vectors.scaleSample(only, skip)
+    val sampleScores = vectors.scoresAt(eg, ss.pickedRows)
+    val scale = Fusion.estimateScale(sampleScores, ss.pickedModalities, ss.groupRows)
 
     val staged = vectors.stageCandidates(eg, allowed)
     val ofWords = vectors.rowsOfFiles(wordFiles.toLongArray().also { it.sort() })
     val rows = mergeSorted(staged, ofWords)
     val scores = vectors.scoresAt(eg, rows)
+    if (vectors.isQuantized && rows.isNotEmpty()) {
+      rescoreTopFp16Rows(eg, rows, scores, allowed, only, skip)
+    }
     for (i in rows.indices) {
       val row = rows[i]
-      if (only >= 0 && (modality[row] != only || vectors.fileId(row) == skip)) continue
-      if (allowed[vectors.kindOrdinal(row)]) offer(vectors.fileId(row), scale.z(scores[i], modality[row]), vectors.segmentId(row))
+      val m = vectors.modalityOrdinal(row)
+      if ((only >= 0 && m != only) || (skip >= 0L && vectors.fileId(row) == skip)) continue
+      if (allowed[vectors.kindOrdinal(row)]) offer(vectors.fileId(row), scale.z(scores[i], m), vectors.segmentId(row))
     }
+  }
+
+  /**
+   * Exact fp16 rescore of the Top-[FP16_RESCORE_K] SQ8 candidates per modality from SQLite `segments.vec` (PK lookup, < 1 ms).
+   * Restores 1.0000 Recall@10 parity with exact fp16 while keeping `vectors.bin` pure SQ8 (-49% to -62% smaller).
+   */
+  private fun rescoreTopFp16Rows(
+    eg: FloatArray,
+    rows: IntArray,
+    scores: FloatArray,
+    allowed: BooleanArray,
+    only: Int,
+    skip: Long,
+  ) {
+    val groups = Modality.entries.size
+    val tops = Array(groups) { TopK(FP16_RESCORE_K) }
+    for (i in rows.indices) {
+      val row = rows[i]
+      val mod = vectors.modalityOrdinal(row)
+      if ((only >= 0 && mod != only) || (skip >= 0 && vectors.fileId(row) == skip)) continue
+      if (!allowed[vectors.kindOrdinal(row)]) continue
+      tops[mod].offer(i, scores[i])
+    }
+    val pickPos = ArrayList<Int>()
+    val segIds = ArrayList<Long>()
+    for (g in 0 until groups) {
+      for (pos in tops[g].rows()) {
+        pickPos += pos
+        segIds += vectors.segmentId(rows[pos])
+      }
+    }
+    if (segIds.isEmpty()) return
+    val blobs = store.vectorsBySegmentIds(segIds)
+    if (blobs.isEmpty()) return
+    val q = normaliseQuery(eg)
+    val dim = vectors.dim
+    val expectBytes = dim * 2
+    for (j in pickPos.indices) {
+      val blob = blobs[segIds[j]] ?: continue
+      if (blob.size != expectBytes) continue
+      scores[pickPos[j]] = fp16BlobDot(q, blob, dim)
+    }
+  }
+
+  private fun rescoreTopFp16Full(eg: FloatArray, scores: FloatArray, allowed: BooleanArray) {
+    val groups = Modality.entries.size
+    val tops = Array(groups) { TopK(FP16_RESCORE_K) }
+    for (row in scores.indices) {
+      if (!allowed[vectors.kindOrdinal(row)]) continue
+      tops[vectors.modalityOrdinal(row)].offer(row, scores[row])
+    }
+    val pickRows = ArrayList<Int>()
+    val segIds = ArrayList<Long>()
+    for (g in 0 until groups) {
+      for (row in tops[g].rows()) {
+        pickRows += row
+        segIds += vectors.segmentId(row)
+      }
+    }
+    if (segIds.isEmpty()) return
+    val blobs = store.vectorsBySegmentIds(segIds)
+    if (blobs.isEmpty()) return
+    val q = normaliseQuery(eg)
+    val dim = vectors.dim
+    val expectBytes = dim * 2
+    for (j in pickRows.indices) {
+      val blob = blobs[segIds[j]] ?: continue
+      if (blob.size != expectBytes) continue
+      scores[pickRows[j]] = fp16BlobDot(q, blob, dim)
+    }
+  }
+
+  private fun normaliseQuery(v: FloatArray): FloatArray {
+    var sum = 0.0
+    for (x in v) sum += x.toDouble() * x
+    val norm = Math.sqrt(sum).toFloat()
+    return if (norm == 0f || Math.abs(norm - 1f) < 1e-6f) v else FloatArray(v.size) { v[it] / norm }
+  }
+
+  private fun fp16BlobDot(q: FloatArray, blob: ByteArray, dim: Int): Float {
+    val table = Halves.TO_FLOAT
+    var a0 = 0f; var a1 = 0f; var a2 = 0f; var a3 = 0f
+    var i = 0
+    while (i + 4 <= dim) {
+      val b = i * 2
+      val h0 = (blob[b].toInt() and 0xFF) or ((blob[b + 1].toInt() and 0xFF) shl 8)
+      val h1 = (blob[b + 2].toInt() and 0xFF) or ((blob[b + 3].toInt() and 0xFF) shl 8)
+      val h2 = (blob[b + 4].toInt() and 0xFF) or ((blob[b + 5].toInt() and 0xFF) shl 8)
+      val h3 = (blob[b + 6].toInt() and 0xFF) or ((blob[b + 7].toInt() and 0xFF) shl 8)
+      a0 += table[h0] * q[i]
+      a1 += table[h1] * q[i + 1]
+      a2 += table[h2] * q[i + 2]
+      a3 += table[h3] * q[i + 3]
+      i += 4
+    }
+    while (i < dim) {
+      val b = i * 2
+      val h = (blob[b].toInt() and 0xFF) or ((blob[b + 1].toInt() and 0xFF) shl 8)
+      a0 += table[h] * q[i]
+      i++
+    }
+    return (a0 + a1) + (a2 + a3)
   }
 
   /** The union of two ascending row lists, ascending, each row once. */
@@ -522,6 +638,7 @@ class Searcher(
   private fun words(
     terms: List<String>, filter: KindFilter, prefixLast: Boolean, dates: DateRange? = null, carriers: Set<Long> = emptySet(),
     nounClasses: Boolean = false, english: ((List<List<String>>) -> List<List<String>>)? = null,
+    sees: Boolean = false, maxWordFiles: Int = MAX_WORD_FILES,
   ): Words {
     if (terms.isEmpty() || filter.kinds.isEmpty()) return Words.NONE
     val kinds = filter.kinds.joinToString(",") { "'${it.name}'" }
@@ -531,7 +648,9 @@ class Searcher(
         val classForms = terms.map { if (nounClasses) Fusion.nounClassForms(it) else listOf(it) }
         val englishWords = english?.invoke(classForms)
         val forms = if (englishWords == null) classForms else classForms.mapIndexed { i, g -> g + englishWords[i] }
-        val star = BooleanArray(terms.size) { prefixLast && it == terms.lastIndex }
+        // Two-letter prefixes ("yo"*, "ma"*) expand across hundreds of thousands of FTS5 postings while typing; match them exact until 3+ letters.
+        val usePrefixLast = prefixLast && terms.last().length >= 3
+        val star = BooleanArray(terms.size) { usePrefixLast && it == terms.lastIndex }
         // One word's pattern: `"word"`, or `("form1" OR "form2" ...)` for its noun-class forms; `*` after each when it is a prefix.
         fun group(i: Int, prefix: Boolean): String {
           val s = if (prefix) "*" else ""
@@ -542,41 +661,79 @@ class Searcher(
         // so a result the panel showed while typing does not vanish when typing stops. A word that is in the index
         // stays whole ("cat" must not bring in "category"), and two-letter words are too short to stand for one.
         for (i in terms.indices) {
-          if (terms[i].length >= 3 && !star[i] && !isIndexed(db, patterns[i])) { star[i] = true; patterns[i] = group(i, true) }
+          if (terms[i].length >= 3 && !star[i] && !isIndexed(db, patterns[i]) && !(sees && seesIndexed(db, patterns[i]))) { star[i] = true; patterns[i] = group(i, true) }
         }
         val words = ArrayList<WordMatch>()
         val seen = HashSet<Long>()
+        // FTS5 `rank MATCH 'bm25(3.0, 1.0)' ORDER BY fts.rank` uses FTS5's native rank-ordered index scan and only
+        // computes `snippet(...)` on the returned rows instead of sorting and snippeting every posting in a temp B-tree.
         db.query(
           """
           SELECT s.file, s.id, snippet(fts, 1, '«', '»', '…', 12) FROM fts
           JOIN segments s ON s.id = fts.rowid
           JOIN files f ON f.id = s.file
-          WHERE fts MATCH ? AND f.state != 'skipped' AND f.kind IN ($kinds)$inDates
-          ORDER BY bm25(fts, 3.0, 1.0) LIMIT 1000
+          WHERE fts MATCH ? AND fts.rank MATCH 'bm25(3.0, 1.0)' AND f.state != 'skipped' AND f.kind IN ($kinds)$inDates
+          ORDER BY fts.rank LIMIT 1000
           """,
           patterns.joinToString(" OR "),
         ) { row ->
           val file = row.getLong(0)
-          if (words.size < MAX_WORD_FILES && seen.add(file)) words += WordMatch(file, row.getLong(1), if (row.isNull(2)) null else row.getText(2))
+          if (words.size < maxWordFiles && seen.add(file)) words += WordMatch(file, row.getLong(1), if (row.isNull(2)) null else row.getText(2))
+        }
+        if (sees && FileKind.VIDEO in filter.kinds) {
+          var added = 0
+          db.query(
+            "SELECT s.file, s.id FROM sees_fts JOIN segments s ON s.id = sees_fts.rowid JOIN files f ON f.id = s.file " +
+              "WHERE sees_fts MATCH ? AND s.kind = 'sees' AND f.kind = 'VIDEO' AND f.state != 'skipped'$inDates ORDER BY sees_fts.rank LIMIT 1000",
+            patterns.joinToString(" OR "),
+          ) { row ->
+            if (added < maxWordFiles && seen.add(row.getLong(0))) {
+              words += WordMatch(row.getLong(0), row.getLong(1), null)
+              added++
+            }
+          }
         }
         val coverage = HashMap<Long, Double>()
         val prefixOnly = HashSet<Long>()
         if (words.isNotEmpty()) {
-          val files = words.joinToString(",") { it.file.toString() }
-          for ((i, pattern) in patterns.withIndex()) {
-            val matched = HashSet<Long>()
-            db.query(
-              "SELECT DISTINCT s.file FROM fts JOIN segments s ON s.id = fts.rowid WHERE fts MATCH ? AND s.file IN ($files)",
-              pattern,
-            ) { matched += it.getLong(0); coverage.merge(it.getLong(0), 1.0 / patterns.size, Double::plus) }
-            if (star[i]) {
-              // One more query, only for a prefix: the files with the word whole ("toy", "toys") tell the others ("toilet") apart.
-              val whole = HashSet<Long>()
-              db.query(
-                "SELECT DISTINCT s.file FROM fts JOIN segments s ON s.id = fts.rowid WHERE fts MATCH ? AND s.file IN ($files)",
-                group(i, false),
-              ) { whole += it.getLong(0) }
-              prefixOnly += matched - whole
+          if (patterns.size == 1 && !star[0]) {
+            for (w in words) coverage[w.file] = 1.0
+          } else {
+            val fileIdx = LongIntMap(words.size)
+            for (idx in words.indices) fileIdx.put(words[idx].file, idx)
+            val files = words.joinToString(",") { it.file.toString() }
+            // Covering-index scan (segments_file) maps each candidate segment rowid -> file index in RAM so FTS5 coverage
+            // and prefix-only checks scan pure FTS rowids instead of probing the multi-GB `segments` vec-BLOB table per hit.
+            val segToFile = LongIntMap(maxOf(words.size * 4, 64))
+            db.query("SELECT id, file FROM segments WHERE file IN ($files)") { row ->
+              val idx = fileIdx.get(row.getLong(1))
+              if (idx >= 0) segToFile.put(row.getLong(0), idx)
+            }
+            val seenBuf = BooleanArray(words.size)
+            fun filesMatching(pat: String): HashSet<Long> {
+              java.util.Arrays.fill(seenBuf, false)
+              val out = HashSet<Long>()
+              db.query("SELECT rowid FROM fts WHERE fts MATCH ?", pat) { row ->
+                val idx = segToFile.get(row.getLong(0))
+                if (idx >= 0 && !seenBuf[idx]) {
+                  seenBuf[idx] = true
+                  out += words[idx].file
+                }
+              }
+              if (sees) seesFiles(db, pat, files, out)
+              return out
+            }
+            for ((i, pattern) in patterns.withIndex()) {
+              val matched = if (patterns.size == 1) {
+                HashSet<Long>(words.size * 2).also { s -> for (w in words) { s += w.file; coverage[w.file] = 1.0 } }
+              } else {
+                filesMatching(pattern).also { m -> for (f in m) coverage.merge(f, 1.0 / patterns.size, Double::plus) }
+              }
+              if (star[i]) {
+                // One more query, only for a prefix: the files with the word whole ("toy", "toys") tell the others ("toilet") apart.
+                val whole = filesMatching(group(i, false))
+                prefixOnly += matched - whole
+              }
             }
           }
         }
@@ -591,16 +748,18 @@ class Searcher(
           ) { named += it.getLong(0) }
         }
         val phrase = HashSet<Long>()
-        Fusion.phraseQuery(terms, prefixLast)?.let { phrasePattern ->
-          db.query(
-            """
-            SELECT DISTINCT s.file FROM fts
-            JOIN segments s ON s.id = fts.rowid
-            JOIN files f ON f.id = s.file
-            WHERE fts MATCH ? AND s.kind IN ($PHRASE_KINDS) AND f.state != 'skipped' AND f.kind IN ($kinds)$inDates LIMIT 1000
-            """,
-            phrasePattern,
-          ) { phrase += it.getLong(0) }
+        if (words.isNotEmpty() && coverage.values.any { it >= 1.0 - 1e-9 }) {
+          Fusion.phraseQuery(terms, usePrefixLast)?.let { phrasePattern ->
+            db.query(
+              """
+              SELECT DISTINCT s.file FROM fts
+              JOIN segments s ON s.id = fts.rowid
+              JOIN files f ON f.id = s.file
+              WHERE fts MATCH ? AND s.kind IN ($PHRASE_KINDS) AND f.state != 'skipped' AND f.kind IN ($kinds)$inDates LIMIT 1000
+              """,
+              phrasePattern,
+            ) { phrase += it.getLong(0) }
+          }
         }
         Words(words, coverage, phrase, prefixOnly, named)
       }
@@ -664,13 +823,48 @@ class Searcher(
     }
   }
 
+  private val indexedCacheLock = Any()
+  private var indexedCacheRev = -1L
+  private val indexedCache = object : LinkedHashMap<String, Boolean>(64, 0.75f, true) {
+    override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, Boolean>?): Boolean = size > IS_INDEXED_CACHE_MAX
+  }
+
   private fun isIndexed(db: Db, pattern: String): Boolean {
+    val rev = store.changeCount
+    synchronized(indexedCacheLock) {
+      if (indexedCacheRev != rev) {
+        indexedCache.clear()
+        indexedCacheRev = rev
+      }
+      indexedCache[pattern]?.let { return it }
+    }
     var found = false
     db.query("SELECT 1 FROM fts WHERE fts MATCH ? LIMIT 1", pattern) { found = true }
+    synchronized(indexedCacheLock) {
+      if (store.changeCount == rev) {
+        if (indexedCacheRev != rev) {
+          indexedCache.clear()
+          indexedCacheRev = rev
+        }
+        indexedCache[pattern] = found
+      }
+    }
     return found
   }
 
   // ---- hit details ---------------------------------------------------------------------------------------------------
+
+  private fun seesIndexed(db: Db, pattern: String): Boolean {
+    var found = false
+    db.query("SELECT 1 FROM sees_fts JOIN segments s ON s.id = sees_fts.rowid JOIN files f ON f.id = s.file WHERE sees_fts MATCH ? AND f.kind = 'VIDEO' AND f.state != 'skipped' LIMIT 1", pattern) { found = true }
+    return found
+  }
+
+  private fun seesFiles(db: Db, pattern: String, files: String, matched: MutableSet<Long>) {
+    db.query("SELECT DISTINCT s.file FROM sees_fts JOIN segments s ON s.id = sees_fts.rowid JOIN files f ON f.id = s.file WHERE sees_fts MATCH ? AND s.file IN ($files) AND f.kind = 'VIDEO'", pattern) {
+      matched += it.getLong(0)
+    }
+  }
 
   private class SegmentFacts(val id: Long, val file: Long, val kind: SegmentKind, val locStart: Long?, val locEnd: Long?, val text: String?, val marks: String? = null)
 
@@ -773,11 +967,15 @@ class Searcher(
 
   private companion object {
     const val MAX_WORD_FILES = 100
+    const val MAX_WORD_FILES_CAP = 500
     const val MAX_CARRIERS = 2000
+    const val IS_INDEXED_CACHE_MAX = 256
     /** A file whose words cover this much of the query (every word, allowing for float sums) holds all of it. */
     const val LITERAL_COVERAGE = 0.999
     /** How many of a video's key frames stand for it as a find-similar seed. */
     const val SIMILAR_SEED_VECTORS = 8
+    /** Top SQ8 candidates per modality rescored against exact fp16 BLOBs from SQLite. */
+    const val FP16_RESCORE_K = 100
     /** The segments whose text is the file's own words: chunks, pages, OCR and what was said or heard. Not names or folders. */
     val PHRASE_KINDS = listOf(SegmentKind.CHUNK, SegmentKind.PAGE, SegmentKind.OCR, SegmentKind.TRANSCRIPT, SegmentKind.SOUND)
       .joinToString(",") { "'${it.db}'" }

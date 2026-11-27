@@ -49,7 +49,7 @@ class LocalKeywordsAssetTest {
   }
 
   @Test fun theOtherLanguagesRowsNeverHoldACommonEnglishWordOrAGrammarWord() {
-    val common = GZIPInputStream(File("src/main/assets/${SpeechLanguageGate.COMMON_ASSET}").inputStream()).bufferedReader().readLines().toSet()
+    val common = GZIPInputStream(File("src/full/assets/${SpeechLanguageGate.COMMON_ASSET}").inputStream()).bufferedReader().readLines().toSet()
     val rows = lines.filter { !it.startsWith("#") && it.isNotBlank() }.map { it.split('\t') }
     val codes = rows.map { it[0] }.toSet()
     assertEquals(setOf("lg", "sw", "nyn", "kin", "ach"), codes)   // no Ateso (measured, did not help) and no Lugbara (no clean source)

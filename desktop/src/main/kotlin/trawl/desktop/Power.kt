@@ -58,7 +58,7 @@ object Power {
   private val MAINS_TYPES = setOf("mains", "usb", "usb_c", "usb_pd", "usb_dcp", "usb_cdp", "ac", "wireless")
 
   private fun run(cmd: List<String>): String? {
-    val p = ProcessBuilder(cmd).redirectErrorStream(true).start()
+    val p = Politeness.Cpu.track(ProcessBuilder(cmd).redirectErrorStream(true).start())
     val out = p.inputStream.bufferedReader().readText()
     return if (p.waitFor(3, java.util.concurrent.TimeUnit.SECONDS) && p.exitValue() == 0) out else null
   }
@@ -76,6 +76,13 @@ object Power {
 
   interface Kernel32 : Library {
     fun GetSystemPowerStatus(status: SystemPowerStatus): Boolean
+  }
+
+  /** Windows Battery Saver: `SYSTEM_POWER_STATUS.SystemStatusFlag` is 1 while it is on. */
+  fun windowsBatterySaver(): Boolean? {
+    val k = Native.load("kernel32", Kernel32::class.java)
+    val s = SystemPowerStatus()
+    return if (k.GetSystemPowerStatus(s)) (s.SystemStatusFlag.toInt() and 0xff) == 1 else null
   }
 
   private fun windowsAcLineStatus(): Int? {

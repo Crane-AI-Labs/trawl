@@ -60,12 +60,13 @@ class PrivacyPass(
         val batch = store.nextForPrivateScore(BATCH, engine.enabledKinds())
         if (batch.isEmpty()) break
         for (file in batch) {
-          if (stopped()) break
+          if (stopped() || !engine.privacyShouldRun()) break
           // A thumbnail on screen asked for its score (blur until scored): it goes first, and is not scored twice.
           yield()
           if (engine.privacyOnDemand.known(file.id)) continue
-          while (engine.userInteracting && !stopped()) delay(250)
-          while (engine.speechActive.get() > 0 && !stopped()) delay(250)
+          while (engine.userInteracting && !stopped() && engine.privacyShouldRun()) delay(250)
+          while (engine.speechActive.get() > 0 && !stopped() && engine.privacyShouldRun()) delay(250)
+          if (stopped() || !engine.privacyShouldRun()) break
           coroutineContext.ensureActive()
           val t0 = System.nanoTime()
           if (scoreAndSave(context, engine, file, "pass") == null) return@withContext   // the model itself won't run: stop, don't mark every file unreadable
@@ -80,6 +81,13 @@ class PrivacyPass(
           val mode = pace.mode()
           if (mode != before) Log.i(TAG, "privacy pace: $mode (episode paced ${maxOf(pacedMs, pace.pacedMs()) / 1000} s, $done scored this run)")
           pace.restMs(mode, workMs, engine.embeddingNow, Tuning.current.privacyDuty).let { if (it > 0) delay(it) }
+          // Predictive thermal pacing: prevents FAST mode (4 privacy threads) from overheating on warm phones.
+          val heat = engine.thermalDecision(engine.batteryCelsius())
+          when (heat.action) {
+            HeatPace.Action.COOL_DOWN -> { delay(1_000); break }
+            HeatPace.Action.PACE -> HeatPace.restMs(workMs, hot = true, duty = heat.duty).let { if (it > 0) delay(it) }
+            HeatPace.Action.FULL_SPEED -> {}
+          }
           // Heat pacing (a study knob, off in every shipped build): once the phone is warm, a further rest in proportion to the work.
           if (Tuning.current.paces) HeatPace.restMs(workMs, engine.heatPaced(), Tuning.current.pacePrivacyDuty).let { if (it > 0) delay(it) }
         }

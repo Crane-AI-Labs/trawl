@@ -70,7 +70,7 @@ class QuickLookTest {
 
   // ---- the query gate --------------------------------------------------------------------------------------------
 
-  private val gate = SpeechLanguageGate(lazyOf(File("src/main/assets/${SpeechLanguageGate.ASSET}").inputStream().use { EnglishWords.fromGzip(it) }))
+  private val gate = SpeechLanguageGate(lazyOf(File("src/full/assets/${SpeechLanguageGate.ASSET}").inputStream().use { EnglishWords.fromGzip(it) }))
 
   @Test fun englishQueriesUseTheQuickLookModel() {
     listOf("dog on the beach", "receipt from the supermarket", "wedding photos", "Nakato birthday cake", "a red car parked outside")

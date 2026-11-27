@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="player_play">Zaana</string>
+  <string name="player_pause">Yemerezaaho</string>
+  <string name="player_rewind_10">Garuka enyima sikonda 10</string>
+  <string name="player_forward_10">Gyenda omumaisho sikonda 10</string>
+  <string name="player_jump_match">Gurukira aha %1$s</string>
+  <string name="player_open_external">Igura omuri app</string>
+  <string name="player_error">Fayiro egi terikubasa kuzaanwa aha.</string>
+  <string name="player_loading">Neeteekateeka okuzaana…</string>
+  <string name="player_seek_position">Omuwanya gw\'okuzaana</string>
+  <string name="action_preview">Reeba bukye</string>
+  <string name="action_show_preview">Yoreka okureeba bukye</string>
+  <string name="preview_loading">Neeteekateeka okureeba…</string>
+  <string name="preview_unavailable">Okureeba bukye tikuriho aha fayiro egi.</string>
+  <string name="preview_empty">Fayiro egi neeyera.</string>
+  <string name="preview_truncated">Neeyoreka enyiriri %1$d ez\'okubanza</string>
+  <string name="preview_bytes_truncated">Neeyoreka ekicweka ky\'okubanza eky\'egi fayiro</string>
+  <string name="preview_rows_cols">Enyiriri %1$d · emigongo %2$d</string>
+</resources>

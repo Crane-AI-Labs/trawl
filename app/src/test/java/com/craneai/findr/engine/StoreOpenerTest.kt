@@ -2,6 +2,9 @@ package com.craneai.findr.engine
 
 import com.craneai.findr.core.IndexOpenProblem
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
@@ -224,5 +227,34 @@ class StoreOpenerTest {
     r.opener.start(); r.opener.start()
     runCurrent()
     assertEquals(1, r.opens.size)
+  }
+
+  @Test fun startAfterReadyDoesNotReplaceOrLeakTheOpenStore() = runTest {
+    val rig = Rig(this) { null }
+    rig.opener.start()
+    runCurrent()
+    val first = rig.opener.current
+    rig.opener.start()
+    runCurrent()
+    assertEquals(1, rig.opens.size)
+    assertSame(first, rig.opener.current)
+  }
+
+  @Test fun cancellationDuringBlockingOpenClosesTheUnpublishedStore() = runTest {
+    val callerDispatcher = StandardTestDispatcher(testScheduler, name = "caller")
+    val ioDispatcher = StandardTestDispatcher(testScheduler, name = "io")
+    val openingScope = CoroutineScope(SupervisorJob() + callerDispatcher)
+    val store = Fake(1)
+    val opener = StoreOpener(
+      scope = openingScope,
+      ioDispatcher = ioDispatcher,
+      open = { _ -> openingScope.cancel(); store },
+      classify = { IndexOpenProblem.OTHER },
+      close = { it.closed = true },
+    )
+    opener.start()
+    runCurrent()
+    assertTrue("a completed blocking open must not lose its store at the dispatcher boundary", store.closed)
+    assertNull(opener.current)
   }
 }

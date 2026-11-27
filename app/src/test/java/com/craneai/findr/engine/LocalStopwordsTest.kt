@@ -12,7 +12,7 @@ import java.util.zip.GZIPInputStream
  * query keeps every word it had; the two kept on purpose are "ya" and "ku" (scripts/build_local_stopwords.py says why).
  */
 class LocalStopwordsTest {
-  private val common = GZIPInputStream(File("src/main/assets/${SpeechLanguageGate.COMMON_ASSET}").inputStream()).bufferedReader().readLines().toSet()
+  private val common = GZIPInputStream(File("src/full/assets/${SpeechLanguageGate.COMMON_ASSET}").inputStream()).bufferedReader().readLines().toSet()
 
   @Test fun noCommonEnglishWordIsAGrammarWordExceptTheTwoChosen() {
     assertTrue(common.size > 1000)

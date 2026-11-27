@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="pack_speech_lg_name">Hadalka Luganda</string>
+  <string name="pack_speech_nyn_name">Hadalka Runyankole</string>
+  <string name="pack_speech_ach_name">Hadalka Acholi</string>
+  <string name="pack_speech_sw_name">Hadalka Sawaaxili</string>
+  <string name="pack_speech_xog_name">Hadalka Lusoga (tijaabo)</string>
+  <string name="speech_language_lg">Luganda</string>
+  <string name="speech_language_nyn">Runyankole</string>
+  <string name="speech_language_ach">Acholi</string>
+  <string name="speech_language_sw">Sawaaxili</string>
+  <string name="speech_language_xog">Lusoga</string>
+  <string name="pack_speech_language_benefit">Wuxuu helaa waxa lagu sheegay farriimaha codka iyo fiidyowyada %1$s, kuwaas oo raadinta hadalka Ingiriisku aanay akhrin karin. Tijaabooyinkeennii codka saxda ah wuxuu yimid kaalinta koowaad %2$d%%, halka la\'aantiis uu ahaa %3$d%%.</string>
+  <string name="pack_speech_language_cost">Mar labaad ayuu akhriyaa hadalka aan Ingiriiska ahayn, sidaas darteed faylashaasi waxay qaataan waqti dheeraad ah, mana aha mid qumman: filo ereyo qaldan. Ingiriiska sidii hore ayaa loo akhriyaa. Hal luqad oo hadal ah markiiba; xusuus dheeraad ah wuxuu u baahan yahay marka uu shaqeynayo oo keliya.</string>
+</resources>

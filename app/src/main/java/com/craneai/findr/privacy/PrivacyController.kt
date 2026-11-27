@@ -24,8 +24,7 @@ import kotlinx.coroutines.flow.StateFlow
  *
  * Everything here runs on the main thread.
  */
-class PrivacyController(private val app: Application, private val engine: SearchEngine) {
-  val prefs = PrivacyPrefs(app)
+class PrivacyController(private val app: Application, private val engine: SearchEngine, val prefs: PrivacyPrefs = PrivacyPrefs(app)) {
   private val gate = PrivacyGate(configOf())
   private val main = Handler(Looper.getMainLooper())
 
@@ -62,7 +61,8 @@ class PrivacyController(private val app: Application, private val engine: Search
   }
 
   /** Call once, from Application.onCreate. */
-  fun start() {
+  fun start(startedActivities: Int = 0) {
+    started = startedActivities
     gate.onProcessStart()
     publish()
     app.registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks {

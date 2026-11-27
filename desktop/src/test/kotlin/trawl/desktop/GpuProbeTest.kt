@@ -46,6 +46,58 @@ class GpuProbeTest {
     // No bin/java (the macOS runtime): the app's own launcher, told by a flag.
     val mac = GpuProbe.childCommand(File("/m/model.litertlm"), "/nonexistent", "cp.jar", { "/Applications/Trawl.app/Contents/MacOS/Trawl" }, logs, Os.MAC)
     assertEquals(listOf("/Applications/Trawl.app/Contents/MacOS/Trawl", "--gpu-probe", "/m/model.litertlm"), mac)
+    // When a staging cache dir is provided, both command forms append it so compiled caches can be promoted on exit 0.
+    val staging = File("/data/trawl/engine-cache.probe-123")
+    val macStaged = GpuProbe.childCommand(File("/m/model.litertlm"), "/nonexistent", "cp.jar", { "/Applications/Trawl.app/Contents/MacOS/Trawl" }, logs, Os.MAC, stagingDir = staging)
+    assertEquals(listOf("/Applications/Trawl.app/Contents/MacOS/Trawl", "--gpu-probe", "/m/model.litertlm", staging.absolutePath), macStaged)
+  }
+
+  @Test fun cleanExitPromotesCompiledCacheAndDeletesStagingDir() {
+    val root = Files.createTempDirectory("trawl-probe-promote").toFile()
+    val cacheDir = File(root, "engine-cache")
+    var seenStaging: File? = null
+    val ok = GpuProbe.runWithStagingCache(cacheDir) { staging ->
+      seenStaging = staging
+      assertTrue(staging != null && staging.isDirectory)
+      assertEquals(root.canonicalFile, staging.parentFile.canonicalFile, "staging must be a sibling of cacheDir for atomic move")
+      File(staging, "model.litertlm.xnnpack_cache").writeText("compiled-cpu")
+      File(staging, "metal/vision_weight_cache.bin").apply { parentFile.mkdirs(); writeText("compiled-gpu") }
+      true
+    }
+    assertTrue(ok)
+    assertEquals("compiled-cpu", File(cacheDir, "model.litertlm.xnnpack_cache").readText())
+    assertEquals("compiled-gpu", File(cacheDir, "metal/vision_weight_cache.bin").readText())
+    assertFalse(seenStaging!!.exists(), "staging dir must be cleaned up after promotion")
+    root.deleteRecursively()
+  }
+
+  @Test fun crashOrFailureDeletesStagingDirWithoutTouchingCacheDir() {
+    val root = Files.createTempDirectory("trawl-probe-crash").toFile()
+    val cacheDir = File(root, "engine-cache").apply { mkdirs() }
+    val existing = File(cacheDir, "existing.cache").apply { writeText("good") }
+    var seenStaging: File? = null
+    val ok = GpuProbe.runWithStagingCache(cacheDir) { staging ->
+      seenStaging = staging
+      File(staging!!, "corrupt.cache").writeText("partial")
+      false
+    }
+    assertFalse(ok)
+    assertFalse(seenStaging!!.exists(), "staging dir must be deleted on crash/non-zero exit")
+    assertFalse(File(cacheDir, "corrupt.cache").exists(), "partial files must never be promoted")
+    assertEquals("good", existing.readText())
+
+    var thrownStaging: File? = null
+    val threw = runCatching {
+      GpuProbe.runWithStagingCache(cacheDir) { staging ->
+        thrownStaging = staging
+        File(staging!!, "boom.cache").writeText("partial")
+        error("probe boom")
+      }
+    }.isFailure
+    assertTrue(threw)
+    assertFalse(thrownStaging!!.exists(), "staging dir must be deleted even on exception")
+    assertFalse(File(cacheDir, "boom.cache").exists())
+    root.deleteRecursively()
   }
 
   private fun icd(vararg names: Pair<String, String>) = names.map { VulkanIcds.Icd(it.first, it.second) }
@@ -74,5 +126,58 @@ class GpuProbeTest {
     assertEquals(1, named.size)
     assertEquals(Os.LINUX, Platform.detect("Linux"))
     assertFalse(VulkanIcds.onlySoftwareHere(Os.MAC), "other systems have no such list")
+  }
+
+  @Test fun concurrentUsableCallsSerializeAndWriteAnswerAtomically() {
+    val d = Files.createTempDirectory("trawl-probe-concurrent").toFile()
+    val model = File(d, "m.litertlm").apply { writeText("model-bytes") }
+    val answer = File(d, "vision-backend.txt")
+    val runs = java.util.concurrent.atomic.AtomicInteger(0)
+    val startLatch = java.util.concurrent.CountDownLatch(1)
+    val results = java.util.Collections.synchronizedList(mutableListOf<Boolean>())
+    val threads = (1..4).map {
+      Thread {
+        startLatch.await()
+        results += GpuProbe.usable(
+          model,
+          answer,
+          run = {
+            runs.incrementAndGet()
+            Thread.sleep(60)
+            true
+          },
+          softwareOnly = { false },
+        )
+      }.apply { start() }
+    }
+    startLatch.countDown()
+    threads.forEach { it.join(5_000) }
+    assertEquals(1, runs.get(), "probeLock must serialize concurrent usable() calls so only one probes")
+    assertEquals(listOf(true, true, true, true), results)
+    assertTrue(answer.isFile)
+    assertEquals(listOf("m.litertlm", "vision-backend.txt"), d.list()!!.sorted(), "atomic answer write must leave no .tmp files behind")
+    d.deleteRecursively()
+  }
+
+  @Test fun awaitChildReapsTimedOutAndInterruptedProcess() {
+    if (Platform.os == Os.WINDOWS) return
+    val timedOut = ProcessBuilder("sleep", "30").start()
+    assertFalse(GpuProbe.awaitChild(timedOut, timeoutS = 0))
+    assertFalse(timedOut.isAlive, "timed-out child must be forcibly destroyed and reaped before returning")
+
+    val interruptedProc = ProcessBuilder("sleep", "30").start()
+    var result: Boolean? = null
+    var flagPreserved = false
+    val t = Thread {
+      result = GpuProbe.awaitChild(interruptedProc, timeoutS = 30)
+      flagPreserved = Thread.currentThread().isInterrupted
+    }
+    t.start()
+    Thread.sleep(80)
+    t.interrupt()
+    t.join(5_000)
+    assertEquals(false, result)
+    assertFalse(interruptedProc.isAlive, "interrupted child must be forcibly destroyed and reaped before returning")
+    assertTrue(flagPreserved, "awaitChild must restore the thread interrupt flag")
   }
 }

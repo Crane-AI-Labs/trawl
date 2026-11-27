@@ -38,7 +38,7 @@ class AppPathHarnessTest {
     val dir = File(world!!)
     val only = System.getenv("FINDR_ONLY")?.split(",")?.toSet()
     val ww = System.getenv("FINDR_WW")
-    val words by lazy { File(System.getenv("FINDR_WORDS") ?: "src/main/assets/${SpeechLanguageGate.ASSET}").inputStream().use { EnglishWords.fromGzip(it) } }
+    val words by lazy { File(System.getenv("FINDR_WORDS") ?: "src/full/assets/${SpeechLanguageGate.ASSET}").inputStream().use { EnglishWords.fromGzip(it) } }
     val split = System.getenv("FINDR_SPLIT")
     val weightOf: ((String) -> Double)? = when (ww) {
       null, "" -> null
@@ -47,7 +47,7 @@ class AppPathHarnessTest {
       else -> { val fixed = ww.toDouble(); { _: String -> fixed } }
     }
     val policyD19c: WordWeightPolicy? = if (ww == "d19c") {
-      val assets = File("src/main/assets/${LanguageCentroids.ASSET_DIR}")
+      val assets = File("src/full/assets/${LanguageCentroids.ASSET_DIR}")
       val index = File(assets, "index.json").readText()
       WordWeightPolicy(QueryLanguage(lazy { words }), { name ->
         LanguageCentroids.directoryFor(index, name)?.let { dir ->

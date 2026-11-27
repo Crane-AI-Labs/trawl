@@ -14,9 +14,9 @@ import org.junit.Test
  * the words-first answer stays at 2.0, a model with no centroid file falls back to the D19 word-list gate, and only counts are kept.
  */
 class WordWeightPolicyTest {
-  private val assets = File("src/main/assets/${LanguageCentroids.ASSET_DIR}")
+  private val assets = File("src/full/assets/${LanguageCentroids.ASSET_DIR}")
   private val index = File(assets, "index.json").readText()
-  private val words = EnglishWords.fromGzip(File("src/main/assets/english_words.txt.gz").inputStream())
+  private val words = EnglishWords.fromGzip(File("src/full/assets/english_words.txt.gz").inputStream())
   private val stock = "embeddinggemma-2-text-vision-440m.litertlm"
   private val fineTuned = "findr-eg2-ft-740m.litertlm"
   private val luganda = "ekifaananyi ky'embuzi eky'omwana"   // the word-list gate calls this non-English

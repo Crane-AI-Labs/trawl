@@ -19,7 +19,8 @@ OHS kotlin-fhir-engine's conformance pages. Every row says where the evidence is
 | Scanned PDF (images only) | **partly** | OCR of the first 50 scanned pages | 15-page scan test on the Infinix |
 | Password-protected PDF | **not yet** | file name only | messy corpus |
 | Archives, APKs, databases | name only, by design | file name only | messy corpus |
-| App caches, `.nomedia` folders, trash, thumbnails | skipped by design | nothing | messy corpus |
+| App caches, trash, thumbnails | skipped by design | nothing | messy corpus |
+| `.nomedia` folders | skipped except documents and PDFs under WhatsApp/Telegram `… Documents` folders, including Sent; Private subfolders still stay out | ordinary document reading for the exception; folder exclusions always win | `RulesTest`; `FolderGroupsTest`; `CrawlerTest` |
 
 ## Languages (search by meaning)
 | Language | Status | Measured | Evidence |

@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -66,10 +67,15 @@ internal fun pickedFiles(ui: MainUi, c: AppController): List<com.craneai.findr.c
  * Mark as sensitive / Not sensitive. Our own popup, not the platform's, so it is
  * drawn in Sunlight and behaves the same on every computer; it sits where the pointer was and slides back inside the window if it would hang off.
  */
+private val MENU_SHAPE = RoundedCornerShape(10.dp)
+private val MENU_ROW_SHAPE = RoundedCornerShape(7.dp)
+
 @Composable
 fun ResultMenu(ui: MainUi, c: AppController, row: ResultRow) {
-  val m = ui.menu
-  if (m == null || m.id != row.file.id) return
+  // Isolate menu-open checks per row so opening a menu on one row does not recompose or mount popups on every other visible row.
+  val openForRow by remember(row.file.id, ui) { derivedStateOf { ui.menu?.id == row.file.id } }
+  if (!openForRow) return
+  val m = ui.menu ?: return
   val tk = LocalSunlight.current
   val f = row.file
   val mod = MainUi.modName
@@ -99,7 +105,7 @@ fun ResultMenu(ui: MainUi, c: AppController, row: ResultRow) {
     add(MenuItem(t("action_copy"), Icons.Copy, "$mod C") { close(); leaving(listOf(f.id)) { c.copyFiles(listOf(f)) } })
     add(MenuItem(t("action_copy_path"), Icons.Copy, "$mod Shift C") { close(); leaving(listOf(f.id)) { c.copyPath(f) } })
     if (c.canShare) add(MenuItem(t("action_share"), Icons.Share, null) { close(); leaving(listOf(f.id)) { c.share(listOf(f)) } })
-    if (c.canFindSimilar(f)) add(MenuItem(t("action_find_similar"), Icons.ImageSearch, null) { close(); c.findSimilar(f, nameHidden = blur.hides(f)) })
+    if (c.canFindSimilar(f)) add(MenuItem(t("action_find_similar"), Icons.ImageSearch, "$mod Shift S") { close(); c.findSimilar(f, nameHidden = blur.hides(f)) })
     // Marking is the person's own word for "this one is private": the file then stays out of results until they show sensitive files.
     // A file that is only sensitive because of its folder cannot be unmarked here (the folder rule is in Settings, Privacy).
     if (privacy != null && (f.markedSensitive || !f.sensitive)) {
@@ -116,7 +122,6 @@ fun ResultMenu(ui: MainUi, c: AppController, row: ResultRow) {
       }
     }
   }
-  val shape = RoundedCornerShape(10.dp)
   Popup(
     popupPositionProvider = provider, onDismissRequest = { close() }, properties = PopupProperties(focusable = true),
     onPreviewKeyEvent = { e ->
@@ -131,7 +136,7 @@ fun ResultMenu(ui: MainUi, c: AppController, row: ResultRow) {
     },
   ) {
     Column(
-      Modifier.widthIn(min = 240.dp).width(IntrinsicSize.Max).clip(shape).background(tk.paper).border(Sun.Border, tk.line, shape).padding(Sun.S4)
+      Modifier.widthIn(min = 240.dp).width(IntrinsicSize.Max).clip(MENU_SHAPE).background(tk.paper).border(Sun.Border, tk.line, MENU_SHAPE).padding(Sun.S4)
     ) {
       items.forEachIndexed { i, item -> MenuRow(item, active == i) }
     }
@@ -141,13 +146,12 @@ fun ResultMenu(ui: MainUi, c: AppController, row: ResultRow) {
 @Composable
 private fun MenuRow(item: MenuItem, keyboardActive: Boolean) {
   val tk = LocalSunlight.current
-  val shape = RoundedCornerShape(7.dp)
   val source = remember { MutableInteractionSource() }
   val hovered by source.collectIsHoveredAsState()
   Row(
-    Modifier.fillMaxWidth().clip(shape).pointerHoverIcon(PointerIcon.Hand).hoverable(source)
-      .background(if (hovered || keyboardActive) tk.paper2 else androidx.compose.ui.graphics.Color.Transparent, shape)
-      .menuActiveRing(keyboardActive, shape)
+    Modifier.fillMaxWidth().clip(MENU_ROW_SHAPE).pointerHoverIcon(PointerIcon.Hand).hoverable(source)
+      .background(if (hovered || keyboardActive) tk.paper2 else androidx.compose.ui.graphics.Color.Transparent, MENU_ROW_SHAPE)
+      .menuActiveRing(keyboardActive, MENU_ROW_SHAPE)
       .clickable(role = Role.Button, onClick = item.run)
       .heightIn(min = 34.dp).padding(horizontal = Sun.S12, vertical = Sun.S4),
     verticalAlignment = Alignment.CenterVertically,

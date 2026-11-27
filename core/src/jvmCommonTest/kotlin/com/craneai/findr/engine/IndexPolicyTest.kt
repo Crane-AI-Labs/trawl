@@ -56,11 +56,116 @@ class IndexPolicyTest {
     assertEquals(PauseReason.TOO_HOT, decide(saver = true, thermal = 3).heldBy)
   }
 
-  @Test fun onTheChargerEverythingRunsAtAnyLevelOrHeat() {
-    for (pct in listOf(-1, 1, 29, 30, 100)) for (thermal in 0..6) {
-      val d = decide(charging = true, pct = pct, thermal = thermal)
-      assertEquals(Tier.BULK, d.tier)
-      assertNull(d.heldBy)
+  @Test fun chargerThermalTableAppliesAtEveryBatteryLevelAndPreset() {
+    val bulk = IndexPolicy.Decision(Tier.BULK, null)
+    val warm = bulk.copy(reducedThreads = true)
+    val hot = IndexPolicy.Decision(Tier.WORDS_ONLY, PauseReason.TOO_HOT)
+    val expected = listOf(bulk, bulk, warm, hot, hot, hot, hot)
+    for (pct in listOf(-1, 1, 29, 30, 100)) for (thermal in 0..6)
+      for (strict in listOf(false, true)) for (full in listOf(false, true)) for (saver in listOf(false, true)) {
+        assertEquals("charging pct=$pct thermal=$thermal strict=$strict full=$full saver=$saver", expected[thermal],
+          decide(charging = true, pct = pct, thermal = thermal, strict = strict, full = full, saver = saver))
+      }
+  }
+
+  // ---- a corroborated heat signal (D48, D51): SEVERE counts only when the battery (>= 40 C) or the headroom (>= 1.0) agrees; a stale
+  // status counts as none, and the charger cuts threads only when the phone measures warm (battery >= 38 C or headroom >= 0.85) ----
+
+  @Test fun corroborateTable() {
+    val batteries = listOf(Double.NaN, 25.0, 29.0, 37.0, 38.0, 39.9, 40.0, 45.0)
+    val headrooms = listOf(Float.NaN, 0.0f, 0.5f, 0.85f, 0.99f, 1.0f, 1.4f)
+    for (status in 0..6) for (b in batteries) for (h in headrooms) {
+      val agrees = b.isNaN() || b >= IndexPolicy.HOT_BATTERY_C || (!h.isNaN() && h >= IndexPolicy.HOT_HEADROOM)
+      val expected = if (status < IndexPolicy.HOT_THERMAL_STATUS || agrees) status else 0
+      assertEquals("status=$status battery=$b headroom=$h", expected, IndexPolicy.corroborate(status, b, h))
+    }
+  }
+
+  @Test fun measuredWarmthIsTheBatteryAt38OrTheHeadroomAt085() {
+    assertFalse(IndexPolicy.measuredWarm(Double.NaN, Float.NaN))
+    assertFalse(IndexPolicy.measuredWarm(37.9, 0.84f))
+    assertTrue(IndexPolicy.measuredWarm(38.0, Float.NaN))
+    assertTrue(IndexPolicy.measuredWarm(Double.NaN, 0.85f))
+    assertTrue(IndexPolicy.measuredWarm(30.0, 0.9f))
+  }
+
+  private fun decideHeat(charging: Boolean, thermal: Int, batteryC: Double, headroom: Float = Float.NaN, pct: Int = 80, strict: Boolean = false, full: Boolean = false, saver: Boolean = false) =
+    IndexPolicy.decide(charging, pct, thermal, strict, full, saver, batteryC = batteryC, headroom = headroom)
+
+  /** The KN4 and the A06 (MT6769): status 3 for days, battery 29-37 C, headroom low or not given. Decided as a cool phone (D51). */
+  @Test fun stuckCoolASevereStatusOnACoolPhoneCountsAsNone() {
+    for (b in listOf(29.0, 33.5, 36.0, 37.9)) for (h in listOf(Float.NaN, 0.3f, 0.84f)) {
+      val charger = decideHeat(charging = true, thermal = 3, batteryC = b, headroom = h)
+      assertEquals("charger battery=$b headroom=$h", IndexPolicy.Decision(Tier.BULK, null, reducedThreads = false, thermalStale = true), charger)
+      val battery = decideHeat(charging = false, thermal = 3, batteryC = b, headroom = h)
+      assertEquals("battery battery=$b headroom=$h", IndexPolicy.Decision(Tier.LIGHT, PauseReason.NOT_CHARGING, newFilesFullQuality = true, thermalStale = true), battery)
+      assertEquals(IndexPolicy.FollowUp.NEXT_BATCH, IndexPolicy.followUp(battery, paused = false, newFilesWaiting = true))   // not "retry later": nothing is too hot
+    }
+    // Every status from SEVERE up is the same when nothing agrees, and the presets, Battery Saver and the battery floor keep their limits.
+    for (thermal in 3..6) assertEquals(IndexPolicy.Decision(Tier.BULK, null, thermalStale = true), decideHeat(charging = true, thermal = thermal, batteryC = 34.0))
+    assertEquals(IndexPolicy.Decision(Tier.WORDS_ONLY, PauseReason.NOT_CHARGING, thermalStale = true), decideHeat(false, 3, 34.0, strict = true))
+    assertEquals(IndexPolicy.Decision(Tier.BULK, null, thermalStale = true), decideHeat(false, 3, 34.0, full = true))
+    assertEquals(IndexPolicy.Decision(Tier.LIGHT, PauseReason.NOT_CHARGING, newFilesFullQuality = false, thermalStale = true), decideHeat(false, 3, 34.0, saver = true))
+    assertEquals(PauseReason.BATTERY_LOW, decideHeat(false, 3, 34.0, pct = 20).heldBy)
+  }
+
+  @Test fun stuckWarmByHeadroomCutsThreadsOnTheCharger() {
+    for (h in listOf(0.85f, 0.9f, 0.99f)) for (thermal in 3..6) {
+      assertEquals("headroom=$h thermal=$thermal", IndexPolicy.Decision(Tier.BULK, null, reducedThreads = true, thermalStale = true), decideHeat(true, thermal, batteryC = 35.0, headroom = h))
+      // On battery the tier is the normal one (the warm share is for a MODERATE status Android reports).
+      assertEquals(IndexPolicy.Decision(Tier.LIGHT, PauseReason.NOT_CHARGING, thermalStale = true), decideHeat(false, thermal, batteryC = 35.0, headroom = h))
+    }
+  }
+
+  @Test fun stuckWarmByBatteryCutsThreadsOnTheCharger() {
+    for (b in listOf(38.0, 39.0, 39.9)) for (h in listOf(Float.NaN, 0.2f)) for (thermal in 3..6) {
+      assertEquals("battery=$b headroom=$h thermal=$thermal", IndexPolicy.Decision(Tier.BULK, null, reducedThreads = true, thermalStale = true), decideHeat(true, thermal, batteryC = b, headroom = h))
+      assertEquals(IndexPolicy.Decision(Tier.LIGHT, PauseReason.NOT_CHARGING, thermalStale = true), decideHeat(false, thermal, batteryC = b, headroom = h))
+    }
+  }
+
+  @Test fun aGenuinelyHotPhoneStillStopsAtWordsOnTheChargerAndOnBattery() {
+    val hot = IndexPolicy.Decision(Tier.WORDS_ONLY, PauseReason.TOO_HOT)
+    for (charging in listOf(true, false)) for (thermal in 3..6) {
+      assertEquals("battery hot charging=$charging thermal=$thermal", hot, decideHeat(charging, thermal, batteryC = 40.0))
+      assertEquals("battery hot charging=$charging thermal=$thermal", hot, decideHeat(charging, thermal, batteryC = 46.0, headroom = 0.2f))
+      assertEquals("headroom agrees charging=$charging thermal=$thermal", hot, decideHeat(charging, thermal, batteryC = 35.0, headroom = 1.0f))
+      assertEquals("headroom agrees charging=$charging thermal=$thermal", hot, decideHeat(charging, thermal, batteryC = 35.0, headroom = 1.6f))
+      assertEquals("no battery temperature: nothing disagrees charging=$charging thermal=$thermal", hot, decideHeat(charging, thermal, batteryC = Double.NaN))
+    }
+    assertEquals(IndexPolicy.FollowUp.RETRY_LATER, IndexPolicy.followUp(hot, paused = false, newFilesWaiting = true))
+  }
+
+  @Test fun belowSevereTheStatusIsUsedAsItIsAndMeasuredWarmthDecidesTheChargerThreads() {
+    // A hot battery with a calm status is the worker's own battery rest (41 / 44 C), not the policy's: the tiers are unchanged.
+    for (charging in listOf(true, false)) for (thermal in 0..2) for (b in listOf(Double.NaN, 30.0, 38.0, 45.0)) for (h in listOf(Float.NaN, 0.2f, 0.85f, 1.5f)) {
+      val plain = decide(charging = charging, thermal = thermal)
+      // MODERATE on the charger cuts threads when the phone measures warm, or measures nothing at all (Android's word is all there is).
+      val reduced = charging && thermal == IndexPolicy.WARM_THERMAL_STATUS && (IndexPolicy.measuredWarm(b, h) || (b.isNaN() && h.isNaN()))
+      assertEquals("charging=$charging thermal=$thermal battery=$b headroom=$h", plain.copy(reducedThreads = reduced), decideHeat(charging, thermal, b, h))
+    }
+  }
+
+  @Test fun batteryThermalTableKeepsTheExistingLevelPresetAndSaverLimits() {
+    val words = IndexPolicy.Decision(Tier.WORDS_ONLY, PauseReason.NOT_CHARGING)
+    val light = IndexPolicy.Decision(Tier.LIGHT, PauseReason.NOT_CHARGING)
+    val warm = light.copy(newFilesFullQuality = false)
+    val hot = IndexPolicy.Decision(Tier.WORDS_ONLY, PauseReason.TOO_HOT)
+    val low = IndexPolicy.Decision(Tier.WORDS_ONLY, PauseReason.BATTERY_LOW)
+    val bulk = IndexPolicy.Decision(Tier.BULK, null)
+    for (strict in listOf(false, true)) for (full in listOf(false, true)) for (saver in listOf(false, true)) {
+      val cool = when {
+        strict -> words
+        full -> bulk
+        saver -> warm
+        else -> light
+      }
+      val expected = listOf(cool, cool, if (strict) words else warm, hot, hot, hot, hot)
+      for (pct in listOf(-1, 1, 29, 30, 100)) for (thermal in 0..6) {
+        assertEquals("battery pct=$pct thermal=$thermal strict=$strict full=$full saver=$saver",
+          if (pct in 0..29) low else expected[thermal],
+          decide(pct = pct, thermal = thermal, strict = strict, full = full, saver = saver))
+      }
     }
   }
 
@@ -105,8 +210,15 @@ class IndexPolicyTest {
     assertFalse("words-only has none", decide(thermal = 3).newFilesFullQuality)
   }
 
-  @Test fun theChargerIsNotSlowedByModerateHeat() {
-    assertEquals(Tier.BULK, decide(charging = true, thermal = 2).tier)
+  @Test fun moderateHeatOnTheChargerKeepsBulkWithReducedThreads() {
+    val warm = decide(charging = true, thermal = 2)
+    assertEquals(Tier.BULK, warm.tier)
+    assertTrue(warm.bulkAllowed)
+    assertTrue(warm.newFilesFullQuality)
+    assertTrue(warm.reducedThreads)
+    assertNull(warm.heldBy)
+    assertFalse(decide(charging = true, thermal = 1).reducedThreads)
+    assertFalse(decide(thermal = 2).reducedThreads)
   }
 
   @Test fun lowBatteryIsReportedBeforeHeat() {
@@ -176,6 +288,16 @@ class IndexPolicyTest {
   @Test fun onTheChargerTheBulkPassTakesNewFilesSoNothingExtraIsQueued() {
     assertEquals(IndexPolicy.FollowUp.NONE, follow(decide(charging = true)))
     assertEquals(IndexPolicy.FollowUp.NONE, follow(decide(charging = true, pct = 5)))
+  }
+
+  @Test fun severeHeatOnTheChargerRetriesLaterJustAsOnBattery() {
+    val hot = decide(charging = true, thermal = IndexPolicy.HOT_THERMAL_STATUS)
+    assertEquals(decide(thermal = IndexPolicy.HOT_THERMAL_STATUS), hot)
+    assertEquals(IndexPolicy.FollowUp.RETRY_LATER, follow(hot))
+    assertEquals(IndexPolicy.FollowUp.NONE, follow(hot, paused = true))
+    assertEquals(IndexPolicy.FollowUp.NONE, follow(hot, waiting = false))
+    assertEquals(IndexPolicy.FollowUp.NONE, follow(hot, paused = true, waiting = false))
+    assertEquals(IndexPolicy.FollowUp.NONE, follow(decide(charging = true, thermal = IndexPolicy.WARM_THERMAL_STATUS)))
   }
 
   @Test fun theStrictChargingOnlySettingStillKeepsEverythingHeavierOffBattery() {

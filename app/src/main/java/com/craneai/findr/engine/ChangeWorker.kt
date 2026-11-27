@@ -14,7 +14,7 @@ import com.craneai.findr.FindrApp
  */
 class ChangeWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
   override suspend fun doWork(): Result {
-    val engine = (applicationContext as FindrApp).engine as? FindrEngine ?: return Result.success()
+    val engine = (applicationContext as FindrApp).awaitEngine() as? FindrEngine ?: return Result.success()
     try {
       if (!engine.hasAllFilesAccess()) return Result.success()
       if (engine.paused) {   // paused: a file deleted meanwhile still leaves the index (the crawl only removes while paused)

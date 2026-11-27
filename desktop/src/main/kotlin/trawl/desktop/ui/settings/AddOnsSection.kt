@@ -122,7 +122,7 @@ fun FirstRunAddOns(manager: AddOnManager, privacy: PrivacyController) {
   Text(t("first_addons_body"), style = SunType.Body, color = tk.ink2)
   Spacer(Modifier.height(Sun.S12))
   Column(verticalArrangement = Arrangement.spacedBy(Sun.S12)) {
-    for (def in offered) AddOnCard(def, states[def.id] ?: AddOnState.NotInstalled, declined = privacy.declined(def.id), update = null, manager = manager, privacy = privacy, onRemove = {})
+    for (def in offered) AddOnCard(def, states[def.id] ?: AddOnState.NotInstalled, declined = privacy.declined(def.id), update = null, manager = manager, privacy = privacy, onRemove = { manager.remove(def.id) })
     Text(t("first_addons_skip"), style = SunType.Caption)
   }
 }

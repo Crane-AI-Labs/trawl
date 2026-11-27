@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="pack_speech_lg_name">Inkulumo yesiLuganda</string>
+  <string name="pack_speech_nyn_name">Inkulumo yesiRunyankole</string>
+  <string name="pack_speech_ach_name">Inkulumo yesiAcholi</string>
+  <string name="pack_speech_sw_name">Inkulumo yesiSwahili</string>
+  <string name="pack_speech_xog_name">Inkulumo yesiLusoga (beta)</string>
+  <string name="speech_language_lg">isiLuganda</string>
+  <string name="speech_language_nyn">isiRunyankole</string>
+  <string name="speech_language_ach">isiAcholi</string>
+  <string name="speech_language_sw">isiSwahili</string>
+  <string name="speech_language_xog">isiLusoga</string>
+  <string name="pack_speech_language_benefit">Ithola okushiwo kumazwi aqoshiwe namavidiyo esi-%1$s, ukusesha kwesiNgisi okungakwazi ukukufunda. Ekuhloleni kwethu izwi elifanele lafika kuqala ngo-%2$d%%, uma kuqhathaniswa no-%3$d%% ngaphandle kwalo.</string>
+  <string name="pack_speech_language_cost">Ifunda kabusha inkulumo engeyona eyisiNgisi okwesibili, ngakho lawo mafayela athatha isikhathi eside, futhi akuphelele: lindela amagama athile angalungile. IsiNgisi sifundwa njengakuqala. Ulimi olulodwa lwenkulumo ngesikhathi; ludinga inkumbulo eyengeziwe kuphela uma lusebenza.</string>
+</resources>

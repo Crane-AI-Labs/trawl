@@ -1,0 +1,9 @@
+{
+  "pad_pack_name": "pack_speech_sw",
+  "pack_id": "speech-sw",
+  "folder_name": "trawl-speech-sw",
+  "archive_name": "trawl-speech-sw.zip",
+  "delivery_type": "on-demand",
+  "expected_uncompressed_bytes": 131411551,
+  "staging_note": "Stage verified real weights into src/main/assets/<folder_name>/ via scripts/pack-speech-packs.sh --stage-pad before Play Console upload."
+}

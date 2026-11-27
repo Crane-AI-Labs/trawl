@@ -15,7 +15,7 @@ import org.junit.Test
  * "English word list loaded" and "Common word list loaded" prove the asset name half.
  */
 class BundledAssetsTest {
-  private val gz = File("src/main/assets/${SpeechLanguageGate.ASSET}")
+  private val gz = File("src/full/assets/${SpeechLanguageGate.ASSET}")
 
   @Test fun theWordListReadsTheSameGzippedOrAsPackaged() {
     val fromSource = gz.inputStream().use { EnglishWords.fromGzip(it) }
@@ -24,7 +24,7 @@ class BundledAssetsTest {
     assertEquals(fromSource.sizeBytes, fromApk.sizeBytes)
     listOf("market", "dawn", "receipts", "embwa", "mbwa").forEach { assertEquals(it, fromSource.isWord(it), fromApk.isWord(it)) }
     // the common-word list the gate judges with is packaged the same way
-    val commonGz = File("src/main/assets/${SpeechLanguageGate.COMMON_ASSET}")
+    val commonGz = File("src/full/assets/${SpeechLanguageGate.COMMON_ASSET}")
     val common = commonGz.inputStream().use { EnglishWords.fromGzip(it) }
     val commonApk = ByteArrayInputStream(GZIPInputStream(commonGz.inputStream()).use { it.readBytes() }).use { EnglishWords.fromGzip(it) }
     assertEquals(common.sizeBytes, commonApk.sizeBytes)

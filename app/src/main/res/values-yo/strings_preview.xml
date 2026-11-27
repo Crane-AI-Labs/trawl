@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="player_play">Ṣiṣẹ</string>
+  <string name="player_pause">Duro diẹ</string>
+  <string name="player_rewind_10">Pada sẹhin iṣẹju-aaya 10</string>
+  <string name="player_forward_10">Lọ siwaju iṣẹju-aaya 10</string>
+  <string name="player_jump_match">Fò lọ si %1$s</string>
+  <string name="player_open_external">Ṣi ninu ohun elo</string>
+  <string name="player_error">Ko le ṣiṣẹ faili yii nibi.</string>
+  <string name="player_loading">Ngba ṣiṣiṣẹ silẹ…</string>
+  <string name="player_seek_position">Ipo ṣiṣiṣẹ</string>
+  <string name="action_preview">Awotẹlẹ</string>
+  <string name="action_show_preview">Fi awotẹlẹ han</string>
+  <string name="preview_loading">Ngba awotẹlẹ silẹ…</string>
+  <string name="preview_unavailable">Awotẹlẹ ko si fun faili yii.</string>
+  <string name="preview_empty">Faili yii ṣofo.</string>
+  <string name="preview_truncated">Fifi awọn ila %1$d akọkọ han</string>
+  <string name="preview_bytes_truncated">Fifi apakan akọkọ ti faili yii han</string>
+  <string name="preview_rows_cols">Awọn ila %1$d · awọn ọwọn %2$d</string>
+</resources>

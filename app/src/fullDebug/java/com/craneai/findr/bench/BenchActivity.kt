@@ -65,7 +65,7 @@ class BenchActivity : Activity() {
     // `--es searchfile bench/q.txt`: the same, one query per line from a file in the app's files (no shell quoting to survive).
     (args.search ?: args.raw("searchfile")?.let { File(filesDir, it).readLines().joinToString("|") })?.let { qs ->
       scope.launch {
-        val engine = (application as com.craneai.findr.FindrApp).engine
+        val engine = (application as com.craneai.findr.FindrApp).awaitEngine()
         for (q in qs.split("|").map { it.trim() }.filter { it.isNotEmpty() }) {
           var last: com.craneai.findr.core.SearchResults? = null
           engine.searchProgressive(q).collect { last = it }
@@ -78,9 +78,11 @@ class BenchActivity : Activity() {
     // `--es index start`: what the app does once onboarding is done (crawl, then schedule the worker), without the UI, so a
     // timed run doesn't depend on this phone's onboarding state.
     if (args.index == "start") {
-      (application as com.craneai.findr.FindrApp).engine.startIndexing()
-      Log.i(TAG, "FINDR_INDEX_STARTED")
-      finish()
+      scope.launch {
+        (application as com.craneai.findr.FindrApp).awaitEngine().startIndexing()
+        Log.i(TAG, "FINDR_INDEX_STARTED")
+        finish()
+      }
       return
     }
     scope.launch {
@@ -88,10 +90,10 @@ class BenchActivity : Activity() {
       val out = File(base, "results/${args.tag}.json").apply { parentFile!!.mkdirs() }
       // The bench runs in the app's process, so a pending index worker (a long PDF's later steps, say) would compete for
       // the CPU: it skewed a decode bench 2.3x. Pause indexing for the run, wait for the worker to stop, restore after.
-      val engine = (application as? com.craneai.findr.FindrApp)?.engine as? com.craneai.findr.engine.FindrEngine
+      val engine = (application as? com.craneai.findr.FindrApp)?.awaitEngine() as? com.craneai.findr.engine.FindrEngine
       val pausedHere = engine != null && !engine.paused
       if (pausedHere) {
-        engine!!.pauseIndexing()
+        engine.pauseIndexing()
         val until = System.currentTimeMillis() + 120_000
         while (engine.workerState.running && System.currentTimeMillis() < until) kotlinx.coroutines.delay(500)
         say("indexing paused for the bench" + if (engine.workerState.running) " (worker still running after 120 s)" else "")
@@ -104,7 +106,7 @@ class BenchActivity : Activity() {
           JSONObject().put("tag", args.tag).put("error", t.toString())
         }
       if (pausedHere) {
-        engine!!.resumeIndexing()
+        engine.resumeIndexing()
         kotlinx.coroutines.delay(1_000)   // let the preference write land before bench.sh force-stops the app
       }
       out.writeText(result.toString(2))
@@ -585,7 +587,7 @@ class BenchActivity : Activity() {
 
   /** One setting from adb (`--es set quickLook=false`), applied through the engine like the Settings screen does. */
   private suspend fun applySetting(kv: String) {
-    val engine = (application as com.craneai.findr.FindrApp).engine
+    val engine = (application as com.craneai.findr.FindrApp).awaitEngine()
     val (key, value) = kv.split('=', limit = 2).let { it[0] to it.getOrElse(1) { "" } }
     // `profile=lite|standard|auto`: the debug setting that forces the memory profile; it takes effect at the next app start.
     if (key == "profile") {

@@ -78,7 +78,23 @@ val buildMacHotkey = tasks.register<Exec>("buildMacHotkey") {
   doFirst { out.get().asFile.parentFile.mkdirs() }
   commandLine("swiftc", "-O", "-target", "arm64-apple-macos13.0", src.absolutePath, "-o", out.get().asFile.absolutePath)
 }
-tasks.named("processResources") { dependsOn(buildMacHotkey) }
+// In-process macOS AppKit/Carbon bridge (native/trawl-mac.m): in-process RegisterEventHotKey, Spotlight-true overlay raise,
+// and native Cocoa NSDraggingSession (NSURL / public.file-url) file drag-and-drop. Compiled on Mac builds; skipped elsewhere.
+val buildMacNative = tasks.register<Exec>("buildMacNative") {
+  val src = file("native/trawl-mac.m")
+  val out = layout.buildDirectory.file("native/libtrawl_mac.dylib")
+  onlyIf { System.getProperty("os.name").startsWith("Mac") }
+  inputs.file(src); inputs.property("installName", "@rpath/libtrawl_mac.dylib"); outputs.file(out)
+  doFirst { out.get().asFile.parentFile.mkdirs() }
+  commandLine(
+    "clang", "-dynamiclib", "-O2", "-fobjc-arc", "-arch", "arm64", "-mmacosx-version-min=13.0",
+    "-install_name", "@rpath/libtrawl_mac.dylib",
+    "-ffile-prefix-map=${src.parentFile.absolutePath}=.",
+    "-framework", "Cocoa", "-framework", "Carbon",
+    src.absolutePath, "-o", out.get().asFile.absolutePath,
+  )
+}
+tasks.named("processResources") { dependsOn(buildMacHotkey, buildMacNative) }
 // --- end shell ---
 
 // The Touch ID helper (native/touchid.swift): same arrangement as the OCR helper. Compiled on a Mac into the app; skipped elsewhere.
@@ -116,6 +132,49 @@ val buildAppleQuickLook = tasks.register<Exec>("buildAppleQuickLook") {
   commandLine("swiftc", "-O", "-suppress-warnings", "-target", "arm64-apple-macos13.0", src.absolutePath, "-o", out.get().asFile.absolutePath)
 }
 tasks.named("processResources") { dependsOn(buildAppleQuickLook) }
+
+// Optional ARM64 NEON SDOT shared library for SQ8 vectors.bin v3 scoring (macOS ARM64 .dylib and Linux ARM64 .so; skipped on x86_64/Windows).
+val buildNeonVec = tasks.register<Exec>("buildNeonVec") {
+  val src = rootDir.resolve("../core/src/native/trawl_vec_neon.c")
+  val osName = System.getProperty("os.name")
+  val isArm64 = System.getProperty("os.arch").let { it == "aarch64" || it == "arm64" }
+  val isMacArm64 = osName.startsWith("Mac") && isArm64
+  val isLinuxArm64 = osName.startsWith("Linux") && isArm64
+  val out = layout.buildDirectory.file(if (isLinuxArm64) "native/libtrawl_vec_neon.so" else "native/libtrawl_vec_neon.dylib")
+  onlyIf { isMacArm64 || isLinuxArm64 }
+  inputs.file(src)
+  inputs.property("installName", if (isLinuxArm64) "libtrawl_vec_neon.so" else "@rpath/libtrawl_vec_neon.dylib")
+  outputs.file(out)
+  doFirst {
+    out.get().asFile.parentFile.mkdirs()
+    val jhome = listOfNotNull(
+      System.getProperty("java.home"),
+      System.getenv("JAVA_HOME"),
+    ).firstOrNull { File(it, "include/jni.h").isFile }
+      ?: throw GradleException("JDK include/jni.h not found for buildNeonVec")
+    if (isMacArm64) {
+      commandLine(
+        "clang", "-O3", "-shared", "-fPIC",
+        "-arch", "arm64", "-march=armv8.2-a+dotprod",
+        "-mmacosx-version-min=13.0",
+        "-install_name", "@rpath/libtrawl_vec_neon.dylib",
+        "-ffile-prefix-map=${src.parentFile.absolutePath}=.",
+        "-I$jhome/include", "-I$jhome/include/darwin",
+        src.absolutePath, "-o", out.get().asFile.absolutePath,
+      )
+    } else {
+      commandLine(
+        "cc", "-O3", "-shared", "-fPIC",
+        "-march=armv8.2-a+dotprod",
+        "-ffile-prefix-map=${src.parentFile.absolutePath}=.",
+        "-I$jhome/include", "-I$jhome/include/linux",
+        src.absolutePath, "-o", out.get().asFile.absolutePath,
+      )
+    }
+  }
+  commandLine("true")
+}
+tasks.named("processResources") { dependsOn(buildNeonVec) }
 
 // The third-party list the Licences screen shows is generated from what the desktop really ships: every jar on the resolved
 // runtimeClasspath (transitive ones too), with the licence read from its own POM (or the parent POM it inherits one from). The
@@ -286,7 +345,8 @@ dependencies {
   implementation("com.vaadin.external.google:android-json:0.0.20131108.vaadin1")
   implementation("net.sf.kxml:kxml2:2.3.0")                      // org.xmlpull pull parser, which :core's office-text reader uses (android.jar has it on a phone)
   implementation("net.java.dev.jna:jna:5.18.1")                  // LGPL-2.1 or Apache-2.0 (dual): FSEvents / native shims later
-  implementation("com.google.ai.edge.litertlm:litertlm-jvm:0.18.0")   // Apache-2.0: the same EmbeddingEngine API and .litertlm file as Android
+  // 0.19.1 is the newest JDK-21 (classfile 65.0) litertlm-jvm; 0.20.0 was published with JDK-25 bytecode (69.0).
+  implementation("com.google.ai.edge.litertlm:litertlm-jvm:0.19.1")   // Apache-2.0: the same EmbeddingEngine API and .litertlm file as Android
   // MIT: ONNX Runtime, the engine that runs the Privacy pack's classifier, as on the phone. The published jar carries the natives of every platform
   // (51 MB); the runtime classpath gets it cut to this system's (see SlimOnnxRuntime above).
   // PINNED AT 1.28.0 ON PURPOSE, and never to be raised without the zero-network gate (desktop/scripts/net-gate.py): ONNX Runtime 1.29 to 1.31 built
@@ -312,8 +372,25 @@ dependencies {
   testImplementation(compose.uiTest)                           // Apache-2.0: runComposeUiTest, the semantics tree the accessibility tests read (test only)
 }
 
+// The heap the installed app runs with, one list for the launcher (jvmArgs below), the launcher check and the tests that open a big index.
+// It was a fixed -Xmx1g, which a 3.6 GB index on a 32 GB Mac outgrew (22 Nov: "index open failed (MEMORY)" every minute for 40 hours). Now a share
+// of the computer's memory: 35% of the RAM up to 12 GB of it, so 4.2 GB on any Mac with 12 GB or more, 1.4 GB on a 4 GB laptop, 0.7 GB on a 2 GB
+// one. HotSpot has no floor for a percentage, and an explicit -Xmx would win over these, so the launcher must carry no -Xmx (checkLauncherHeap).
+// Valid on every jpackage target (macOS, Windows, Linux); nothing is read from the network or computed by a script at start.
+val shippedHeapArgs = listOf("-XX:MaxRAMPercentage=35", "-XX:MaxRAM=12g")
+// JEP 346 G1GC heap-return tuning: releases uncommitted idle Java heap regions back to the OS (-140 to -180 MB idle footprint)
+// without touching shippedHeapArgs (so checkLauncherHeap / testLauncherHeapGate keep verifying MaxRAMPercentage + MaxRAM + zero -Xmx/-Xms).
+val shippedGcReturnArgs = listOf(
+  "-XX:G1PeriodicGCInterval=30000",
+  "-XX:G1PeriodicGCSystemLoadThreshold=0.5",
+  "-XX:MinHeapFreeRatio=10",
+  "-XX:MaxHeapFreeRatio=25",
+)
+
 tasks.test {
   useJUnitPlatform()
+  // The index-open regression test starts child JVMs with the flags the installers ship (see IndexOpensUnderShippedHeapTest).
+  systemProperty("trawl.shippedHeapArgs", shippedHeapArgs.joinToString(" "))
   // Gradle starts test JVMs headless. On a Linux box with an X display (Xvfb is enough) the X11 tests need real AWT windows, so give them one;
   // everywhere else the default stays, and those tests skip themselves.
   if (org.gradle.internal.os.OperatingSystem.current().isLinux && !System.getenv("DISPLAY").isNullOrBlank()) systemProperty("java.awt.headless", "false")
@@ -494,6 +571,42 @@ val checkNoTelemetryInNatives = tasks.register("checkNoTelemetryInNatives") {
 }
 tasks.test { dependsOn(checkNoTelemetryInNatives) }
 
+// Every runtime dependency must be loadable by our bundled JDK 21 (classfile major version <= 65; e.g. litertlm-jvm 0.20.0 shipped JDK 25 / 69.0).
+val checkJvmClassfileVersion = tasks.register("checkJvmClassfileVersion") {
+  group = "trawl"
+  description = "Fails when any runtime classpath jar ships non-multi-release classes newer than JDK 21 (major version 65)."
+  val runtime = configurations.named("runtimeClasspath")
+  val stamp = layout.buildDirectory.file("checks/jvm-classfile-version.ok")
+  inputs.files(runtime); outputs.file(stamp)
+  doLast {
+    val maxMajor = 65 // JDK 21
+    var classes = 0
+    val tooNew = ArrayList<String>()
+    for (jar in runtime.get().files.filter { it.name.endsWith(".jar") }) {
+      ZipFile(jar).use { z ->
+        for (e in z.entries().asSequence().filter { !it.isDirectory && it.name.endsWith(".class") }) {
+          if (e.name == "module-info.class" || e.name.endsWith("/module-info.class")) continue
+          if (e.name.startsWith("META-INF/versions/")) {
+            val ver = e.name.removePrefix("META-INF/versions/").substringBefore('/').toIntOrNull()
+            if (ver != null && ver > 21) continue
+          }
+          val hdr = ByteArray(8)
+          val n = z.getInputStream(e).use { it.read(hdr) }
+          if (n == 8 && hdr[0] == 0xCA.toByte() && hdr[1] == 0xFE.toByte() && hdr[2] == 0xBA.toByte() && hdr[3] == 0xBE.toByte()) {
+            classes++
+            val major = ((hdr[6].toInt() and 0xFF) shl 8) or (hdr[7].toInt() and 0xFF)
+            if (major > maxMajor) tooNew += "${jar.name}!${e.name} (major $major > $maxMajor)"
+          }
+        }
+      }
+    }
+    if (tooNew.isNotEmpty()) throw GradleException("Runtime classpath contains bytecode newer than JDK 21 (65.0):\n  " + tooNew.take(20).joinToString("\n  "))
+    stamp.get().asFile.apply { parentFile.mkdirs(); writeText("scanned $classes classfiles: all <= $maxMajor\n") }
+    println("checkJvmClassfileVersion: $classes classfiles scanned, all <= JDK 21 (65)")
+  }
+}
+tasks.test { dependsOn(checkJvmClassfileVersion) }
+
 // ---- Windows: the Visual C++ runtime piece ONNX Runtime needs ---------------------------------------------------------------------------------
 // onnxruntime.dll (1.28, Windows) imports MSVCP140_1.dll. A clean Windows has no copy and the Temurin runtime does not carry one (it has msvcp140,
 // vcruntime140 and vcruntime140_1), so on such a PC the library fails to load ("Can't find dependent libraries"), the Privacy pack reads "Not
@@ -537,17 +650,17 @@ compose.desktop {
     mainClass = "trawl.desktop.MainKt"
     // The runtime inside every installer: the pinned Temurin from fetchRuntimeJdk above, never the machine's own JDK.
     pinnedJdkHome?.let { javaHome = it.absolutePath }
-    jvmArgs += listOf("-Xmx1g", "-Dfile.encoding=UTF-8")
+    jvmArgs += shippedHeapArgs + shippedGcReturnArgs + listOf("-Dfile.encoding=UTF-8")
     // macOS only matters here: lets privacy/SecureWindow.kt reach the NSWindow to keep it out of screenshots. Harmless on other systems.
     jvmArgs += listOf("--add-opens=java.desktop/sun.awt=ALL-UNNAMED", "--add-opens=java.desktop/sun.lwawt=ALL-UNNAMED", "--add-opens=java.desktop/sun.lwawt.macosx=ALL-UNNAMED")
     // Linux only matters here: WmClass.kt names the X11 window class after the .deb's launcher entry (the dock icon). Harmless on other systems.
     jvmArgs += listOf("--add-opens=java.desktop/sun.awt.X11=ALL-UNNAMED")
     nativeDistributions {
       targetFormats(TargetFormat.Deb, TargetFormat.Msi, TargetFormat.Dmg)
-      // The name people see: Trawl.app and Trawl-1.0.3.dmg on a Mac, the Start menu and the .msi on Windows. A per-OS `packageName` in the
+      // The name people see: Trawl.app and Trawl-1.1.0.dmg on a Mac, the Start menu and the .msi on Windows. A per-OS `packageName` in the
       // macOS block only sets the menu-bar name (jpackage --mac-package-name), not the file names, so the top-level one has to be "Trawl".
       packageName = "Trawl"
-      packageVersion = "1.0.3"
+      packageVersion = "1.1.0"
       appResourcesRootDir.set(layout.buildDirectory.dir("appres"))   // appres/windows/ lands in the app's resources folder on Windows only
       description = "Search your own files by meaning, on this computer. Nothing leaves it."
       vendor = "Crane AI Labs"
@@ -555,7 +668,7 @@ compose.desktop {
       modules("java.sql", "java.management", "jdk.management", "java.desktop", "java.logging", "java.xml", "java.naming", "jdk.unsupported", "jdk.crypto.ec")
       // The mark, drawn from site/favicon.svg by scripts/make_desktop_icons.py: a PNG for the .deb (its menu entry and .desktop file),
       // an .ico for the .msi (the exe, its shortcuts, Add/Remove Programs) and an .icns for the macOS slot.
-      // A .deb package name is lowercase by convention (trawl_1.0.3_amd64.deb); the menu entry still reads "Trawl" from the .desktop file.
+      // A .deb package name is lowercase by convention (trawl_1.1.0_amd64.deb); the menu entry still reads "Trawl" from the .desktop file.
       linux { packageName = "trawl"; menuGroup = "Utility"; shortcut = true; debMaintainer = "Crane AI Labs"; iconFile.set(project.file("packaging/trawl.png")) }
       windows { menuGroup = "Trawl"; shortcut = true; perUserInstall = true; upgradeUuid = "6f1d1f7e-3c0e-4a5e-9d57-2b1f5e0c7a11"; iconFile.set(project.file("packaging/trawl.ico")) }
       // Apple silicon only (litertlm-jvm and sqlite-bundled ship no Intel Mac natives). Unsigned: signing and notarisation need an Apple
@@ -595,9 +708,32 @@ val checkMacPrivacyStrings = tasks.register("checkMacPrivacyStrings") {
 }
 if (org.gradle.internal.os.OperatingSystem.current().isMacOsX) tasks.matching { it.name == "createDistributable" || it.name == "packageDmg" }.configureEach { finalizedBy(checkMacPrivacyStrings) }
 
+// After packaging: every launcher config jpackage made must carry the heap + JEP 346 G1GC flags and no -Xmx/-Xms (which would override them).
+// Reads the app image's Trawl.cfg (Linux: lib/app, Windows: app, macOS: Contents/app), where jpackage writes each `java-options=` line.
+val checkLauncherHeap = tasks.register("checkLauncherHeap") {
+  group = "trawl"
+  description = "Fails when a built app image's Trawl.cfg lacks the shipped heap/G1GC flags, or carries an explicit -Xmx/-Xms."
+  dependsOn("createDistributable")
+  val appDir = layout.buildDirectory.dir("compose/binaries/main/app")
+  val want = shippedHeapArgs + shippedGcReturnArgs
+  doLast {
+    val cfgs = appDir.get().asFile.walkTopDown().maxDepth(6).filter { it.isFile && it.name == "Trawl.cfg" }.toList()
+    if (cfgs.isEmpty()) throw GradleException("checkLauncherHeap found no Trawl.cfg under build/compose/binaries/main/app after createDistributable")
+    for (f in cfgs) {
+      val options = f.readLines().filter { it.startsWith("java-options=") }.map { it.removePrefix("java-options=").trim() }
+      val missing = want.filter { it !in options }
+      if (missing.isNotEmpty()) throw GradleException("${f.path}: the launcher lacks the heap/G1GC flags $missing (java-options: $options)")
+      val explicit = options.filter { it.startsWith("-Xmx") || it.startsWith("-Xms") }
+      if (explicit.isNotEmpty()) throw GradleException("${f.path}: an explicit $explicit would override the percentage-based heap")
+      println("checkLauncherHeap: ${f.name} carries ${want.joinToString(" ")} and no -Xmx/-Xms")
+    }
+  }
+}
+tasks.matching { it.name == "createDistributable" || it.name.startsWith("package") && it.name.let { n -> n == "packageDeb" || n == "packageMsi" || n == "packageDmg" } }.configureEach { finalizedBy(checkLauncherHeap) }
+
 // Every task of the "compose desktop" group or of the plugin's task classes (checkRuntime is in no group, yet reads the runtime folder; runtime image, distributable, installers) first checks the runtime and the natives, and the packaging tasks check what ended up inside.
 tasks.matching { it.group == "compose desktop" || it.javaClass.name.startsWith("org.jetbrains.compose.desktop.application.tasks") }.configureEach {
-  dependsOn(checkRuntimeJdk, checkNoTelemetryInNatives, stageWindowsVcRuntime)
+  dependsOn(checkRuntimeJdk, checkNoTelemetryInNatives, checkJvmClassfileVersion, stageWindowsVcRuntime)
   if (name == "createRuntimeImage" || name == "createDistributable" || name.startsWith("package")) finalizedBy(checkPackagedRuntime)
 }
 // The plugin's resource-preparing task reads the whole appres/ folder, which holds the staged DLL: Gradle wants that order spelled out.

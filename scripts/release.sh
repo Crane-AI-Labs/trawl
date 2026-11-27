@@ -10,6 +10,11 @@
 #                                                Trawl key from ~/.gradle/gradle.properties (passwords pass only as env vars, never printed).
 #                                                The key never leaves this machine. Everything after the build is the same as the local path.
 #   scripts/release.sh <version> --remote --skip-build   re-sign the APKs a previous --remote run left in app/build/outputs
+#   scripts/release.sh <version> --check-apk-paths       build without the publishing key, check both flavour paths, then STOP
+#                                                       before release signing, copying APKs, bundling models or printing publish commands.
+#                                                       Also works with --remote and --remote --skip-build; no signing key is read.
+# Fresh builds must leave BOTH flavour APKs newer than the build-start marker (remote rsync preserves their timestamps).
+# Cached or missing outputs stop the release; rerun the build tasks to regenerate them. --skip-build deliberately checks only existence.
 # Whichever path built them, an APK must carry the genuine Trawl certificate (SHA-256 pinned below, TRAWL_CERT_SHA256 overrides for
 # tests) and no INTERNET permission, or the script stops.
 #
@@ -17,7 +22,7 @@
 #   1. checks the version equals versionName in app/build.gradle.kts, the work tree is clean, and the publishing key is set up
 #      (scripts/make-signing-key.sh; ~/.gradle/gradle.properties holds trawlKeystore and its passwords);
 #   2. builds the two signed release APKs (it fails rather than debug-sign):
-#        Trawl, 64-bit:     ./gradlew :app:assembleRelease -PtrawlPublish=true     -> trawl-<version>.apk
+#        Trawl, 64-bit:     ./gradlew :app:assembleFullRelease -PtrawlPublish=true -> trawl-<version>.apk
 #        Trawl Go, 32-bit:  ./gradlew :app:assembleGoRelease -PtrawlPublish=true   -> trawl-go-<version>.apk (words only, no models)
 #   3. builds the two model bundles with scripts/pack-bundle.sh: standard and lite (LITE=1). They are signed in an Azure Key Vault
 #      over ssh, exactly as pack-bundle.sh does: set TRAWL_SIGN_SSH=user@host and TRAWL_VAULT=<vault name> (no defaults).
@@ -38,17 +43,18 @@ cd "$(dirname "$0")/.."
 
 REPO=Crane-AI-Labs/trawl
 VERSION=${1:-}; shift || true
-PRINT_ONLY=0; NO_MODELS=0; REMOTE=0; SKIP_BUILD=0
-for a in "$@"; do case "$a" in --print-only) PRINT_ONLY=1;; --no-models) NO_MODELS=1;; --remote) REMOTE=1;; --skip-build) SKIP_BUILD=1;; *) echo "unknown option: $a"; exit 2;; esac; done
-[[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "usage: scripts/release.sh <version, like 1.0.0> [--print-only|--no-models|--remote|--skip-build]"; exit 2; }
+PRINT_ONLY=0; NO_MODELS=0; REMOTE=0; SKIP_BUILD=0; CHECK_APK_PATHS=0
+for a in "$@"; do case "$a" in --print-only) PRINT_ONLY=1;; --no-models) NO_MODELS=1;; --remote) REMOTE=1;; --skip-build) SKIP_BUILD=1;; --check-apk-paths) CHECK_APK_PATHS=1;; *) echo "unknown option: $a"; exit 2;; esac; done
+[[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "usage: scripts/release.sh <version, like 1.0.0> [--print-only|--no-models|--remote|--skip-build|--check-apk-paths]"; exit 2; }
 [ "$SKIP_BUILD" = 0 ] || [ "$REMOTE" = 1 ] || { echo "--skip-build goes with --remote (it re-signs the APKs a previous --remote run left in app/build/outputs)."; exit 2; }
+[ "$CHECK_APK_PATHS" = 0 ] || [ "$PRINT_ONLY" = 0 ] || { echo "--check-apk-paths cannot be combined with --print-only."; exit 2; }
 
 # The genuine Trawl signing certificate (SHA-256). Public: it is printed in the release notes. Override only to test the failure path.
 GENUINE_CERT=${TRAWL_CERT_SHA256:-3d056763b58093e91006f00b44d98d47bfe5f26140be6105598363e670708d80}
 SDK_BT=$(ls -d "${ANDROID_HOME:-$HOME/Library/Android/sdk}"/build-tools/*/ 2>/dev/null | sort -V | tail -1 || true)
 
 GRADLE_VERSION=$(sed -n 's/^ *versionName = "\(.*\)"/\1/p' app/build.gradle.kts | head -1)
-if [ "$NO_MODELS" = 0 ] && [ "$PRINT_ONLY" = 0 ]; then
+if [ "$NO_MODELS" = 0 ] && [ "$PRINT_ONLY" = 0 ] && [ "$CHECK_APK_PATHS" = 0 ]; then
   : "${TRAWL_SIGN_SSH:?set TRAWL_SIGN_SSH=user@host (the machine that signs the model bundles) or pass --no-models}"
   : "${TRAWL_VAULT:?set TRAWL_VAULT=<Azure Key Vault name> (the vault that holds the bundle-signing key) or pass --no-models}"
 fi
@@ -63,38 +69,64 @@ APP_TAG="v$VERSION"
 APP_DIR="dist/$APP_TAG"; MODELS_DIR="dist/$MODELS_TAG"
 APK="$APP_DIR/trawl-$VERSION.apk"
 GO_APK="$APP_DIR/trawl-go-$VERSION.apk"
+OUT_REL=app/build/outputs/apk/full/release/app-full-release.apk
+OUT_GO=app/build/outputs/apk/go/release/app-go-release.apk
 
 if [ "$PRINT_ONLY" = 0 ]; then
   if [ -n "$(git status --porcelain --untracked-files=no)" ]; then echo "The work tree has uncommitted changes. A release is built from a commit."; git status --short --untracked-files=no | head; exit 1; fi
-  grep -q '^trawlKeystore=' ~/.gradle/gradle.properties 2>/dev/null || { echo "No publishing key. Run scripts/make-signing-key.sh once (it writes ~/.gradle/gradle.properties)."; exit 1; }
+  if [ "$CHECK_APK_PATHS" = 0 ]; then
+    grep -q '^trawlKeystore=' ~/.gradle/gradle.properties 2>/dev/null || { echo "No publishing key. Run scripts/make-signing-key.sh once (it writes ~/.gradle/gradle.properties)."; exit 1; }
+  fi
   mkdir -p "$APP_DIR"
-  rm -f "$APK" "$GO_APK" "$APP_DIR/SHA256SUMS" "$APP_DIR/certificate.txt"   # a stopped run must not leave the previous build's files looking current
+  if [ "$CHECK_APK_PATHS" = 0 ]; then
+    rm -f "$APK" "$GO_APK" "$APP_DIR/SHA256SUMS" "$APP_DIR/certificate.txt"   # a stopped run must not leave the previous build's files looking current
+  fi
+  TMPD=$(mktemp -d "$APP_DIR/.release.XXXXXX"); trap 'rm -rf "$TMPD"' EXIT
   APKSIGNER=${SDK_BT:+${SDK_BT}apksigner}; [ -x "${APKSIGNER:-}" ] || APKSIGNER=""
-  if [ "$REMOTE" = 0 ]; then
-    echo "== signed release APKs (Trawl 64-bit, Trawl Go 32-bit)"
-    ./gradlew :app:assembleRelease :app:assembleGoRelease -PtrawlPublish=true -q
-    cp app/build/outputs/apk/release/app-release.apk "$APK"
-    cp app/build/outputs/apk/go/release/app-go-release.apk "$GO_APK"
-  else
+  if [ "$REMOTE" = 1 ]; then
     # No Gradle on this machine: the build box makes the (debug-signed) release APKs; they are zip-aligned and signed HERE with the
     # Trawl key, which never leaves this machine. The key passwords travel only as environment variables of the apksigner process.
     : "${TRAWL_BUILD_SSH:?--remote needs TRAWL_BUILD_SSH=user@host (the build box, see scripts/remote-gradle.sh)}"
-    [ -n "$APKSIGNER" ] || { echo "--remote needs apksigner (Android build-tools under \$ANDROID_HOME/build-tools). Stopping."; exit 1; }
-    ZIPALIGN=${SDK_BT}zipalign; [ -x "$ZIPALIGN" ] || { echo "zipalign not found next to apksigner. Stopping."; exit 1; }
-    GP=${TRAWL_GRADLE_PROPERTIES:-$HOME/.gradle/gradle.properties}   # override only to test with a throwaway key
-    prop() { sed -n "s/^$1=//p" "$GP" | head -1; }
-    KS=$(prop trawlKeystore); KS_ALIAS=$(prop trawlKeyAlias)
-    [ -f "$KS" ] && [ -n "$KS_ALIAS" ] && [ -n "$(prop trawlKeystorePassword)" ] && [ -n "$(prop trawlKeyPassword)" ] || { echo "~/.gradle/gradle.properties does not name a readable keystore with its alias and passwords. Stopping."; exit 1; }
-    OUT_REL=app/build/outputs/apk/release/app-release.apk; OUT_GO=app/build/outputs/apk/go/release/app-go-release.apk
-    if [ "$SKIP_BUILD" = 0 ]; then
-      echo "== release APKs, built on $TRAWL_BUILD_SSH (unsigned for publishing: they come back debug-signed)"
-      rm -f "$OUT_REL" "$OUT_GO"          # never sign a stale APK from an earlier build if this one fails
-      scripts/remote-gradle.sh :app:assembleRelease :app:assembleGoRelease -q
-    else
-      echo "== --skip-build: re-signing the APKs already in app/build/outputs"
+    if [ "$CHECK_APK_PATHS" = 0 ]; then
+      [ -n "$APKSIGNER" ] || { echo "--remote needs apksigner (Android build-tools under \$ANDROID_HOME/build-tools). Stopping."; exit 1; }
+      ZIPALIGN=${SDK_BT}zipalign; [ -x "$ZIPALIGN" ] || { echo "zipalign not found next to apksigner. Stopping."; exit 1; }
+      GP=${TRAWL_GRADLE_PROPERTIES:-$HOME/.gradle/gradle.properties}   # override only to test with a throwaway key
+      prop() { sed -n "s/^$1=//p" "$GP" | head -1; }
+      KS=$(prop trawlKeystore); KS_ALIAS=$(prop trawlKeyAlias)
+      [ -f "$KS" ] && [ -n "$KS_ALIAS" ] && [ -n "$(prop trawlKeystorePassword)" ] && [ -n "$(prop trawlKeyPassword)" ] || { echo "~/.gradle/gradle.properties does not name a readable keystore with its alias and passwords. Stopping."; exit 1; }
     fi
-    [ -f "$OUT_REL" ] && [ -f "$OUT_GO" ] || { echo "The remote build left no APKs in app/build/outputs/apk. Stopping."; exit 1; }
-    TMPD=$(mktemp -d); trap 'rm -rf "$TMPD"' EXIT
+  fi
+  if [ "$SKIP_BUILD" = 0 ]; then
+    touch "$TMPD/build-start"
+    rm -f "$OUT_REL" "$OUT_GO"
+    if [ "$REMOTE" = 1 ]; then
+      echo "== release APKs, built on $TRAWL_BUILD_SSH (unsigned for publishing: they come back debug-signed)"
+      scripts/remote-gradle.sh :app:assembleFullRelease :app:assembleGoRelease -q
+    elif [ "$CHECK_APK_PATHS" = 1 ]; then
+      echo "== release APK paths (Trawl Full and Go; no publishing key)"
+      ./gradlew :app:assembleFullRelease :app:assembleGoRelease -q
+    else
+      echo "== signed release APKs (Trawl 64-bit, Trawl Go 32-bit)"
+      ./gradlew :app:assembleFullRelease :app:assembleGoRelease -PtrawlPublish=true -q
+    fi
+  else
+    echo "== --skip-build: using the APKs already in app/build/outputs"
+  fi
+  for built_apk in "$OUT_REL" "$OUT_GO"; do
+    [ -f "$built_apk" ] || { echo "Missing flavour APK: $built_apk. Stopping."; exit 1; }
+    if [ "$SKIP_BUILD" = 0 ] && [ ! "$built_apk" -nt "$TMPD/build-start" ]; then
+      echo "Stale flavour APK: $built_apk is not newer than the build just started. Regenerate the build outputs. Stopping."; exit 1
+    fi
+  done
+  if [ "$CHECK_APK_PATHS" = 1 ]; then
+    printf 'Checked flavour APK: %s\n' "$OUT_REL" "$OUT_GO"
+    echo "STOP: APK paths checked; no release signing, release APK copies, model bundles or publishing."
+    exit 0
+  fi
+  if [ "$REMOTE" = 0 ]; then
+    cp "$OUT_REL" "$APK"
+    cp "$OUT_GO" "$GO_APK"
+  else
     sign_apk() { # <built apk> <final apk>: align (only if needed) then sign with the Trawl key
       local src=$1 dst=$2
       if ! "$ZIPALIGN" -c -p 4 "$src" >/dev/null 2>&1; then

@@ -14,26 +14,33 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Extension
 import androidx.compose.material.icons.rounded.Mic
+import androidx.compose.material.icons.rounded.Translate
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.foundation.layout.Box
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.dp
 import com.craneai.findr.R
 import com.craneai.findr.core.PackCatalog
@@ -41,6 +48,7 @@ import com.craneai.findr.core.PackCopy
 import com.craneai.findr.core.PackProblem
 import com.craneai.findr.core.PackRow
 import com.craneai.findr.core.PackStatus
+import com.craneai.findr.ui.delivery.openInBrowser
 import com.craneai.findr.ui.settings.SettingsDialog
 import com.craneai.findr.ui.settings.SunErrorText
 import com.craneai.findr.ui.theme.LocalSunlight
@@ -58,6 +66,7 @@ fun packIcon(id: String): ImageVector = when (id) {
   PackCatalog.SPEECH -> Icons.Rounded.Mic
   PackCatalog.QUICK_LOOK -> Icons.Rounded.Bolt
   PackCatalog.PRIVACY -> Icons.Rounded.VisibilityOff
+  in com.craneai.findr.core.PackIds.SPEECH_PACKS -> Icons.Rounded.Translate
   else -> Icons.Rounded.Extension
 }
 
@@ -69,7 +78,10 @@ fun AddOnCard(
   onRemove: () -> Unit,
   onSwitch: (Boolean) -> Unit,
   modifier: Modifier = Modifier,
+  downloadUrl: String? = null,
 ) {
+  val context = LocalContext.current
+  var noBrowser by remember(row.def.id) { mutableStateOf(false) }
   SunCard(modifier = modifier.fillMaxWidth()) {
     Column(Modifier.padding(Sun.S16)) {
       PackHeader(row)
@@ -83,6 +95,17 @@ fun AddOnCard(
         )
         PackStatus.NOT_INSTALLED -> {
           PackProblemText(row)
+          if (row.problem == PackProblem.NOT_FOUND && !downloadUrl.isNullOrBlank()) {
+            SunOutlinedButton(
+              onClick = { noBrowser = !openInBrowser(context, downloadUrl) },
+              modifier = Modifier.fillMaxWidth().padding(bottom = Sun.S8),
+            ) {
+              Icon(Icons.AutoMirrored.Outlined.OpenInNew, contentDescription = null, modifier = Modifier.size(18.dp))
+              Spacer(Modifier.width(Sun.S8))
+              Text(stringResource(R.string.addons_download_browser), style = SunType.Label)
+            }
+            if (noBrowser) SunErrorText(stringResource(R.string.addons_no_browser), Modifier.padding(bottom = Sun.S8))
+          }
           SunOutlinedButton(onClick = onAdd, modifier = Modifier.fillMaxWidth()) {
             Text(stringResource(R.string.addons_add_with_size, row.def.sizeLabel()), style = SunType.Label)
           }
@@ -98,7 +121,7 @@ fun AddOnCard(
               .clip(shape)
               .toggleable(value = row.on, role = Role.Switch, onValueChange = onSwitch)
               .heightIn(min = Sun.SettingsRow)
-              .semantics { stateDescription = packTitle },
+              .semantics { contentDescription = packTitle },
             verticalAlignment = Alignment.CenterVertically,
           ) {
             Text(
@@ -212,9 +235,17 @@ fun PackProblemText(row: PackRow) {
   SunErrorText(text, Modifier.padding(bottom = Sun.S12))
 }
 
-/** "Add": says where the file has to be, then installs it. [howTo] comes from the pack source, so Play can word it differently. */
+/** "Add": says where the file has to be, offers a direct browser download link for sideload builds, then installs it. */
 @Composable
-fun AddPackDialog(row: PackRow, howTo: PackCopy?, onInstall: () -> Unit, onDismiss: () -> Unit) {
+fun AddPackDialog(
+  row: PackRow,
+  howTo: PackCopy?,
+  onInstall: () -> Unit,
+  onDismiss: () -> Unit,
+  downloadUrl: String? = null,
+) {
+  val context = LocalContext.current
+  var noBrowser by remember(row.def.id, downloadUrl) { mutableStateOf(false) }
   SettingsDialog(
     title = stringResource(R.string.addons_add_title, row.def.title()),
     confirmLabel = stringResource(R.string.addons_add_install),
@@ -224,6 +255,23 @@ fun AddPackDialog(row: PackRow, howTo: PackCopy?, onInstall: () -> Unit, onDismi
   ) {
     Text(howTo.text(), style = SunType.Body)
     Text(stringResource(R.string.addons_size, row.def.sizeLabel()), style = SunType.CaptionBold, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    if (!downloadUrl.isNullOrBlank()) {
+      Spacer(Modifier.height(Sun.S8))
+      SunOutlinedButton(
+        onClick = { noBrowser = !openInBrowser(context, downloadUrl) },
+        modifier = Modifier.fillMaxWidth(),
+      ) {
+        Icon(Icons.AutoMirrored.Outlined.OpenInNew, contentDescription = null, modifier = Modifier.size(18.dp))
+        Spacer(Modifier.width(Sun.S8))
+        Text(stringResource(R.string.addons_download_browser), style = SunType.Label)
+      }
+      Text(
+        stringResource(R.string.addons_download_return_hint),
+        style = SunType.Caption,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+      )
+      if (noBrowser) SunErrorText(stringResource(R.string.addons_no_browser))
+    }
   }
 }
 

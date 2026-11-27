@@ -47,4 +47,9 @@
   <string name="models_pack_upgrade_note">إضافة الحزمة القياسية تجعل <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> يقرأ ملفاتك مرة أخرى بالنموذج الأفضل. تبقى قائمة ملفاتك: يستمر البحث باسم الملف والعثور على الصور بنظرة سريعة خلال ذلك. أما الكلمات داخل المستندات ولقطات الشاشة والبحث بالمعنى فتعود كلما أُعيدت قراءة كل ملف، وأفضل وقت لذلك أثناء شحن الهاتف.</string>
   <string name="models_pack_get_standard">الحصول على الحزمة القياسية (%1$d MB)</string>
   <string name="models_pack_upgraded">تم تثبيت الحزمة القياسية. أغلق <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> وافتحه مرة أخرى لبدء استخدامها. بعدها يقرأ ملفاتك مرة أخرى بالنموذج الأفضل. يستمر البحث باسم الملف والبحث السريع عن الصور خلال ذلك؛ وتعود الكلمات داخل المستندات ولقطات الشاشة كلما قُرئت الملفات.</string>
+  <string name="models_get_full_bundle">الحصول على الحزمة الكاملة (%1$d ميغابايت)</string>
+  <string name="models_missing_full_bundle">التنزيلات المنفصلة لهذه الحزم غير متوفرة هنا. احصل على الحزمة الكاملة لإضافتها.</string>
+  <string name="models_missing_packs">نموذج البحث مثبت. الحزم المفقودة: %1$s.</string>
+  <string name="models_refused_installed_safe">تعذر استخدام الملف الذي تم تنزيله. لا يزال نموذج البحث المثبت لديك يعمل.</string>
+  <string name="models_search_installed">نموذج البحث مثبت.</string>
 </resources>

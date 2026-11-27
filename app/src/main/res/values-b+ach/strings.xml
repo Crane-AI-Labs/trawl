@@ -298,6 +298,8 @@
   <string name="settings_about_model">Yenyo tiyo ki EmbeddingGemma 2 pa Google (Apache 2.0), i cim man keken.</string>
   <string name="settings_about_private"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> pe tye ki twero me donyo i intanet. Fayil megi ki gin ma en opwonyo ki iye pe aaka i cim man matwal.</string>
   <string name="settings_about_maker">Crane AI Labs aye oyubo.</string>
+  <string name="settings_check_updates">Ngi ka ngec manyen tye</string>
+  <string name="settings_check_updates_hint">Yabo pot buk me gamo jami i browser meri.</string>
   <string name="settings_licences">Laicens ki deyo</string>
   <string name="licences_title">Laicens ki deyo</string>
   <string name="licences_intro"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> kiyubo ki tic ma ite kany. Ngec magi kimito pi laicens, dok aye yo ma wawaco kwede ni apwoyo.</string>
@@ -471,4 +473,7 @@
     <item quantity="one">Fayil %1$d pe twero kwano (obale, onyo kit ma cim man pe twero yabo). Pud itwero nongo ki nying.</item>
     <item quantity="other">Fayil %1$d pe twero kwano (obale, onyo kit ma cim man pe twero yabo). Pud itwero nongo gi ki nying.</item>
   </plurals>
+  <string name="addons_download_browser">Gam ki i browser</string>
+  <string name="addons_download_return_hint">Ka fayil otyeko gamo i Downloads, dwog kany ci idi Ket.</string>
+  <string name="addons_no_browser">Pe tye browser ma ononge me yabo link me gamo.</string>
 </resources>

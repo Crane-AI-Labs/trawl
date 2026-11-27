@@ -5,16 +5,20 @@ import android.net.Uri
 import com.craneai.findr.core.AsrEngine
 import com.craneai.findr.core.AudioDecoder
 import com.craneai.findr.core.AudioTranscript
+import com.craneai.findr.engine.LocalSpeech
 import java.io.File
 
-/** Trawl Go reads no speech (sherpa-onnx and its models are the full edition's): an engine that is never available. */
+/** Trawl Go reads no speech (sherpa-onnx and its models are the full edition's): an engine that is never available, speech packs included. */
 @Suppress("UNUSED_PARAMETER")
 class SherpaAsrEngine(
   modelsDir: File,
   decoder: AudioDecoder? = null,
+  packDir: () -> File? = { null },
+  tight: () -> Boolean = { false },
 ) : AsrEngine {
   override fun available(): Boolean = false
-  override suspend fun transcribe(context: Context, uri: Uri, maxSeconds: Int, startMs: Long): AudioTranscript = AudioTranscript(emptyList(), emptyList(), 0.0)
+  override suspend fun transcribe(context: Context, uri: Uri, maxSeconds: Int, startMs: Long, reading: LocalSpeech.Reading?): AudioTranscript =
+    AudioTranscript(emptyList(), emptyList(), 0.0)
 
   companion object {
     const val MOONSHINE_DIR = "moonshine-tiny-en-int8"

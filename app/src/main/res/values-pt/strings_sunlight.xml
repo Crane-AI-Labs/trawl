@@ -9,4 +9,7 @@
   <string name="colours_wallpaper">Cores do papel de parede</string>
   <string name="colours_wallpaper_hint">Usa as cores do papel de parede e muda junto com ele.</string>
   <string name="settings_brightness">Claro ou escuro</string>
+  <string name="notif_waiting_other_app">Em espera enquanto usa outra app</string>
+  <string name="preview_checking">pré-visualização oculta até ser verificada</string>
+  <string name="preview_checking_words">A verificar · toque para ver</string>
 </resources>

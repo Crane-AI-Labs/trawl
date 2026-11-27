@@ -9,4 +9,7 @@
   <string name="colours_wallpaper">Àwọ̀ àwòrán abẹ́lẹ̀</string>
   <string name="colours_wallpaper_hint">Ó ń gba àwọn àwọ̀ rẹ̀ láti inú àwòrán abẹ́lẹ̀ rẹ, ó sì ń yí padà nígbà tí àwòrán náà bá yí padà.</string>
   <string name="settings_brightness">Mọ́lẹ̀ tàbí ṣókùnkùn</string>
+  <string name="notif_waiting_other_app">Nduro lakoko ti o nlo ohun elo miiran</string>
+  <string name="preview_checking">awotẹlẹ ti farapamọ titi yoo fi ṣayẹwo</string>
+  <string name="preview_checking_words">Nṣayẹwo · tẹ lati wo</string>
 </resources>

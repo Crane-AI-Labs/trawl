@@ -298,6 +298,8 @@
   <string name="settings_about_model">Usesho lusebenza nge-EmbeddingGemma 2 yakwa-Google (Apache 2.0), kule foni kuphela.</string>
   <string name="settings_about_private">I-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ayinayo imvume ye-inthanethi. Amafayela akho nalokho ekufundayo kuwo akukaze kuphume efonini.</string>
   <string name="settings_about_maker">Kwenziwe ngabakwa-Crane AI Labs.</string>
+  <string name="settings_check_updates">Hlola izibuyekezo</string>
+  <string name="settings_check_updates_hint">Ivula ikhasi lokulanda kusiphequluli sakho.</string>
   <string name="settings_licences">Amalayisense namakhredithi</string>
   <string name="licences_title">Amalayisense namakhredithi</string>
   <string name="licences_intro">I-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> yakhelwe phezu komsebenzi ongezansi. Lezi zaziso ziyadingeka ngaphansi kwamalayisense, futhi ziyindlela yethu yokubonga.</string>
@@ -471,4 +473,7 @@
     <item quantity="one">Ifayela elingu-%1$d alifundekanga (lonakele, noma liyifomethi le-foni engeke ilivule). Ungalitholabe ngegama.</item>
     <item quantity="other">Amafayela angu-%1$d awafundekanga (onakele, noma ayifomethi le-foni engeke iwavule). Ungawatholabe ngegama.</item>
   </plurals>
+  <string name="addons_download_browser">Landa kusiphequluli</string>
+  <string name="addons_download_return_hint">Ngemuva kokuthi ifayela liqede ukulandwa ku-Downloads, buyela lapha bese uthepha u-Faka.</string>
+  <string name="addons_no_browser">Asikho isiphequluli esitholiwe ukuvula isixhumanisi sokulanda.</string>
 </resources>

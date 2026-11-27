@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="pack_speech_lg_name">Magana cikin Luganda</string>
+  <string name="pack_speech_nyn_name">Magana cikin Runyankole</string>
+  <string name="pack_speech_ach_name">Magana cikin Acholi</string>
+  <string name="pack_speech_sw_name">Magana cikin Swahili</string>
+  <string name="pack_speech_xog_name">Magana cikin Lusoga (gwaji)</string>
+  <string name="speech_language_lg">Luganda</string>
+  <string name="speech_language_nyn">Runyankole</string>
+  <string name="speech_language_ach">Acholi</string>
+  <string name="speech_language_sw">Swahili</string>
+  <string name="speech_language_xog">Lusoga</string>
+  <string name="pack_speech_language_benefit">Yana gano abin da aka faɗa a cikin saƙonnin murya da bidiyoyi na %1$s, waɗanda binciken maganar Turanci ba zai iya karantawa ba. A gwajinmu saƙon murya daidai ya fito farko %2$d%% na lokaci, sabanin %3$d%% ba tare da shi ba.</string>
+  <string name="pack_speech_language_cost">Yana sake karanta maganar da ba ta Turanci ba, don haka waɗannan fayilolin suna ɗaukar lokaci mai tsawo, kuma ba cikakke ba ne: yi tsammanin wasu kalmomi marasa daidai. Ana karanta Turanci kamar da. Harshen magana ɗaya a lokaci guda; yana buƙatar ƙarin ƙwaƙwalwa lokacin aiki kawai.</string>
+</resources>

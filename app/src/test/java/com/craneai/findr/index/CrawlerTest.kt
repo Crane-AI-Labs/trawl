@@ -178,6 +178,74 @@ class CrawlerTest {
     assertEquals(FileState.SEARCHABLE, state(1)!!.first)
   }
 
+  @Test fun sentChatDocumentsAreCrawledDespiteAncestorNoMedia() {
+    val root = "/storage/emulated/0/"
+    for ((offset, base) in listOf(
+      "WhatsApp/Media/WhatsApp Documents/",
+      "Android/media/com.whatsapp/WhatsApp/Media/WhatsApp Documents/",
+      "Telegram/Telegram Documents/",
+      "Android/media/org.telegram.messenger/Telegram/Telegram Documents/",
+    ).withIndex()) {
+      val firstId = 10L + offset * 10
+      noMediaDirs = noMediaDirs + "${root}${base}Sent"
+      phone.put(firstId, "sheet.xlsx", "${base}Sent/Reports/", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", abs = "${root}${base}Sent/Reports/sheet.xlsx")
+      phone.put(firstId + 1, "receipt.pdf", "${base}Sent/", "application/pdf", abs = "${root}${base}Sent/receipt.pdf")
+      phone.put(firstId + 2, "secret.pdf", "${base}Sent/Private/", "application/pdf", abs = "${root}${base}Sent/Private/secret.pdf")
+      phone.put(firstId + 3, "image.jpg", "${base}Sent/", "image/jpeg", abs = "${root}${base}Sent/image.jpg")
+      phone.put(firstId + 4, "video.mp4", "${base}Sent/", "video/mp4", abs = "${root}${base}Sent/video.mp4")
+      phone.put(firstId + 5, "audio.mp3", "${base}Sent/", "audio/mpeg", abs = "${root}${base}Sent/audio.mp3")
+      phone.put(firstId + 6, "hidden.pdf", "${base}Sent/.hidden/", "application/pdf", abs = "${root}${base}Sent/.hidden/hidden.pdf")
+    }
+    crawler.sync()
+    for (firstId in listOf(10L, 20L, 30L, 40L)) {
+      assertEquals(FileState.SEARCHABLE, state(firstId)!!.first)
+      assertEquals(FileKind.DOCUMENT, store.fileById(fileId(firstId)!!)!!.kind)
+      assertEquals(FileState.SEARCHABLE, state(firstId + 1)!!.first)
+      assertEquals("private folder", state(firstId + 2)!!.second)
+      for (offset in 3L..5L) assertEquals(".nomedia folder", state(firstId + offset)!!.second)
+      assertEquals("hidden folder", state(firstId + 6)!!.second)
+    }
+  }
+
+  @Test fun excludedSentDocumentsStaySkippedEvenWhenAddedByHand() {
+    val base = "WhatsApp/Media/WhatsApp Documents/Sent/"
+    settings = FindrSettings(includedFolders = setOf(base), excludedFolders = setOf(base), groupOverrides = mapOf(FolderGroups.WHATSAPP_DOCUMENTS to false))
+    noMediaDirs = setOf("/storage/emulated/0/${base.trimEnd('/')}")
+    phone.put(10, "report.pdf", base, "application/pdf", abs = "/storage/emulated/0/${base}report.pdf")
+    crawler.sync()
+    assertEquals(FileState.SKIPPED, state(10)!!.first)
+    assertEquals("excluded folder", state(10)!!.second)
+  }
+
+  @Test fun forcedRecrawlOnlyUnskipsNewlyAllowedChatDocuments() {
+    val base = "Telegram/Telegram Documents/Sent/"
+    val outside = "Documents/Sent/"
+    noMediaDirs = setOf("/storage/emulated/0/${base.trimEnd('/')}", "/storage/emulated/0/${outside.trimEnd('/')}")
+    phone.put(10, "report.pdf", base, "application/pdf", abs = "/storage/emulated/0/${base}report.pdf")
+    phone.put(11, "private.pdf", "${base}Private/", "application/pdf", abs = "/storage/emulated/0/${base}Private/private.pdf")
+    phone.put(12, "image.jpg", base, "image/jpeg", abs = "/storage/emulated/0/${base}image.jpg")
+    phone.put(13, "other.pdf", outside, "application/pdf", abs = "/storage/emulated/0/${outside}other.pdf")
+    crawler.sync()
+    val oldRow = phone.rows.getValue(10L).first
+    store.upsertFromCrawl(listOf(CrawlRecord(
+      volume = oldRow.volume, mediaStoreId = oldRow.id, uri = oldRow.uri, relativePath = oldRow.relativePath,
+      name = oldRow.name, kind = FileKind.PDF, mimeType = oldRow.mimeType, sizeBytes = oldRow.sizeBytes,
+      modifiedMillis = oldRow.dateModifiedSec * 1000, skipReason = ".nomedia folder",
+    )))
+    for (mediaId in 10L..13L) assertEquals(FileState.SKIPPED, state(mediaId)!!.first)
+    store.setState(fileId(1)!!, FileState.UNDERSTOOD)
+    val unchanged = store.fileById(fileId(1)!!)!!
+    val report = crawler.sync(forceFull = true)
+    assertTrue(report.fullResync)
+    assertEquals(0, report.added)
+    assertEquals(1, report.changed)
+    assertEquals(listOf(fileId(10)!!), report.resetFileIds)
+    assertEquals(FileState.SEARCHABLE, state(10)!!.first)
+    for (mediaId in 11L..13L) assertEquals(FileState.SKIPPED, state(mediaId)!!.first)
+    assertEquals(unchanged, store.fileById(fileId(1)!!))
+    assertEquals(FileState.UNDERSTOOD, state(1)!!.first)
+  }
+
   @Test fun nomediaFoldersAreSkippedIncludingAncestors() {
     noMediaDirs = setOf("/storage/emulated/0/Pictures/Hidden")
     phone.put(10, "a.jpg", "Pictures/Hidden/", "image/jpeg", w = 800, h = 600, abs = "/storage/emulated/0/Pictures/Hidden/a.jpg")

@@ -46,6 +46,8 @@ class LearnControlTest {
     assertFalse(t.politeOnLockScreen)
     assertFalse(LearningProfile.roomy(cores = 8, tight = true))
     assertFalse(LearningProfile.roomy(cores = 6, tight = false))
+    assertFalse(LearningProfile.roomy(cores = 8, tight = false, perfCores = 2))   // 8 GB Helio G81/G85 (Redmi 15C): 2 big cores stay at 2 threads
+    assertTrue(LearningProfile.roomy(cores = 8, tight = false, perfCores = 4))
     assertTrue(LearningProfile.roomy(cores = 8, tight = false))
   }
 

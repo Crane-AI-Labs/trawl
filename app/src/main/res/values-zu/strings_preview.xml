@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="player_play">Dlala</string>
+  <string name="player_pause">Misa kancane</string>
+  <string name="player_rewind_10">Buyela emuva imizuzwana eyi-10</string>
+  <string name="player_forward_10">Phambili imizuzwana eyi-10</string>
+  <string name="player_jump_match">Yeqela ku-%1$s</string>
+  <string name="player_open_external">Vula kuhlelo lokusebenza</string>
+  <string name="player_error">Leli fayela alikwazanga ukudlalwa lapha.</string>
+  <string name="player_loading">Iyalayisha ukudlala…</string>
+  <string name="player_seek_position">Indawo yokudlala</string>
+  <string name="action_preview">Buka kuqala</string>
+  <string name="action_show_preview">Bonisa ukubuka kuqala</string>
+  <string name="preview_loading">Iyalayisha ukubuka kuqala…</string>
+  <string name="preview_unavailable">Ukubuka kuqala akutholakali kuleli fayela.</string>
+  <string name="preview_empty">Leli fayela alinalutho.</string>
+  <string name="preview_truncated">Ibonisa imigqa engu-%1$d yokuqala</string>
+  <string name="preview_bytes_truncated">Ibonisa ingxenye yokuqala yaleli fayela</string>
+  <string name="preview_rows_cols">Imigqa engu-%1$d · amakholomu angu-%2$d</string>
+</resources>

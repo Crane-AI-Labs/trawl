@@ -298,6 +298,8 @@
   <string name="settings_about_model">Okunoonya kukolebwa EmbeddingGemma 2 eya Google (Apache 2.0), era kukolebwa kwokka ku ssimu eno.</string>
   <string name="settings_about_private"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> terina lukusa lwa yintaneeti. Fayiro zo n\'ebyo by\'eyiga okuva mu zo tebiva ku ssimu eno n\'akatono.</string>
   <string name="settings_about_maker">Yakolebwa Crane AI Labs.</string>
+  <string name="settings_check_updates">Kebera ebipya</string>
+  <string name="settings_check_updates_hint">Kiggulawo omuko gw\'okuwanula mu kivumbuzi kyo.</string>
   <string name="settings_licences">Layisinsi n\'abasiimiddwa</string>
   <string name="licences_title">Layisinsi n\'abasiimiddwa</string>
   <string name="licences_intro"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ezimbiddwa ku mirimu egiri wammanga. Ebirango bino byetagisa okusinziira ku layisinsi, era y\'engeri gye twebazaamu.</string>
@@ -471,4 +473,7 @@
     <item quantity="one">Fayiro %1$d teyasobodde kusomebwa (yonooneddwa, oba ekika ssimu eno ky\'etesobola kuggulawo). Osobola okugizuula mu linnya.</item>
     <item quantity="other">Fayiro %1$d tezisobodde kusomebwa (zonooneddwa, oba kika ssimu eno ky\'etesobola kuggulawo). Osobola okuzizuula mu linnya.</item>
   </plurals>
+  <string name="addons_download_browser">Wanula mu kirambuzi</string>
+  <string name="addons_download_return_hint">Fayiro bw\'emala okuwanulibwa mu Biwanuddwa, komawo wano onyige Teekako.</string>
+  <string name="addons_no_browser">Tewali kirambuzi kisangiddwa kuggulawo linki y\'okuwanula.</string>
 </resources>

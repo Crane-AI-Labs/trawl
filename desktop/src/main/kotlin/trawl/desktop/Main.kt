@@ -65,7 +65,7 @@ fun main(args: Array<String>) {
   // Before any native library loads: no ONNX Runtime in this process (the privacy pack's, or sherpa-onnx's own copy) may phone home.
   trawl.desktop.privacy.NoTelemetry.apply()
   when {
-    args.firstOrNull() == GpuProbe.FLAG && args.size >= 2 -> GpuProbe.main(arrayOf(args[1]))   // the GPU probe's child, started by the app's own launcher
+    args.firstOrNull() == GpuProbe.FLAG && args.size >= 2 -> GpuProbe.main(args.drop(1).toTypedArray())   // the GPU probe's child, started by the app's own launcher
     args.firstOrNull() in setOf("index", "search", "eval", "speed", "media") -> cliMain(args)
     else -> trawl.desktop.ui.runWindow(args.toList())   // shell (Package D): args carry --quick
   }

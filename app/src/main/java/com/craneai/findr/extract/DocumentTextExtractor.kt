@@ -196,8 +196,9 @@ class DocumentTextExtractor(
      * only those the change can affect ([VERSION_AFFECTS]: name endings, plus text/ mime types), so an update doesn't
      * re-read every PDF on the phone (on the Infinix a blanket re-read was 108 documents and ~6 min of words alone).
      */
-    const val VERSION = 2   // 2: a PDF named .txt is read as a PDF; binary data with a text name gives no text
-    val VERSION_AFFECTS = listOf("txt", "md", "markdown", "csv", "tsv", "json", "log", "html", "htm", "xhtml", "rtf")
+    const val VERSION = 3   // 3: legacy .xls workbooks are read (XlsText); 2: a PDF named .txt is read as a PDF; binary data with a text name gives no text
+    /** What version 3 changed: only .xls files read differently (they had no text before), so only they are read again; no other sheet, text, markup or PDF file is touched. */
+    val VERSION_AFFECTS = listOf("xls")
 
     private val EMPTY = ExtractedText(emptyList())
     private val TEXT_FORMATS = setOf(DocFormat.PLAIN, DocFormat.DELIMITED, DocFormat.HTML, DocFormat.RTF, DocFormat.SVG)

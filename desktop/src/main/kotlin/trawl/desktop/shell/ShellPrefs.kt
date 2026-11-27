@@ -37,11 +37,14 @@ class ShellPrefsStore(private val dir: File) {
 
   fun save(p: ShellPrefs) {
     dir.mkdirs()
+    trawl.desktop.OwnerOnlyPermissions.hardenDir(dir)
     val part = File(dir, "shell.json.part")
     part.writeText(
       JSONObject().put("hotkeyOn", p.hotkeyOn).put("hotkey", p.hotkey ?: "").put("keepRunning", p.keepRunning)
         .put("firstIndexNotified", p.firstIndexNotified).toString(2),
     )
+    trawl.desktop.OwnerOnlyPermissions.hardenFile(part)
     Files.move(part.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING)
+    trawl.desktop.OwnerOnlyPermissions.hardenFile(file)
   }
 }

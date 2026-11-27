@@ -133,6 +133,7 @@ object Diag {
     "documents ${onOff(s.indexDocuments)}",
     "audio ${onOff(s.indexAudio)}",
     "speech ${onOff(s.speechToText)}",
+    "speech pack ${s.speechPack ?: "none"}",
     "quick look ${onOff(s.quickLook)}",
     "learning speed ${s.learningSpeed.key}",
     "${s.excludedFolders.size} folders left out",

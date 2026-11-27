@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="player_play">አጫውት</string>
+  <string name="player_pause">ለጊዜው አቁም</string>
+  <string name="player_rewind_10">10 ሰከንድ ወደ ኋላ</string>
+  <string name="player_forward_10">10 ሰከንድ ወደ ፊት</string>
+  <string name="player_jump_match">ወደ %1$s ዝለል</string>
+  <string name="player_open_external">በመተግበሪያ ውስጥ ክፈት</string>
+  <string name="player_error">ይህን ፋይል እዚህ ማጫወት አልተቻለም።</string>
+  <string name="player_loading">ማጫወቻ በመጫን ላይ…</string>
+  <string name="player_seek_position">የማጫወት ቦታ</string>
+  <string name="action_preview">ቅድመ ዕይታ</string>
+  <string name="action_show_preview">ቅድመ ዕይታ አሳይ</string>
+  <string name="preview_loading">ቅድመ ዕይታ በመጫን ላይ…</string>
+  <string name="preview_unavailable">ለዚህ ፋይል ቅድመ ዕይታ አይገኝም።</string>
+  <string name="preview_empty">ይህ ፋይል ባዶ ነው።</string>
+  <string name="preview_truncated">የመጀመሪያዎቹን %1$d ረድፎች በማሳየት ላይ</string>
+  <string name="preview_bytes_truncated">የዚህን ፋይል የመጀመሪያ ክፍል በማሳየት ላይ</string>
+  <string name="preview_rows_cols">%1$d ረድፎች · %2$d አምዶች</string>
+</resources>

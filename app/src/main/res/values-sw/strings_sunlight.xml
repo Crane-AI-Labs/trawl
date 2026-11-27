@@ -9,4 +9,7 @@
   <string name="colours_wallpaper">Rangi za picha ya mandhari</string>
   <string name="colours_wallpaper_hint">Huchukua rangi zake kwenye picha yako ya mandhari na hubadilika picha hiyo inapobadilika.</string>
   <string name="settings_brightness">Mwangaza au giza</string>
+  <string name="notif_waiting_other_app">Inasubiri unapotumia programu nyingine</string>
+  <string name="preview_checking">hakikisho limefichwa hadi likaguliwe</string>
+  <string name="preview_checking_words">Inakagua · gusa kuona</string>
 </resources>

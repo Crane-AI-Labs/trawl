@@ -9,4 +9,7 @@
   <string name="colours_wallpaper">Launukan fuskar bangon waya</string>
   <string name="colours_wallpaper_hint">Yana ɗauko launukansa daga fuskar bangon wayarka, kuma yana canzawa idan ta canza.</string>
   <string name="settings_brightness">Haske ko duhu</string>
+  <string name="notif_waiting_other_app">Ana jira yayin da kake amfani da wata manhaja</string>
+  <string name="preview_checking">an boye samfoti har sai an duba</string>
+  <string name="preview_checking_words">Ana dubawa · danna don gani</string>
 </resources>

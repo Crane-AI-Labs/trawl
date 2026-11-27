@@ -38,7 +38,7 @@ object Fusion {
   const val STRONG_RATIO = 0.5
 
   /** Fewer vectors than this in a modality and its own average is too noisy: the overall average stands in. */
-  private const val MIN_GROUP = 20
+  internal const val MIN_GROUP = 20
   private const val MIN_DEVIATION = 0.02
 
   /** Words that describe what to look for, not what is in it. Kind words ("photo", "pdf") are here and act as [kindHints]. */
@@ -102,7 +102,7 @@ object Fusion {
   internal fun words(text: String): List<String> {
     val out = ArrayList<String>()
     val sb = StringBuilder()
-    for (ch in text.lowercase()) {
+    for (ch in QueryNumbers.normalise(text).lowercase()) {
       if (Character.isLetterOrDigit(ch)) sb.append(ch)
       else if (sb.isNotEmpty()) { out += sb.toString(); sb.setLength(0) }
     }

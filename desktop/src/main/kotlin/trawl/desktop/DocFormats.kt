@@ -61,7 +61,7 @@ object DocFormats {
 
   /** The extensions a person can expect to be read, for the detail panel's "Formats" line and the tests. */
   val EXTENSIONS: List<String> = listOf(
-    "txt", "md", "json", "log", "csv", "tsv", "html", "htm", "rtf", "svg", "docx", "xlsx", "pptx", "odt", "ods", "odp", "epub", "pdf",
+    "txt", "md", "json", "log", "csv", "tsv", "html", "htm", "rtf", "svg", "docx", "xlsx", "xls", "pptx", "odt", "ods", "odp", "epub", "pdf",
   )
 
   private fun headerFormat(file: File): DocFormat? = try {
@@ -97,9 +97,17 @@ object DocFormats {
    * from PDFBox for a PDF (named or hidden under a text name) and from the core's extractors for everything else.
    */
   fun pages(file: File, namedPdf: Boolean): Pages {
-    if (namedPdf) return Pages(Extract.pdfPages(file), pdf = true)
+    fun readPdf(): Pages {
+      if (file.length() > ExtractLimits.MAX_FILE_BYTES) return Pages(emptyList(), pdf = true, failure = Why.TOO_BIG.detail)
+      return try {
+        Pages(Extract.pdfPages(file), pdf = true)
+      } catch (_: Throwable) {
+        Pages(emptyList(), pdf = true, failure = Why.DAMAGED.detail)
+      }
+    }
+    if (namedPdf) return readPdf()
     val r = read(file)
-    if (r.pdf) return Pages(Extract.pdfPages(file), pdf = true)
+    if (r.pdf) return readPdf()
     return Pages(r.pages.map { Chunker.chunks(it) }, pdf = false, failure = r.why?.detail)
   }
 

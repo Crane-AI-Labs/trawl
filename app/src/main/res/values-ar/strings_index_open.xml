@@ -7,4 +7,6 @@
   <string name="open_problem_memory">لا توجد ذاكرة كافية في الهاتف. سيحاول مرة أخرى بعد قليل.</string>
   <string name="open_problem_other">سيحاول مرة أخرى بعد قليل.</string>
   <string name="open_problem_detail">نتائجك السابقة بأمان ولم يُحذف شيء. يحاول من تلقاء نفسه، أو اضغط على إعادة المحاولة.</string>
+  <string name="index_opening_title">جارٍ فتح الفهرس</string>
+  <string name="index_opening_detail">ستظهر النتائج عندما يصبح الفهرس جاهزاً.</string>
 </resources>

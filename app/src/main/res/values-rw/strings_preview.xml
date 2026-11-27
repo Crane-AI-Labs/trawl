@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="player_play">Kina</string>
+  <string name="player_pause">Hagarika gato</string>
+  <string name="player_rewind_10">Subira inyuma amasegonda 10</string>
+  <string name="player_forward_10">Imbere amasegonda 10</string>
+  <string name="player_jump_match">Simbukira kuri %1$s</string>
+  <string name="player_open_external">Fungura muri porogaramu</string>
+  <string name="player_error">Iyi dosiye ntishoboye gukinwa hano.</string>
+  <string name="player_loading">Iri gutegura gukina…</string>
+  <string name="player_seek_position">Aho gukina bigeze</string>
+  <string name="action_preview">Reba mbere</string>
+  <string name="action_show_preview">Erekana imiterere</string>
+  <string name="preview_loading">Iri gutegura kureba…</string>
+  <string name="preview_unavailable">Kureba mbere ntibishoboka kuri iyi dosiye.</string>
+  <string name="preview_empty">Iyi dosiye nta kirimo.</string>
+  <string name="preview_truncated">Iri kwerekana imirongo %1$d ya mbere</string>
+  <string name="preview_bytes_truncated">Iri kwerekana igice cya mbere cy\'iyi dosiye</string>
+  <string name="preview_rows_cols">Imirongo %1$d · inkingi %2$d</string>
+</resources>

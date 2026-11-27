@@ -6,6 +6,7 @@ import com.craneai.findr.core.KindFilter
 import com.craneai.findr.core.ResultView
 import com.craneai.findr.core.SortOrder
 import com.craneai.findr.core.MatchReason
+import com.craneai.findr.core.SeesHead
 import java.time.DayOfWeek
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -45,7 +46,7 @@ import kotlin.math.ln
 object AppPathHarness {
   const val LIMIT = 60          // SearchScreen asks for 60
 
-  private class Seg(val kind: String, val v: Int, val text: String?, val late: Boolean?)
+  private class Seg(val kind: String, val v: Int, val text: String?, val late: Boolean?, val modality: String?)
   private class FileRec(val id: Long, val name: String, val folder: String, val kind: FileKind, val segs: List<Seg>)
   private class Query(val id: String, val q: String, val rel: Set<Long>, val slices: List<String>, val qv: Int, val filter: KindFilter)
 
@@ -71,10 +72,28 @@ object AppPathHarness {
   private fun kindOf(s: String) = FileKind.valueOf(s)
   private fun segKind(k: String) = when (k) {
     "chunk" -> SegmentKind.CHUNK; "page" -> SegmentKind.PAGE; "image" -> SegmentKind.IMAGE; "ocr" -> SegmentKind.OCR
-    "transcript" -> SegmentKind.TRANSCRIPT; "sound" -> SegmentKind.SOUND; "frame" -> SegmentKind.FRAME
+    "transcript" -> SegmentKind.TRANSCRIPT; "sound" -> SegmentKind.SOUND; "frame" -> SegmentKind.FRAME; "audio" -> SegmentKind.AUDIO
+    "sees" -> SegmentKind.SEES
     else -> error("unknown segment kind $k")
   }
-  private fun modalityOf(k: SegmentKind) = if (k == SegmentKind.IMAGE || k == SegmentKind.FRAME) Modality.IMAGE else Modality.TEXT
+  internal fun modalityOf(kind: SegmentKind, declared: String?, hasVector: Boolean): Modality {
+    val saved = declared?.let { value ->
+      Modality.entries.singleOrNull { it.db == value } ?: error("unknown segment modality $value")
+    }
+    if (!hasVector) return Modality.NONE
+    if (saved != null) {
+      require(saved != Modality.NONE) { "vector segment $kind has modality none" }
+      return saved
+    }
+    return when (kind) {
+      SegmentKind.IMAGE, SegmentKind.FRAME -> Modality.IMAGE
+      SegmentKind.AUDIO -> Modality.AUDIO
+      SegmentKind.SOUND -> Modality.SOUND
+      SegmentKind.OCR -> Modality.OCR_TEXT
+      SegmentKind.CHUNK, SegmentKind.PAGE, SegmentKind.TRANSCRIPT -> Modality.TEXT
+      SegmentKind.NAME, SegmentKind.SEES -> error("$kind segment must not have a vector")
+    }
+  }
 
   /**
    * mode "datescan": which queries of <world>/queries.jsonl the app's [DateParser] reads a date in (no index, no vectors needed).
@@ -164,6 +183,7 @@ object AppPathHarness {
      */
     val keywords: Lazy<LocalKeywords?>? = null,
     val appendKeywords: Boolean = false,
+    val seesHead: SeesHead? = null,
   )
 
   class DateMode(val fallback: Boolean, val now: ZonedDateTime = ZonedDateTime.of(2026, 10, 16, 12, 0, 0, 0, ZoneId.of("Africa/Kampala")))
@@ -203,7 +223,7 @@ object AppPathHarness {
         @Suppress("UNCHECKED_CAST")
         FileRec(
           (m["id"] as Double).toLong(), m["name"] as String, (m["folder"] as? String) ?: "", kindOf(m["kind"] as String),
-          (m["segs"] as List<Map<String, Any?>>).map { Seg(it["k"] as String, ((it["v"] as? Double) ?: -1.0).toInt(), it["t"] as? String, it["late"] as? Boolean) },
+          (m["segs"] as List<Map<String, Any?>>).map { Seg(it["k"] as String, ((it["v"] as? Double) ?: -1.0).toInt(), it["t"] as? String, it["late"] as? Boolean, it["modality"] as? String) },
         )
       }.toList()
       files.chunked(500).forEach { batch ->
@@ -225,7 +245,7 @@ object AppPathHarness {
           val late = s.late ?: (kind == SegmentKind.CHUNK && chunkNo >= 40)
           if (kind == SegmentKind.CHUNK) chunkNo++
           val vec = if (!withheld && s.v >= 0) docs.row(s.v) else null
-          Segment(kind, if (vec != null) modalityOf(kind) else Modality.NONE, text = s.text, vector = vec, late = late)
+          Segment(kind, modalityOf(kind, s.modality, vec != null), text = s.text, vector = vec, late = late)
         }
         if (segments.isEmpty()) continue
         // A file with no vector segment at all has only had its words pass, as on a real phone: searchable, not understood.
@@ -233,6 +253,13 @@ object AppPathHarness {
         val ids = store.saveSegments(fileId, segments, state)
         segments.forEachIndexed { i, s -> s.vector?.let { vectors.add(ids[i], fileId, f.kind, s.modality, s.late, it); vecCount++ } }
         segCount += segments.size
+        if (f.kind == FileKind.VIDEO && policy.seesHead != null) {
+          store.seesFrames(fileId)?.let { frames ->
+            val line = policy.seesHead.line(frames.vectors)
+            check(store.saveSeesCatchUp(frames, line))
+            File(outDir, "sees.jsonl").appendText("{\"id\":${f.id},\"frames\":${frames.vectors.size},\"line\":${line?.let(MiniJson::quote) ?: "null"}}\n")
+          }
+        }
       }
       log("built index: ${files.size} files, $segCount segments, $vecCount vectors in ${(System.nanoTime() - t0) / 1_000_000_000} s")
 

@@ -39,12 +39,17 @@ object PackFilesRegistry {
     archive = Regex("""(?:findr|trawl)-private-models.*\.zip""", RegexOption.IGNORE_CASE),
   )
 
+  /** The speech add-on's packs, one per language (engine/SpeechPacks.kt): `trawl-speech-lg/` or `trawl-speech-lg*.zip` in Downloads. */
+  private val speechPacks: Map<String, PackFiles> = SpeechPacks.all.associate { e ->
+    e.id to PackFiles(dir = e.dir, manifest = e.files, folderName = e.folderName, archive = Regex("""(?:findr|trawl)-speech-${e.language}(?:[-_ (].*)?\.zip""", RegexOption.IGNORE_CASE))
+  }
+
   /** `null` for a pack whose files do not exist yet. */
   fun of(id: String): PackFiles? = when (id) {
     PackCatalog.SPEECH -> speech
     PackCatalog.QUICK_LOOK -> quickLook
     PackCatalog.PRIVACY -> privacy
-    else -> null
+    else -> speechPacks[id]
   }
 }
 

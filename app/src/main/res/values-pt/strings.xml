@@ -300,6 +300,8 @@
   <string name="settings_about_model">A busca usa o EmbeddingGemma 2 do Google (Apache 2.0), totalmente neste celular.</string>
   <string name="settings_about_private">O <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> não tem permissão de internet. Seus arquivos e o que ele aprende com eles nunca saem do celular.</string>
   <string name="settings_about_maker">Feito por Crane AI Labs.</string>
+  <string name="settings_check_updates">Procurar atualizações</string>
+  <string name="settings_check_updates_hint">Abre a página de transferências no seu navegador.</string>
   <string name="settings_licences">Licenças e créditos</string>
   <string name="licences_title">Licenças e créditos</string>
   <string name="licences_intro">O <xliff:g id="app_name" example="Trawl">%1$s</xliff:g> é desenvolvido sobre o trabalho abaixo. Estes avisos são exigidos pelas licenças e são também nossa forma de agradecer.</string>
@@ -481,4 +483,7 @@
     <item quantity="many">%1$d arquivos não puderam ser lidos (danificados ou em um formato que este celular não abre). Você ainda pode encontrá-los pelo nome.</item>
     <item quantity="other">%1$d arquivos não puderam ser lidos (danificados ou em um formato que este celular não abre). Você ainda pode encontrá-los pelo nome.</item>
   </plurals>
+  <string name="addons_download_browser">Transferir no navegador</string>
+  <string name="addons_download_return_hint">Quando o ficheiro terminar de transferir para Transferências, volte aqui e toque em Instalar.</string>
+  <string name="addons_no_browser">Nenhum navegador encontrado para abrir a ligação de transferência.</string>
 </resources>

@@ -1,5 +1,6 @@
 package trawl.desktop
 
+import com.craneai.findr.core.OcrLine
 import com.craneai.findr.engine.Chunker
 import com.craneai.findr.extract.TextDecoding
 import java.awt.RenderingHints
@@ -28,14 +29,22 @@ object Extract {
     return listOf(Chunker.chunks(TextDecoding.decode(bytes)))
   }
 
-  /** PDF with a text layer: one chunk list per page (page number = index + 1). Scanned PDFs need the OCR path (not in the prototype). */
-  fun pdfPages(file: File): List<List<String>> = Loader.loadPDF(file).use { doc ->
+  /** PDF with a text layer: one chunk list per page (page number = index + 1), bounded to [DocFormats.MAX_CHARS] and [ExtractLimits.MAX_PDF_PAGES]. */
+  fun pdfPages(file: File, maxChars: Int = DocFormats.MAX_CHARS): List<List<String>> = Loader.loadPDF(file).use { doc ->
     quietPdfLogs
     val stripper = PDFTextStripper()
-    (1..doc.numberOfPages).map { p ->
+    var remaining = maxChars
+    val pageLimit = minOf(doc.numberOfPages, com.craneai.findr.extract.ExtractLimits.MAX_PDF_PAGES)
+    val out = ArrayList<List<String>>(pageLimit)
+    for (p in 1..pageLimit) {
+      if (remaining <= 0) break
       stripper.startPage = p; stripper.endPage = p
-      Chunker.chunks(stripper.getText(doc))
+      val raw = stripper.getText(doc)
+      val bounded = if (raw.length > remaining) raw.take(remaining) else raw
+      remaining -= bounded.length
+      out += Chunker.chunks(bounded)
     }
+    out
   }
 
   /** The phone's picture preparation: longest side 768 px, JPEG quality 90 (scripts/eval_quality.py phone_jpeg). */
@@ -63,51 +72,135 @@ object Extract {
 }
 
 /** Text from a picture. One per OS: Apple Vision (macOS), Windows.Media.Ocr (Windows, later), Tesseract (the portable fallback). */
-interface Ocr : AutoCloseable { fun read(image: File): String; val name: String }
+interface Ocr : AutoCloseable {
+  fun read(image: File): String
+  fun readLines(image: File): List<OcrLine> = read(image).lines().map { OcrLine(it, OcrLine.UNKNOWN, 0f, 0f, 0f, null) }
+  val name: String
+}
 
 /** Tesseract through its command line (Apache-2.0; `apt install tesseract-ocr`). The prototype's Linux reader; PP-OCRv5 on ONNX Runtime is the planned in-process one. */
 class TesseractOcr(private val lang: String = "eng") : Ocr {
   override val name = "tesseract"
   override fun read(image: File): String {
-    val p = ProcessBuilder("tesseract", image.absolutePath, "stdout", "-l", lang).redirectError(ProcessBuilder.Redirect.DISCARD).start()
+    val p = HelperProcs.started(HelperProcs.builder("tesseract", image.absolutePath, "stdout", "-l", lang).redirectError(ProcessBuilder.Redirect.DISCARD).start())
     val text = p.inputStream.bufferedReader().readText()
     p.waitFor()
     return text
   }
+  override fun readLines(image: File): List<OcrLine> {
+    val base = File.createTempFile("trawl-ocr-", "")
+    val tsv = File(base.path + ".tsv")
+    val hocr = File(base.path + ".hocr")
+    try {
+      val process = HelperProcs.started(HelperProcs.builder("tesseract", image.absolutePath, base.absolutePath, "-l", lang, "tsv", "hocr")
+        .redirectError(ProcessBuilder.Redirect.DISCARD).redirectOutput(ProcessBuilder.Redirect.DISCARD).start())
+      check(process.waitFor() == 0) { "Tesseract could not read the picture" }
+      return TesseractLines.parse(tsv.readText(), hocr.readText())
+    } finally { tsv.delete(); hocr.delete(); base.delete() }
+  }
   override fun close() {}
 }
 
-/** Windows.Media.Ocr through a long-lived Windows PowerShell helper (native/ocr-windows.ps1), same line protocol as the Apple one. Windows only. */
-class WindowsOcr(script: File) : Ocr {
+/** Windows.Media.Ocr through a long-lived Windows PowerShell helper (native/ocr-windows.ps1), same UTF-8 line protocol as the Apple one. Windows only. */
+class WindowsOcr(private val script: File) : Ocr {
   override val name = "windows-media-ocr"
-  private val proc = ProcessBuilder("powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", script.absolutePath)
-    .redirectError(ProcessBuilder.Redirect.DISCARD).start()
-  private val stdin = proc.outputStream.bufferedWriter()
-  private val stdout = proc.inputStream.bufferedReader()
+  @Volatile private var closed = false
+  private var proc: Process? = null
+  private var stdin: java.io.BufferedWriter? = null
+  private var stdout: java.io.BufferedReader? = null
 
-  @Synchronized override fun read(image: File): String {
-    stdin.write(image.absolutePath); stdin.newLine(); stdin.flush()
-    val line = stdout.readLine() ?: return ""
-    return org.json.JSONObject(line).optString("text", "")
+  private fun ensure(): Pair<java.io.BufferedWriter, java.io.BufferedReader> {
+    if (closed) throw java.io.IOException("ocr closed")
+    proc?.takeIf { it.isAlive }?.let { return stdin!! to stdout!! }
+    val p = HelperProcs.started(HelperProcs.builder("powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", script.absolutePath)
+      .redirectError(ProcessBuilder.Redirect.DISCARD).start())
+    proc = p
+    stdin = p.outputStream.bufferedWriter(Charsets.UTF_8)
+    stdout = p.inputStream.bufferedReader(Charsets.UTF_8)
+    return stdin!! to stdout!!
   }
 
-  override fun close() { runCatching { stdin.close() }; proc.destroy() }
+  private fun resetProc() {
+    runCatching { stdin?.close() }
+    runCatching { stdout?.close() }
+    runCatching { proc?.destroyForcibly() }
+    proc = null; stdin = null; stdout = null
+  }
+
+  @Synchronized override fun read(image: File): String {
+    val path = image.absolutePath
+    if (path.any { it == '\n' || it == '\r' }) return ""
+    repeat(2) { attempt ->
+      try {
+        val (w, r) = ensure()
+        w.write(path); w.newLine(); w.flush()
+        val line = r.readLine()
+        if (line != null) return org.json.JSONObject(line).optString("text", "")
+        resetProc()
+      } catch (_: Throwable) {
+        resetProc()
+        if (attempt == 1 || closed) return ""
+      }
+    }
+    return ""
+  }
+
+  @Synchronized override fun close() {
+    closed = true
+    resetProc()
+  }
 }
 
 /** Apple Vision through a long-lived Swift helper (native/ocr-stdin.swift, compiled once): path in, text out. macOS only. */
 class AppleOcr(private val helper: File) : Ocr {
   override val name = "apple-vision"
-  private val proc = ProcessBuilder(helper.absolutePath).redirectError(ProcessBuilder.Redirect.DISCARD).start()
-  private val stdin = proc.outputStream.bufferedWriter()
-  private val stdout = proc.inputStream.bufferedReader()
+  @Volatile private var closed = false
+  private var proc: Process? = null
+  private var stdin: java.io.BufferedWriter? = null
+  private var stdout: java.io.BufferedReader? = null
 
-  @Synchronized override fun read(image: File): String {
-    stdin.write(image.absolutePath); stdin.newLine(); stdin.flush()
-    val line = stdout.readLine() ?: return ""
-    return org.json.JSONObject(line).optString("text", "")
+  private fun ensure(): Pair<java.io.BufferedWriter, java.io.BufferedReader> {
+    if (closed) throw java.io.IOException("ocr closed")
+    proc?.takeIf { it.isAlive }?.let { return stdin!! to stdout!! }
+    val p = HelperProcs.started(HelperProcs.builder(helper.absolutePath).redirectError(ProcessBuilder.Redirect.DISCARD).start())
+    proc = p
+    stdin = p.outputStream.bufferedWriter(Charsets.UTF_8)
+    stdout = p.inputStream.bufferedReader(Charsets.UTF_8)
+    return stdin!! to stdout!!
   }
 
-  override fun close() { runCatching { stdin.close() }; proc.destroy() }
+  private fun resetProc() {
+    runCatching { stdin?.close() }
+    runCatching { stdout?.close() }
+    runCatching { proc?.destroyForcibly() }
+    proc = null; stdin = null; stdout = null
+  }
+
+  @Synchronized private fun reading(image: File): org.json.JSONObject {
+    val path = image.absolutePath
+    if (path.any { it == '\n' || it == '\r' }) return org.json.JSONObject()
+    repeat(2) { attempt ->
+      try {
+        val (w, r) = ensure()
+        w.write(path); w.newLine(); w.flush()
+        val line = r.readLine()
+        if (line != null) return org.json.JSONObject(line)
+        resetProc()
+      } catch (_: Throwable) {
+        resetProc()
+        if (attempt == 1 || closed) return org.json.JSONObject()
+      }
+    }
+    return org.json.JSONObject()
+  }
+
+  override fun read(image: File): String = reading(image).optString("text", "")
+  override fun readLines(image: File): List<OcrLine> = OcrJson.lines(reading(image))
+
+  @Synchronized override fun close() {
+    closed = true
+    resetProc()
+  }
 
   companion object {
     /** Compiles the helper next to [dir] on first use. */
@@ -115,7 +208,7 @@ class AppleOcr(private val helper: File) : Ocr {
       val bin = File(dir, "ocr-stdin")
       if (!bin.exists() || bin.lastModified() < source.lastModified()) {
         dir.mkdirs()
-        val p = ProcessBuilder("swiftc", "-O", source.absolutePath, "-o", bin.absolutePath).redirectErrorStream(true).start()
+        val p = Politeness.Cpu.track(ProcessBuilder("swiftc", "-O", source.absolutePath, "-o", bin.absolutePath).redirectErrorStream(true).start())
         val log = p.inputStream.bufferedReader().readText()
         check(p.waitFor() == 0) { "swiftc failed: $log" }
       }

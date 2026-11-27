@@ -38,6 +38,17 @@ object PackCatalog {
      * measured A/B/A, mean +4.8%, median +2.7%; 60% duty was +15.7%: the research notes). A test holds it at or under the 5% budget.
      */
     const val PRIVATE_SLOWDOWN_PCT = 5
+    /**
+     * Speech packs (D48): share of held-out voice notes whose 2-word query found the right one first through the app's own index and
+     * search, with the pack (whole-note reading, LocalSpeech.WHOLE_NOTE, arm G) and without it: the desktop SpeechPackE2e harness through
+     * MediaIndexer -> LocalSpeech.keep -> Searcher, 23 Nov 2026: Luganda WAXAL-H502 76.5 vs
+     * 0.4; Runyankole WAXAL H300 57.0 vs 0.0; Acholi 41.2 vs 0.7; Swahili FLEURS (312) 59.0 vs 0.3; Lusoga 47.3 vs 0.0 (a beta).
+     * Rounded down to whole percents.
+     */
+    val SPEECH_PACK_FOUND_FIRST_PCT: Map<String, Pair<Int, Int>> = mapOf(
+      PackIds.SPEECH_LG to (76 to 0), PackIds.SPEECH_NYN to (57 to 0), PackIds.SPEECH_ACH to (41 to 0),
+      PackIds.SPEECH_SW to (59 to 0), PackIds.SPEECH_XOG to (47 to 0),
+    )
   }
 
   const val SPEECH = PackIds.SPEECH
@@ -94,7 +105,35 @@ object PackCatalog {
     byDefault = true,
   )
 
-  val all: List<PackDef> = listOf(speech, quickLook, privacy)
+  /**
+   * The speech add-on, one pack per language (engine/LocalSpeech.kt, engine/SpeechPacks.kt): the English model still reads everything,
+   * and only speech the language gate calls not English is read again. Opt-in and not asked about at onboarding: it is for the people who
+   * speak the language, who find it under Settings → Add-ons. One at a time: switching one on switches the others off
+   * ([FindrSettings.speechPack]), as the gate can say "not English" but not which language.
+   */
+  private fun speechPack(entry: com.craneai.findr.engine.SpeechPacks.Entry, nameRes: Int, languageRes: Int): PackDef {
+    val (after, before) = Facts.SPEECH_PACK_FOUND_FIRST_PCT.getValue(entry.id)
+    return PackDef(
+      id = entry.id,
+      nameRes = nameRes,
+      benefit = PackCopy(R.string.pack_speech_language_benefit, listOf(PackCopy(languageRes), after, before)),
+      cost = PackCopy(R.string.pack_speech_language_cost),
+      sizeBytes = entry.sizeBytes,
+      archiveName = "${entry.folderName}.zip",
+      available = true,
+      enabledIn = { it.speechPack == entry.id },
+      withEnabled = { s, on -> s.copy(speechPack = if (on) entry.id else s.speechPack.takeIf { it != entry.id }) },
+      atOnboarding = false,
+    )
+  }
+
+  val speechLg = speechPack(com.craneai.findr.engine.SpeechPacks.lg, R.string.pack_speech_lg_name, R.string.speech_language_lg)
+  val speechNyn = speechPack(com.craneai.findr.engine.SpeechPacks.nyn, R.string.pack_speech_nyn_name, R.string.speech_language_nyn)
+  val speechAch = speechPack(com.craneai.findr.engine.SpeechPacks.ach, R.string.pack_speech_ach_name, R.string.speech_language_ach)
+  val speechSw = speechPack(com.craneai.findr.engine.SpeechPacks.sw, R.string.pack_speech_sw_name, R.string.speech_language_sw)
+  val speechXog = speechPack(com.craneai.findr.engine.SpeechPacks.xog, R.string.pack_speech_xog_name, R.string.speech_language_xog)
+
+  val all: List<PackDef> = listOf(speech, quickLook, privacy, speechLg, speechNyn, speechAch, speechSw, speechXog)
 
   fun byId(id: String): PackDef? = all.firstOrNull { it.id == id }
 }

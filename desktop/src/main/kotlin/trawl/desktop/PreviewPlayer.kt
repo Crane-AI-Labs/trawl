@@ -40,7 +40,12 @@ class JavaSoundOut private constructor(private val line: SourceDataLine) : PcmOu
   override fun write(bytes: ByteArray, length: Int) { line.write(bytes, 0, length) }
   override fun playedMs(): Long = line.microsecondPosition / 1000
   override fun finish() { line.drain() }
-  override fun close() { runCatching { line.stop() }; runCatching { line.close() } }
+  override fun close() {
+    // Stop + flush BEFORE close so CoreAudio discards buffered PCM immediately and unblocks any in-flight write()/drain().
+    runCatching { line.stop() }
+    runCatching { line.flush() }
+    runCatching { line.close() }
+  }
 
   companion object {
     val FORMAT = AudioFormat(16000f, 16, 1, true, false)
@@ -48,7 +53,7 @@ class JavaSoundOut private constructor(private val line: SourceDataLine) : PcmOu
     /** Null when this computer has no output for that format (a server with no sound card, a machine whose output is busy). */
     fun open(): PcmOut? = runCatching {
       val l = AudioSystem.getSourceDataLine(FORMAT)
-      l.open(FORMAT, 16000 * 2)   // half a second of buffer: stopping is prompt
+      l.open(FORMAT, 16000 / 2)   // 250 ms buffer: immediate stop, low latency
       l.start()
       JavaSoundOut(l)
     }.getOrNull()
@@ -71,6 +76,9 @@ class PreviewPlayer(
 ) {
   private val _state = MutableStateFlow<PlayState>(PlayState.Idle)
   val state: StateFlow<PlayState> = _state.asStateFlow()
+  private val _activeFile = MutableStateFlow<File?>(null)
+  /** The file whose playback [state] belongs to (null when Idle/stopped), preventing stale state bleed across rapid switches. */
+  val activeFile: StateFlow<File?> = _activeFile.asStateFlow()
 
   @Volatile private var run: Run? = null
 
@@ -88,38 +96,60 @@ class PreviewPlayer(
     stop()
     val r = Run(file)
     run = r
+    _activeFile.value = file
     _state.value = PlayState.Loading
     val t = Thread({ clip(r, fromMs.coerceAtLeast(0)) }, "trawl-preview-play").apply { isDaemon = true }
     r.thread = t
     t.start()
   }
 
-  /** Ends whatever is playing. Safe to call at any time, from any thread. */
-  @Synchronized fun stop() {
-    val r = run ?: return
-    r.stopped = true
-    run = null
-    runCatching { r.out?.close() }
-    runCatching { r.dec?.close() }
-    r.thread?.interrupt()
-    if (_state.value is PlayState.Loading || _state.value is PlayState.Playing) _state.value = PlayState.Idle
+  /** Ends whatever is playing and resets [state] (including Done/Failed) back to [PlayState.Idle] without blocking the UI thread. */
+  fun stop() {
+    val detached = synchronized(this) {
+      val r = run
+      run = null
+      if (r != null) r.stopped = true
+      _activeFile.value = null
+      _state.value = PlayState.Idle
+      r
+    }
+    if (detached != null) {
+      detached.thread?.interrupt()
+      stopPool.execute {
+        runCatching { detached.out?.close() }
+        runCatching { detached.dec?.close() }
+      }
+    }
   }
 
   private fun clip(r: Run, fromMs: Long) {
     var failed = false
     try {
+      if (r.stopped) return
       val d = decoder()
-      r.dec = d
+      val keepDec = synchronized(this) {
+        if (r.stopped) false else { r.dec = d; true }
+      }
+      if (!keepDec) { runCatching { d?.close() }; return }
       val o = output()
-      r.out = o
+      val keepOut = synchronized(this) {
+        if (r.stopped) false else { r.out = o; true }
+      }
+      if (!keepOut) { runCatching { o?.close() }; return }
       if (d == null || o == null) { failed = true; return }
       if (r.stopped) return
       var first = true
       d.audio(r.file, fromMs, spanMs) { bytes, n ->
+        if (r.stopped || Thread.currentThread().isInterrupted) throw Stopped()
+        if (first) {
+          first = false
+          synchronized(this) { if (run === r && !r.stopped) _state.value = PlayState.Playing(fromMs, 0) }
+        }
         if (r.stopped) throw Stopped()
-        if (first) { first = false; _state.value = PlayState.Playing(fromMs, 0) }
         o.write(bytes, n)
-        if (!r.stopped) _state.value = PlayState.Playing(fromMs, o.playedMs())
+        if (r.stopped) throw Stopped()
+        val elapsed = o.playedMs()
+        synchronized(this) { if (run === r && !r.stopped) _state.value = PlayState.Playing(fromMs, elapsed) }
       }
       if (!r.stopped) { if (first) failed = true else o.finish() }
     } catch (_: Stopped) {
@@ -139,7 +169,17 @@ class PreviewPlayer(
   }
 
   companion object {
+    private val stopPool = java.util.concurrent.Executors.newFixedThreadPool(2) { r ->
+      Thread(r, "trawl-preview-stop").apply { isDaemon = true }
+    }
+
     /** Long enough to hear the passage the search matched, short enough that a wrong click costs nothing. */
     const val DEFAULT_SPAN_MS = 45_000L
+
+    /** Pre-roll applied when playing from a search match moment so the user hears the matched word in context. */
+    const val MATCH_PRE_ROLL_MS = 1_500L
+
+    /** Playback start position for a match at [matchMs]: [MATCH_PRE_ROLL_MS] earlier, clamped at 0. */
+    fun matchPlayStartMs(matchMs: Long): Long = (matchMs - MATCH_PRE_ROLL_MS).coerceAtLeast(0L)
   }
 }

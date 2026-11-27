@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="player_play">Cheza</string>
+  <string name="player_pause">Sitisha</string>
+  <string name="player_rewind_10">Rudi sekunde 10</string>
+  <string name="player_forward_10">Sogea sekunde 10</string>
+  <string name="player_jump_match">Ruka hadi %1$s</string>
+  <string name="player_open_external">Fungua kwenye programu</string>
+  <string name="player_error">Faili hii haikuweza kuchezwa hapa.</string>
+  <string name="player_loading">Inapakia uchezaji…</string>
+  <string name="player_seek_position">Nafasi ya uchezaji</string>
+  <string name="action_preview">Hakiki</string>
+  <string name="action_show_preview">Onyesha hakikisho</string>
+  <string name="preview_loading">Inapakia hakikisho…</string>
+  <string name="preview_unavailable">Hakikisho halipatikani kwa faili hii.</string>
+  <string name="preview_empty">Faili hii ni tupu.</string>
+  <string name="preview_truncated">Inaonyesha safu %1$d za kwanza</string>
+  <string name="preview_bytes_truncated">Inaonyesha sehemu ya kwanza ya faili hii</string>
+  <string name="preview_rows_cols">Safu %1$d · safuwima %2$d</string>
+</resources>

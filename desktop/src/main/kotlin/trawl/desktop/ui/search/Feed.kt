@@ -88,8 +88,8 @@ fun MoreRow(group: trawl.desktop.ui.Group, hidden: Int, mix: trawl.desktop.ui.Mi
     Icon(Icons.ExpandMore, contentDescription = null, tint = tk.ink, modifier = Modifier.size(Sun.Icon))
     Spacer(Modifier.width(Sun.S8))
     val key = when {
-      group != trawl.desktop.ui.Group.DOCUMENTS -> "recent_more_photos"
-      mix == trawl.desktop.ui.Mix.MEDIA -> "recent_more_media"
+      group == trawl.desktop.ui.Group.PHOTOS -> "recent_more_photos"
+      group == trawl.desktop.ui.Group.VIDEOS || group == trawl.desktop.ui.Group.AUDIO || mix == trawl.desktop.ui.Mix.MEDIA -> "recent_more_media"
       mix == trawl.desktop.ui.Mix.BOTH -> "recent_more_files"
       else -> "recent_more_documents"
     }

@@ -46,6 +46,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import com.craneai.findr.FindrApp
 import com.craneai.findr.R
 import com.craneai.findr.core.FindrLog as Log
@@ -62,6 +63,7 @@ import com.craneai.findr.ui.theme.SunOutlinedButton
 import com.craneai.findr.ui.theme.SunType
 import com.craneai.findr.ui.theme.ThemeMode
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  * The keep-learning screen ([KeepLearning]): black, the window's brightness at its lowest (the phone's own setting is left
@@ -87,6 +89,13 @@ class KeepLearningActivity : ComponentActivity() {
     ContextCompat.registerReceiver(this, receiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED), ContextCompat.RECEIVER_NOT_EXPORTED)
       ?.let { battery.value = BatteryState.of(it) }
     awake(true)
+    lifecycleScope.launch {
+      (application as FindrApp).awaitEngine()
+      if (!isFinishing) showContent()
+    }
+  }
+
+  private fun showContent() {
     val engine = (application as FindrApp).engine
     val power = getSystemService(PowerManager::class.java)
     val startedOnCharger = battery.value.plugged
@@ -119,7 +128,7 @@ class KeepLearningActivity : ComponentActivity() {
                 phase = s.phase, pauseReason = s.pauseReason, needsCharger = s.needsCharger,
                 sameStateForMs = now - keySince, noProgressForMs = now - progressSince,
                 plugged = b.plugged, batteryPct = b.pct, batteryTempC = b.tempC, thermalStatus = power.currentThermalStatus,
-                startedOnCharger = startedOnCharger, unpluggedForMs = unpluggedSince?.let { now - it } ?: 0L,
+                headroom = (engine as? com.craneai.findr.engine.FindrEngine)?.thermalHeadroom() ?: Float.NaN, startedOnCharger = startedOnCharger, unpluggedForMs = unpluggedSince?.let { now - it } ?: 0L,
               ),
             )
             if (reason != null) {
@@ -166,7 +175,7 @@ class KeepLearningActivity : ComponentActivity() {
 }
 
 /** The battery as the screen needs it: plugged in, percentage, temperature. */
-internal data class BatteryState(val plugged: Boolean = true, val pct: Int = 100, val tempC: Double = 0.0) {
+internal data class BatteryState(val plugged: Boolean = true, val pct: Int = 100, val tempC: Double = Double.NaN) {
   companion object {
     fun of(i: Intent): BatteryState {
       val level = i.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
@@ -174,7 +183,7 @@ internal data class BatteryState(val plugged: Boolean = true, val pct: Int = 100
       return BatteryState(
         plugged = i.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0) != 0,
         pct = if (level < 0) -1 else level * 100 / scale,
-        tempC = i.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, 0) / 10.0,
+        tempC = i.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, Int.MIN_VALUE).let { if (it == Int.MIN_VALUE) Double.NaN else it / 10.0 },
       )
     }
   }

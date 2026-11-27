@@ -31,21 +31,54 @@ class IndexStore private constructor(
   private val log: (String) -> Unit,
   /** Dimension of [Modality.CLIP] vectors (the quick-look pass); every other modality is [dim]. */
   private val quickDim: Int = QUICK_DIM,
+  cleanClose: Boolean = false,
 ) {
   private fun dimOf(modality: Modality) = if (modality == Modality.CLIP) quickDim else dim
 
   /** The time that decides which files are recent ([Schema.priority]); tests set it. */
   @Volatile var clock: () -> Long = System::currentTimeMillis
   private val writeLock = ReentrantLock()
+  @Volatile private var closed = false
+  @Volatile private var cleanCloseMarked = cleanClose
   /** What the person has marked private; stamped onto rows as the crawler writes them. Persisted by the engine, not here. */
   @Volatile var rules: PrivacyRules = PrivacyRules.NONE
+  /**
+   * The speech pack in use, as its stamp `<pack_id>@<pack_version>` (engine/SpeechPack.kt), or null when none is: while set, the
+   * soundtrack catch-up also queues the not-English voice notes and videos that were not read with it ([SoundtrackCatchUp.PACK_KEY]),
+   * and its saves stamp them. Set by the engine before each run; validated as one token.
+   */
+  @Volatile var speechPackStamp: String? = null
+    set(v) { field = v?.takeIf { s -> s.isNotEmpty() && s.all { it.isLetterOrDigit() || it == '-' || it == '@' || it == '.' } } }
   @Volatile private var rulesDirty = false
     private set
   @Volatile private var modelFingerprint: String = writer.text("SELECT value FROM meta WHERE key = ?", Schema.Meta.MODEL_FINGERPRINT) ?: ""
 
   // ---- connections ---------------------------------------------------------------------------------------------
 
-  fun <T> write(block: (Db) -> T): T = writeLock.withLock { try { block(writer) } finally { changes.incrementAndGet() } }
+  /** Clears the clean-close marker before the first mutation after open (caller must hold [writeLock]). */
+  private fun markDirty() {
+    if (cleanCloseMarked) {
+      setMetaIn(writer, Schema.Meta.CLEAN_CLOSE, "0")
+      cleanCloseMarked = false
+    }
+  }
+
+  fun <T> write(block: (Db) -> T): T = writeLock.withLock {
+    markDirty()
+    try { block(writer) } finally { changes.incrementAndGet() }
+  }
+
+  /** Runs the full table + FTS5 integrity check on demand (e.g. asynchronously after a `fastOpen`). */
+  fun verifyIntegrity() = writeLock.withLock {
+    if (IndexRecovery.check(writer, log)) {
+      try {
+        setMetaIn(writer, Schema.Meta.CLEAN_CLOSE, "0")
+        cleanCloseMarked = false
+      } finally {
+        changes.incrementAndGet()
+      }
+    }
+  }
 
   /** How many writes this store has finished. A count that has not moved since a value was worked out means that value is still true ([cached]). */
   private val changes = java.util.concurrent.atomic.AtomicLong()
@@ -68,17 +101,60 @@ class IndexStore private constructor(
 
   /** Runs [block] on a pooled read connection. Safe from any thread; blocks only if every reader is busy. */
   fun <T> read(block: (Db) -> T): T {
-    val db = readers.take()
+    var db: Db? = null
+    while (db == null) {
+      if (closed) throw IllegalStateException("IndexStore is closed")
+      db = readers.poll() ?: readers.poll(50, java.util.concurrent.TimeUnit.MILLISECONDS)
+    }
+    if (closed) {
+      runCatching { db.close() }
+      throw IllegalStateException("IndexStore is closed")
+    }
     try {
       return block(db)
     } finally {
-      readers.put(db)
+      if (closed) {
+        runCatching { db.close() }
+      } else {
+        readers.put(db)
+        if (closed) {
+          while (true) runCatching { (readers.poll() ?: break).close() }
+        }
+      }
+    }
+  }
+
+  /**
+   * Incrementally merges up to [pages] b-tree pages of FTS5 inverted-index segments (`INSERT INTO fts(fts, rank) VALUES('merge', ?)`).
+   * Non-blocking (`tryLock`): skips immediately when another write holds [writeLock] or the store is closed, and WAL mode
+   * keeps concurrent read searches completely unblocked. Returns true when a merge slice executed cleanly.
+   */
+  fun mergeFts(pages: Int = 64): Boolean {
+    if (pages <= 0 || closed) return false
+    if (!writeLock.tryLock()) return false
+    return try {
+      if (closed) return false
+      markDirty()
+      runCatching { writer.run("INSERT INTO fts(fts, rank) VALUES('merge', ?)", pages) }.isSuccess
+    } finally {
+      writeLock.unlock()
     }
   }
 
   fun close() {
+    closed = true
     writeLock.withLock {
-      runCatching { writer.exec("PRAGMA wal_checkpoint(TRUNCATE)") }
+      // Bounded planner statistics refresh (400 rows/index) so sqlite_stat1 stays accurate for multi-join query plans.
+      runCatching {
+        writer.exec("PRAGMA analysis_limit = 400")
+        writer.exec("PRAGMA optimize")
+      }
+      if (!cleanCloseMarked) {
+        if (runCatching { setMetaIn(writer, Schema.Meta.CLEAN_CLOSE, "1") }.isSuccess) {
+          cleanCloseMarked = true
+        }
+      }
+      runCatching { writer.query("PRAGMA wal_checkpoint(TRUNCATE)") { } }
       runCatching { writer.close() }
     }
     while (true) runCatching { (readers.poll() ?: return).close() }
@@ -116,6 +192,7 @@ class IndexStore private constructor(
     db.transaction {
       if (old != null) {
         if (keepStale) {
+          db.run("DELETE FROM segments WHERE kind = 'sees'")
           db.run("UPDATE segments SET late = ${Schema.Late.STALE} WHERE vec IS NOT NULL AND modality IN ('${Modality.IMAGE.db}', '${Modality.AUDIO.db}')")
           db.run(
             "UPDATE files SET state = 'searchable', detail = ?, info = NULL, indexed_at = NULL WHERE state IN ('understood', 'partial') AND $HAS_STALE",
@@ -209,9 +286,6 @@ class IndexStore private constructor(
     }
   }
 
-  private fun setMetaIn(db: Db, key: String, value: String) =
-    db.run("INSERT INTO meta(key, value) VALUES(?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value", key, value)
-
   // ---- crawl ---------------------------------------------------------------------------------------------------
 
   data class UpsertResult(
@@ -232,9 +306,18 @@ class IndexStore private constructor(
    */
   fun upsertFromCrawl(records: List<CrawlRecord>): UpsertResult = write { db ->
     var result = UpsertResult()
-    db.transaction {
-      val nowMs = provenNow(db, records.filter { it.skipReason == null })
-      for (r in records) result += upsertOne(db, r, nowMs)
+    val rulesBefore = rules
+    val dirtyBefore = rulesDirty
+    try {
+      db.transaction {
+        val nowMs = provenNow(db, records.filter { it.skipReason == null })
+        for (r in records) result += upsertOne(db, r, nowMs)
+        syncRulesFingerprintIfTracked(db, rulesBefore, rules)
+      }
+    } catch (t: Throwable) {
+      rules = rulesBefore
+      rulesDirty = dirtyBefore
+      throw t
     }
     result
   }
@@ -345,13 +428,22 @@ class IndexStore private constructor(
    */
   fun forgetNowSkipped(records: List<CrawlRecord>): UpsertResult = write { db ->
     var result = UpsertResult()
-    db.transaction {
-      for (r in records) {
-        if (r.skipReason == null) continue
-        val state = db.text("SELECT state FROM files WHERE volume = ? AND mediastore_id = ?", r.volume, r.mediaStoreId) ?: continue
-        if (FileState.of(state) == FileState.SKIPPED) continue
-        result += upsertOne(db, r, clock())   // a skipped file's priority is not used
+    val rulesBefore = rules
+    val dirtyBefore = rulesDirty
+    try {
+      db.transaction {
+        for (r in records) {
+          if (r.skipReason == null) continue
+          val state = db.text("SELECT state FROM files WHERE volume = ? AND mediastore_id = ?", r.volume, r.mediaStoreId) ?: continue
+          if (FileState.of(state) == FileState.SKIPPED) continue
+          result += upsertOne(db, r, clock())   // a skipped file's priority is not used
+        }
+        syncRulesFingerprintIfTracked(db, rulesBefore, rules)
       }
+    } catch (t: Throwable) {
+      rules = rulesBefore
+      rulesDirty = dirtyBefore
+      throw t
     }
     result
   }
@@ -405,24 +497,38 @@ class IndexStore private constructor(
 
   /**
    * Takes the person's privacy marks and brings every row in line with them. Only rows whose flags change are written,
-   * so calling it again with the same rules is cheap. Returns how many rows changed. The marks live in the settings, so
-   * this runs again after "Delete index" or a rebuild, and nothing marked becomes findable by accident.
+   * and when [newRules] matches the stored [Schema.Meta.RULES_FINGERPRINT] this short-circuits in O(1) without scanning
+   * `files` or writing to disk. Returns how many rows changed. The marks live in the settings, so this runs again after
+   * "Delete index" or a rebuild, and nothing marked becomes findable by accident.
    */
-  fun applyRules(newRules: PrivacyRules): Int = write { db ->
-    rules = newRules
-    rulesDirty = false
-    val changes = ArrayList<Pair<Long, Int>>()
-    var learned = newRules
-    db.query("SELECT id, volume, mediastore_id, rel_path, sensitive, name FROM files") {
-      val want = newRules.flagsFor(it.getText(1), it.getLong(2), it.getText(3), it.getText(5))
-      if (want != it.getLong(4).toInt()) changes += it.getLong(0) to want
-      // A marked file found under a new MediaStore id keeps its mark: remember the new id too.
-      learned = learned.learn(it.getText(1), it.getLong(2), it.getText(3), it.getText(5))
+  fun applyRules(newRules: PrivacyRules): Int = writeLock.withLock {
+    val fp = rulesFingerprint(newRules)
+    if (writer.text("SELECT value FROM meta WHERE key = ?", Schema.Meta.RULES_FINGERPRINT) == fp) {
+      rules = newRules
+      rulesDirty = false
+      return@withLock 0
     }
-    rules = learned
-    rulesDirty = learned != newRules
-    if (changes.isNotEmpty()) db.transaction { for ((id, flags) in changes) db.run("UPDATE files SET sensitive = ? WHERE id = ?", flags, id) }
-    changes.size
+    markDirty()
+    try {
+      val pending = ArrayList<Pair<Long, Int>>()
+      var learned = newRules
+      writer.query("SELECT id, volume, mediastore_id, rel_path, sensitive, name FROM files") {
+        val want = newRules.flagsFor(it.getText(1), it.getLong(2), it.getText(3), it.getText(5))
+        if (want != it.getLong(4).toInt()) pending += it.getLong(0) to want
+        // A marked file found under a new MediaStore id keeps its mark: remember the new id too.
+        learned = learned.learn(it.getText(1), it.getLong(2), it.getText(3), it.getText(5))
+      }
+      val learnedFp = if (learned === newRules) fp else rulesFingerprint(learned)
+      writer.transaction {
+        for ((id, flags) in pending) writer.run("UPDATE files SET sensitive = ? WHERE id = ?", flags, id)
+        setMetaIn(writer, Schema.Meta.RULES_FINGERPRINT, learnedFp)
+      }
+      rules = learned
+      rulesDirty = learned != newRules
+      pending.size
+    } finally {
+      changes.incrementAndGet()
+    }
   }
 
   /**
@@ -435,10 +541,24 @@ class IndexStore private constructor(
       found = true; volume = it.getText(0); msId = it.getLong(1); rel = it.getText(2); name = it.getText(3)
     }
     if (!found) return@write null
-    rules = if (on) rules.withMark(volume, msId, rel, name) else rules.withoutMark(volume, msId, rel, name)
+    val rulesBefore = rules
+    val updated = if (on) rulesBefore.withMark(volume, msId, rel, name) else rulesBefore.withoutMark(volume, msId, rel, name)
+    db.transaction {
+      db.run("UPDATE files SET sensitive = ? WHERE id = ?", updated.flagsFor(volume, msId, rel, name), fileId)
+      syncRulesFingerprintIfTracked(db, rulesBefore, updated)
+    }
+    rules = updated
     rulesDirty = false
-    db.run("UPDATE files SET sensitive = ? WHERE id = ?", rules.flagsFor(volume, msId, rel, name), fileId)
-    rules
+    updated
+  }
+
+  /** Advances [Schema.Meta.RULES_FINGERPRINT] when the store was already synced to [before] and mutated inline to [after]. */
+  private fun syncRulesFingerprintIfTracked(db: Db, before: PrivacyRules, after: PrivacyRules) {
+    if (after == before) return
+    val current = db.text("SELECT value FROM meta WHERE key = ?", Schema.Meta.RULES_FINGERPRINT) ?: return
+    if (current == rulesFingerprint(before)) {
+      setMetaIn(db, Schema.Meta.RULES_FINGERPRINT, rulesFingerprint(after))
+    }
   }
 
   /** The flags this crawled file gets; also lets the rules learn its new id or path ([PrivacyRules.learn]). */
@@ -453,7 +573,14 @@ class IndexStore private constructor(
    * The rules, but only when a crawl or rule-apply taught them something new (a marked file's new id, or its new name) that the
    * settings do not hold yet. The engine saves them, then this returns null until the next change.
    */
-  fun takeLearnedRules(): PrivacyRules? = if (rulesDirty) { rulesDirty = false; rules } else null
+  fun takeLearnedRules(): PrivacyRules? = writeLock.withLock {
+    if (rulesDirty) {
+      rulesDirty = false
+      rules
+    } else {
+      null
+    }
+  }
 
   /** Whether one file carries any sensitive flag. The index sheet uses it to avoid naming the file being read. */
   fun isSensitive(fileId: Long): Boolean = read { (it.long("SELECT sensitive FROM files WHERE id = ?", fileId) ?: 0L) != 0L }
@@ -557,50 +684,76 @@ class IndexStore private constructor(
   // by the restarted worker, forever. The worker marks the step it is reading (the file, and which step of it: a long video
   // is read a window at a time) and clears the mark when the step is over, however it went. A mark still there at the next
   // start means the process died inside that step. The mark carries the count of deaths, so the second death in the same step
-  // ends it: the whole file is failed ("too large for this phone's memory"), or, for a windowed video or recording, only that
-  // window is skipped and the rest is read. A second skipped window fails the file: it is the file, not one window.
+  // ends it. Only deaths with memory pressure recorded during that attempt can label the file too large or skip a window.
+  // Other repeated interruptions fail neutrally and wait for an app update, without discarding any windows.
 
   /** What [recoverInflight] did: [skippedWindow] true: only [step] was left out and the file goes on; false: the file was failed. */
-  data class Recovery(val fileId: Long, val step: Int, val skippedWindow: Boolean)
+  data class Recovery(val fileId: Long, val step: Int, val skippedWindow: Boolean, val detail: String? = null)
+
+  @Volatile private var inflightActive = false
 
   /** Marks step [step] of [fileId] as the one being read. The death count survives only while it is the same step of the same file. */
-  fun markInflight(fileId: Long, step: Int = 0, windowed: Boolean = false) {
-    val deaths = inflight()?.takeIf { it.fileId == fileId && it.step == step }?.deaths ?: 0
-    setMeta(INFLIGHT_KEY, "$fileId:$step:$deaths:${if (windowed) "w" else "f"}")
+  fun markInflight(fileId: Long, step: Int = 0, windowed: Boolean = false) = write { db ->
+    val previous = inflight(db)?.takeIf { it.fileId == fileId && it.step == step }
+    setMetaIn(db, INFLIGHT_KEY, Inflight(fileId, step, previous?.deaths ?: 0, windowed, false, previous?.memoryDeaths ?: 0).value)
+    inflightActive = true
+  }
+
+  fun noteInflightMemoryPressure() {
+    if (!inflightActive) return
+    write { db ->
+      if (!inflightActive) return@write
+      val mark = inflight(db) ?: return@write
+      if (!mark.memoryPressure) setMetaIn(db, INFLIGHT_KEY, mark.copy(memoryPressure = true).value)
+    }
   }
 
   /** The worker is done with the step it marked (however that went): no process death happened inside it. */
-  fun clearInflight() = setMeta(INFLIGHT_KEY, null)
+  fun clearInflight() = write { db ->
+    inflightActive = false
+    db.run("DELETE FROM meta WHERE key = ?", INFLIGHT_KEY)
+  }
 
   /**
    * Called when a worker starts. A mark left behind means the last process died inside that step: count it. At [maxDeaths]
    * the step is given up on (see above) and what was done is returned; below that it stays marked with the higher count and
    * gets another chance.
    */
-  fun recoverInflight(maxDeaths: Int = 2): Recovery? {
-    val m = inflight() ?: return null
-    val deaths = m.deaths + 1
-    if (deaths < maxDeaths) {
-      setMeta(INFLIGHT_KEY, "${m.fileId}:${m.step}:$deaths:${if (m.windowed) "w" else "f"}")
-      return null
+  fun recoverInflight(maxDeaths: Int = 2): Recovery? = write { db ->
+    inflightActive = false
+    db.transaction {
+      val mark = inflight(db) ?: return@transaction null
+      val deaths = mark.deaths + 1
+      val memoryDeaths = mark.memoryDeaths + if (mark.memoryPressure) 1 else 0
+      if (deaths < maxDeaths) {
+        setMetaIn(db, INFLIGHT_KEY, mark.copy(deaths = deaths, memoryPressure = false, memoryDeaths = memoryDeaths).value)
+        return@transaction null
+      }
+      clearInflight()
+      val memoryRelated = memoryDeaths >= maxDeaths
+      val detail = db.text("SELECT detail FROM files WHERE id = ?", mark.fileId)
+      val skipped = detail?.let { SKIPPED.find(it)?.groupValues?.get(1)?.toIntOrNull() } ?: 0
+      if (memoryRelated && mark.windowed && skipped < 1) {
+        setState(mark.fileId, FileState.PARTIAL, "next=${mark.step + 1} skipped=${skipped + 1}")
+        return@transaction Recovery(mark.fileId, mark.step, skippedWindow = true)
+      }
+      val failure = if (memoryRelated) TOO_LARGE_DETAIL else INTERRUPTED_DETAIL
+      setState(mark.fileId, FileState.FAILED, failure)
+      Recovery(mark.fileId, mark.step, skippedWindow = false, detail = failure)
     }
-    clearInflight()
-    val detail = stateOf(m.fileId)?.second
-    val skipped = detail?.let { SKIPPED.find(it)?.groupValues?.get(1)?.toIntOrNull() } ?: 0
-    if (m.windowed && skipped < 1) {
-      setState(m.fileId, FileState.PARTIAL, "next=${m.step + 1} skipped=${skipped + 1}")
-      return Recovery(m.fileId, m.step, skippedWindow = true)
-    }
-    setState(m.fileId, FileState.FAILED, TOO_LARGE_DETAIL)
-    return Recovery(m.fileId, m.step, skippedWindow = false)
   }
 
-  private class Inflight(val fileId: Long, val step: Int, val deaths: Int, val windowed: Boolean)
+  private data class Inflight(
+    val fileId: Long, val step: Int, val deaths: Int, val windowed: Boolean, val memoryPressure: Boolean, val memoryDeaths: Int,
+  ) {
+    val value get() = "$fileId:$step:$deaths:${if (windowed) "w" else "f"}:${if (memoryPressure) "p" else "-"}:$memoryDeaths"
+  }
 
-  private fun inflight(): Inflight? {
-    val parts = meta(INFLIGHT_KEY)?.split(':') ?: return null
+  private fun inflight(db: Db): Inflight? {
+    val parts = db.text("SELECT value FROM meta WHERE key = ?", INFLIGHT_KEY)?.split(':') ?: return null
     val id = parts.getOrNull(0)?.toLongOrNull() ?: return null
-    return Inflight(id, parts.getOrNull(1)?.toIntOrNull() ?: 0, parts.getOrNull(2)?.toIntOrNull() ?: 0, parts.getOrNull(3) == "w")
+    return Inflight(id, parts.getOrNull(1)?.toIntOrNull() ?: 0, parts.getOrNull(2)?.toIntOrNull() ?: 0,
+      parts.getOrNull(3) == "w", parts.getOrNull(4) == "p", parts.getOrNull(5)?.toIntOrNull() ?: 0)
   }
 
   /**
@@ -622,6 +775,15 @@ class IndexStore private constructor(
     val n = (db.long("SELECT COUNT(*) FROM files WHERE state = 'failed'") ?: 0).toInt()
     if (n > 0) db.run("UPDATE files SET state = 'searchable', detail = NULL WHERE state = 'failed'")
     n
+  }
+
+  fun retryFailedAfterUpdate(build: String): Int = write { db ->
+    db.transaction {
+      if (db.text("SELECT value FROM meta WHERE key = ?", RETRY_KEY) == build) return@transaction 0
+      val count = retryFailed()
+      setMetaIn(db, RETRY_KEY, build)
+      count
+    }
   }
 
   fun retryTimedOut(): Int = write { db ->
@@ -750,6 +912,7 @@ class IndexStore private constructor(
   /** One segment row and its keyword row, inside the caller's transaction. Returns the segment id. */
   private fun insertSegment(db: Db, fileId: Long, s: Segment): Long {
     val vector = s.vector
+    require(s.kind != SegmentKind.SEES || (vector == null && s.modality == Modality.NONE && s.locStart == null && s.locEnd == null && s.marks == null))
     val modality = if (vector == null) Modality.NONE else s.modality.takeIf { it != Modality.NONE } ?: Modality.TEXT
     require(vector == null || vector.size == dimOf(modality)) { "vector has ${vector?.size} dimensions, $modality uses ${dimOf(modality)}" }
     db.run(
@@ -758,10 +921,47 @@ class IndexStore private constructor(
     )
     val id = db.lastInsertId()
     if (!s.text.isNullOrBlank()) {
-      if (s.kind == SegmentKind.NAME) db.run("INSERT INTO fts(rowid, name, body) VALUES(?, ?, '')", id, s.text)
+      if (s.kind == SegmentKind.SEES) db.run("INSERT INTO sees_fts(rowid, body) VALUES(?, ?)", id, s.text)
+      else if (s.kind == SegmentKind.NAME) db.run("INSERT INTO fts(rowid, name, body) VALUES(?, ?, '')", id, s.text)
       else db.run("INSERT INTO fts(rowid, name, body) VALUES(?, '', ?)", id, s.text)
     }
     return id
+  }
+
+  fun nextOldSees(limit: Int): List<PendingFile> = read { db ->
+    val out = ArrayList<PendingFile>()
+    db.query("SELECT $FILE_COLUMNS, state, detail FROM files WHERE $OLD_SEES ORDER BY date_ms DESC, id LIMIT ?", limit) {
+      out += PendingFile(fileOf(it), FileState.of(it.getText(12)), it.textOrNull(13))
+    }
+    out
+  }
+
+  fun seesFrames(fileId: Long): SeesCatchUp.Frames? = read { db ->
+    val generation = db.long("SELECT value FROM meta WHERE key = ?", Schema.Meta.VEC_GEN) ?: 0L
+    var fingerprint: String? = null
+    var indexedAt: Long? = null
+    db.query("SELECT fingerprint, indexed_at FROM files WHERE id = ? AND $OLD_SEES", fileId) {
+      fingerprint = it.getText(0)
+      indexedAt = it.longOrNull(1)
+    }
+    val readFingerprint = fingerprint ?: return@read null
+    val frames = ArrayList<FloatArray>()
+    db.query("SELECT vec FROM segments WHERE file = ? AND kind = 'frame' AND modality = 'image' AND vec IS NOT NULL AND late != ${Schema.Late.STALE} ORDER BY id", fileId) {
+      frames += Fp16.blobToFloats(it.getBlob(0))
+    }
+    if (generation != (db.long("SELECT value FROM meta WHERE key = ?", Schema.Meta.VEC_GEN) ?: 0L)) return@read null
+    SeesCatchUp.Frames(fileId, generation, readFingerprint, indexedAt, frames)
+  }
+
+  fun saveSeesCatchUp(frames: SeesCatchUp.Frames, line: String?): Boolean = write { db ->
+    db.transaction {
+      if (frames.generation != (db.long("SELECT value FROM meta WHERE key = ?", Schema.Meta.VEC_GEN) ?: 0L) ||
+        (db.long("SELECT COUNT(*) FROM files WHERE id = ? AND fingerprint = ? AND indexed_at IS ? AND $OLD_SEES", frames.fileId, frames.fingerprint, frames.indexedAt) ?: 0L) == 0L) return@transaction false
+      db.run("DELETE FROM segments WHERE file = ? AND kind = 'sees'", frames.fileId)
+      if (!line.isNullOrBlank()) insertSegment(db, frames.fileId, Segment(SegmentKind.SEES, text = line))
+      stampIn(db, frames.fileId, SeesCatchUp.KEY, SeesCatchUp.VERSION)
+      true
+    }
   }
 
   // ---- older videos (VideoCatchUp) ----------------------------------------------------------------------------
@@ -810,34 +1010,123 @@ class IndexStore private constructor(
       for ((id, mark) in marks) db.run("UPDATE segments SET marks = ? WHERE id = ? AND file = ? AND kind = 'frame' AND marks IS NULL", mark, id, fileId)
       if (!keepOld) db.run("DELETE FROM segments WHERE file = ? AND kind = 'ocr'", fileId)
       for (s in ocr) insertSegment(db, fileId, s)
-      db.run("UPDATE files SET info = ? WHERE id = ?", VideoCatchUp.STAMP, fileId)
+      stampIn(db, fileId, VideoCatchUp.KEY, VideoCatchUp.VERSION)
       true
     }
   }
 
   /** The catch-up gives up on a video (it could not be read again, or took too long): it keeps the reading it has and leaves the queue. */
-  fun stampVideo(fileId: Long) = write { db -> db.run("UPDATE files SET info = ? WHERE id = ? AND $OLD_VIDEO", VideoCatchUp.STAMP, fileId) }
+  fun stampVideo(fileId: Long) = write { db -> if ((db.long("SELECT COUNT(*) FROM files WHERE id = ? AND $OLD_VIDEO", fileId) ?: 0L) > 0L) stampIn(db, fileId, VideoCatchUp.KEY, VideoCatchUp.VERSION) }
 
   /**
    * Before a video's catch-up: notes it as in flight. False when the process already died inside this same video's catch-up
    * [maxDeaths] times; the video is then stamped as it is (it keeps its reading) so it can never hold the queue in a kill loop.
    */
-  fun beginVideoCatchUp(fileId: Long, maxDeaths: Int = 2): Boolean = write { db ->
-    val was = db.text("SELECT value FROM meta WHERE key = ?", CATCHUP_INFLIGHT)?.split(':')
-    val deaths = if (was?.getOrNull(0)?.toLongOrNull() == fileId) (was.getOrNull(1)?.toIntOrNull() ?: 0) + 1 else 0
-    if (deaths >= maxDeaths) {
-      db.transaction {
-        db.run("UPDATE files SET info = ? WHERE id = ? AND $OLD_VIDEO", VideoCatchUp.STAMP, fileId)
-        db.run("DELETE FROM meta WHERE key = ?", CATCHUP_INFLIGHT)
-      }
-      return@write false
-    }
-    setMetaIn(db, CATCHUP_INFLIGHT, "$fileId:$deaths")
-    true
-  }
+  fun beginVideoCatchUp(fileId: Long, maxDeaths: Int = 2): Boolean = beginCatchUp(CATCHUP_INFLIGHT, fileId, maxDeaths) { stampVideo(fileId) }
 
   /** The video's catch-up is over, however it went: no process death happened inside it. */
   fun endVideoCatchUp() = setMeta(CATCHUP_INFLIGHT, null)
+
+  /** The in-flight guard every catch-up shares: [giveUp] runs (stamping the file as it is) when the process already died inside this file [maxDeaths] times. */
+  private fun beginCatchUp(key: String, fileId: Long, maxDeaths: Int, giveUp: () -> Unit): Boolean {
+    val was = meta(key)?.split(':')
+    val deaths = if (was?.getOrNull(0)?.toLongOrNull() == fileId) (was.getOrNull(1)?.toIntOrNull() ?: 0) + 1 else 0
+    if (deaths >= maxDeaths) {
+      giveUp()
+      setMeta(key, null)
+      return false
+    }
+    setMeta(key, "$fileId:$deaths")
+    return true
+  }
+
+  /** Sets [key]'s stamp on one file, keeping its other stamps. */
+  private fun stampIn(db: Db, fileId: Long, key: String, version: Int) {
+    val now = db.text("SELECT info FROM files WHERE id = ?", fileId)
+    db.run("UPDATE files SET info = ? WHERE id = ?", ReadingStamps.put(now, key, version), fileId)
+  }
+
+  // ---- older soundtracks (SoundtrackCatchUp) ------------------------------------------------------------------
+
+  /**
+   * The catch-up's queue: understood videos and recordings whose speech an earlier build read ([SoundtrackCatchUp]: no stamp) and,
+   * while a speech pack is in use ([speechPackStamp]), those judged not English that were not read with it.
+   */
+  private fun oldSoundtrack(): String {
+    val pack = speechPackStamp ?: return OLD_SOUNDTRACK
+    return "$SOUNDTRACK_JUDGED AND (NOT (${ReadingStamps.sqlHas(SoundtrackCatchUp.KEY, SoundtrackCatchUp.VERSION)}) OR " +
+      "(detail LIKE '%${com.craneai.findr.engine.SpeechLanguageGate.NOTE_NOT_ENGLISH}%' AND NOT (${ReadingStamps.sqlHas(SoundtrackCatchUp.PACK_KEY, pack)})))"
+  }
+
+  /** Sets the soundtrack stamps of one file: today's reading, and the speech pack in use when there is one. */
+  private fun stampSoundtrackIn(db: Db, fileId: Long) {
+    stampIn(db, fileId, SoundtrackCatchUp.KEY, SoundtrackCatchUp.VERSION)
+    speechPackStamp?.let { pack ->
+      val now = db.text("SELECT info FROM files WHERE id = ?", fileId)
+      db.run("UPDATE files SET info = ? WHERE id = ?", ReadingStamps.put(now, SoundtrackCatchUp.PACK_KEY, pack), fileId)
+    }
+  }
+
+  /** Understood videos and recordings the soundtrack catch-up has to read ([oldSoundtrack]), newest first, of [kinds]: its queue. */
+  fun nextOldSoundtracks(limit: Int, kinds: Set<FileKind>): List<PendingFile> = read { db ->
+    if (kinds.isEmpty()) return@read emptyList()
+    val out = ArrayList<PendingFile>()
+    val inList = kinds.joinToString(",") { "'${it.name}'" }
+    db.query("SELECT $FILE_COLUMNS, state, detail FROM files WHERE ${oldSoundtrack()} AND kind IN ($inList) ORDER BY date_ms DESC, id LIMIT ?", limit) {
+      out += PendingFile(fileOf(it), FileState.of(it.getText(12)), it.textOrNull(13))
+    }
+    out
+  }
+
+  /** How many files the soundtrack catch-up has left, and their length in ms. */
+  fun oldSoundtracksLeft(): Pair<Int, Long> = read { db ->
+    var n = 0; var ms = 0L
+    db.query("SELECT COUNT(*), COALESCE(SUM(duration_ms), 0) FROM files WHERE ${oldSoundtrack()}") { n = it.getLong(0).toInt(); ms = it.getLong(1) }
+    n to ms
+  }
+
+  /**
+   * Stamps, without opening them, the queue's files the current change cannot alter ([SoundtrackCatchUp.needsRead] false: a complete
+   * "Sounds:" line that names no singing). Returns how many. Files with no sounds line, a full line, or singing stay queued. Only v1's
+   * stamp is written: a not-English file still waits for the speech pack in use, if any.
+   */
+  fun stampUnaffectedSoundtracks(): Int = write { db ->
+    val ids = ArrayList<Long>()
+    db.query("SELECT s.file, x.body FROM segments s JOIN fts x ON x.rowid = s.id WHERE s.kind = '${SegmentKind.SOUND.db}' AND s.file IN (SELECT id FROM files WHERE $OLD_SOUNDTRACK)") {
+      if (!SoundtrackCatchUp.needsRead(it.textOrNull(1))) ids += it.getLong(0)
+    }
+    db.transaction { for (id in ids.distinct()) stampIn(db, id, SoundtrackCatchUp.KEY, SoundtrackCatchUp.VERSION) }
+    ids.distinct().size
+  }
+
+  /**
+   * Saves one file's soundtrack catch-up in one transaction: its transcript pieces ([transcript], words and text vectors) in place of the
+   * old ones, the "Sounds:" lines too when [sounds] holds any (one per window of a long file, [SoundtrackCatchUp.REFRESH_SOUNDS]; a
+   * reading with none keeps the old lines), and the stamp. Nothing else of the file
+   * is touched: not its pictures, their vectors or words, its audio vectors or name, nor its state, detail or dates. False, with nothing
+   * written, when the file was changed, switched off or read again since it was picked (that new read is today's already).
+   */
+  fun saveSoundtrackCatchUp(fileId: Long, transcript: List<Segment>, sounds: List<Segment> = emptyList()): Boolean = write { db ->
+    require(transcript.all { it.kind == SegmentKind.TRANSCRIPT }) { "a soundtrack catch-up writes transcript pieces only" }
+    require(sounds.all { it.kind == SegmentKind.SOUND })
+    db.transaction {
+      if ((db.long("SELECT COUNT(*) FROM files WHERE id = ? AND ${oldSoundtrack()}", fileId) ?: 0L) == 0L) return@transaction false
+      db.run("DELETE FROM segments WHERE file = ? AND kind = '${SegmentKind.TRANSCRIPT.db}'", fileId)
+      if (sounds.isNotEmpty()) db.run("DELETE FROM segments WHERE file = ? AND kind = '${SegmentKind.SOUND.db}'", fileId)
+      for (t in transcript) insertSegment(db, fileId, t)
+      for (s in sounds) insertSegment(db, fileId, s)
+      stampSoundtrackIn(db, fileId)
+      true
+    }
+  }
+
+  /** The catch-up gives up on a file (it could not be read again, or took too long): it keeps the reading it has and leaves the queue. */
+  fun stampSoundtrack(fileId: Long) = write { db -> if ((db.long("SELECT COUNT(*) FROM files WHERE id = ? AND ${oldSoundtrack()}", fileId) ?: 0L) > 0L) stampSoundtrackIn(db, fileId) }
+
+  /** Before a soundtrack catch-up: false (the file stamped as it is) when the process already died twice inside this file's. */
+  fun beginSoundtrackCatchUp(fileId: Long, maxDeaths: Int = 2): Boolean = beginCatchUp(SoundtrackCatchUp.INFLIGHT, fileId, maxDeaths) { stampSoundtrack(fileId) }
+
+  fun endSoundtrackCatchUp() = setMeta(SoundtrackCatchUp.INFLIGHT, null)
 
   // ---- looks private (blur a preview; never rank or hide) -----------------------------------------------------
 
@@ -1020,9 +1309,12 @@ class IndexStore private constructor(
     val visible = if (includeSensitive) "" else "AND sensitive = 0 "
     val by = when (order) {
       // A date past the clock's ceiling is junk (2099): after every real date, not before them (ClockSense.isJunkFuture). Longs only.
-      SortOrder.BEST, SortOrder.NEWEST -> "(date_ms > ${ClockSense.ceiling(nowMs)}), date_ms DESC, id DESC"
-      SortOrder.OLDEST -> "date_ms, id"
+      SortOrder.BEST, SortOrder.NEWEST -> "(mtime > ${ClockSense.ceiling(nowMs)}), mtime DESC, id DESC"
+      SortOrder.OLDEST -> "mtime, id"
+      SortOrder.CREATED_NEWEST -> "(date_ms > ${ClockSense.ceiling(nowMs)}), date_ms DESC, id DESC"
+      SortOrder.CREATED_OLDEST -> "date_ms, id"
       SortOrder.LARGEST -> "size DESC, id DESC"
+      SortOrder.SMALLEST -> "size, id"
       SortOrder.NAME -> "name COLLATE NOCASE, id"
     }
     db.query(
@@ -1099,20 +1391,18 @@ class IndexStore private constructor(
     var segments = 0; var vectors = 0
     db.query("SELECT COUNT(*), COUNT(vec) FROM segments WHERE kind != 'name'") { segments = it.getLong(0).toInt(); vectors = it.getLong(1).toInt() }
     val quick = HashMap<FileKind, Int>()
-    db.query(
-      "SELECT f.kind, COUNT(DISTINCT s.file) FROM segments s JOIN files f ON f.id = s.file " +
-        "WHERE s.modality = 'clip' AND s.vec IS NOT NULL AND f.state NOT IN ('understood', 'skipped', 'failed') GROUP BY f.kind",
-    ) {
-      val kind = runCatching { FileKind.valueOf(it.getText(0)) }.getOrNull() ?: return@query
-      quick[kind] = it.getLong(1).toInt()
-    }
     val unreadable = HashMap<FileKind, Int>()
+    // Single pass over the covering partial index `segments_clip(file, vec IS NOT NULL) WHERE modality = 'clip'`.
     db.query(
-      "SELECT f.kind, COUNT(DISTINCT s.file) FROM segments s JOIN files f ON f.id = s.file " +
-        "WHERE s.modality = 'clip' AND s.vec IS NULL AND f.state NOT IN ('understood', 'skipped', 'failed') GROUP BY f.kind",
+      "SELECT f.kind, (s.vec IS NOT NULL), COUNT(DISTINCT s.file) FROM segments s JOIN files f ON f.id = s.file " +
+        "WHERE s.modality = 'clip' AND f.state NOT IN ('understood', 'skipped', 'failed') GROUP BY f.kind, (s.vec IS NOT NULL)",
     ) {
       val kind = runCatching { FileKind.valueOf(it.getText(0)) }.getOrNull() ?: return@query
-      unreadable[kind] = it.getLong(1).toInt()
+      val hasVec = it.getLong(1) != 0L
+      val count = it.getLong(2).toInt()
+      if (count > 0) {
+        if (hasVec) quick[kind] = count else unreadable[kind] = count
+      }
     }
     val tooLarge = (db.long("SELECT COUNT(*) FROM files WHERE state = 'failed' AND detail = ?", TOO_LARGE_DETAIL) ?: 0).toInt()
     return IndexStats(byKind, segments, vectors, 0, quick, unreadable, tooLarge)
@@ -1129,20 +1419,25 @@ class IndexStore private constructor(
   }
 
   /** The write-ahead log's size on disk. It grows with every batch and only shrinks when checkpointed with TRUNCATE. */
-  fun walBytes(): Long = File(file.path + "-wal").let { if (it.exists()) it.length() else 0L }
+  fun walBytes(): Long = walBytesOf(file)
 
   /**
-   * Folds the write-ahead log back into the database and shrinks it, when it has grown past [aboveBytes] (0: always).
-   * SQLite's own checkpoint keeps the file's size (the A06's log had grown to 10.6 MB beside a 2.2 MB database). Returns the
-   * bytes given back. A busy reader only postpones it to the next call.
+   * Folds the write-ahead log back into the database when it has grown past [aboveBytes] (0: always).
+   *
+   * Mid-run calls (`aboveBytes > 0`, `truncate = false`) use non-blocking `PASSIVE` checkpoints so concurrent search
+   * readers are never stalled, escalating to `TRUNCATE` only when the WAL exceeds [WAL_TRUNCATE_HIGH_WATER_BYTES]
+   * or when [truncate] is true (default when `aboveBytes == 0L`, e.g. end-of-run or after deletes). Returns the bytes
+   * given back to disk.
    */
-  fun trimWal(aboveBytes: Long = 0): Long {
+  fun trimWal(aboveBytes: Long = 0, truncate: Boolean = aboveBytes == 0L): Long {
     val before = walBytes()
     if (before <= aboveBytes) return 0
-    writeLock.withLock { runCatching { writer.exec("PRAGMA wal_checkpoint(TRUNCATE)") } }
-    val freed = before - walBytes()
-    if (freed > 0) log("wal: checkpointed ${before / 1024} KB -> ${walBytes() / 1024} KB")
-    return freed.coerceAtLeast(0)
+    val mode = if (truncate || before >= WAL_TRUNCATE_HIGH_WATER_BYTES) "TRUNCATE" else "PASSIVE"
+    writeLock.withLock { runCatching { writer.query("PRAGMA wal_checkpoint($mode)") { } } }
+    val after = walBytes()
+    val freed = (before - after).coerceAtLeast(0)
+    if (freed > 0) log("wal: checkpointed ${before / 1024} KB -> ${after / 1024} KB")
+    return freed
   }
 
   fun bytesOnDisk(): Long = listOf("", "-wal", "-shm").sumOf { File(file.path + it).let { f -> if (f.exists()) f.length() else 0L } }
@@ -1158,6 +1453,21 @@ class IndexStore private constructor(
   /** The vectors of one file, for refreshing the in-memory matrix after it was saved. */
   fun forEachVectorOfFile(fileId: Long, sink: (segmentId: Long, fileId: Long, fileKind: FileKind, modality: Modality, late: Int, blob: ByteArray) -> Unit) = read { db ->
     forEachVectorOn(db, "WHERE s.vec IS NOT NULL AND s.file = ? AND f.state != 'skipped'", arrayOf(fileId), sink)
+  }
+
+  /**
+   * Fetches exact fp16 vector BLOBs for a bounded set of segment primary keys (e.g. Top-100 SQ8 rescore).
+   * One primary-key lookup per 400-id batch (< 1 ms). Missing or null-vec ids are omitted.
+   */
+  fun vectorsBySegmentIds(ids: Collection<Long>): Map<Long, ByteArray> = read { db ->
+    if (ids.isEmpty()) return@read emptyMap()
+    val out = HashMap<Long, ByteArray>(ids.size * 2)
+    ids.distinct().chunked(400).forEach { chunk ->
+      db.query("SELECT id, vec FROM segments WHERE id IN (${chunk.joinToString(",")}) AND vec IS NOT NULL") {
+        out[it.getLong(0)] = it.getBlob(1)
+      }
+    }
+    out
   }
 
   /** True when at least one searchable vector is stored. One indexed probe: no scan, and no need to load the matrix first. */
@@ -1199,8 +1509,15 @@ class IndexStore private constructor(
     const val OPEN_RETRIES = 5
     const val OPEN_BACKOFF_MS = 250L
     private const val OPEN_BUSY_MS = 10_000
+    /** Page cache sizes (KB) and read mmap window for SQLite connections (bounded so 2 GB phones stay comfortably within RAM). */
+    private const val WRITER_CACHE_KB = 8_000
+    private const val READER_CACHE_KB = 4_000
+    private const val MMAP_BYTES = 33_554_432L
+    /** High-water mark where a mid-run PASSIVE [trimWal] escalates to TRUNCATE to cap WAL disk growth. */
+    const val WAL_TRUNCATE_HIGH_WATER_BYTES = 16L * 1024 * 1024
     /** A file with at least one vector from the previous model (see [Schema.Late.STALE]). */
     private const val HAS_STALE = "EXISTS (SELECT 1 FROM segments s WHERE s.file = files.id AND s.late = ${Schema.Late.STALE})"
+    private val OLD_SEES = "kind = 'VIDEO' AND state = 'understood' AND NOT (${ReadingStamps.sqlHas(SeesCatchUp.KEY, SeesCatchUp.VERSION)}) AND NOT ($HAS_STALE)"
     private const val BACKLOG_MARK = "backlog_mark_file_id"
 
     /** id, uri, rel_path, name, kind, mime, size, mtime, width, height, duration_ms, pages (state, detail follow when asked). */
@@ -1225,13 +1542,19 @@ class IndexStore private constructor(
     /** Kinds the quick-look pass covers: pictures, and a video's first frame. */
     val QUICK_KINDS = setOf(FileKind.IMAGE, FileKind.SCREENSHOT, FileKind.VIDEO)
     /** Files a quick-look vector may be saved for: not yet understood by EmbeddingGemma (a failed one too: it may never be). */
-    /** The reason stored on a file that took the process down twice in a row (shown as "too large for this phone's memory"). */
+    /** Repeated deaths with memory pressure recorded during each reading attempt. */
     const val TOO_LARGE_DETAIL = "too large for this phone's memory"
+    const val INTERRUPTED_DETAIL = "reading interrupted repeatedly; will retry after an app update"
     private const val INFLIGHT_KEY = "inflight_file"
+    private const val RETRY_KEY = "retried_failures_for_build"
     /** "fileId:deaths": the video whose catch-up is running ([beginVideoCatchUp]). */
     private const val CATCHUP_INFLIGHT = "video_catchup_inflight"
     /** An understood video an earlier build read: the catch-up's queue ([VideoCatchUp]). */
-    private const val OLD_VIDEO = "kind = 'VIDEO' AND state = 'understood' AND (info IS NULL OR info != '${VideoCatchUp.STAMP}')"
+    private val OLD_VIDEO = "kind = 'VIDEO' AND state = 'understood' AND NOT (${ReadingStamps.sqlHas(VideoCatchUp.KEY, VideoCatchUp.VERSION)})"
+    /** Understood videos and recordings whose speech was judged (FileProcessor writes the verdict in the detail) by a build without the soundtrack stamp. */
+    private val SOUNDTRACK_JUDGED = "kind IN ('VIDEO', 'AUDIO') AND state = 'understood' AND " +
+      "(detail LIKE '%${com.craneai.findr.engine.SpeechLanguageGate.NOTE_ENGLISH}%' OR detail LIKE '%${com.craneai.findr.engine.SpeechLanguageGate.NOTE_NOT_ENGLISH}%')"
+    private val OLD_SOUNDTRACK = "$SOUNDTRACK_JUDGED AND NOT (${ReadingStamps.sqlHas(SoundtrackCatchUp.KEY, SoundtrackCatchUp.VERSION)})"
     private val SKIPPED = Regex("skipped=(\\d+)")
 
     private val QUICK_STATES = setOf(FileState.NEW, FileState.SEARCHABLE, FileState.FAILED)
@@ -1274,6 +1597,27 @@ class IndexStore private constructor(
      * It used to be moved aside as `*.corrupt-<time>`, which kept a full copy of the user's text that nothing ever removed;
      * any such copy, and any half-made salvage file, is deleted here.
      */
+    private fun walBytesOf(file: File): Long = File(file.path + "-wal").let { if (it.exists()) it.length() else 0L }
+
+    /** Deterministic, order-independent SHA-256 fingerprint of [r] for O(1) [applyRules] short-circuiting. */
+    internal fun rulesFingerprint(r: PrivacyRules): String {
+      val md = java.security.MessageDigest.getInstance("SHA-256")
+      fun feed(tag: String, items: List<String>) {
+        md.update(tag.toByteArray(Charsets.UTF_8))
+        md.update(0)
+        for (s in items) {
+          val b = s.toByteArray(Charsets.UTF_8)
+          md.update(b.size.toString().toByteArray(Charsets.UTF_8))
+          md.update(':'.code.toByte())
+          md.update(b)
+          md.update(0)
+        }
+      }
+      feed("f", r.privateFolders.map { PrivacyRules.normalize(it) }.filter { it.isNotEmpty() }.distinct().sorted())
+      feed("m", r.markedFiles.sorted())
+      return md.digest().joinToString("") { "%02x".format(it) }
+    }
+
     fun open(
       dir: File,
       driver: SQLiteDriver = BundledSQLiteDriver(),
@@ -1285,6 +1629,12 @@ class IndexStore private constructor(
       backoffMs: Long = OPEN_BACKOFF_MS,
       /** Called with the error each time a transient failure is about to be retried (before the wait), so a caller can say "trying again" at once. */
       onRetry: (Throwable) -> Unit = {},
+      /**
+       * When true, skips the blocking full-table + FTS5 [IndexRecovery.check] on open if the store was closed cleanly
+       * ([Schema.Meta.CLEAN_CLOSE] == `'1'`), the WAL is empty, and no schema migration is needed. Callers may invoke
+       * [verifyIntegrity] asynchronously off the cold-start critical path.
+       */
+      fastOpen: Boolean = false,
     ): IndexStore {
       dir.mkdirs()
       val file = File(dir, FILE_NAME)
@@ -1295,7 +1645,7 @@ class IndexStore private constructor(
       var salvaged = false
       while (true) {
         try {
-          return create(file, driver, dim, readers, log, quickDim)
+          return create(file, driver, dim, readers, log, quickDim, fastOpen)
         } catch (t: Throwable) {
           val brief = com.craneai.findr.core.FindrLog.brief(t)
           when {
@@ -1337,10 +1687,15 @@ class IndexStore private constructor(
       com.craneai.findr.diag.Diag.handled(com.craneai.findr.diag.HandledKind.INDEX_CORRUPT, cause)
       IndexRecovery.deleteWithSidecars(file)
       IndexRecovery.deleteWithSidecars(File(file.path + IndexRecovery.SALVAGE_SUFFIX))
-      return create(file, driver, dim, readers, log, quickDim)
+      return create(file, driver, dim, readers, log, quickDim, fastOpen = false)
     }
 
-    private fun create(file: File, driver: SQLiteDriver, dim: Int, readerCount: Int, log: (String) -> Unit, quickDim: Int): IndexStore {
+    private fun setMetaIn(db: Db, key: String, value: String) =
+      db.run("INSERT INTO meta(key, value) VALUES(?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value", key, value)
+
+    private fun create(
+      file: File, driver: SQLiteDriver, dim: Int, readerCount: Int, log: (String) -> Unit, quickDim: Int, fastOpen: Boolean,
+    ): IndexStore {
       val opened = ArrayList<Db>()
       try {
         val writer = Db(driver.open(file.path)).also { opened += it }
@@ -1350,9 +1705,27 @@ class IndexStore private constructor(
         writer.exec("PRAGMA foreign_keys = ON")
         // Deleted rows are zeroed on disk, not just unlinked, so a forensic copy can't read back a deleted file's words.
         writer.exec("PRAGMA secure_delete = ON")
+        // Keep temp B-trees (FTS5 / ORDER BY / GROUP BY) off flash, expand page cache, and enable read mmap where supported.
+        writer.exec("PRAGMA temp_store = MEMORY")
+        writer.exec("PRAGMA cache_size = -$WRITER_CACHE_KB")
+        runCatching { writer.query("PRAGMA mmap_size = $MMAP_BYTES") { } }
         val version = writer.long("PRAGMA user_version") ?: 0
         if (version > Schema.VERSION) throw IndexRecovery.TooNew("index was made by a newer Trawl (schema $version)")
-        if (version > 0) IndexRecovery.check(writer, log)
+        var cleanOnOpen = false
+        if (version > 0) {
+          val markedClean = writer.text("SELECT value FROM meta WHERE key = ?", Schema.Meta.CLEAN_CLOSE) == "1"
+          val skipCheck = fastOpen && version == Schema.VERSION && walBytesOf(file) == 0L && markedClean
+          if (skipCheck) {
+            cleanOnOpen = true
+          } else {
+            val repaired = IndexRecovery.check(writer, log)
+            if (repaired && markedClean) {
+              setMetaIn(writer, Schema.Meta.CLEAN_CLOSE, "0")
+            } else {
+              cleanOnOpen = markedClean
+            }
+          }
+        }
         if (version == 0L) {
           writer.transaction {
             Schema.CREATE.forEach { writer.exec(it) }
@@ -1366,25 +1739,41 @@ class IndexStore private constructor(
         // existed, which hid that the loop used to start at 0 and would have run step 1 -> 2 on a brand-new database).
         for (from in (if (version == 0L) Schema.VERSION else version) until Schema.VERSION) {
           writer.transaction {
+            setMetaIn(writer, Schema.Meta.CLEAN_CLOSE, "0")
             Schema.MIGRATIONS[(from - 1).toInt()].forEach { writer.exec(it) }
             writer.run("UPDATE meta SET value = ? WHERE key = ?", (from + 1).toString(), Schema.Meta.SCHEMA)
             writer.exec("PRAGMA user_version = ${from + 1}")
           }
+          cleanOnOpen = false
           log("upgraded index schema $from -> ${from + 1}")
         }
         // FTS5 keeps a deleted row's words in its index until a merge, unless secure-delete is on (SQLite 3.42+). Stored
         // in the table's config, so it is set once per index; checking first keeps an open from writing.
         if (writer.long("SELECT v FROM fts_config WHERE k = 'secure-delete'") != 1L) {
-          writer.run("INSERT INTO fts(fts, rank) VALUES('secure-delete', 1)")
+          writer.transaction {
+            setMetaIn(writer, Schema.Meta.CLEAN_CLOSE, "0")
+            writer.run("INSERT INTO fts(fts, rank) VALUES('secure-delete', 1)")
+          }
+          cleanOnOpen = false
+        }
+        if (writer.long("SELECT v FROM sees_fts_config WHERE k = 'secure-delete'") != 1L) {
+          writer.transaction {
+            setMetaIn(writer, Schema.Meta.CLEAN_CLOSE, "0")
+            writer.run("INSERT INTO sees_fts(sees_fts, rank) VALUES('secure-delete', 1)")
+          }
+          cleanOnOpen = false
         }
         val pool = ArrayBlockingQueue<Db>(readerCount)
         repeat(readerCount) {
           val reader = Db(driver.open(file.path)).also { opened += it }
           reader.exec("PRAGMA busy_timeout = 5000")
           reader.exec("PRAGMA query_only = ON")
+          reader.exec("PRAGMA temp_store = MEMORY")
+          reader.exec("PRAGMA cache_size = -$READER_CACHE_KB")
+          runCatching { reader.query("PRAGMA mmap_size = $MMAP_BYTES") { } }
           pool.put(reader)
         }
-        return IndexStore(file, writer, pool, dim, log, quickDim)
+        return IndexStore(file, writer, pool, dim, log, quickDim, cleanClose = cleanOnOpen)
       } catch (t: Throwable) {
         opened.forEach { runCatching { it.close() } }
         throw t

@@ -139,7 +139,7 @@ class ClearSearchLayoutTest {
   private fun assertOneFilterBlock(where: String) {
     val groups = boundsOfAll("Show which files")
     assertEquals("$where: kind filter groups on screen: $groups", 1, groups.size)
-    val sort = boundsOfText("Newest")
+    val sort = boundsOfText("Date modified (newest)")
     assertTrue("$where: sort chip count ${sort.size}", sort.isNotEmpty())
     val group = groups.single()
     val sections = rule.onAllNodes(hasText("Recent", substring = true)).fetchSemanticsNodes().map { it.boundsInRoot }

@@ -66,7 +66,7 @@ internal object IndexRecovery {
    * `PRAGMA quick_check` used to do both in one go: since SQLite 3.44 it also runs the FTS5 integrity check, so a full-text
    * problem looked like a damaged index and the whole file was deleted. Naming the tables keeps the two apart.
    */
-  fun check(db: Db, log: (String) -> Unit) {
+  fun check(db: Db, log: (String) -> Unit): Boolean {
     val tables = ArrayList<String>()
     db.query(
       "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite\\_%' ESCAPE '\\' AND name != 'fts' AND name NOT LIKE 'fts\\_%' ESCAPE '\\'",
@@ -76,7 +76,7 @@ internal object IndexRecovery {
       db.query("PRAGMA quick_check(\"$table\")") { rows += it.getText(0) }
       if (rows.firstOrNull() != "ok") throw Damaged("table $table failed its check: ${rows.firstOrNull() ?: "no answer"}")
     }
-    val problem = ftsFailure(db) ?: return
+    val problem = ftsFailure(db) ?: return false
     log("full-text index is inconsistent (${FindrLog.brief(problem)}); rebuilding it from the stored words, files and vectors are kept")
     try {
       db.transaction { db.run("INSERT INTO fts(fts) VALUES('rebuild')") }
@@ -87,6 +87,7 @@ internal object IndexRecovery {
     ftsFailure(db)?.let { throw Damaged("full-text index is still inconsistent after a rebuild (${FindrLog.brief(it)})", it) }
     log("full-text index rebuilt")
     Diag.handled(HandledKind.INDEX_REPAIRED, problem)
+    return true
   }
 
   /** The FTS5 integrity check (it compares the inverted index with the stored text). Null: fine. A busy database is thrown, not reported. */
@@ -137,7 +138,10 @@ internal object IndexRecovery {
       val words = copyRanges(db, "SELECT MIN(id), MAX(id) FROM old.fts_content",
         "INSERT OR IGNORE INTO main.fts(rowid, name, body) SELECT id, c0, c1 FROM old.fts_content WHERE id BETWEEN ? AND ? AND id IN (SELECT id FROM main.segments)")
       runCatching {
-        db.exec("INSERT OR REPLACE INTO meta(key, value) SELECT key, value FROM old.meta WHERE key NOT IN ('${Schema.Meta.SCHEMA}', '${Schema.Meta.VEC_GEN}', '${Schema.Meta.VEC_GEN_QUICK}')")
+        db.exec(
+          "INSERT OR REPLACE INTO meta(key, value) SELECT key, value FROM old.meta WHERE key NOT IN " +
+            "('${Schema.Meta.SCHEMA}', '${Schema.Meta.VEC_GEN}', '${Schema.Meta.VEC_GEN_QUICK}', '${Schema.Meta.CLEAN_CLOSE}', '${Schema.Meta.RULES_FINGERPRINT}')",
+        )
       }
       // The vector files trust a generation they settled at; a number past anything the old index reached makes them reload.
       for (key in listOf(Schema.Meta.VEC_GEN, Schema.Meta.VEC_GEN_QUICK)) {

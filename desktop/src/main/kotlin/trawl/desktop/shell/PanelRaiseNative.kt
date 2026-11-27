@@ -20,13 +20,33 @@ import trawl.desktop.privacy.SecureWindow
  * No networking, no child process, no permission prompt: these are the same calls an ordinary windowing toolkit makes.
  */
 internal object PanelRaiseNative {
-  fun run(step: RaiseStep, window: Window, os: Os): Boolean = try {
+  fun run(step: RaiseStep, window: Window, os: Os, overlay: Boolean = true): Boolean = try {
     when (step) {
-      RaiseStep.AWT_FRONT -> awtFront(window)
-      RaiseStep.MAC_JOIN_SPACES -> onMainThread { macJoinSpaces(window) }
-      RaiseStep.MAC_ACTIVATE -> onMainThread { macMsg(macApp(), "activateIgnoringOtherApps:", 1L) }
-      RaiseStep.MAC_ACTIVATE_WORKSPACE -> onMainThread { macActivateRunningApp() }
-      RaiseStep.MAC_ORDER_FRONT -> onMainThread { macOrderFront(window) }
+      RaiseStep.AWT_FRONT -> awtFront(window, overlay)
+      RaiseStep.MAC_JOIN_SPACES -> if (MacNative.configureOverlay(window)) true else onMainThread { macJoinSpaces(window) }
+      RaiseStep.MAC_ACTIVATE -> when {
+        overlay && MacNative.raiseOverlay(window, activateApp = false) -> {
+          javax.swing.SwingUtilities.invokeLater { MacNative.notifyAwtPanelActivated(window) }
+          true
+        }
+        !overlay && MacNative.raiseMain(window) -> true
+        else -> onMainThread { macActivate(window, overlay) }
+      }
+      RaiseStep.MAC_ACTIVATE_WORKSPACE -> when {
+        overlay && MacNative.raiseOverlay(window, activateApp = true) -> {
+          javax.swing.SwingUtilities.invokeLater { MacNative.notifyAwtPanelActivated(window) }
+          true
+        }
+        !overlay && MacNative.raiseMain(window) -> true
+        else -> onMainThread { macActivateRunningApp(window, overlay) }
+      }
+      RaiseStep.MAC_ORDER_FRONT -> when {
+        overlay && MacNative.available -> {
+          javax.swing.SwingUtilities.invokeLater { MacNative.notifyAwtPanelActivated(window) }
+          true
+        }
+        else -> onMainThread { macOrderFront(window) }
+      }
       RaiseStep.WIN_ALLOW_AND_FOREGROUND -> winAllowAndForeground(window)
       RaiseStep.WIN_ATTACH_INPUT -> winAttachInput(window)
       RaiseStep.WIN_INPUT_NUDGE -> winInputNudge(window)
@@ -38,12 +58,28 @@ internal object PanelRaiseNative {
     false
   }
 
-  private fun awtFront(window: Window): Boolean {
-    runCatching {
-      if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.APP_REQUEST_FOREGROUND)) Desktop.getDesktop().requestForeground(true)
+  private fun awtFront(window: Window, overlay: Boolean): Boolean {
+    // Only request full-app foreground for the main window: calling requestForeground(true) for the Quick Panel pulls the main
+    // window forward on macOS (stealing key focus from the panel and dragging Spaces back to where the main window lives).
+    if (!overlay) {
+      runCatching {
+        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.APP_REQUEST_FOREGROUND)) Desktop.getDesktop().requestForeground(true)
+      }
+    }
+    // On macOS overlays with MacNative active, keep the panel strictly non-activating (never toFront() or requestForeground())
+    // and bridge OpenJDK's focus check with notifyAwtPanelActivated + FocusEvent.Cause.MOUSE_EVENT.
+    if (overlay && trawl.desktop.Platform.os == Os.MAC && MacNative.available) {
+      MacNative.notifyAwtPanelActivated(window)
+      return true
     }
     window.toFront()
-    window.requestFocus()
+    val target = MacNative.findComposeCanvas(window)
+    if (target != null) {
+      if (!target.requestFocusInWindow()) target.requestFocus()
+    } else {
+      window.requestFocus()
+      window.requestFocusInWindow()
+    }
     return true
   }
 
@@ -84,29 +120,66 @@ internal object PanelRaiseNative {
   private fun macMsg(receiver: Pointer, selector: String, arg: Long): Long = objc.objc_msgSend(receiver, sel(selector), arg)
   private fun macApp(): Pointer = Pointer(macMsg(cls("NSApplication"), "sharedApplication"))
 
-  /** NSWindowCollectionBehaviorCanJoinAllSpaces (1 << 0) and FullScreenAuxiliary (1 << 8), at NSStatusWindowLevel (25). */
+  /**
+   * NSWindowCollectionBehavior flags for the Spotlight-style overlay:
+   * CanJoinAllSpaces (1 << 0) | FullScreenAuxiliary (1 << 8), clearing MoveToActiveSpace (1 << 1) because AppKit rejects
+   * combining CanJoinAllSpaces with MoveToActiveSpace.
+   */
   private const val JOIN_ALL_SPACES = 1L shl 0
+  private const val MOVE_TO_ACTIVE_SPACE = 1L shl 1
   private const val FULL_SCREEN_AUXILIARY = 1L shl 8
   private const val STATUS_WINDOW_LEVEL = 25L
+  /** NSApplicationActivateIgnoringOtherApps (2) without NSApplicationActivateAllWindows (1). */
+  private const val ACTIVATE_IGNORING_OTHER_APPS = 2L
+  /** NSApplicationActivateAllWindows (1) | NSApplicationActivateIgnoringOtherApps (2), used only when explicitly raising the main window. */
+  private const val ACTIVATE_ALL_WINDOWS = 3L
 
   private fun macJoinSpaces(window: Window) {
     val ns = SecureWindow.nsWindowOf(window) ?: return
     val now = macMsg(ns, "collectionBehavior")
-    macMsg(ns, "setCollectionBehavior:", now or JOIN_ALL_SPACES or FULL_SCREEN_AUXILIARY)
+    val clean = (now and MOVE_TO_ACTIVE_SPACE.inv()) or JOIN_ALL_SPACES or FULL_SCREEN_AUXILIARY
+    macMsg(ns, "setCollectionBehavior:", clean)
     macMsg(ns, "setLevel:", STATUS_WINDOW_LEVEL)
     macMsg(ns, "setHidesOnDeactivate:", 0L)
   }
 
-  private fun macActivateRunningApp() {
+  private fun macActivate(window: Window, overlay: Boolean) {
+    val app = macApp()
+    if (!overlay) {
+      macMsg(app, "activateIgnoringOtherApps:", 1L)
+      return
+    }
+    // Order the CanJoinAllSpaces panel onto the active Space BEFORE activating the app so macOS stays on the current Space,
+    // then activate via NSApp.activateIgnoringOtherApps:YES (honored across macOS 14-26) and immediately make the panel the key window.
+    macJoinSpaces(window)
+    macOrderFront(window)
+    if (macMsg(app, "isActive") == 0L) {
+      macMsg(app, "activateIgnoringOtherApps:", 1L)
+    }
+    macOrderFront(window)
+  }
+
+  private fun macActivateRunningApp(window: Window, overlay: Boolean) {
     val me = Pointer(macMsg(cls("NSRunningApplication"), "currentApplication"))
-    // NSApplicationActivateAllWindows (1) | NSApplicationActivateIgnoringOtherApps (2)
-    macMsg(me, "activateWithOptions:", 3L)
+    if (overlay) {
+      macJoinSpaces(window)
+      macOrderFront(window)
+      if (macMsg(macApp(), "isActive") == 0L) {
+        macMsg(me, "activateWithOptions:", ACTIVATE_IGNORING_OTHER_APPS)
+        macMsg(macApp(), "activateIgnoringOtherApps:", 1L)
+      }
+      macOrderFront(window)
+    } else {
+      macMsg(me, "activateWithOptions:", ACTIVATE_ALL_WINDOWS)
+    }
   }
 
   private fun macOrderFront(window: Window) {
     val ns = SecureWindow.nsWindowOf(window) ?: return
-    macMsg(ns, "makeKeyAndOrderFront:", 0L)
     macMsg(ns, "orderFrontRegardless")
+    macMsg(ns, "makeKeyAndOrderFront:", 0L)
+    val content = macMsg(ns, "contentView")
+    if (content != 0L) macMsg(ns, "makeFirstResponder:", content)
   }
 
   // ---- Windows ---------------------------------------------------------------------------------------------------------------
@@ -228,20 +301,25 @@ internal object PanelRaiseNative {
     return w
   }
 
+  /** Process-global XSetErrorHandler guard shared with HotkeyX11 so handlers never race or restore a freed trampoline. */
+  internal val x11ErrorHandlerLock = Any()
+
   private fun x11(window: Window, action: (Xlib, Pointer, Long, Long) -> Unit): Boolean {
     val x = xlib ?: return false
     if (System.getenv("DISPLAY").isNullOrBlank()) return false
     val d = x.XOpenDisplay(null) ?: return false
-    val previous = x.XSetErrorHandler(ignoreErrors)
-    try {
-      val top = x11TopLevel(x, d, Native.getWindowID(window))
-      action(x, d, x.XDefaultRootWindow(d), top)
-      x.XFlush(d)
-      x.XSync(d, 0)
-      return true
-    } finally {
-      x.XSetErrorHandler(previous)
-      x.XCloseDisplay(d)
+    return synchronized(x11ErrorHandlerLock) {
+      val previous = x.XSetErrorHandler(ignoreErrors)
+      try {
+        val top = x11TopLevel(x, d, Native.getWindowID(window))
+        action(x, d, x.XDefaultRootWindow(d), top)
+        x.XFlush(d)
+        x.XSync(d, 0)
+        true
+      } finally {
+        x.XSetErrorHandler(previous)
+        x.XCloseDisplay(d)
+      }
     }
   }
 

@@ -23,6 +23,7 @@ object LearningProfile {
     LearningSpeed.BALANCED -> base
     LearningSpeed.GENTLE -> base.copy(
       textThreadsOff = minOf(base.textThreadsOff, 2),
+      audioThreads = minOf(base.audioThreads, 2),
       clipImageThreads = 1, privacyThreads = 1, asrThreads = 1,
       quickDuty = minOf(base.quickDuty, 0.3), privacyDuty = minOf(base.privacyDuty, 0.3),
       warmC = minOf(base.warmC, GENTLE_WARM_C),
@@ -36,6 +37,9 @@ object LearningProfile {
     )
   }
 
-  /** The phone-class gate for FAST's extra threads: [cores] logical cores and [tight] from [MemoryBudget.tight]. */
-  fun roomy(cores: Int, tight: Boolean): Boolean = cores >= 8 && !tight
+  /**
+   * The phone-class gate for FAST's extra threads: [cores] logical cores, [tight] from [MemoryBudget.tight], and
+   * [perfCores] performance cores (so an 8 GB / 2-big-core chip like Helio G81/G85 does not oversubscribe its 2 big cores).
+   */
+  fun roomy(cores: Int, tight: Boolean, perfCores: Int = cores): Boolean = cores >= 8 && !tight && perfCores >= 4
 }

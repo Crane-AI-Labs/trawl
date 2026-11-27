@@ -14,6 +14,8 @@ import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
 import coil3.ImageLoader
 import coil3.SingletonImageLoader
 import coil3.video.VideoFrameDecoder
@@ -24,6 +26,7 @@ import com.craneai.findr.ui.common.MediaThumbKeyer
 import com.craneai.findr.ui.privacy.LocalPrivacy
 import com.craneai.findr.ui.privacy.LockScreen
 import com.craneai.findr.ui.theme.FindrTheme
+import kotlinx.coroutines.launch
 
 /** The only activity. Everything on screen is Compose; this wires the engine, the image loader and the theme. */
 class MainActivity : FragmentActivity() {   // FragmentActivity because the phone's unlock prompt (BiometricPrompt) needs one
@@ -35,13 +38,23 @@ class MainActivity : FragmentActivity() {   // FragmentActivity because the phon
   override fun attachBaseContext(base: Context) = super.attachBaseContext(AppLocale.wrap(base))
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    installSplashScreen()
+    installSplashScreen().setKeepOnScreenCondition { !(application as FindrApp).isReady }
     super.onCreate(savedInstanceState)
     com.craneai.findr.diag.StartupFrames.note("activity", if (savedInstanceState != null) "restored" else "fresh")
     enableEdgeToEdge()
     // Back on the first screen goes to the background, never ends the app (see RootBack). Registered before any screen's own handler.
     rootBack = RootBack.install(this, intent = { intent }, isTaskRoot = { isTaskRoot }, moveToBack = { moveTaskToBack(true) })
 
+    lifecycleScope.launch {
+      (application as FindrApp).awaitEngine()
+      if (!isFinishing) {
+        showContent()
+        if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) appViewModel.refreshAccess()
+      }
+    }
+  }
+
+  private fun showContent() {
     // Thumbnails of videos come from a frame of the file itself. Nothing is downloaded: Findr has no network.
     SingletonImageLoader.setSafe { context ->
       ImageLoader.Builder(context).components {
@@ -85,6 +98,6 @@ class MainActivity : FragmentActivity() {   // FragmentActivity because the phon
   override fun onResume() {
     super.onResume()
     // The user may have just flipped All files access in system Settings.
-    appViewModel.refreshAccess()
+    if ((application as FindrApp).isReady) appViewModel.refreshAccess()
   }
 }

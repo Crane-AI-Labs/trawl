@@ -65,8 +65,19 @@ interface AudioDecoder {
 interface AsrEngine {
   /** True when the models are installed and the native library loads. Cheap after the first call. */
   fun available(): Boolean
-  /** Decodes up to `maxSeconds` of the soundtrack and transcribes it. Empty transcript when there is no audio track. */
-  suspend fun transcribe(context: Context, uri: Uri, maxSeconds: Int = 300, startMs: Long = 0): AudioTranscript
+  /** True when a speech pack (the opt-in speech add-on: engine/LocalSpeech.kt) is installed and switched on too. Cheap. */
+  fun localAvailable(): Boolean = false
+  /** The stamp `<pack_id>@<pack_version>` of that pack (engine/SpeechPack.kt), or null when [localAvailable] is false. */
+  fun localStamp(): String? = null
+  /**
+   * Decodes up to `maxSeconds` of the soundtrack and transcribes it. Empty transcript when there is no audio track. With a [reading]
+   * (only when [localAvailable]), the segments it picks after the first pass are read again, one at a time, by the pack's model and come
+   * back in [SpeechSegment.local]; the model is loaded for that and kept for the next file (engine/ModelHold.kt), except on a phone short
+   * of memory, where it is given back before this returns.
+   */
+  suspend fun transcribe(context: Context, uri: Uri, maxSeconds: Int = 300, startMs: Long = 0, reading: com.craneai.findr.engine.LocalSpeech.Reading? = null): AudioTranscript
+  /** Gives back the speech pack's model a run keeps between files (run end, pause, memory pressure, pack removal). The English models stay. */
+  fun releaseLocal() {}
   /** Gives the memory back (models are loaded on first use and kept while the indexer runs). */
-  fun release() {}
+  suspend fun release() {}
 }

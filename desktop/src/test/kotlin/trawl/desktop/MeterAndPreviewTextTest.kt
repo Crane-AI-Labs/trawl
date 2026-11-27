@@ -71,6 +71,15 @@ class MeterAndPreviewTextTest {
     assertEquals(t("pause_not_charging"), MeterText.of(IndexUi(opening = false, phase = Phase.PAUSED, hold = Hold.BATTERY)).title)
   }
 
+  @Test fun aLowBatteryWaitHasItsOwnWordsNotTheGentleSpeeds() {
+    // Every speed waits under the battery floor: a Balanced or Fast user must not read a sentence about Gentle.
+    val m = MeterText.of(IndexUi(opening = false, phase = Phase.PAUSED, hold = Hold.LOW_BATTERY))
+    assertEquals(t("pause_low_battery"), m.title)
+    assertEquals(t("pause_low_battery_detail"), m.sub)
+    assertTrue(!m.sub.contains("Gentle"), m.sub)
+    assertTrue(t("pause_low_battery") != t("pause_not_charging"))
+  }
+
   @Test fun theEtaIsPutInWordsAtEachScale() {
     assertEquals(t("meter_eta_under_minute"), MeterText.etaText(20_000))
     assertTrue(MeterText.etaText(5 * 60_000L).contains("5"), MeterText.etaText(5 * 60_000L))

@@ -4,7 +4,6 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.onAllNodesWithContentDescription
-import androidx.compose.ui.test.runComposeUiTest
 import com.craneai.findr.core.FileKind
 import com.craneai.findr.core.IndexedFile
 import java.util.Locale

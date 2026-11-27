@@ -290,4 +290,76 @@ class RulesTest {
     assertEquals(".nomedia folder", skip("Pictures/Hidden/", "a.jpg", noMedia = true))
     assertNotNull(skip("Pictures/Hidden/", "a.jpg", noMedia = true))
   }
+
+  @Test fun chatDocumentsIgnoreNoMediaOnOldNewAndNestedLayouts() {
+    for (path in listOf(
+      "WhatsApp/Media/WhatsApp Documents/Sent/",
+      "Android/media/com.whatsapp/WhatsApp/Media/WhatsApp Documents/Sent/",
+      "Download/WhatsApp Documents/Sent/Reports/",
+      "Android/media/com.whatsapp.w4b/WhatsApp Business/Media/WhatsApp Business Documents/Sent/",
+      "Telegram/Telegram Documents/Sent/",
+      "Android/media/org.telegram.messenger/Telegram/Telegram Documents/Sent/",
+      "/Documents/Archive/tElEgRaM dOcUmEnTs/Reports/Sent/",
+      "WhatsApp/Media/WhatsApp Documents/",
+      "Telegram/Telegram Documents/",
+    )) {
+      assertNull(path, skip(path, "sheet.xlsx", FileKind.DOCUMENT, noMedia = true))
+      assertNull(path, skip(path, "receipt.pdf", FileKind.PDF, noMedia = true))
+    }
+  }
+
+  @Test fun chatDocumentsPrivateSubfoldersStaySkippedWithoutRelyingOnNoMedia() {
+    for (app in listOf("WhatsApp", "Telegram")) {
+      for (privatePath in listOf("Private/", "Sent/pRiVaTe/Reports/")) {
+        for (kind in listOf(FileKind.DOCUMENT, FileKind.PDF)) {
+          val path = "$app/Media/$app Documents/$privatePath"
+          assertEquals(path, "private folder", skip(path, "report.pdf", kind))
+          assertEquals(path, "private folder", skip(path, "report.pdf", kind, noMedia = true))
+        }
+      }
+      assertNull(skip("$app/$app Documents/PrivateStuff/", "sheet.xlsx", FileKind.DOCUMENT, noMedia = true))
+    }
+  }
+
+  @Test fun chatDocumentsNoMediaExceptionNeverOpensHiddenOrAppPrivateFolders() {
+    for (app in listOf("WhatsApp", "Telegram")) {
+      for (kind in listOf(FileKind.DOCUMENT, FileKind.PDF)) {
+        assertEquals("hidden folder", skip("$app/$app Documents/Sent/.hidden/", "report.pdf", kind, noMedia = true))
+        assertEquals("hidden file", skip("$app/$app Documents/Sent/", ".secret.pdf", kind, noMedia = true))
+        for (tree in listOf("data", "obb")) {
+          assertEquals("app-private folder (Android/$tree)", skip("Android/$tree/com.chat/$app Documents/Sent/", "report.pdf", kind, noMedia = true))
+        }
+      }
+    }
+  }
+
+  @Test fun noMediaStillSkipsEveryNonDocumentKindInChatDocuments() {
+    for (app in listOf("WhatsApp", "Telegram")) {
+      for (kind in listOf(FileKind.IMAGE, FileKind.SCREENSHOT, FileKind.VIDEO, FileKind.AUDIO, FileKind.OTHER)) {
+        assertEquals(kind.name, ".nomedia folder", skip("$app/$app Documents/Sent/", "attachment.bin", kind, noMedia = true))
+      }
+    }
+  }
+
+  @Test fun noMediaDocumentsOutsideNamedChatDocumentFoldersStaySkipped() {
+    for (path in listOf(
+      "Documents/Sent/", "Download/Work Documents/Sent/", "WhatsApp/Documents/Sent/", "Telegram/Documents/Sent/",
+      "Android/media/com.whatsapp/WhatsApp/Media/WhatsApp Images/Sent/", "Telegram/Telegram Video/Sent/",
+      "Documents/NotWhatsApp Documents/Sent/", "Documents/My Telegram Documents/Sent/",
+      "WhatsApp/WhatsApp DocumentsBackup/Sent/", "Telegram/Telegram Documents-old/Sent/",
+    )) {
+      for (kind in listOf(FileKind.DOCUMENT, FileKind.PDF)) {
+        assertEquals(path, ".nomedia folder", skip(path, "report.pdf", kind, noMedia = true))
+      }
+    }
+  }
+
+  @Test fun excludingChatDocumentsStillWinsOverTheNoMediaException() {
+    for (app in listOf("WhatsApp", "Telegram")) {
+      val path = "$app/$app Documents/Sent/Reports/"
+      for (kind in listOf(FileKind.DOCUMENT, FileKind.PDF)) {
+        assertEquals("excluded folder", skip(path, "report.pdf", kind, excluded = setOf("/$app/$app Documents/sent/"), noMedia = true))
+      }
+    }
+  }
 }

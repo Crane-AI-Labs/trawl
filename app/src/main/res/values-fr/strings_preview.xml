@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="player_play">Lire</string>
+  <string name="player_pause">Pause</string>
+  <string name="player_rewind_10">Reculer de 10 secondes</string>
+  <string name="player_forward_10">Avancer de 10 secondes</string>
+  <string name="player_jump_match">Aller à %1$s</string>
+  <string name="player_open_external">Ouvrir dans une app</string>
+  <string name="player_error">Impossible de lire ce fichier ici.</string>
+  <string name="player_loading">Chargement de la lecture…</string>
+  <string name="player_seek_position">Position de lecture</string>
+  <string name="action_preview">Aperçu</string>
+  <string name="action_show_preview">Afficher l\'aperçu</string>
+  <string name="preview_loading">Chargement de l\'aperçu…</string>
+  <string name="preview_unavailable">L\'aperçu n\'est pas disponible pour ce fichier.</string>
+  <string name="preview_empty">Ce fichier est vide.</string>
+  <string name="preview_truncated">Affichage des %1$d premières lignes</string>
+  <string name="preview_bytes_truncated">Affichage du début de ce fichier</string>
+  <string name="preview_rows_cols">%1$d lignes · %2$d colonnes</string>
+</resources>

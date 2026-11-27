@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="pack_speech_lg_name">Ebigambo omu Luganda</string>
+  <string name="pack_speech_nyn_name">Ebigambo omu Runyankole</string>
+  <string name="pack_speech_ach_name">Ebigambo omu Acholi</string>
+  <string name="pack_speech_sw_name">Ebigambo omu Swahili</string>
+  <string name="pack_speech_xog_name">Ebigambo omu Lusoga (beta)</string>
+  <string name="speech_language_lg">Luganda</string>
+  <string name="speech_language_nyn">Runyankole</string>
+  <string name="speech_language_ach">Acholi</string>
+  <string name="speech_language_sw">Swahili</string>
+  <string name="speech_language_xog">Lusoga</string>
+  <string name="pack_speech_language_benefit">Neesherura ebyagambirwe omu maraka na vidiyo omu %1$s, ebi okusherura kw\'Orungyereza kutarikubaasa kushoma. Omu kukyebera kwaitu eiraka erihikire ryaija ery\'okubanza %2$d%%, aha %3$d%% kutarimu.</string>
+  <string name="pack_speech_language_cost">Neeshoma obwakabiri ebigambo ebitari by\'Orungyereza, n\'ahabw\'ekyo fayiro ezo zitwara obwire bwingi kushoma, kandi terikuhikaana gye: teekateeka ebigambo ebimwe ebihabire. Orungyereza rushomwa nk\'oku rwaabaire. Orurimi rumwe aha murundi gumwe; rwetaaga obwongo obw\'okwongyeraho obu rurikukora bwonka.</string>
+</resources>

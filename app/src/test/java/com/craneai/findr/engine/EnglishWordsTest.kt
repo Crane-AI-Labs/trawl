@@ -9,7 +9,7 @@ import org.junit.Test
 
 /** The word list the gate uses, loaded from the real asset (gradle runs unit tests with the module directory as the working directory). */
 class EnglishWordsTest {
-  private fun asset() = File("src/main/assets/${SpeechLanguageGate.ASSET}")
+  private fun asset() = File("src/full/assets/${SpeechLanguageGate.ASSET}")
   private val words = asset().inputStream().use { EnglishWords.fromGzip(it) }
 
   @Test fun everyListedWordIsFoundAndNearMissesAreNot() {

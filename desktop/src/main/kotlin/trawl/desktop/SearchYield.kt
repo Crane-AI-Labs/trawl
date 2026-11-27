@@ -36,8 +36,8 @@ class SearchYield(
   }
 
   companion object {
-    const val QUIET_MS = 1_200L
-    const val CAP_MS = 8_000L
-    const val STEP_MS = 100L
+    val QUIET_MS: Long = BackgroundTuning.searchQuietMs
+    val CAP_MS: Long = BackgroundTuning.searchCapMs
+    val STEP_MS: Long = BackgroundTuning.searchStepMs
   }
 }

@@ -4,6 +4,7 @@ import com.craneai.findr.core.AudioTranscript
 import com.craneai.findr.core.FileKind
 import com.craneai.findr.core.FormatNotReadable
 import com.craneai.findr.core.IndexedFile
+import com.craneai.findr.core.OnScreenText
 import com.craneai.findr.engine.AudioPolicy
 import com.craneai.findr.engine.Chunker
 import com.craneai.findr.engine.SpeechLanguageGate
@@ -86,12 +87,14 @@ class MediaProcessor(
     val together = windowed || seconds <= MediaSchedule.OVERLAP_MAX_SECONDS
     // A sliver of a last window (a video 3 min 0.2 s long has one) holds no speech the decoder can open: leave it out, quietly.
     val wantsSound = info.hasAudio && (!windowed || soundWorthReading(durationMs, startMs))
+    val aborted = java.util.concurrent.atomic.AtomicBoolean(false)
+    val stopSound: () -> Boolean = { stop() || aborted.get() }
     fun trackOrNote(): Track = try {
-      if (windowed) soundtrack(path, startMs, MediaSchedule.MEDIA_WINDOW_MS, late) else soundtrack(path, 0, null, late)
+      if (windowed) soundtrack(path, startMs, MediaSchedule.MEDIA_WINDOW_MS, late, stopFn = stopSound) else soundtrack(path, 0, null, late, stopFn = stopSound)
     } catch (e: FormatNotReadable) {
       Track(emptyList(), "soundtrack can't be opened on this computer")
     }
-    val sound: CompletableFuture<Track>? = if (wantsSound && together) CompletableFuture.supplyAsync(::trackOrNote, SOUND_POOL) else null
+    val sound: java.util.concurrent.Future<Track>? = if (wantsSound && together) SOUND_POOL.submit(java.util.concurrent.Callable { trackOrNote() }) else null
 
     var cantOpen: FormatNotReadable? = null
     var frameCount = 0
@@ -101,9 +104,10 @@ class MediaProcessor(
     class Kept(val hash: Long, val start: Long, var end: Long, val vector: CompletableFuture<FloatArray>?)
     val kept = ArrayList<Kept>()
     val captions = LinkedHashSet<String>()   // a meme's caption repeats in every frame: keep each line once
+    val longCaptions = LinkedHashSet<String>()
     try {
       if (info.hasVideo) {
-        val n = if (windowed) MediaSchedule.framesInWindow(window!!, durationMs) else MediaSchedule.framesFor(seconds)
+        val n = if (window != null) MediaSchedule.framesInWindow(window, durationMs) else MediaSchedule.framesFor(seconds)
         val span = if (windowed) MediaSchedule.MEDIA_WINDOW_MS else (durationMs ?: 1000L)
         for (shot in MediaSchedule.shots(startMs, span, n)) {
           if (stop()) throw java.util.concurrent.CancellationException("stopped")
@@ -120,7 +124,10 @@ class MediaProcessor(
           val te = System.nanoTime()
           val vector = if (embedder.vision) CompletableFuture.supplyAsync({ embedder.image(jpeg) }, EMBED_POOL) else null
           val to = System.nanoTime()
-          readCaption(jpeg)?.let { captions += it }
+          readCaption(jpeg)?.let { reading ->
+            captions += reading.text
+            if (reading.long) longCaptions += reading.text
+          }
           ocrNs += System.nanoTime() - to
           kept += Kept(hash ?: 0L, shot.startMs, shot.endMs, vector)
           vector?.join()
@@ -128,6 +135,7 @@ class MediaProcessor(
         }
       }
     } catch (t: Throwable) {
+      aborted.set(true)
       sound?.cancel(true)
       throw t
     }
@@ -137,12 +145,30 @@ class MediaProcessor(
       val words = captions.joinToString("\n")
       // Without picture vectors (the text-only model) the caption words get their own text vector, as a picture's words do.
       if (embedder.vision) segments += Segment(SegmentKind.OCR, Modality.NONE, text = words, late = late)
-      else Chunker.chunks(words).take(Indexer.MAX_READ_CHUNKS).forEachIndexed { i, c ->
-        segments += Segment(SegmentKind.OCR, Modality.OCR_TEXT, text = words.takeIf { i == 0 }, vector = embedder.document(c), late = late)
+      else {
+        val chunks = Chunker.chunks(longCaptions.joinToString("\n")).take(Indexer.MAX_READ_CHUNKS)
+        if (chunks.isEmpty()) segments += Segment(SegmentKind.OCR, Modality.NONE, text = words, late = late)
+        else chunks.forEachIndexed { index, chunk ->
+          segments += Segment(SegmentKind.OCR, Modality.OCR_TEXT, text = words.takeIf { index == 0 }, vector = embedder.document(chunk), late = late)
+        }
       }
     }
     var detail = "$frameCount frames, ${kept.size} distinct (sample ${secs(sampleNs)} embed ${secs(embedNs)} ocr ${secs(ocrNs)})"
-    val soundtrack: Track? = sound?.join() ?: if (wantsSound && !together) trackOrNote() else null
+    val soundtrack: Track? = if (sound != null) {
+      try {
+        sound.get()
+      } catch (e: java.util.concurrent.ExecutionException) {
+        val cause = e.cause
+        if (cause is java.util.concurrent.CancellationException || cause is kotlinx.coroutines.CancellationException) throw cause
+        throw cause ?: e
+      } catch (e: java.util.concurrent.CompletionException) {
+        val cause = e.cause
+        if (cause is java.util.concurrent.CancellationException || cause is kotlinx.coroutines.CancellationException) throw cause
+        throw cause ?: e
+      }
+    } else if (wantsSound && !together) {
+      trackOrNote()
+    } else null
     soundtrack?.let { t -> segments += t.segments; t.detail?.let { detail += ", $it" } }
     // Nothing came out of the picture or the sound, and the computer said it could not open the video: a failure, not an empty file.
     cantOpen?.let { if (frameCount == 0 && soundtrack?.segments.isNullOrEmpty()) throw it }
@@ -151,13 +177,15 @@ class MediaProcessor(
   }
 
   /** Words in a frame: the OCR's, kept only when they are text and not specks; one line per caption line. */
-  private fun readCaption(jpeg: ByteArray): String? {
+  private fun readCaption(jpeg: ByteArray): OnScreenText.Kept? {
     val reader = ocr() ?: return null
     tmpDir.mkdirs()
     val tmp = File.createTempFile("frame", ".jpg", tmpDir)
     try {
       tmp.writeBytes(jpeg)
-      return Indexer.readable(reader.read(tmp))?.lines()?.map { it.trim() }?.filter { it.isNotEmpty() }?.joinToString("\n")
+      return OnScreenText.keep(reader.readLines(tmp))?.let { kept ->
+        OnScreenText.Kept(kept.lines.map { it.trim() }.filter { it.isNotEmpty() }.joinToString("\n"), kept.long)
+      }
     } catch (e: Exception) {
       return null   // a picture OCR cannot read has no caption; it is still a picture
     } finally { tmp.delete() }
@@ -167,25 +195,23 @@ class MediaProcessor(
    * A file's soundtrack: the words and sound labels from the speech engine, through the language gate. [spanMs] null: the first five
    * minutes (the phone's single-step cap). [soundFile]: this is a recording, so a decoder that produced no sound at all is a failure.
    */
-  private fun soundtrack(path: File, startMs: Long, spanMs: Long?, late: Boolean, soundFile: Boolean = false): Track {
+  private fun soundtrack(path: File, startMs: Long, spanMs: Long?, late: Boolean, soundFile: Boolean = false, stopFn: () -> Boolean = stop): Track {
     val engine = transcriber?.takeIf { it.available() }
     if (engine == null) return Track(emptyList(), IndexStore.SPEECH_MISSING)
     val ta = System.nanoTime()
-    val t = engine.transcribe(decoder, path, startMs, spanMs ?: SINGLE_STEP_MS, stop)
+    val t = engine.transcribe(decoder, path, startMs, spanMs ?: SINGLE_STEP_MS, stopFn)
     val asrNs = System.nanoTime() - ta
     if (soundFile && startMs == 0L && t.seconds <= 0.0) throw FormatNotReadable("no audio could be decoded")
     val tt = System.nanoTime()
     // The English-only recogniser writes English-looking junk for other languages: keep the transcript only when it is English.
-    val verdict = gate.judge(t.speech.joinToString(" ") { it.text })
-    val speech = when {
-      verdict.english -> TranscriptPieces.speech(t)
-      verdict.partial.isNotEmpty() -> TranscriptPieces.ofText(verdict.partial)
-      else -> emptyList()
-    }
+    // Sung and spoken words are judged apart (SpeechLanguageGate.keep), each by the same rule.
+    val kept = gate.keep(t)
+    val verdict = kept.verdict
+    val speech = kept.speech
     val sounds = TranscriptPieces.sounds(t)
     val segments = ArrayList<Segment>()
     for (x in speech) {
-      if (stop()) throw java.util.concurrent.CancellationException("stopped")
+      if (stopFn()) throw java.util.concurrent.CancellationException("stopped")
       segments += Segment(SegmentKind.TRANSCRIPT, Modality.TEXT, x.startMs, x.endMs, x.text, embedder.document(x.text), late, x.marks)
     }
     sounds?.let { x -> segments += Segment(SegmentKind.SOUND, Modality.SOUND, x.startMs, x.endMs, x.text, embedder.document(x.text), late, x.marks) }
@@ -205,7 +231,7 @@ class MediaProcessor(
 
     /** The phone reads a single-step file's first five minutes of sound at most (it asked ASR for 300 s). */
     const val SINGLE_STEP_MS = 300_000L
-    private val EMBED_POOL = Executors.newSingleThreadExecutor { r -> Thread(r, "trawl-frame-embed").apply { isDaemon = true } }
-    private val SOUND_POOL = Executors.newCachedThreadPool { r -> Thread(r, "trawl-soundtrack").apply { isDaemon = true } }
+    private val EMBED_POOL = Executors.newSingleThreadExecutor(LowPriority.factory("trawl-frame-embed"))
+    private val SOUND_POOL = Executors.newCachedThreadPool(LowPriority.factory("trawl-soundtrack"))
   }
 }

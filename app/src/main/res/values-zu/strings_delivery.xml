@@ -47,4 +47,9 @@
   <string name="models_pack_upgrade_note">Ukwengeza iphakheji elithi Standard kwenza i-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> ifunde amafayela akho futhi ngemodeli engcono. Uhlu lwamafayela akho luyahlala: ukusesha ngegama lefayela nokuthola izithombe ngokubuka ngokushesha kuyaqhubeka nokusebenza khona manje. Amagama asemadokhumentini nasezithombeni-skrini, nokusesha ngencazelo, kubuya njengoba ifayela ngalinye lifundwa futhi, kangcono ifoni ishajwa.</string>
   <string name="models_pack_get_standard">Thola iphakheji elithi Standard (%1$d MB)</string>
   <string name="models_pack_upgraded">Iphakheji elithi Standard selifakiwe. Vala i-<xliff:g id="app_name" example="Trawl">%1$s</xliff:g> bese uyivula futhi ukuze uqale ukulisebenzisa. Bese ifunda amafayela akho futhi ngemodeli engcono. Amagama amafayela nokusesha izithombe ngokushesha kuyaqhubeka nokusebenza khona manje; amagama asemadokhumentini nasezithombeni-skrini abuya njengoba amafayela efundwa.</string>
+  <string name="models_get_full_bundle">Thola iphakheji ephelele (%1$d MB)</string>
+  <string name="models_missing_full_bundle">Ukulanda okuhlukene kwala maphakheji akutholakali lapha. Thola iphakheji ephelele ukuze uwengeze.</string>
+  <string name="models_missing_packs">Imodeli yokusesha ifakiwe. Amaphakheji angekho: %1$s.</string>
+  <string name="models_refused_installed_safe">Ifayela elilandiwe alikwazanga ukusetshenziswa. Imodeli yakho yokusesha efakiwe isekhona.</string>
+  <string name="models_search_installed">Imodeli yokusesha ifakiwe.</string>
 </resources>

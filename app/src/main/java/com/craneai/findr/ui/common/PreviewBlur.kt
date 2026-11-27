@@ -5,7 +5,6 @@ import android.content.Context
 import android.widget.Toast
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.staticCompositionLocalOf
 import coil3.size.Size
@@ -46,7 +45,8 @@ class PreviewBlur(
    */
   private val check: PrivacyCheck = PrivacyCheck.None,
 ) {
-  private val revealed = mutableStateListOf<Long>()
+  /** Pictures the person has tapped to reveal, one state per picture, so revealing one redraws only that picture. Main thread. */
+  private val revealed = HashMap<Long, MutableState<Boolean>>()
   private var announced = false
   /** Scores that arrived while this screen is up, one state per picture, so an arriving score redraws only that picture. Main thread. */
   private val fresh = HashMap<Long, MutableState<Float?>>()
@@ -54,6 +54,8 @@ class PreviewBlur(
   private val firstChecking = HashMap<Long, Long>()
   /** Detail logging only: the look of each thumbnail on screen now (key: one token per thumbnail), for the on-screen sampler. */
   internal val onScreen = HashMap<Any, PrivateLook.Look>()
+
+  private fun revealedState(id: Long): MutableState<Boolean> = revealed.getOrPut(id) { mutableStateOf(false) }
 
   private fun freshState(id: Long): MutableState<Float?> = fresh.getOrPut(id) { mutableStateOf(null) }
 
@@ -78,7 +80,7 @@ class PreviewBlur(
   fun checking(file: IndexedFile): Boolean = look(file) == PrivateLook.Look.CHECKING
 
   /** The thumbnail is blurred right now: it looks private or is still being checked, and the person has not revealed it. */
-  fun hides(file: IndexedFile): Boolean = look(file) != PrivateLook.Look.CLEAR && file.id !in revealed
+  fun hides(file: IndexedFile): Boolean = look(file) != PrivateLook.Look.CLEAR && !revealedState(file.id).value
 
   /**
    * Scores a picture shown while [checking] it, ahead of the background pass. Call it from an effect tied to the thumbnail, so it is
@@ -98,7 +100,7 @@ class PreviewBlur(
   internal fun shown(file: IndexedFile, look: PrivateLook.Look) {
     if (!FindrLog.detail) return
     if (look == PrivateLook.Look.CHECKING) firstChecking.putIfAbsent(file.id, System.nanoTime())
-    FindrLog.i(GATE_TAG, "shown id=${file.id} look=$look unscored=${file.privacyUnscored} revealed=${file.id in revealed} gate=${check.available()}")
+    FindrLog.i(GATE_TAG, "shown id=${file.id} look=$look unscored=${file.privacyUnscored} revealed=${revealed[file.id]?.value == true} gate=${check.available()}")
   }
 
   /** Tap on the eye: shows the picture if the gate allows it. */
@@ -107,7 +109,7 @@ class PreviewBlur(
       onDenied()
       return false
     }
-    if (file.id !in revealed) revealed.add(file.id)
+    revealedState(file.id).value = true
     return true
   }
 

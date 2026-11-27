@@ -31,6 +31,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -40,7 +41,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.addPathNodes
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
@@ -64,10 +68,12 @@ import com.craneai.findr.ui.theme.LocalSunlight
 import java.time.Instant
 import java.time.ZoneOffset
 import trawl.desktop.AppController
+import trawl.desktop.FileSubType
 import trawl.desktop.ViewUi
 import trawl.desktop.t
 import trawl.desktop.ui.Icons
 import trawl.desktop.ui.MainUi
+import trawl.desktop.ui.ResultViewMode
 import trawl.desktop.ui.Sun
 import trawl.desktop.ui.SunButton
 import trawl.desktop.ui.SunTextButton
@@ -78,7 +84,7 @@ import trawl.desktop.ui.sunFocus
 // ---- SEARCH PACKAGE (A): the date and sort controls and "Find similar" in the filter bar (A5-A9) ----
 
 /** One line of a small choice menu. */
-class Choice(val label: String, val selected: Boolean, val run: () -> Unit)
+class Choice(val label: String, val selected: Boolean, val icon: ImageVector? = null, val run: () -> Unit)
 
 /**
  * A chip that opens a menu (the date and the sort). Quiet when it is at its default, the marker fill when it changes what the list shows, so a
@@ -122,9 +128,9 @@ private fun ControlChip(
   }
 }
 
-/** A small menu under its chip: Up and Down move, Enter chooses, Esc closes. Our own popup like the result menu, so it looks the same everywhere. */
+/** A small menu under its chip or button: Up and Down move, Enter chooses, Esc closes. Our own popup like the result menu, so it looks the same everywhere. */
 @Composable
-private fun ChoiceMenu(choices: List<Choice>, onDismiss: () -> Unit) {
+internal fun ChoiceMenu(choices: List<Choice>, onDismiss: () -> Unit) {
   val tk = LocalSunlight.current
   var active by remember { mutableIntStateOf(choices.indexOfFirst { it.selected }.coerceAtLeast(0)) }
   val provider = remember {
@@ -171,7 +177,12 @@ private fun ChoiceRow(ch: Choice, keyboardActive: Boolean) {
       .heightIn(min = 34.dp).padding(horizontal = Sun.S12, vertical = Sun.S4),
     verticalAlignment = Alignment.CenterVertically,
   ) {
-    Box(Modifier.size(Sun.IconSmall)) { if (ch.selected) Icon(Icons.Check, contentDescription = null, tint = tk.ink, modifier = Modifier.size(Sun.IconSmall)) }
+    Box(Modifier.size(Sun.IconSmall)) {
+      when {
+        ch.selected -> Icon(Icons.Check, contentDescription = null, tint = tk.ink, modifier = Modifier.size(Sun.IconSmall))
+        ch.icon != null -> Icon(ch.icon, contentDescription = null, tint = tk.ink2, modifier = Modifier.size(Sun.IconSmall))
+      }
+    }
     Spacer(Modifier.width(Sun.S8))
     Text(ch.label, style = SunType.Body, color = tk.ink, maxLines = 1)
   }
@@ -187,15 +198,46 @@ fun defaultSort(browse: Boolean): SortOrder = if (browse) SortOrder.NEWEST else 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun FilterBarRow(c: AppController, ui: MainUi, view: ViewUi, modifier: Modifier = Modifier, kindChips: @Composable () -> Unit) {
+  val filter by c.filter.collectAsState()
+  val subType by c.subType.collectAsState()
   FlowRow(modifier, horizontalArrangement = Arrangement.spacedBy(Sun.S8), verticalArrangement = Arrangement.spacedBy(Sun.S8), itemVerticalAlignment = Alignment.CenterVertically) {
     kindChips()
+    SubTypeChip(c, ui, filter, subType)
     DateChip(c, ui, view)
     SortChip(c, ui, view)
+    ViewModeToggle(ui)
     view.similar?.let { seed ->
       ControlChip(
         label = t("similar_chip", seed.name), icon = Icons.ImageSearch, active = true, spoken = t("similar_chip", seed.name), onClick = {},
         clearLabel = t("similar_remove"), onClear = { c.clearSimilar(); ui.focusSearch() }, modifier = Modifier.widthIn(max = 320.dp),
       )
+    }
+  }
+}
+
+@Composable
+private fun SubTypeChip(c: AppController, ui: MainUi, filter: com.craneai.findr.core.KindFilter, active: FileSubType?) {
+  val options = remember(filter) { FileSubType.forFilter(filter) }
+  if (options.isEmpty()) return
+  val label = active?.chipLabel ?: t("subtype_all")
+  Box {
+    ControlChip(
+      label = label,
+      icon = Icons.Document,
+      active = active != null,
+      spoken = t("subtype_group") + ": " + label,
+      onClick = { ui.subTypeMenu = !ui.subTypeMenu },
+      clearLabel = t("subtype_remove"),
+      onClear = if (active != null) ({ c.setSubType(null); ui.focusSearch() }) else null,
+      focus = ui.subTypeChipFocus,
+    )
+    if (ui.subTypeMenu) {
+      val close = { ui.subTypeMenu = false; ui.focusAfterMenu(ui.subTypeChipFocus) }
+      val choices = buildList {
+        add(Choice(t("subtype_all"), active == null) { close(); c.setSubType(null) })
+        options.forEach { opt -> add(Choice(opt.menuLabel, active == opt) { close(); c.setSubType(opt) }) }
+      }
+      ChoiceMenu(choices) { close() }
     }
   }
 }
@@ -240,6 +282,62 @@ private fun SortChip(c: AppController, ui: MainUi, view: ViewUi) {
       val close = { ui.sortMenu = false; ui.focusAfterMenu(ui.sortChipFocus) }
       ChoiceMenu(sortChoices(searching).map { o -> Choice(o.text(), view.sort == o) { close(); c.setSort(o) } }) { close() }
     }
+  }
+}
+
+private val GridViewIcon by lazy {
+  ImageVector.Builder("grid_view", 24.dp, 24.dp, 24f, 24f)
+    .addPath(addPathNodes("M3 3h8v8H3V3zm2 2v4h4V5H5zm8-2h8v8h-8V3zm2 2v4h4V5h-4zM3 13h8v8H3v-8zm2 2v4h4v-4H5zm8-2h8v8h-8v-8zm2 2v4h4v-4h-4z"), fill = SolidColor(Color.Black))
+    .build()
+}
+
+private val ListViewIcon by lazy {
+  ImageVector.Builder("view_list", 24.dp, 24.dp, 24f, 24f)
+    .addPath(addPathNodes("M3 5h4v4H3V5zm6 0h12v4H9V5zM3 10h4v4H3v-4zm6 0h12v4H9v-4zM3 15h4v4H3v-4zm6 0h12v4H9v-4z"), fill = SolidColor(Color.Black))
+    .build()
+}
+
+/** Compact segmented Grid / List view toggle right next to Sort in the filter bar. */
+@Composable
+private fun ViewModeToggle(ui: MainUi) {
+  val tk = LocalSunlight.current
+  Row(
+    Modifier.heightIn(min = Sun.Chip).clip(CircleShape).background(tk.paper).border(Sun.Border, tk.line, CircleShape)
+      .padding(2.dp).selectableGroup().semantics { contentDescription = t("view_mode_group") },
+    verticalAlignment = Alignment.CenterVertically,
+    horizontalArrangement = Arrangement.spacedBy(2.dp),
+  ) {
+    ViewModeSegment(
+      label = t("view_grid"),
+      icon = GridViewIcon,
+      selected = ui.viewMode == ResultViewMode.GRID,
+      onClick = { ui.viewMode = ResultViewMode.GRID },
+    )
+    ViewModeSegment(
+      label = t("view_list"),
+      icon = ListViewIcon,
+      selected = ui.viewMode == ResultViewMode.LIST,
+      onClick = { ui.viewMode = ResultViewMode.LIST },
+    )
+  }
+}
+
+@Composable
+private fun ViewModeSegment(label: String, icon: ImageVector, selected: Boolean, onClick: () -> Unit) {
+  val tk = LocalSunlight.current
+  val fg = if (selected) tk.onMarker else tk.ink
+  val source = remember { MutableInteractionSource() }
+  val hovered by source.collectIsHoveredAsState()
+  Row(
+    Modifier.sunFocus(CircleShape).clip(CircleShape).pointerHoverIcon(PointerIcon.Hand).hoverable(source)
+      .selectable(selected = selected, role = Role.RadioButton, interactionSource = source, indication = null, onClick = onClick)
+      .background(if (selected) tk.marker else if (hovered) tk.paper2 else Color.Transparent, CircleShape)
+      .heightIn(min = Sun.Chip - 6.dp).padding(horizontal = 10.dp, vertical = 2.dp),
+    verticalAlignment = Alignment.CenterVertically,
+    horizontalArrangement = Arrangement.spacedBy(4.dp),
+  ) {
+    Icon(icon, contentDescription = null, tint = fg, modifier = Modifier.size(Sun.IconSmall))
+    Text(label, style = SunType.Label, color = fg, maxLines = 1)
   }
 }
 

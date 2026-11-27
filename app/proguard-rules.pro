@@ -28,9 +28,14 @@
 -dontwarn com.gemalto.jp2.**
 -dontwarn org.bouncycastle.**
 
-# WorkManager: workers are created by class name from its database. (Its AAR keeps ListenableWorker subclasses; this is a
+# WorkManager: workers are created by class name from its database. (Its AAR keeps ListenableWorker subclasses; these are a
 # second line for ours.)
 -keep class com.craneai.findr.engine.IndexWorker { *; }
+-keep class com.craneai.findr.engine.ChangeWorker { *; }
+
+# SQ8 VectorIndex v3 native ARM64 NEON SDOT kernel (optional JNI library libtrawl_vec_neon.so): JNI binds strictly to
+# Java_com_craneai_findr_search_Sq8Native_* symbols, so R8 must never rename, strip, or repackage this object or its native methods.
+-keep class com.craneai.findr.search.Sq8Native { *; }
 
 # sherpa-onnx (speech to words, VAD, sound labels): its native code reads the Kotlin config classes' fields by name, and
 # its AAR ships an empty proguard.txt, so R8 would rename them. Keep the whole package.

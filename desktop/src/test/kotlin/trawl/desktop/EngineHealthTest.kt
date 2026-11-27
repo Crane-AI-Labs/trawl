@@ -2,7 +2,6 @@ package trawl.desktop
 
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.runComposeUiTest
 import java.io.File
 import java.nio.ByteBuffer
 import java.nio.ByteOrder

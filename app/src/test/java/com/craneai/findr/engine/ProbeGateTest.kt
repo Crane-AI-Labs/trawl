@@ -294,12 +294,31 @@ class ProbeGateTest {
     val rig = Rig()
     rig.cacheFile.writeText("x")
     File(rig.cacheDir, "other-model.litertlm_1_2.text_encoder.xnnpack_cache").writeText("another model's")
+    File(rig.cacheDir, "other-model.litertlm.vision_encoder_weight_cache.bin").writeText("another model's gpu")
     File(rig.cacheDir, "scratch.tmp").writeText("unrelated")
     val fp = EngineFingerprint.of(rig.cacheDir, rig.model)
     assertTrue(fp.contains(bundle))
     assertFalse(fp.contains("other-model"))
     assertFalse(fp.contains("scratch"))
     assertEquals("", EngineFingerprint.of(tmp.newFolder(), rig.model))
+  }
+
+  @Test fun `mldrift gpu cache files are fingerprinted and trigger re-probe when changed`() {
+    val rig = Rig()
+    val gpuWeight = File(rig.cacheDir, "${bundle}.vision_encoder_42_weight_cache.bin").apply { writeText("gpu-v1") }
+    val gpuProg = File(rig.cacheDir, "${bundle}_mldrift.program_cache").apply { writeText("prog-v1") }
+    rig.load()
+    val fp = EngineFingerprint.of(rig.cacheDir, rig.model)
+    assertTrue("fingerprint includes weight_cache: $fp", fp.contains(gpuWeight.name))
+    assertTrue("fingerprint includes mldrift program_cache: $fp", fp.contains(gpuProg.name))
+
+    val before = rig.probeRuns
+    rig.load()
+    assertEquals("unchanged gpu caches skip probe", before, rig.probeRuns)
+
+    gpuWeight.writeText("gpu-v2-corrupted")
+    rig.load()
+    assertEquals("changed gpu weight_cache triggers re-probe", before + 3, rig.probeRuns)
   }
 
   @Test fun `the embedder wires the schedule into the self-test and reads crashes from the exit history`() {

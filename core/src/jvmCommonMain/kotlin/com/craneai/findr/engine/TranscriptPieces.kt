@@ -26,6 +26,16 @@ object TranscriptPieces {
    */
   const val WORDS_PER_MARK = 2
 
+  /**
+   * The everyday words for the sound labels people describe differently: "man singing" finds a file labelled "Male singing" only if
+   * the line says "man". Written after the label, so the label itself is unchanged (internal/research/video-context-levers.md, arm 1c:
+   * no loss on Context Bench, the real-sung world or eval-en). Plurals are spelled out: the keyword index's stemming does not join
+   * "children" to "child".
+   */
+  val PLAIN_WORDS = mapOf(
+    "Male singing" to "man singing", "Female singing" to "woman singing", "Child singing" to "children singing", "Babbling" to "baby babbling",
+  )
+
   fun speech(t: AudioTranscript, maxChars: Int = MAX_CHARS): List<TranscriptText> {
     val out = ArrayList<TranscriptText>()
     var start = 0L
@@ -83,6 +93,6 @@ object TranscriptPieces {
     val labels = t.sounds.flatMap { it.labels }.distinct().take(MAX_LABELS)
     if (labels.isEmpty()) return null
     // Each label once, in the order first heard: the line stands for the whole file, so it points at no moment.
-    return TranscriptText(null, null, "Sounds: " + labels.joinToString(", "))
+    return TranscriptText(null, null, "Sounds: " + labels.joinToString(", ") { l -> PLAIN_WORDS[l]?.let { "$l ($it)" } ?: l })
   }
 }

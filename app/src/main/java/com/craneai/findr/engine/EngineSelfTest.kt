@@ -161,14 +161,38 @@ class EngineSelfTest<E : Any>(
 
 object EngineCache {
   /**
-   * LiteRT-LM names the files it caches for a model `<model file name>_<n>_<n>.<part>.xnnpack_cache` in the cache directory
-   * (seen on the phone and on the Mac). Deletes those of [modelFileName] only; other models' caches and everything else in the
-   * folder stay. Returns how many files went.
+   * Whether [name] in the cache folder is a runtime cache file produced for [modelFileName]:
+   *  - XNNPACK CPU caches (`<modelFileName>_<n>_<n>.<part>.xnnpack_cache`, `<modelFileName>.xnnpack_cache`)
+   *  - ML Drift GPU program/weight caches (`*mldrift*`, `*.program_cache*`, `*_program_cache*`, `*.weight_cache*`, `*_weight_cache*`
+   *    prefixed with the model file name or its stem).
+   * Never matches the model file itself, other models' caches, or unrelated files.
    */
-  fun clear(cacheDir: File, modelFileName: String): Int {
-    val files = cacheDir.listFiles { f -> f.isFile && f.name.startsWith("${modelFileName}_") && f.name.endsWith(".xnnpack_cache") } ?: return 0
-    return files.count { it.delete() }
+  internal fun isCacheFile(name: String, modelFileName: String): Boolean {
+    if (name == modelFileName) return false
+    val stem = modelFileName.substringBeforeLast('.')
+    val matchesModel = name.startsWith("${modelFileName}_") ||
+      name.startsWith("${modelFileName}.") ||
+      (stem != modelFileName && (name.startsWith("${stem}_") || name.startsWith("${stem}.")))
+    if (!matchesModel) return false
+    val lower = name.lowercase()
+    return lower.endsWith(".xnnpack_cache") ||
+      lower.contains("mldrift") ||
+      lower.contains(".program_cache") ||
+      lower.contains("_program_cache") ||
+      lower.contains(".weight_cache") ||
+      lower.contains("_weight_cache")
   }
+
+  /** Every XNNPACK and ML Drift GPU cache file belonging to [modelFileName] in [cacheDir], sorted by name. */
+  fun list(cacheDir: File, modelFileName: String): List<File> =
+    cacheDir.listFiles { f -> f.isFile && isCacheFile(f.name, modelFileName) }?.sortedBy { it.name }.orEmpty()
+
+  /**
+   * Deletes all XNNPACK and ML Drift GPU cache files of [modelFileName] in [cacheDir]; other models' caches and
+   * everything else in the folder stay. Returns how many files went.
+   */
+  fun clear(cacheDir: File, modelFileName: String): Int =
+    list(cacheDir, modelFileName).count { it.delete() }
 }
 
 /** The index could not be written because the phone's storage is full (see [com.craneai.findr.index.StorageFull]); not any file's fault. */

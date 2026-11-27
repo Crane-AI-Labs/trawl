@@ -5,6 +5,14 @@
   <string name="sort_oldest">Ezisinga obukadde</string>
   <string name="sort_largest">Ezisinga obunene</string>
   <string name="sort_name">Erinnya okuva ku A okutuuka ku Z</string>
+  <string name="sort_chip_best">Okukwatagana</string>
+  <string name="sort_chip_newest">Ebipya</string>
+  <string name="sort_chip_oldest">Ebikadde</string>
+  <string name="sort_chip_created_newest">Ebyakolebwa</string>
+  <string name="sort_chip_created_oldest">Ebyakolebwa</string>
+  <string name="sort_chip_largest">Ebinene</string>
+  <string name="sort_chip_smallest">Ebitono</string>
+  <string name="sort_chip_name">Erinnya</string>
   <string name="sort_group">Tegeka okusinziira ku</string>
   <string name="date_any_time">Ekiseera kyonna</string>
   <string name="date_group">Olunaku</string>
@@ -85,4 +93,20 @@
   <string name="snack_marked_sensitive_many">Ziteekeddwako nti za kyama. Kati zikisiddwa obutalabika mu bizuuliddwa.</string>
   <string name="snack_unmarked_sensitive_many">Akabonero kaggyiddwako. Zisobola nate okulabika mu bizuuliddwa.</string>
   <string name="nothing_in_dates">%1$s, tewali kizuuliddwa. Gezaako olunaku olulala.</string>
+  <string name="sort_created_newest">Olunaku lw\'okukolebwa (empya)</string>
+  <string name="sort_created_oldest">Olunaku lw\'okukolebwa (enkadde)</string>
+  <string name="sort_smallest">Entono</string>
+  <string name="subtype_group">Ekika kya fayiro</string>
+  <string name="subtype_all">Ebika byonna</string>
+  <string name="subtype_remove">Ggyawo okusengejja kw\'ekika kya fayiro</string>
+  <string name="subtype_spreadsheet_menu">Excel ne CSV (.xlsx, .csv)</string>
+  <string name="subtype_text_menu">Ebigambo ne Markdown (.txt, .md)</string>
+  <string name="subtype_text_chip">Ebigambo / MD</string>
+  <string name="subtype_code_menu">Koodi ne data (.json, .xml, …)</string>
+  <string name="subtype_code_chip">Koodi / Data</string>
+  <string name="view_mode_group">Enkola y\'okulaga</string>
+  <string name="view_grid">Bupande</string>
+  <string name="view_list">Lukalala</string>
+  <string name="label_modified_short">Kyakyusibwa %1$s</string>
+  <string name="label_created_short">Kyakolebwa %1$s</string>
 </resources>

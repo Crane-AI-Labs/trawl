@@ -39,7 +39,7 @@ class FormatsBenchActivity : Activity() {
       val out = File(filesDir, "results/$tag.json").apply { parentFile!!.mkdirs() }
       val rows = JSONArray()
       try {
-        val engine = (application as com.craneai.findr.FindrApp).engine as com.craneai.findr.engine.FindrEngine
+        val engine = (application as com.craneai.findr.FindrApp).awaitEngine() as com.craneai.findr.engine.FindrEngine
         val lines = File(filesDir, "formats/$queries").readLines().filter { it.isNotBlank() }
         for (line in lines) {
           val f = line.split('\t')

@@ -7,4 +7,6 @@
   <string name="open_problem_memory">Le téléphone manque de mémoire. Nouvelle tentative dans un instant.</string>
   <string name="open_problem_other">Nouvelle tentative dans un instant.</string>
   <string name="open_problem_detail">Vos résultats précédents sont conservés. Rien n\'a été supprimé. Une nouvelle tentative se fera automatiquement, ou touchez Réessayer.</string>
+  <string name="index_opening_title">Ouverture de votre index</string>
+  <string name="index_opening_detail">Les résultats apparaîtront dès que l\'index sera prêt.</string>
 </resources>

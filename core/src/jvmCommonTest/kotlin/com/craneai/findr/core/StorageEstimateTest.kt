@@ -15,8 +15,8 @@ class StorageEstimateTest {
     val r = est()
     assertEquals(0L, r.indexBytes)
     assertEquals(0L, r.vectors)
-    // Empty indexes have no vector file: 1,024 and 256 rows of facts (19 bytes) and a 32-slot lookup (12 bytes a slot) each.
-    assertEquals((1_024 + 256) * 19L + 2 * 32 * 12L, r.ramBytes)
+    // Empty indexes have no vector file: 1,024 and 256 rows of facts (23 bytes) and one 32-slot file lookup (12 bytes a slot) each.
+    assertEquals((1_024 + 256) * 23L + 2 * 32 * 12L, r.ramBytes)
   }
 
   @Test fun aPhotoCostsItsMeasuredShareAndOneVector() {
@@ -54,7 +54,7 @@ class StorageEstimateTest {
       val v = FloatArray(768) { 0.01f }
       for (i in 1..5_000) index.add(i.toLong(), i.toLong(), FileKind.IMAGE, com.craneai.findr.index.Modality.IMAGE, false, v)
       val r = est(KindTotals(FileKind.IMAGE, 5_000, 0, 0))
-      val quickEmpty = 256 * 19L + 32 * 12L
+      val quickEmpty = 256 * 23L + 32 * 12L
       assertEquals(index.memoryBytes() + quickEmpty, r.ramBytes)
       assertEquals(index.mappedBytes(), java.io.File(dir, "v.bin").length())
       assertEquals(5_000 * StorageEstimate.IMAGE_BYTES + index.mappedBytes(), r.indexBytes)

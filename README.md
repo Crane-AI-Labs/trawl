@@ -115,6 +115,16 @@ Neither has a default, and `NO_SIGN=1` writes an unsigned bundle. For local test
 Without `-PtrawlPublish=true` every build stays debug-signed, so test phones keep upgrading in place.
 `scripts/release.sh <version>` does the whole sequence, builds both model bundles (it needs `TRAWL_SIGN_SSH` and `TRAWL_VAULT`,
 or `--no-models`), writes the release notes and prints the `gh release create` commands. It never publishes anything itself.
+It consumes the flavour outputs directly: `app/build/outputs/apk/full/release/app-full-release.apk` and
+`app/build/outputs/apk/go/release/app-go-release.apk`, not the Full edition's legacy compatibility copy. After a build, both APKs
+must be newer than its start marker; missing or stale outputs stop before release copying or remote re-signing. Remote output
+timestamps are preserved, so cached outputs or a build-box clock behind this machine fail closed: regenerate the APKs (for example,
+rerun the same Gradle tasks with `--rerun-tasks`) and correct clock skew. `--remote --skip-build` explicitly reuses existing flavour
+APKs and only checks that they exist; it still applies the normal certificate and manifest checks after signing.
+To check paths without a publishing key, use `scripts/release.sh <version> --check-apk-paths`, optionally with `--remote` or
+`--remote --skip-build`. Unless skipping the build, this builds without `-PtrawlPublish=true`; it stops before release signing,
+copying release APKs, model bundling or publish commands and does not certify an APK for release. Run the hermetic shell regression
+suite with `bash scripts/test-release.sh`; it uses fake builders and verification only, and refuses any signing or network command.
 
 **Phones.** The adb helpers (`scripts/phone-lock.sh` and friends) take the phone from `ANDROID_SERIAL`. Your own phone list, and
 any phone that must not be locked without an explicit go, goes in an ignored file `scripts/phones.local`; copy

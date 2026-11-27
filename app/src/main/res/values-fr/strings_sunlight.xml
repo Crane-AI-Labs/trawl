@@ -9,4 +9,7 @@
   <string name="colours_wallpaper">Couleurs du fond d’écran</string>
   <string name="colours_wallpaper_hint">Reprend les couleurs de votre fond d’écran et change avec lui.</string>
   <string name="settings_brightness">Clair ou sombre</string>
+  <string name="notif_waiting_other_app">En attente pendant que vous utilisez une autre app</string>
+  <string name="preview_checking">aperçu masqué pendant la vérification</string>
+  <string name="preview_checking_words">Vérification · toucher pour voir</string>
 </resources>

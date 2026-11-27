@@ -5,6 +5,14 @@
   <string name="sort_oldest">Macon loyo</string>
   <string name="sort_largest">Madit loyo</string>
   <string name="sort_name">Nying A naka Z</string>
+  <string name="sort_chip_best">Maber</string>
+  <string name="sort_chip_newest">Manyen</string>
+  <string name="sort_chip_oldest">Macon</string>
+  <string name="sort_chip_created_newest">Kicweyo</string>
+  <string name="sort_chip_created_oldest">Kicweyo</string>
+  <string name="sort_chip_largest">Madit</string>
+  <string name="sort_chip_smallest">Matidi</string>
+  <string name="sort_chip_name">Nying</string>
   <string name="sort_group">Rye malube ki</string>
   <string name="date_any_time">Cawa mo keken</string>
   <string name="date_group">Nino dwe</string>
@@ -85,4 +93,20 @@
   <string name="snack_marked_sensitive_many">Kicimo ni me mung. Kombedi gimukanne, pe ginyutte i Adwogi.</string>
   <string name="snack_unmarked_sensitive_many">Kikwanyo cim. Gitwero nyutte dok i Adwogi.</string>
   <string name="nothing_in_dates">Pe kinongo gin mo i %1$s. Tem nino dwe mukene.</string>
+  <string name="sort_created_newest">Nino me cweyo (manyen)</string>
+  <string name="sort_created_oldest">Nino me cweyo (macon)</string>
+  <string name="sort_smallest">Matidi loyo</string>
+  <string name="subtype_group">Kit fayil</string>
+  <string name="subtype_all">Kit ducu</string>
+  <string name="subtype_remove">Kwany yer me kit fayil</string>
+  <string name="subtype_spreadsheet_menu">Excel ki CSV (.xlsx, .csv)</string>
+  <string name="subtype_text_menu">Coc ki Markdown (.txt, .md)</string>
+  <string name="subtype_text_chip">Coc / MD</string>
+  <string name="subtype_code_menu">Kod ki data (.json, .xml, …)</string>
+  <string name="subtype_code_chip">Kod / Data</string>
+  <string name="view_mode_group">Kit me neno</string>
+  <string name="view_grid">Grid</string>
+  <string name="view_list">Nying</string>
+  <string name="label_modified_short">Kilo %1$s</string>
+  <string name="label_created_short">Kicweyo %1$s</string>
 </resources>

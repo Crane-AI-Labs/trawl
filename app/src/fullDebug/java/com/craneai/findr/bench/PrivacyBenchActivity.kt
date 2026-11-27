@@ -43,7 +43,7 @@ class PrivacyBenchActivity : Activity() {
     val exact = intent.getBooleanExtra("exact", false)
     scope.launch {
       val out = File(filesDir, "results/$tag.json").apply { parentFile!!.mkdirs() }
-      val engine = (application as? com.craneai.findr.FindrApp)?.engine as? com.craneai.findr.engine.FindrEngine
+      val engine = (application as? com.craneai.findr.FindrApp)?.awaitEngine() as? com.craneai.findr.engine.FindrEngine
       val pausedHere = engine != null && !engine.paused
       if (pausedHere) {
         engine!!.pauseIndexing()

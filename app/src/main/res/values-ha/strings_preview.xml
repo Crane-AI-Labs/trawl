@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="player_play">Kunna</string>
+  <string name="player_pause">Dakata</string>
+  <string name="player_rewind_10">Koma baya dakika 10</string>
+  <string name="player_forward_10">Ci gaba dakika 10</string>
+  <string name="player_jump_match">Tsallaka zuwa %1$s</string>
+  <string name="player_open_external">Bude a wata manhaja</string>
+  <string name="player_error">Ba za a iya kunna wannan fayil din a nan ba.</string>
+  <string name="player_loading">Ana loda kunnawa…</string>
+  <string name="player_seek_position">Wurin kunnawa</string>
+  <string name="action_preview">Dubawa</string>
+  <string name="action_show_preview">Nuna samfoti</string>
+  <string name="preview_loading">Ana loda samfoti…</string>
+  <string name="preview_unavailable">Babu samfoti ga wannan fayil din.</string>
+  <string name="preview_empty">Wannan fayil din babu komai a ciki.</string>
+  <string name="preview_truncated">Ana nuna layuka %1$d na farko</string>
+  <string name="preview_bytes_truncated">Ana nuna sashen farko na wannan fayil din</string>
+  <string name="preview_rows_cols">Layuka %1$d · shafuka %2$d</string>
+</resources>

@@ -1,5 +1,8 @@
 package com.craneai.findr.core
 
+import com.craneai.findr.search.VectorFile
+import com.craneai.findr.search.VectorFormat
+
 /**
  * How much room the search index will take, before it is built: the files counted by kind, times what each kind costs.
  * Pure, so it is unit-tested; the costs are measured numbers, kept here once.
@@ -43,10 +46,10 @@ object StorageEstimate {
   /** No document makes more chunks than this (the average file of the kind is clamped). */
   const val DOC_MAX_CHUNKS = 60
 
-  /** Per row on the heap, apart from the vector: segment id, file id, kind, modality, late flag. */
-  private const val ROW_ARRAYS_BYTES = 8 + 8 + 1 + 1 + 1L
+  /** Per row on the heap, apart from the vector: segment id, file id, kind, modality, late flag, fileNext link. */
+  private const val ROW_ARRAYS_BYTES = 8 + 8 + 1 + 1 + 1 + 4L
 
-  /** The segment lookup (LongIntMap): 12 bytes a slot, a power of two of at least 32 slots, at most half full. */
+  /** The segment and file lookups (LongIntMap): 12 bytes a slot, a power of two of at least 32 slots, at most 2/3 full. */
   private const val LOOKUP_SLOT_BYTES = 12L
   private const val LOOKUP_MIN_SLOTS = 32L
 
@@ -55,12 +58,12 @@ object StorageEstimate {
   private const val FILE_ROWS_PER_CHUNK = 4_096L
   private const val FILE_FACTS_BYTES = 24L
 
-  /** EmbeddingGemma vectors: 768 fp16 values, 1,024 rows to start. */
-  private const val VECTOR_BYTES = 768 * 2L
+  /** EmbeddingGemma vectors: 768 dims, 1,024 rows to start. */
+  private const val VECTOR_DIM = 768
   private const val MATRIX_START_ROWS = 1_024L
 
-  /** The quick-look matrix: 512 fp16 values a row, 256 rows to start. Photos leave it once they are fully read. */
-  private const val QUICK_VECTOR_BYTES = 512 * 2L
+  /** The quick-look matrix: 512 dims a row, 256 rows to start. Photos leave it once they are fully read. */
+  private const val QUICK_VECTOR_DIM = 512
   private const val QUICK_START_ROWS = 256L
 
   /** What the crawl knows about the files of one kind (skipped files left out). */
@@ -70,7 +73,13 @@ object StorageEstimate {
   data class Result(val indexBytes: Long, val vectors: Long, val ramBytes: Long)
 
   /** [indexed]: the kinds Findr will read (the settings); other kinds cost only their names. [withVectors] is false in Trawl Go. */
-  fun estimate(totals: List<KindTotals>, indexed: Set<FileKind>, withVectors: Boolean = true): Result {
+  fun estimate(
+    totals: List<KindTotals>,
+    indexed: Set<FileKind>,
+    withVectors: Boolean = true,
+    format: VectorFormat = VectorFormat.FP16,
+    stageDim: Int = 0,
+  ): Result {
     var bytes = 0L
     var vectors = 0L
     for (t in totals) {
@@ -98,7 +107,7 @@ object StorageEstimate {
       }
     }
     if (!withVectors) return Result(bytes, 0, 0)   // Trawl Go keeps no vectors: no mapped files and no matrices
-    val files = mappedBytes(vectors, VECTOR_BYTES) + mappedBytes(0, QUICK_VECTOR_BYTES)
+    val files = mappedBytes(vectors, VECTOR_DIM, stageDim, format) + mappedBytes(0, QUICK_VECTOR_DIM, 0, VectorFormat.FP16)
     val heap = heapBytes(vectors, MATRIX_START_ROWS) + heapBytes(0, QUICK_START_ROWS)
     return Result(bytes + files, vectors, heap + files)
   }
@@ -114,14 +123,15 @@ object StorageEstimate {
     var capacity = start
     while (capacity < rows) capacity = maxOf(capacity * 3 / 2, capacity + 1_024)
     var slots = LOOKUP_MIN_SLOTS
-    while (slots < rows * 2) slots = slots shl 1
+    while (slots * 2 < rows * 3) slots = slots shl 1
+    // Single LongIntMap lookup: file->headRow (conservative upper bound assumes 1 row per file; segment dedup walks fileNext).
     return capacity * ROW_ARRAYS_BYTES + slots * LOOKUP_SLOT_BYTES
   }
 
-  /** The vector file for [rows] vectors of [vectorBytes] each: nothing until the first one, then the header and whole chunks. */
-  private fun mappedBytes(rows: Long, vectorBytes: Long): Long {
+  /** The vector file for [rows] vectors of [dim] dims in [format]: nothing until the first one, then the header and whole chunks. */
+  private fun mappedBytes(rows: Long, dim: Int, stageDim: Int, format: VectorFormat): Long {
     if (rows <= 0) return 0
     val chunks = (rows + FILE_ROWS_PER_CHUNK - 1) / FILE_ROWS_PER_CHUNK
-    return FILE_HEADER_BYTES + chunks * FILE_ROWS_PER_CHUNK * (FILE_FACTS_BYTES + vectorBytes)
+    return FILE_HEADER_BYTES + chunks * VectorFile.chunkBytesFor(dim, FILE_ROWS_PER_CHUNK.toInt(), stageDim, format)
   }
 }

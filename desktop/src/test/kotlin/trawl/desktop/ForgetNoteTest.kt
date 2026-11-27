@@ -12,6 +12,9 @@ import kotlin.test.assertTrue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 
 /** E21: after "Forget everything" the page says how much was let go, measured before the drop. */
 class ForgetNoteTest {
@@ -38,6 +41,7 @@ class ForgetNoteTest {
     try {
       assertNull(c.forgot.value, "nothing is claimed before anything was forgotten")
       c.forgetEverything()
+      runBlocking { withTimeout(30_000) { c.forgetting.first { !it } } }
       val f = assertNotNull(c.forgot.value)
       assertEquals(0, f.files, "a fresh data folder had learned nothing")
     } finally { c.close() }

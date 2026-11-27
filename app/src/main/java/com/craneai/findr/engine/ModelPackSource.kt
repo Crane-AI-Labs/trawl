@@ -2,6 +2,7 @@ package com.craneai.findr.engine
 
 import android.content.Context
 import android.os.Environment
+import com.craneai.findr.BuildConfig
 import com.craneai.findr.R
 import com.craneai.findr.core.PackCopy
 import com.craneai.findr.core.PackDef
@@ -31,14 +32,27 @@ sealed interface PackSourceResult {
 interface ModelPackSource {
   suspend fun open(pack: PackFiles): PackSourceResult
 
+  /** Opens [pack], forwarding download or transfer progress (bytes done, total bytes) before verification begins. */
+  suspend fun open(pack: PackFiles, onProgress: (done: Long, total: Long) -> Unit): PackSourceResult = open(pack)
+
+  /** Called after [pack] has been verified and copied into app storage so Play Asset Delivery can reclaim its duplicate cache. */
+  fun onInstalled(pack: PackFiles) {}
+
+  /** Called after a pack is removed from app storage so Play Asset Delivery can reclaim its cached asset pack too. */
+  fun onRemoved(pack: PackFiles) {}
+
   /** What to tell the user before they tap Install: where the file comes from and where it has to be (read with `PackCopy.resolve`, ui/addons/PackText.kt). */
   fun howToAdd(def: PackDef): PackCopy
+
+  /** External browser download URL for this pack when sideloaded (null when delivered by Play Asset Delivery). */
+  fun downloadUrl(def: PackDef): String? = null
 }
 
 /** The sideload path: the pack's `.zip` (or unzipped folder) sits in the phone's Downloads folder. */
 class DownloadsFolderSource(
   private val downloads: () -> File = { Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) },
   private val hasAccess: () -> Boolean = { Environment.isExternalStorageManager() },
+  private val baseUrl: String = BuildConfig.MODELS_BASE_URL,
 ) : ModelPackSource {
   override suspend fun open(pack: PackFiles): PackSourceResult {
     if (!hasAccess()) return PackSourceResult.NeedsFileAccess
@@ -53,23 +67,8 @@ class DownloadsFolderSource(
 
   override fun howToAdd(def: PackDef): PackCopy =
     PackCopy(R.string.pack_how_to_add_downloads, listOf(def.archiveName, def.sizeCopy))
-}
 
-/**
- * TODO(Play): the store-ready path. Declare the pack as an on-demand Play Asset Delivery asset pack named after the
- * [PackDef.id], add `com.google.android.play:asset-delivery`, then in [open]:
- *   1. `AssetPackManager.getPackLocation(name)`; if null, `fetch(listOf(name))` and wait for `COMPLETED`
- *      (surface `AssetPackState.bytesDownloaded()` through the same progress callback the installer uses).
- *   2. return `PackSourceResult.Found(listOf(FolderModelSource(File(location.assetsPath()))))`.
- * The checked installer then verifies and copies the files exactly as it does for Downloads. This build is sideload
- * only, so the stub says so. It adds no dependency and no permission.
- */
-class PlayAssetPackSource : ModelPackSource {
-  override suspend fun open(pack: PackFiles): PackSourceResult =
-    PackSourceResult.Unavailable("Play Asset Delivery is not wired up in this build")
-
-  override fun howToAdd(def: PackDef): PackCopy =
-    PackCopy(R.string.pack_how_to_add_play, listOf(def.nameCopy, def.sizeCopy))
+  override fun downloadUrl(def: PackDef): String = baseUrl + def.archiveName
 }
 
 /** Remembers choices the user made about packs, so nothing is installed behind their back. */

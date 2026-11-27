@@ -18,9 +18,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ViewList
+import androidx.compose.material.icons.outlined.Description
+import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.material.icons.rounded.ArrowDropDown
 import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.Check
@@ -68,6 +72,7 @@ import com.craneai.findr.core.DateLabel
 import com.craneai.findr.core.DatePreset
 import com.craneai.findr.core.DateUnit
 import com.craneai.findr.core.DayPart
+import com.craneai.findr.core.KindFilter
 import com.craneai.findr.core.SortOrder
 import com.craneai.findr.ui.theme.LocalSunlight
 import com.craneai.findr.ui.theme.Sun
@@ -87,14 +92,35 @@ fun SortOrder.labelRes(): Int = when (this) {
   SortOrder.BEST -> R.string.sort_best
   SortOrder.NEWEST -> R.string.sort_newest
   SortOrder.OLDEST -> R.string.sort_oldest
+  SortOrder.CREATED_NEWEST -> R.string.sort_created_newest
+  SortOrder.CREATED_OLDEST -> R.string.sort_created_oldest
   SortOrder.LARGEST -> R.string.sort_largest
+  SortOrder.SMALLEST -> R.string.sort_smallest
   SortOrder.NAME -> R.string.sort_name
+}
+
+/** Compact label for the collapsed Sort chip so Sort + Date + Grid/List fit cleanly on phone widths while the menu keeps full explicit names. */
+@androidx.annotation.StringRes
+fun SortOrder.chipLabelRes(): Int = when (this) {
+  SortOrder.BEST -> R.string.sort_chip_best
+  SortOrder.NEWEST -> R.string.sort_chip_newest
+  SortOrder.OLDEST -> R.string.sort_chip_oldest
+  SortOrder.CREATED_NEWEST -> R.string.sort_chip_created_newest
+  SortOrder.CREATED_OLDEST -> R.string.sort_chip_created_oldest
+  SortOrder.LARGEST -> R.string.sort_chip_largest
+  SortOrder.SMALLEST -> R.string.sort_chip_smallest
+  SortOrder.NAME -> R.string.sort_chip_name
 }
 
 /** The sorts the menu offers: Best match only where there is a query to be best for. */
 fun sortChoices(searching: Boolean): List<SortOrder> =
-  if (searching) listOf(SortOrder.BEST, SortOrder.NEWEST, SortOrder.OLDEST, SortOrder.LARGEST, SortOrder.NAME)
-  else listOf(SortOrder.NEWEST, SortOrder.OLDEST, SortOrder.LARGEST, SortOrder.NAME)
+  if (searching) listOf(
+    SortOrder.BEST, SortOrder.NEWEST, SortOrder.OLDEST,
+    SortOrder.CREATED_NEWEST, SortOrder.CREATED_OLDEST, SortOrder.LARGEST, SortOrder.SMALLEST, SortOrder.NAME,
+  ) else listOf(
+    SortOrder.NEWEST, SortOrder.OLDEST,
+    SortOrder.CREATED_NEWEST, SortOrder.CREATED_OLDEST, SortOrder.LARGEST, SortOrder.SMALLEST, SortOrder.NAME,
+  )
 
 /** A date filter's name in the person's language: strings from resources, month and day names from the locale. */
 fun DateLabel.text(context: Context, locale: Locale): String {
@@ -166,7 +192,7 @@ private fun ChipFace(
   text: String?,
   active: Boolean,
   description: String,
-  onClick: () -> Unit,
+  onClick: (() -> Unit)?,
   modifier: Modifier = Modifier,
   onClear: (() -> Unit)? = null,
   clearLabel: String = "",
@@ -189,14 +215,14 @@ private fun ChipFace(
       Modifier
         .heightIn(min = 36.dp)
         .clip(CircleShape)
-        .clickable(role = Role.Button, onClick = onClick)
+        .then(if (onClick != null) Modifier.clickable(role = Role.Button, onClick = onClick) else Modifier)
         .semantics { contentDescription = description }
-        .padding(start = 10.dp, end = if (onClear != null) 4.dp else if (text == null) 8.dp else 4.dp),
+        .padding(start = 8.dp, end = if (onClear != null) 4.dp else if (text == null) 8.dp else 4.dp),
       verticalAlignment = Alignment.CenterVertically,
     ) {
-      Icon(icon, contentDescription = null, tint = fg, modifier = Modifier.size(20.dp))
+      Icon(icon, contentDescription = null, tint = fg, modifier = Modifier.size(18.dp))
       if (text != null) {
-        Spacer(Modifier.width(Sun.S4))
+        Spacer(Modifier.width(3.dp))
         // The cap grows with the font size. A chip with a cross also stays inside the window (less its icon, cross and the list's
         // edges): at 2.0 the Find-similar chip (220 dp of words) ran off a 411 dp phone and took its cross with it (1.0.6 polish, P5).
         // The sort chip has no cross and its word is never cut (UI audit item 11): its row scrolls instead.
@@ -204,12 +230,13 @@ private fun ChipFace(
         val cap = if (onClear != null) minOf(grown, (LocalConfiguration.current.screenWidthDp - CHIP_CHROME_DP).toFloat()) else grown
         Text(text, style = SunType.CaptionBold, color = fg, maxLines = 1, overflow = overflow, modifier = Modifier.widthIn(max = cap.coerceAtLeast(48f).dp).testTag("chip-text"))
       }
-      if (arrow) Icon(Icons.Rounded.ArrowDropDown, contentDescription = null, tint = fg, modifier = Modifier.size(20.dp))
+      if (arrow) Icon(Icons.Rounded.ArrowDropDown, contentDescription = null, tint = fg, modifier = Modifier.size(18.dp))
     }
     if (onClear != null) {
       Box(
         Modifier
-          .size(36.dp)
+          .minimumInteractiveComponentSize()
+          .size(48.dp, 36.dp)
           .clip(CircleShape)
           .clickable(role = Role.Button, onClick = onClear)
           .semantics { contentDescription = clearLabel },
@@ -267,12 +294,13 @@ private const val SORT_CHIP_NEVER_CUT = 1000
 @Composable
 fun SortChip(sort: SortOrder, searching: Boolean, onSort: (SortOrder) -> Unit, modifier: Modifier = Modifier) {
   var open by remember { mutableStateOf(false) }
-  val word = stringResource(sort.labelRes())
+  val chipWord = stringResource(sort.chipLabelRes())
+  val fullWord = stringResource(sort.labelRes())
   val group = stringResource(R.string.sort_group)
   // Anything but the default order is a choice the person made, so the chip says so with the marker.
   val chosen = sort != (if (searching) SortOrder.BEST else SortOrder.NEWEST)
-  Box(modifier) {
-    ChipFace(Icons.Rounded.SwapVert, word, chosen, stringResource(R.string.a11y_description_note, group, word), { open = true }, maxTextWidth = SORT_CHIP_NEVER_CUT)
+  Box(modifier.testTag("sort-chip")) {
+    ChipFace(Icons.Rounded.SwapVert, chipWord, chosen, stringResource(R.string.a11y_description_note, group, fullWord), { open = true }, maxTextWidth = SORT_CHIP_NEVER_CUT)
     ChipMenu(open, { open = it }, focusable = true) {
       sortChoices(searching).forEach { s -> ChoiceItem(stringResource(s.labelRes()), s == sort, { open = false; onSort(s) }) }
     }
@@ -299,11 +327,11 @@ fun DateChip(
   val any = stringResource(R.string.date_any_time)
   val label = date?.let { dateLabelText(it.filter.label) }
   val description = when {
-    label == null -> stringResource(R.string.a11y_description_note, group, any)
+    label == null -> if (any.equals(group, ignoreCase = true)) group else stringResource(R.string.a11y_description_note, group, any)
     date.phrase != null -> stringResource(R.string.a11y_description_note, group, stringResource(R.string.date_from_words, label))
     else -> stringResource(R.string.a11y_description_note, group, label)
   }
-  Box(modifier) {
+  Box(modifier.testTag("date-chip")) {
     ChipFace(
       icon = Icons.Rounded.CalendarMonth,
       text = label ?: if (compact) null else any,
@@ -342,7 +370,7 @@ fun SimilarChip(name: String, onClear: () -> Unit, modifier: Modifier = Modifier
       text = text,
       active = true,
       description = text,
-      onClick = {},
+      onClick = null,
       onClear = onClear,
       clearLabel = stringResource(R.string.similar_remove),
       maxTextWidth = 220,
@@ -354,7 +382,108 @@ fun SimilarChip(name: String, onClear: () -> Unit, modifier: Modifier = Modifier
   }
 }
 
-/** The line of sort and date chips above the list (inside the grid, so it scrolls away with it). */
+/** Format sub-filter chip (e.g. PDF, Word, Excel/CSV under Documents; PNG, JPEG under Photos). Hidden on [KindFilter.ALL]. */
+@Composable
+fun SubTypeChip(
+  filter: KindFilter,
+  subType: FileSubType?,
+  onSubType: (FileSubType?) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  val options = remember(filter) { FileSubType.forFilter(filter) }
+  if (options.isEmpty()) return
+  var open by remember { mutableStateOf(false) }
+  val allLabel = stringResource(R.string.subtype_all)
+  val word = subType?.let { stringResource(it.chipLabelRes) } ?: allLabel
+  val group = stringResource(R.string.subtype_group)
+  Box(modifier) {
+    ChipFace(
+      icon = Icons.Outlined.Description,
+      text = word,
+      active = subType != null,
+      description = stringResource(R.string.a11y_description_note, group, word),
+      onClick = { open = true },
+      onClear = if (subType != null) ({ onSubType(null) }) else null,
+      clearLabel = stringResource(R.string.subtype_remove),
+      maxTextWidth = 140,
+      arrow = subType == null,
+    )
+    ChipMenu(open, { open = it }, focusable = true) {
+      ChoiceItem(allLabel, subType == null, { open = false; onSubType(null) })
+      options.forEach { opt ->
+        ChoiceItem(stringResource(opt.menuLabelRes), subType == opt, { open = false; onSubType(opt) })
+      }
+    }
+  }
+}
+
+/** Compact segmented Grid / List view toggle right beside Sort & Date in the filter row. */
+@Composable
+fun ViewModeToggle(
+  viewMode: ResultViewMode,
+  onViewMode: (ResultViewMode) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  val t = LocalSunlight.current
+  val groupDesc = stringResource(R.string.view_mode_group)
+  Row(
+    modifier
+      .minimumInteractiveComponentSize()
+      .clip(CircleShape)
+      .background(t.paper)
+      .border(Sun.Border, t.line, CircleShape)
+      .padding(2.dp)
+      .heightIn(min = 32.dp)
+      .selectableGroup()
+      .semantics { contentDescription = groupDesc },
+    verticalAlignment = Alignment.CenterVertically,
+    horizontalArrangement = Arrangement.spacedBy(2.dp),
+  ) {
+    ViewModeSegment(
+      icon = Icons.Outlined.GridView,
+      label = stringResource(R.string.view_grid),
+      selected = viewMode == ResultViewMode.GRID,
+      onClick = { onViewMode(ResultViewMode.GRID) },
+      modifier = Modifier.testTag("view-mode-grid"),
+    )
+    ViewModeSegment(
+      icon = Icons.AutoMirrored.Outlined.ViewList,
+      label = stringResource(R.string.view_list),
+      selected = viewMode == ResultViewMode.LIST,
+      onClick = { onViewMode(ResultViewMode.LIST) },
+      modifier = Modifier.testTag("view-mode-list"),
+    )
+  }
+}
+
+@Composable
+private fun ViewModeSegment(
+  icon: ImageVector,
+  label: String,
+  selected: Boolean,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  val t = LocalSunlight.current
+  val fg = if (selected) t.onMarker else t.ink
+  Row(
+    modifier
+      .minimumInteractiveComponentSize()
+      .heightIn(min = 32.dp)
+      .clip(CircleShape)
+      .background(if (selected) t.marker else androidx.compose.ui.graphics.Color.Transparent, CircleShape)
+      .selectable(selected = selected, role = Role.RadioButton, onClick = onClick)
+      .semantics { contentDescription = label }
+      .padding(horizontal = 6.dp, vertical = 4.dp),
+    verticalAlignment = Alignment.CenterVertically,
+    horizontalArrangement = Arrangement.spacedBy(2.dp),
+  ) {
+    Icon(icon, contentDescription = null, tint = fg, modifier = Modifier.size(16.dp))
+    Text(label, style = SunType.CaptionBold, color = fg, maxLines = 1)
+  }
+}
+
+/** The line of subtype, sort, date, and view-mode chips above the list (inside the grid, so it scrolls away with it). */
 @Composable
 fun SortDateRow(
   sort: SortOrder,
@@ -368,22 +497,51 @@ fun SortDateRow(
   /** "Find similar" is on: the name of the file it started from. It leads the row as a chip with a cross. */
   similar: String? = null,
   onClearSimilar: () -> Unit = {},
+  filter: KindFilter = KindFilter.ALL,
+  subType: FileSubType? = null,
+  onSubType: (FileSubType?) -> Unit = {},
+  viewMode: ResultViewMode = ResultViewMode.GRID,
+  onViewMode: (ResultViewMode) -> Unit = {},
 ) {
-  Row(
-    modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-    horizontalArrangement = Arrangement.spacedBy(Sun.S8),
-    verticalAlignment = Alignment.CenterVertically,
-  ) {
-    if (similar != null) SimilarChip(similar, onClearSimilar)
-    SortChip(sort, searching, onSort)
-    DateChip(date, onPreset, onPickRange, onClearDate)
+  val pinToggle = LocalDensity.current.fontScale < 1.3f
+  val chipGap = if (LocalConfiguration.current.screenWidthDp < 390) 6.dp else Sun.S8
+  if (pinToggle) {
+    // Pin Grid | List visibly at the trailing edge on phone widths while Sort/Date/SubType scroll cleanly beside it.
+    Row(
+      modifier.fillMaxWidth(),
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.spacedBy(chipGap),
+    ) {
+      Row(
+        Modifier.weight(1f).horizontalScroll(rememberScrollState()),
+        horizontalArrangement = Arrangement.spacedBy(chipGap),
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        if (similar != null) SimilarChip(similar, onClearSimilar)
+        SubTypeChip(filter, subType, onSubType)
+        SortChip(sort, searching, onSort)
+        DateChip(date, onPreset, onPickRange, onClearDate)
+      }
+      ViewModeToggle(viewMode, onViewMode)
+    }
+  } else {
+    Row(
+      modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+      horizontalArrangement = Arrangement.spacedBy(Sun.S8),
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      if (similar != null) SimilarChip(similar, onClearSimilar)
+      SubTypeChip(filter, subType, onSubType)
+      SortChip(sort, searching, onSort)
+      DateChip(date, onPreset, onPickRange, onClearDate)
+      ViewModeToggle(viewMode, onViewMode)
+    }
   }
 }
 
 /**
- * Short windows (a tablet or phone on its side): the kind, sort and date chips on one scrolling line, so the list gets the row
- * the second line took. The kind chips stay one selectable group of their own. Same chips, same actions as [FilterRow] over
- * [SortDateRow].
+ * Short windows (a tablet or phone on its side): the kind, subtype, sort, date and view-mode chips on one scrolling line,
+ * so the list gets the row the second line took. The kind chips stay one selectable group of their own.
  */
 @Composable
 fun FilterSortRow(
@@ -399,6 +557,10 @@ fun FilterSortRow(
   modifier: Modifier = Modifier,
   similar: String? = null,
   onClearSimilar: () -> Unit = {},
+  subType: FileSubType? = null,
+  onSubType: (FileSubType?) -> Unit = {},
+  viewMode: ResultViewMode = ResultViewMode.GRID,
+  onViewMode: (ResultViewMode) -> Unit = {},
 ) {
   val group = stringResource(R.string.filter_group)
   Row(
@@ -412,8 +574,10 @@ fun FilterSortRow(
       horizontalArrangement = Arrangement.spacedBy(Sun.S8),
       verticalAlignment = Alignment.CenterVertically,
     ) { KindChips(filter, onFilter) }
+    SubTypeChip(filter, subType, onSubType)
     SortChip(sort, searching, onSort)
     DateChip(date, onPreset, onPickRange, onClearDate)
+    ViewModeToggle(viewMode, onViewMode)
   }
 }
 

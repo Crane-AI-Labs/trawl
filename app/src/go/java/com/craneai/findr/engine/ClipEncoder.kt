@@ -14,7 +14,7 @@ class ClipEncoder(
   private val dir: File,
   private val tokenizer: Lazy<ClipTokenizer?>,
   private val scope: CoroutineScope,
-  imageThreads: Int = IMAGE_THREADS,
+  private val imageThreads: Int? = null,
 ) {
   val imageFile: File get() = File(dir, QuickLookPack.IMAGE)
   val textFile: File get() = File(dir, QuickLookPack.TEXT)
@@ -28,6 +28,8 @@ class ClipEncoder(
   suspend fun warmText() {}
   fun releaseImage() {}
   suspend fun release() {}
+  internal fun resolvedImageThreads(): Int = (imageThreads ?: Tuning.current.clipImageThreads).coerceIn(1, 8)
+  internal fun textThreads(): Int = (Tuning.current.textThreadsOn ?: TEXT_THREADS).coerceIn(1, TEXT_THREADS)
 
   companion object {
     const val DIM = QuickLookPack.DIM

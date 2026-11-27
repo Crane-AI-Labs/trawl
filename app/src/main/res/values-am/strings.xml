@@ -298,6 +298,8 @@
   <string name="settings_about_model">ፍለጋ የሚሠራው በGoogle EmbeddingGemma 2 (Apache 2.0) አማካኝነት፣ ሙሉ በሙሉ በዚህ ስልክ ላይ ነው።</string>
   <string name="settings_about_private"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> የኢንተርኔት ፈቃድ የለውም። ፋይሎችህ እና ከመረጃዎቻቸው የተማራቸው ነገሮች በጭራሽ ከስልኩ አይወጡም።</string>
   <string name="settings_about_maker">የተሰራው በCrane AI Labs ነው።</string>
+  <string name="settings_check_updates">ዝማኔዎችን ያረጋግጡ</string>
+  <string name="settings_check_updates_hint">የማውረጃ ገጹን በአሳሽዎ ውስጥ ይከፍታል።</string>
   <string name="settings_licences">ፈቃዶች እና ምስጋናዎች</string>
   <string name="licences_title">ፈቃዶች እና ምስጋናዎች</string>
   <string name="licences_intro"><xliff:g id="app_name" example="Trawl">%1$s</xliff:g> የተገነባው ከዚህ በታች ባለው ስራ ላይ ነው። እነዚህ ማስታወቂያዎች በፈቃዶቹ የሚፈለጉ ናቸው፣ እንዲሁም እኛ ምስጋና የምናቀርብበት መንገድ ናቸው።</string>
@@ -471,4 +473,7 @@
     <item quantity="one">%1$d ፋይል ማንበብ አልተቻለም (ተበላሽቷል፣ ወይም ይህ ስልክ መክፈት የማይችለው ዓይነት ነው)። አሁንም በስሙ ማግኘት ይችላሉ።</item>
     <item quantity="other">%1$d ፋይሎች ማንበብ አልተቻለም (ተበላሽተዋል፣ ወይም ይህ ስልክ መክፈት የማይችላቸው ዓይነት ናቸው)። አሁንም በስማቸው ማግኘት ይችላሉ።</item>
   </plurals>
+  <string name="addons_download_browser">በአሳሽ ውስጥ ያውርዱ</string>
+  <string name="addons_download_return_hint">ፋይሉ ወደ Downloads ወርዶ ሲጨርስ ወደዚህ ተመልሰው ጫንን ይንኩ።</string>
+  <string name="addons_no_browser">የማውረጃ አገናኙን የሚከፍት አሳሽ አልተገኘም።</string>
 </resources>

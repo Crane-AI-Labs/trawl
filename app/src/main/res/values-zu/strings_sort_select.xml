@@ -5,6 +5,14 @@
   <string name="sort_oldest">Okudala kakhulu</string>
   <string name="sort_largest">Okukhulu kakhulu</string>
   <string name="sort_name">Igama A kuya ku-Z</string>
+  <string name="sort_chip_best">Ukufana</string>
+  <string name="sort_chip_newest">Okusha</string>
+  <string name="sort_chip_oldest">Okudala</string>
+  <string name="sort_chip_created_newest">Okwakhiwe</string>
+  <string name="sort_chip_created_oldest">Okwakhiwe</string>
+  <string name="sort_chip_largest">Okukhulu</string>
+  <string name="sort_chip_smallest">Okuncane</string>
+  <string name="sort_chip_name">Igama</string>
   <string name="sort_group">Hlunga ngokuthi</string>
   <string name="date_any_time">Noma nini</string>
   <string name="date_group">Idethi</string>
@@ -85,4 +93,20 @@
   <string name="snack_marked_sensitive_many">Amakwe njengabucayi. Manje afihliwe emiphumeleni.</string>
   <string name="snack_unmarked_sensitive_many">Awasekho amakwe. Angaphinda avele emiphumeleni.</string>
   <string name="nothing_in_dates">%1$s: akukho okutholakele. Zama enye idethi.</string>
+  <string name="sort_created_newest">Usuku lokudalwa (okusha)</string>
+  <string name="sort_created_oldest">Usuku lokudalwa (okudala)</string>
+  <string name="sort_smallest">Okuncane kakhulu</string>
+  <string name="subtype_group">Uhlobo lwefayela</string>
+  <string name="subtype_all">Zonke izinhlobo</string>
+  <string name="subtype_remove">Susa isihlungi sohlobo lwefayela</string>
+  <string name="subtype_spreadsheet_menu">Excel ne-CSV (.xlsx, .csv)</string>
+  <string name="subtype_text_menu">Umbhalo ne-Markdown (.txt, .md)</string>
+  <string name="subtype_text_chip">Umbhalo / MD</string>
+  <string name="subtype_code_menu">Ikhodi nedatha (.json, .xml, …)</string>
+  <string name="subtype_code_chip">Ikhodi / Idatha</string>
+  <string name="view_mode_group">Indlela yokubuka</string>
+  <string name="view_grid">Igridi</string>
+  <string name="view_list">Uhlu</string>
+  <string name="label_modified_short">Kushintshwe %1$s</string>
+  <string name="label_created_short">Kudalwe %1$s</string>
 </resources>

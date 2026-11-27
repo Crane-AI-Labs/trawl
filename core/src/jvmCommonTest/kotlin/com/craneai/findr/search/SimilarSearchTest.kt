@@ -354,4 +354,25 @@ class SimilarSearchTest {
     assertTrue(similar(seed).indexIncomplete)
     assertNotNull(similar(seed).hits.firstOrNull())
   }
+
+  @Test fun crossModalSimilarFindsDocumentsPhotosAndAudioTogetherAndRespectsKindFilter() {
+    backgroundPhotos(60)
+    repeat(60) { text("bgdoc$it.txt", background()) }
+    val seedDoc = text("contract_seed.pdf", scene(4))
+    text("related_memo.txt", scene(4))
+    photo("signed_scan.jpg", scene(4))
+    val audioId = file("call_recording.m4a", FileKind.AUDIO)
+    val audioSegs = store.saveSegments(audioId, listOf(Segment(SegmentKind.AUDIO, Modality.AUDIO, vector = scene(4))), FileState.UNDERSTOOD)
+    vectors.add(audioSegs[0], audioId, FileKind.AUDIO, Modality.AUDIO, false, scene(4))
+
+    val all = searcher.similar(seedDoc, KindFilter.ALL, 30, crossModal = true)
+    assertTrue("document seed must find related text, image, and audio in All: ${names(all)}", setOf("related_memo.txt", "signed_scan.jpg", "call_recording.m4a").all { it in names(all) })
+    assertFalse("seed itself is excluded", "contract_seed.pdf" in names(all))
+
+    val photosOnly = searcher.similar(seedDoc, KindFilter.PHOTOS, 30, crossModal = true)
+    assertEquals(listOf("signed_scan.jpg"), names(photosOnly))
+
+    val docsOnly = searcher.similar(seedDoc, KindFilter.DOCUMENTS, 30, crossModal = true)
+    assertTrue("related_memo.txt" in names(docsOnly) && "signed_scan.jpg" !in names(docsOnly))
+  }
 }

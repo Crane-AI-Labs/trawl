@@ -78,19 +78,17 @@ class OrtPrivateScorer(private val modelFile: File, private val threads: Int = 2
     session = null
   }
 
-  private fun open(): OrtSession {
-    val options = OrtSession.SessionOptions().apply {
-      setIntraOpNumThreads(threads)
-      setInterOpNumThreads(1)
-      setExecutionMode(OrtSession.SessionOptions.ExecutionMode.SEQUENTIAL)
-      setOptimizationLevel(OrtSession.SessionOptions.OptLevel.ALL_OPT)
-      addConfigEntry("session.intra_op.allow_spinning", "0")
-      // Lean memory, as on the phone: one fixed 384 px input, so an arena has nothing to reuse.
-      setCPUArenaAllocator(false)
-      setMemoryPatternOptimization(false)
-      addConfigEntry("session.use_device_allocator_for_initializers", "1")
-    }
-    return env().createSession(modelFile.absolutePath, options)
+  private fun open(): OrtSession = OrtSession.SessionOptions().use { options ->
+    options.setIntraOpNumThreads(threads)
+    options.setInterOpNumThreads(1)
+    options.setExecutionMode(OrtSession.SessionOptions.ExecutionMode.SEQUENTIAL)
+    options.setOptimizationLevel(OrtSession.SessionOptions.OptLevel.ALL_OPT)
+    options.addConfigEntry("session.intra_op.allow_spinning", "0")
+    // Lean memory, as on the phone: one fixed 384 px input, so an arena has nothing to reuse.
+    options.setCPUArenaAllocator(false)
+    options.setMemoryPatternOptimization(false)
+    options.addConfigEntry("session.use_device_allocator_for_initializers", "1")
+    env().createSession(modelFile.absolutePath, options)
   }
 
   companion object {

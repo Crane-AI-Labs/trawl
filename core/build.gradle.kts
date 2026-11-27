@@ -66,6 +66,9 @@ kotlin {
       implementation("org.json:json:20251224")
       implementation(libs.androidx.sqlite.bundled.jvm)
     }
+    jvmTest {
+      resources.srcDir(layout.buildDirectory.dir("native"))
+    }
     getByName("androidHostTest").dependencies {
       // android.jar's org.json is a stub on the JVM; the tests read and write the real one (as :app's unit tests do).
       implementation("org.json:json:20180813")
@@ -82,6 +85,48 @@ configurations.matching { it.name.contains("HostTest") }.configureEach {
 tasks.withType<Test>().configureEach {
   maxHeapSize = "4g"
 }
+
+// Optional ARM64 NEON SDOT native library for SQ8 vector scoring (macOS ARM64 .dylib and Linux ARM64 .so; skipped on x86_64/Windows).
+val buildNeonVecTest = tasks.register<Exec>("buildNeonVecTest") {
+  val src = file("src/native/trawl_vec_neon.c")
+  val osName = System.getProperty("os.name")
+  val isArm64 = System.getProperty("os.arch").let { it == "aarch64" || it == "arm64" }
+  val isMacArm64 = osName.startsWith("Mac") && isArm64
+  val isLinuxArm64 = osName.startsWith("Linux") && isArm64
+  val out = layout.buildDirectory.file(if (isLinuxArm64) "native/libtrawl_vec_neon.so" else "native/libtrawl_vec_neon.dylib")
+  onlyIf { isMacArm64 || isLinuxArm64 }
+  inputs.file(src)
+  outputs.file(out)
+  doFirst {
+    out.get().asFile.parentFile.mkdirs()
+    val jhome = listOfNotNull(
+      System.getProperty("java.home"),
+      System.getenv("JAVA_HOME"),
+    ).firstOrNull { File(it, "include/jni.h").isFile }
+      ?: throw GradleException("JDK include/jni.h not found for buildNeonVecTest")
+    if (isMacArm64) {
+      commandLine(
+        "clang", "-O3", "-shared", "-fPIC",
+        "-arch", "arm64", "-march=armv8.2-a+dotprod",
+        "-mmacosx-version-min=13.0",
+        "-install_name", "@rpath/libtrawl_vec_neon.dylib",
+        "-ffile-prefix-map=${src.parentFile.absolutePath}=.",
+        "-I$jhome/include", "-I$jhome/include/darwin",
+        src.absolutePath, "-o", out.get().asFile.absolutePath,
+      )
+    } else {
+      commandLine(
+        "cc", "-O3", "-shared", "-fPIC",
+        "-march=armv8.2-a+dotprod",
+        "-ffile-prefix-map=${src.parentFile.absolutePath}=.",
+        "-I$jhome/include", "-I$jhome/include/linux",
+        src.absolutePath, "-o", out.get().asFile.absolutePath,
+      )
+    }
+  }
+  commandLine("true")
+}
+tasks.matching { it.name == "jvmTestProcessResources" }.configureEach { dependsOn(buildNeonVecTest) }
 
 // The index kill harness (core/src/jvmTest/.../harness/KillHarness.kt): ./gradlew :core:killHarness -Pkh="kill /mnt/data/kh/run1 300 400 6000".
 // Not part of any test task. It spawns child JVMs that write the index like the app and SIGKILLs them at random moments.

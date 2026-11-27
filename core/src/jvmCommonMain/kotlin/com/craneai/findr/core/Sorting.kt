@@ -2,8 +2,8 @@ package com.craneai.findr.core
 
 /**
  * The order of [SortOrder] as a comparator over files, ties broken by id so a list never shuffles between runs.
- * [SortOrder.BEST] has no file order (it is the score order), so it falls back to newest: that is what browsing shows.
- * The SQL in IndexStore.recent spells the same orders (`date_ms DESC, id DESC`, `size DESC, id DESC`, `name COLLATE NOCASE, id`).
+ * [SortOrder.BEST] has no file order (it is the score order), so it falls back to newest modified: that is what browsing shows.
+ * The SQL in IndexStore.recent spells the same orders (`mtime DESC, id DESC`, `date_ms DESC, id DESC`, `size DESC, id DESC`, `size, id`, `name COLLATE NOCASE, id`).
  *
  * "Newest" does not put a junk date first: a file stamped far in the future (2099, a counter read as a time; see
  * [ClockSense.isJunkFuture]) would sit above everything real for ever. Those files go after every real date, newest-first among
@@ -11,9 +11,13 @@ package com.craneai.findr.core
  */
 fun fileOrder(order: SortOrder, nowMs: Long = System.currentTimeMillis()): Comparator<IndexedFile> = when (order) {
   SortOrder.BEST, SortOrder.NEWEST ->
+    compareBy<IndexedFile> { ClockSense.isJunkFuture(it.modifiedMillis, nowMs) }.thenByDescending { it.modifiedMillis }.thenByDescending { it.id }
+  SortOrder.OLDEST -> compareBy<IndexedFile> { it.modifiedMillis }.thenBy { it.id }
+  SortOrder.CREATED_NEWEST ->
     compareBy<IndexedFile> { ClockSense.isJunkFuture(it.dateMillis, nowMs) }.thenByDescending { it.dateMillis }.thenByDescending { it.id }
-  SortOrder.OLDEST -> compareBy<IndexedFile> { it.dateMillis }.thenBy { it.id }
+  SortOrder.CREATED_OLDEST -> compareBy<IndexedFile> { it.dateMillis }.thenBy { it.id }
   SortOrder.LARGEST -> compareByDescending<IndexedFile> { it.sizeBytes }.thenByDescending { it.id }
+  SortOrder.SMALLEST -> compareBy<IndexedFile> { it.sizeBytes }.thenBy { it.id }
   SortOrder.NAME -> Comparator<IndexedFile> { a, b -> String.CASE_INSENSITIVE_ORDER.compare(a.name, b.name) }.thenBy { it.id }
 }
 

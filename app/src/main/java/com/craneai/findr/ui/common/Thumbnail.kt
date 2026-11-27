@@ -81,9 +81,9 @@ fun FileThumbnail(
   if (checking) LaunchedEffect(file.id) { blur.check(file) }
   if (FindrLog.detail && file.kind in IndexStore.QUICK_KINDS) GateTrace(blur, file, if (hidden) look else PrivateLook.Look.CLEAR)
   val loadable = file.kind.isVisual() && !file.uri.startsWith("fake://")
-  var failed by remember(file.uri) { mutableStateOf(false) }
+  var failed by remember(file.uri, file.modifiedMillis, file.sizeBytes) { mutableStateOf(false) }
   // First choice is the system's small thumbnail (cheap); if MediaProvider cannot make one, decode the file itself.
-  var fallback by remember(file.uri) { mutableStateOf(false) }
+  var fallback by remember(file.uri, file.modifiedMillis, file.sizeBytes) { mutableStateOf(false) }
 
   // Sunlight: one flat paper-2 block for every kind (Color keys compare by value, so these are made once per theme).
   val brush = remember(tone.container) { SolidColor(tone.container) }
@@ -107,9 +107,9 @@ fun FileThumbnail(
     if (iconPainter == null) Icon(file.kind.icon(), contentDescription = null, tint = tone.content, modifier = Modifier.size(iconSize).alpha(0.75f))
     if (loadable && !failed) {
       val systemThumb = !fallback && (file.kind == FileKind.IMAGE || (file.kind == FileKind.VIDEO && frameMs == null))
-      val request = remember(file.uri, frameMs, reduceMotion, systemThumb, hidden) {
+      val request = remember(file.uri, file.modifiedMillis, file.sizeBytes, frameMs, reduceMotion, systemThumb, hidden) {
         ImageRequest.Builder(context)
-          .data(if (systemThumb) MediaThumb(file.uri) else file.uri)
+          .data(if (systemThumb) MediaThumb(file.uri, file.modifiedMillis, file.sizeBytes) else file.uri)
           .allowRgb565(true) // half the memory for a thumbnail nobody inspects pixel by pixel
           .crossfade(false) // a fade per cell while a fling binds a dozen of them costs frames; the system thumbnail is quick enough to pop in
           .apply {
@@ -120,12 +120,15 @@ fun FileThumbnail(
           }
           .build()
       }
+      val onThumbError = remember(file.uri, file.modifiedMillis, file.sizeBytes, systemThumb) {
+        { _: coil3.compose.AsyncImagePainter.State.Error -> if (systemThumb) fallback = true else failed = true }
+      }
       AsyncImage(
         model = request,
         contentDescription = null,
         contentScale = ContentScale.Crop,
         modifier = Modifier.fillMaxSize(),
-        onError = { if (systemThumb) fallback = true else failed = true },
+        onError = onThumbError,
       )
     }
     if (hidden) {

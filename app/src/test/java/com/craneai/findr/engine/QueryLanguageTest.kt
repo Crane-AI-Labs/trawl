@@ -9,7 +9,7 @@ import org.junit.Test
 import java.io.File
 
 class QueryLanguageTest {
-  private val words = File("src/main/assets/${SpeechLanguageGate.ASSET}").inputStream().use { EnglishWords.fromGzip(it) }
+  private val words = File("src/full/assets/${SpeechLanguageGate.ASSET}").inputStream().use { EnglishWords.fromGzip(it) }
   private val lang = QueryLanguage(lazyOf(words))
 
   private fun non(q: String) = QueryLanguage.isNonEnglish(words, q)

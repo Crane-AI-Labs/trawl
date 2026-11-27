@@ -12,7 +12,6 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.click
 import androidx.compose.ui.test.performMouseInput
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.runComposeUiTest
 import androidx.compose.ui.unit.dp
 import com.craneai.findr.core.FileKind
 import com.craneai.findr.index.CrawlRecord

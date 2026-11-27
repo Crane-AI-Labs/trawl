@@ -13,6 +13,9 @@ import trawl.desktop.Platform
 /** Where a right-click happened: the result it was on and the point inside that result's row. */
 data class MenuRequest(val id: Long, val x: Int, val y: Int)
 
+/** How results are arranged: photo grids + compact rows ([GRID]) or a uniform multi-column table ([LIST]). */
+enum class ResultViewMode { GRID, LIST }
+
 /**
  * Everything the main window remembers about what the person is doing that is not in the controller: which result is selected, whether the
  * large preview is open, the search field's caret, where focus is. One object so the keyboard handler, the list, the preview and the
@@ -22,6 +25,8 @@ class MainUi {
   var tfv by mutableStateOf(TextFieldValue(""))
   var selected by mutableStateOf<Long?>(null)
   var quickLook by mutableStateOf(false)
+  /** Grid (photo tiles + document rows) vs uniform multi-column List view. */
+  var viewMode by mutableStateOf(ResultViewMode.GRID)
   /** The index details panel (Package C's), opened from the status bar. */
   var detailOpen by mutableStateOf(false)
   var showWeak by mutableStateOf(false)
@@ -33,9 +38,10 @@ class MainUi {
   var anchor: Long? = null
   /** The Recent list shows every document, not the first few (the "Show N more documents" row). */
   var recentAll by mutableStateOf(false)
-  /** The sort menu, the date menu and the date range dialog. */
+  /** The sort menu, the date menu, the file-type dropdown menu, and the date range dialog. */
   var sortMenu by mutableStateOf(false)
   var dateMenu by mutableStateOf(false)
+  var subTypeMenu by mutableStateOf(false)
   var dateDialog by mutableStateOf(false)
 
   /** Every selectable id in reading order, set from the built list; the range and "select all" rules read it. Not state: only read on a click or key. */
@@ -54,6 +60,7 @@ class MainUi {
 
   /** A press on result [id]: a plain click chooses it alone, Shift takes the range, Cmd/Ctrl adds or removes it. */
   fun press(id: Long, shift: Boolean, toggle: Boolean) {
+    userMoved = true
     setPick(trawl.desktop.ui.search.Picking.click(pickState(), order, id, shift, toggle))
     menu = null
     focusList()
@@ -61,7 +68,7 @@ class MainUi {
 
   /** A right-click on [id]: on one of several chosen results it keeps the choice (the menu acts on all of them); anywhere else it chooses that result alone. */
   fun pressSecondary(id: Long) {
-    if (picked.size > 1 && id in picked) { selected = id; menu = null; focusList() } else press(id, shift = false, toggle = false)
+    if (picked.size > 1 && id in picked) { userMoved = true; selected = id; menu = null; focusList() } else press(id, shift = false, toggle = false)
   }
 
   var searchFocused by mutableStateOf(false)
@@ -72,6 +79,12 @@ class MainUi {
 
   /** The query the selection was last reconciled for (not state: only read when results change). */
   var lastQuery: String = ""
+
+  /**
+   * The person has chosen a row (arrow key, click, select all) since the query last changed. Until then the selection is only the best hit of
+   * the list so far, and it follows the best hit when meaning lands and re-ranks. Not state: only read when results change.
+   */
+  var userMoved: Boolean = false
 
   /** How many rows a Page key moves; set from the list's height. */
   var pageRows: Int = 8
@@ -84,9 +97,10 @@ class MainUi {
   /** The search field's value for the controller's [query]: our own (with its caret) while they agree, a fresh one with the caret at the end otherwise. */
   fun valueFor(query: String): TextFieldValue = if (tfv.text == query) tfv else TextFieldValue(query, TextRange(query.length))
 
-  /** The date and sort chips, so a menu or dialog opened from one hands focus back to it (H4). */
+  /** The date, sort, and file-type chips, so a menu or dialog opened from one hands focus back to it (H4). */
   val dateChipFocus = FocusRequester()
   val sortChipFocus = FocusRequester()
+  val subTypeChipFocus = FocusRequester()
 
   fun focusSearch() { runCatching { searchFocus.requestFocus() } }
   fun focusList() { runCatching { listFocus.requestFocus() } }
