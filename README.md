@@ -27,14 +27,11 @@
   <a href="#build-from-source">Build from Source</a>
 </p>
 
+</div>
+
 <br />
 
-<!-- Hero visual: poster-singing-man-1920x1080.png -->
-<a href="https://trawlsearch.com">
-  <img src="docs/assets/hero.png" width="880" alt="Trawl finding photos, documents, screenshots, and voice notes offline on Desktop and Android" />
-</a>
-
-</div>
+https://github.com/user-attachments/assets/ccb3d680-b544-4a83-812f-eb773df30507
 
 <br />
 
